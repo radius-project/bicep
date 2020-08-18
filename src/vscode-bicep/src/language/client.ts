@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
 import * as path from "path";
-import { existsSync } from "fs";
+import { existsSync, readFile } from "fs";
 import { getLogger } from "../utils/logger";
 import {
   callWithTelemetryAndErrorHandlingSync,
@@ -11,6 +11,13 @@ import {
   parseError,
 } from "vscode-azureextensionui";
 import { ErrorAction, Message, CloseAction } from "vscode-languageclient/node";
+<<<<<<< HEAD
+=======
+import { SemanticTokensFeature } from "vscode-languageclient/lib/common/semanticTokens";
+import { Uri } from "vscode";
+import { Module, render } from "viz.js/full.render.js";
+import Viz = require("viz.js");
+>>>>>>> Implement OAM diagrams
 
 const dotnetRuntimeVersion = "5.0";
 const packagedServerPath = "bicepLanguageServer/Bicep.LangServer.dll";
@@ -86,6 +93,7 @@ async function launchLanguageService(
   getLogger().info("Bicep language service started.");
 
   await client.onReady();
+  registerOamCommand(context, client);
 
   getLogger().info("Bicep language service ready.");
 }
@@ -178,4 +186,44 @@ function configureTelemetry(client: lsp.LanguageClient) {
       return defaultErrorHandler.closed();
     },
   };
+}
+
+function registerOamCommand(context: vscode.ExtensionContext, client: lsp.LanguageClient) {
+  const command = vscode.commands.registerCommand("oam.graph", async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId != "bicep") {
+      return;
+    }
+
+    const contentRoot = path.join(context.extensionPath, "content");
+    const panel = vscode.window.createWebviewPanel(
+      "oam",
+      "OAM Application Diagram",
+      vscode.ViewColumn.Beside,
+      {
+        enableFindWidget: true,
+        enableScripts: true,
+        localResourceRoots: [Uri.file(contentRoot)],
+      }
+    );
+
+    panel.webview.html = "Please wait ...";
+    const content = await new Promise<string>((resolve, reject) => {
+      const p = path.join(contentRoot, "oam_diagram.html");
+      readFile(p, "utf8", function (err, data) {
+        if (err) reject(err);
+        else resolve(data);
+      });
+    });
+
+    await client.onReady();
+    const response = await client.sendRequest<{ text: string }>("makegraph", {
+      uri: editor.document.uri.toString(),
+    });
+    const dot = response.text;
+    const replacement = await new Viz({ Module, render }).renderString(dot);
+    panel.webview.html = content.replace("PLACEHOLDER", replacement);
+  });
+
+  context.subscriptions.push(command);
 }

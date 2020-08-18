@@ -7,7 +7,7 @@ using Bicep.Core.Syntax;
 
 namespace Bicep.Core.Semantics
 {
-    internal class ApplicationResourceVisitor : SymbolVisitor
+    public class ApplicationResourceVisitor : SymbolVisitor
     {
         private Dictionary<SyntaxBase, ApplicationSymbol> _applications;
         private Dictionary<(SyntaxBase, SyntaxBase), ComponentSymbol> _components;
