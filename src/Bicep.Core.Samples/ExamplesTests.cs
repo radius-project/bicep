@@ -14,6 +14,7 @@ using Bicep.Core.PrettyPrint;
 using Bicep.Core.PrettyPrint.Options;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.TypeSystem.Az;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
@@ -126,7 +127,7 @@ namespace Bicep.Core.Samples
             var jsonFileName = Path.Combine(outputDirectory, Path.GetFileName(example.JsonStreamName));
             
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), PathHelper.FilePathToFileUrl(bicepFileName));
-            var compilation = new Compilation(new AzResourceTypeProvider(), syntaxTreeGrouping);
+            var compilation = new Compilation(new AzResourceTypeProvider(), new ComponentTypeProvider(), syntaxTreeGrouping);
             var emitter = new TemplateEmitter(compilation.GetEntrypointSemanticModel());
 
             // group assertion failures using AssertionScope, rather than reporting the first failure

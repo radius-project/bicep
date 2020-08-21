@@ -35,6 +35,11 @@ namespace Bicep.Core.TypeSystem
         Resource,
 
         /// <summary>
+        /// Transform type
+        /// </summary>
+        Transform,
+
+        /// <summary>
         /// Union of multiple types.
         /// </summary>
         Union,

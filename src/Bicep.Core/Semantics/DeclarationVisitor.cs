@@ -33,11 +33,27 @@ namespace Bicep.Core.Semantics
             this.declaredSymbols.Add(symbol);
         }
 
+        public override void VisitImportDirectiveSyntax(ImportDirectiveSyntax syntax)
+        {
+            base.VisitImportDirectiveSyntax(syntax);
+
+            var symbol = new ImportSymbol(this.context, syntax.Name.IdentifierName, syntax, syntax.Name);
+            this.declaredSymbols.Add(symbol);
+        }
+
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
         {
             base.VisitResourceDeclarationSyntax(syntax);
 
             var symbol = new ResourceSymbol(this.context, syntax.Name.IdentifierName, syntax);
+            this.declaredSymbols.Add(symbol);
+        }
+
+        public override void VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax)
+        {
+            base.VisitResourceTransformDeclarationSyntax(syntax);
+
+            var symbol = new TransformSymbol(this.context, syntax.Name.IdentifierName, syntax, syntax.Name);
             this.declaredSymbols.Add(symbol);
         }
 

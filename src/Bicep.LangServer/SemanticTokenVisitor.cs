@@ -165,6 +165,34 @@ namespace Bicep.LanguageServer
             base.VisitResourceDeclarationSyntax(syntax);
         }
 
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);
+            AddTokenType(syntax.Name, SemanticTokenType.Variable);
+            base.VisitApplicationDeclarationSyntax(syntax);
+        }
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);
+            AddTokenType(syntax.Name, SemanticTokenType.Variable);
+            base.VisitComponentDeclarationSyntax(syntax);
+        }
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);
+            AddTokenType(syntax.Name, SemanticTokenType.Variable);
+            base.VisitDeploymentDeclarationSyntax(syntax);
+        }
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);
+            AddTokenType(syntax.Name, SemanticTokenType.Variable);
+            base.VisitInstanceDeclarationSyntax(syntax);
+        }
+
         public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
         {
             AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);

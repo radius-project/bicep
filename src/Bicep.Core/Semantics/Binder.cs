@@ -35,11 +35,13 @@ namespace Bicep.Core.Semantics
                 builtInNamespacs,
                 allDeclarations.OfType<ParameterSymbol>(),
                 allDeclarations.OfType<VariableSymbol>(),
+                allDeclarations.OfType<ImportSymbol>(),
                 allDeclarations.OfType<ResourceSymbol>(),
+                allDeclarations.OfType<TransformSymbol>(),
                 allDeclarations.OfType<ModuleSymbol>(),
                 allDeclarations.OfType<OutputSymbol>());
-        }
 
+        }
         public ResourceScopeType TargetScope { get; }
 
         public FileSymbol FileSymbol { get; }

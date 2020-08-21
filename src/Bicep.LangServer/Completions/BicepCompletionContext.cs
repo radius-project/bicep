@@ -199,7 +199,7 @@ namespace Bicep.LanguageServer.Completions
                 return true;
             }
 
-            if (matchingNodes.Count >=2 && matchingNodes[^1] is Token token)
+            if (matchingNodes.Count >= 2 && matchingNodes[^1] is Token token)
             {
                 // we have at least 2 matching nodes in the "stack" and the last one is a token
                 var node = matchingNodes[^2];
@@ -207,7 +207,8 @@ namespace Bicep.LanguageServer.Completions
                 switch (node)
                 {
                     case ProgramSyntax _:
-                        // the token at current position is inside a program node
+                    case ApplicationDeclarationSyntax _:
+                        // the token at current position is inside a program or application node
                         // we're in a declaration if one of the following conditions is met:
                         // 1. the token is EOF
                         // 2. the token is a newline
@@ -227,6 +228,11 @@ namespace Bicep.LanguageServer.Completions
                         // result counts as being outside of the declaration context)
                         return declaration.Keyword.Span.Contains(offset);
                 }
+            }
+
+            if (matchingNodes.OfType<IDeclarationSyntax>().LastOrDefault() is ApplicationDeclarationSyntax && matchingNodes[^1] is Token t2)
+            {
+                return t2.Type == TokenType.EndOfFile || t2.Type == TokenType.NewLine;
             }
 
             return false;

@@ -95,6 +95,16 @@ namespace Bicep.LanguageServer.Completions
 
                 yield return CreateKeywordCompletion(LanguageConstants.OutputKeyword, "Output keyword", context.ReplacementRange);
                 yield return CreateContextualSnippetCompletion(LanguageConstants.OutputKeyword, "Output declaration", "output ${1:Identifier} ${2:Type} = $0", context.ReplacementRange);
+                yield return CreateKeywordCompletion(LanguageConstants.ApplicationKeyword, "Application keyword", context.ReplacementRange);
+                yield return CreateContextualSnippetCompletion(LanguageConstants.ApplicationKeyword, "Application with defaults", @"application ${1:Identifier} = {
+  name: $2
+  properties: {
+    $0
+  }
+}", context.ReplacementRange);
+                yield return CreateKeywordCompletion(LanguageConstants.ComponentKeyword, "Component keyword", context.ReplacementRange);
+                yield return CreateKeywordCompletion(LanguageConstants.DeploymentKeyword, "Deployment keyword", context.ReplacementRange);
+                yield return CreateKeywordCompletion(LanguageConstants.InstanceKeyword, "Instance keyword", context.ReplacementRange);
 
                 yield return CreateKeywordCompletion(LanguageConstants.ModuleKeyword, "Module keyword", context.ReplacementRange);
                 yield return CreateContextualSnippetCompletion(LanguageConstants.ModuleKeyword, "Module declaration", @"module ${1:Identifier} '${2:Path}' = {

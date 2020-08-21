@@ -10,6 +10,8 @@ namespace Bicep.Core.Semantics
         Parameter,
         Variable,
         Resource,
+        Transform,
+        Import,
         Module,
         Output,
         Namespace,

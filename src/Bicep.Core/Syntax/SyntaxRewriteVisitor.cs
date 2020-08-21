@@ -175,6 +175,38 @@ namespace Bicep.Core.Syntax
         }
         void ISyntaxVisitor.VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceResourceDeclarationSyntax);
 
+        protected virtual ResourceTransformDeclarationSyntax ReplaceResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Transform, out var transform);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+            hasChanges |= RewriteNullable(syntax.Type, out var type);
+            hasChanges |= Rewrite(syntax.Assignment, out var assignment);
+            hasChanges |= RewriteNullable(syntax.IfCondition, out var ifExpression);
+            hasChanges |= Rewrite(syntax.Body, out var body);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new ResourceTransformDeclarationSyntax(transform, name, type, assignment, ifExpression, body);
+        }
+        void ISyntaxVisitor.VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceResourceTransformDeclarationSyntax);
+
+        protected virtual ImportDirectiveSyntax ReplaceImportDirectiveSyntax(ImportDirectiveSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Keyword, out var keyword);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new ImportDirectiveSyntax(keyword, name);
+        }
+        void ISyntaxVisitor.VisitImportDirectiveSyntax(ImportDirectiveSyntax syntax) => ReplaceCurrent(syntax, ReplaceImportDirectiveSyntax);
+
         protected virtual ModuleDeclarationSyntax ReplaceModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
         {
             var hasChanges = Rewrite(syntax.Keyword, out var keyword);

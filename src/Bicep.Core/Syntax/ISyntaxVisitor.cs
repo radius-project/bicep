@@ -22,6 +22,8 @@ namespace Bicep.Core.Syntax
 
         void VisitIdentifierSyntax(IdentifierSyntax syntax);
 
+        void VisitImportDirectiveSyntax(ImportDirectiveSyntax syntax);
+
         void VisitInstanceFunctionCallSyntax(InstanceFunctionCallSyntax syntax);
 
         void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax);
@@ -47,6 +49,8 @@ namespace Bicep.Core.Syntax
         void VisitPropertyAccessSyntax(PropertyAccessSyntax syntax);
 
         void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax);
+
+        void VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax);
 
         void VisitSeparatedSyntaxList(SeparatedSyntaxList syntax);
 

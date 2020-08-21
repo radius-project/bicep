@@ -33,7 +33,17 @@ namespace Bicep.Core.Semantics
             VisitDescendants(symbol);
         }
 
+        public virtual void VisitImportSymbol(ImportSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
         public virtual void VisitResourceSymbol(ResourceSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
+        public virtual void VisitTransformSymbol(TransformSymbol symbol)
         {
             VisitDescendants(symbol);
         }

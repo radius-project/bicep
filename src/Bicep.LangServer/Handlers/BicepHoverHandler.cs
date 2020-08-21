@@ -68,6 +68,18 @@ namespace Bicep.LanguageServer.Handlers
                 case ResourceSymbol resource:
                     return $"```bicep\nresource {resource.Name}\n{resource.Type}\n```";
 
+                case ApplicationSymbol application:
+                    return $"```bicep\napplication {application.Name}\n```";
+
+                case ComponentSymbol component:
+                    return $"```bicep\ncomponent {component.Name}\n{component.GetKindForDisplay()}\n```";
+
+                case DeploymentSymbol deployment:
+                    return $"```bicep\ndeployment {deployment.Name}\n```";
+
+                case InstanceSymbol instance:
+                    return $"```bicep\ninstance {instance.Name}\n{instance.GetKindForDisplay()}\n```";
+
                 case ModuleSymbol module:
                     var filePath = SyntaxHelper.TryGetModulePath(module.DeclaringModule, out _);
                     if (filePath != null)

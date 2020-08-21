@@ -39,9 +39,21 @@ namespace Bicep.Core.Semantics
             this.CollectDiagnostics(symbol);
         }
 
+        public override void VisitImportSymbol(ImportSymbol symbol)
+        {
+            base.VisitImportSymbol(symbol);
+            this.CollectDiagnostics(symbol);
+        }
+
         public override void VisitResourceSymbol(ResourceSymbol symbol)
         {
             base.VisitResourceSymbol(symbol);
+            this.CollectDiagnostics(symbol);
+        }
+
+        public override void VisitTransformSymbol(TransformSymbol symbol)
+        {
+            base.VisitTransformSymbol(symbol);
             this.CollectDiagnostics(symbol);
         }
 

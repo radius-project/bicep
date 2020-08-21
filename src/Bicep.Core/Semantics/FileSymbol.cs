@@ -15,7 +15,9 @@ namespace Bicep.Core.Semantics
             ImmutableDictionary<string, NamespaceSymbol> importedNamespaces,
             IEnumerable<ParameterSymbol> parameterDeclarations,
             IEnumerable<VariableSymbol> variableDeclarations,
+            IEnumerable<ImportSymbol> importDeclarations,
             IEnumerable<ResourceSymbol> resourceDeclarations,
+            IEnumerable<TransformSymbol> transformDeclarations,
             IEnumerable<ModuleSymbol> moduleDeclarations,
             IEnumerable<OutputSymbol> outputDeclarations)
             : base(name)
@@ -24,7 +26,9 @@ namespace Bicep.Core.Semantics
             this.ImportedNamespaces = importedNamespaces;
             this.ParameterDeclarations = parameterDeclarations.ToImmutableArray();
             this.VariableDeclarations = variableDeclarations.ToImmutableArray();
+            this.ImportDeclarations = importDeclarations.ToImmutableArray();
             this.ResourceDeclarations = resourceDeclarations.ToImmutableArray();
+            this.TransformDeclarations = transformDeclarations.ToImmutableArray();
             this.ModuleDeclarations = moduleDeclarations.ToImmutableArray();
             this.OutputDeclarations = outputDeclarations.ToImmutableArray();
         }
@@ -32,7 +36,9 @@ namespace Bicep.Core.Semantics
         public override IEnumerable<Symbol> Descendants => this.ImportedNamespaces.Values
             .Concat<Symbol>(this.ParameterDeclarations)
             .Concat(this.VariableDeclarations)
+            .Concat(this.ImportDeclarations)
             .Concat(this.ResourceDeclarations)
+            .Concat(this.TransformDeclarations)
             .Concat(this.ModuleDeclarations)
             .Concat(this.OutputDeclarations);
 
@@ -45,8 +51,14 @@ namespace Bicep.Core.Semantics
         public ImmutableArray<ParameterSymbol> ParameterDeclarations { get; }
 
         public ImmutableArray<VariableSymbol> VariableDeclarations { get; }
+        
+        
+        public ImmutableArray<ImportSymbol> ImportDeclarations { get;  }
 
         public ImmutableArray<ResourceSymbol> ResourceDeclarations { get; }
+        
+
+        public ImmutableArray<TransformSymbol> TransformDeclarations { get; }
 
         public ImmutableArray<ModuleSymbol> ModuleDeclarations { get; }
 

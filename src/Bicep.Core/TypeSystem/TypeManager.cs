@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Semantics;
+using Bicep.Core.Semantics.Libraries;
 using Bicep.Core.Syntax;
 
 namespace Bicep.Core.TypeSystem
@@ -15,12 +15,13 @@ namespace Bicep.Core.TypeSystem
         private readonly DeclaredTypeManager declaredTypeManager;
         private readonly IBinder binder;
 
-        public TypeManager(IResourceTypeProvider resourceTypeProvider, IBinder binder)
+        public TypeManager(IResourceTypeProvider resourceTypeProvider, LibraryManager libraryManager, IBinder binder)
         {
             // bindings will be modified by name binding after this object is created
             // so we can't make an immutable copy here
             // (using the IReadOnlyDictionary to prevent accidental mutation)
-            this.typeAssignmentVisitor = new TypeAssignmentVisitor(resourceTypeProvider, this, binder);
+
+            this.typeAssignmentVisitor = new TypeAssignmentVisitor(resourceTypeProvider, libraryManager, this, binder);
 
             this.declaredTypeManager = new DeclaredTypeManager(resourceTypeProvider, this, binder);
             this.binder = binder;

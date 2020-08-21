@@ -9,9 +9,11 @@ using Bicep.Core.Diagnostics;
 using Bicep.Core.Extensions;
 using Bicep.Core.Parsing;
 using Bicep.Core.Semantics;
+using Bicep.Core.Semantics.Libraries;
 using Bicep.Core.Syntax;
 using Bicep.Core.Syntax.Visitors;
 using Bicep.Core.Text;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -36,13 +38,15 @@ namespace Bicep.Core.TypeSystem
         }
 
         private readonly IResourceTypeProvider resourceTypeProvider;
+        private readonly LibraryManager libraryManager;
         private readonly TypeManager typeManager;
         private readonly IBinder binder;
         private readonly IDictionary<SyntaxBase, TypeAssignment> assignedTypes;
 
-        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, TypeManager typeManager, IBinder binder)
+        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, LibraryManager libraryManager, TypeManager typeManager, IBinder binder)
         {
             this.resourceTypeProvider = resourceTypeProvider;
+            this.libraryManager = libraryManager;
             this.typeManager = typeManager;
             this.binder = binder;
             this.assignedTypes = new Dictionary<SyntaxBase, TypeAssignment>();
@@ -143,6 +147,35 @@ namespace Bicep.Core.TypeSystem
                 return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, declaredType, diagnostics);
             });
 
+        public override void VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                var declaredInputType = syntax.GetDeclaredInputType(this.libraryManager);
+                if (declaredInputType is ErrorType)
+                {
+                    return declaredInputType;
+                }
+
+                var declaredOutputType = syntax.GetDeclaredOutputType(libraryManager, resourceTypeProvider);
+                if (declaredOutputType is ErrorType)
+                {
+                    return declaredOutputType;
+                }
+
+                if (declaredOutputType is ResourceType resourceType && !resourceTypeProvider.HasType(resourceType.TypeReference))
+                {
+                    diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Type ?? syntax.Transform).ResourceTypesUnavailable(resourceType.TypeReference));
+                }
+
+                if (syntax.IfCondition is IfConditionSyntax ifConditionSyntax)
+                {
+                    diagnostics.WriteMultiple(this.ValidateIfCondition(ifConditionSyntax));
+                }
+
+                var declaredType = new TransformType(syntax.Transform.IdentifierName, declaredInputType, declaredOutputType);
+                return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, declaredType, diagnostics);
+            });
+        
         public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics => {
                 if (this.binder.GetSymbolInfo(syntax) is not ModuleSymbol moduleSymbol)
@@ -727,6 +760,21 @@ namespace Bicep.Core.TypeSystem
                         // resource bodies can participate in cycles
                         // need to explicitly force a type check on the body
                         return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, resource));
+
+                    case TransformSymbol transform:
+                        // transform bodies can participate in cycles
+                        // need to explicitly force a type check on the body
+                        return new DeferredTypeReference(() =>
+                        {
+                            // A reference to a transform is a reference to its output.
+                            var type = VisitDeclaredSymbol(syntax, transform);
+                            if (type is TransformType transformType)
+                            {
+                                return transformType.OutputType.Type;
+                            }
+
+                            return type; // Handles Errors
+                        });
 
                     case ModuleSymbol module:
                         return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, module));

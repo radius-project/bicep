@@ -12,6 +12,7 @@ using Bicep.Core.Samples;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.Text;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Json;
 using Bicep.Core.UnitTests.Utils;
@@ -391,7 +392,7 @@ namespace Bicep.Cli.IntegrationTests
         private IEnumerable<string> GetAllDiagnostics(string bicepFilePath)
         {
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), PathHelper.FilePathToFileUrl(bicepFilePath));
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), syntaxTreeGrouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), syntaxTreeGrouping);
 
             var output = new List<string>();
             foreach (var (syntaxTree, diagnostics) in compilation.GetAllDiagnosticsBySyntaxTree())

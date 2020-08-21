@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Extensions;
 using Bicep.Core.Navigation;
@@ -68,13 +70,15 @@ namespace Bicep.Core.Parsing
                     {
                         TokenType.Identifier => current.Text switch
                         {
+                            LanguageConstants.ImportKeyword => this.ImportDirective(),
                             LanguageConstants.TargetScopeKeyword => this.TargetScope(),
                             LanguageConstants.ParameterKeyword => this.ParameterDeclaration(),
                             LanguageConstants.VariableKeyword => this.VariableDeclaration(),
                             LanguageConstants.ResourceKeyword => this.ResourceDeclaration(),
                             LanguageConstants.OutputKeyword => this.OutputDeclaration(),
                             LanguageConstants.ModuleKeyword => this.ModuleDeclaration(),
-                            _ => throw new ExpectedTokenException(current, b => b.UnrecognizedDeclaration()),
+
+                            _ => this.ResourceTransformDeclaration(),
                         },
                         TokenType.NewLine => this.NewLine(),
 
@@ -106,6 +110,14 @@ namespace Bicep.Core.Parsing
                 default:
                     return RecoveryFlags.None;
             }
+        }
+
+        private SyntaxBase ImportDirective()
+        {
+            var keyword = ExpectKeyword(LanguageConstants.ImportKeyword);
+            var name = this.IdentifierWithRecovery(b => b.ImportDirectiveMissingName(), TokenType.Identifier, TokenType.NewLine);
+            
+            return new ImportDirectiveSyntax(keyword, name);
         }
 
         private SyntaxBase TargetScope()
@@ -212,6 +224,46 @@ namespace Bicep.Core.Parsing
             var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
 
             return new ResourceDeclarationSyntax(keyword, name, type, assignment, ifCondition, body);
+        }
+
+        private SyntaxBase ResourceTransformDeclaration()
+        {
+            var transform = Identifier(b => b.ExpectedIdentifier());
+            var name = this.IdentifierWithRecovery(b => b.ExpectedResourceIdentifier(), TokenType.StringComplete, TokenType.StringLeftPiece, TokenType.NewLine);
+
+            SyntaxBase? type = null;
+            if (reader.Peek().Type != TokenType.Assignment)
+            {
+                // TODO: Unify StringSyntax with TypeSyntax
+                type = this.WithRecovery(
+                    () => ThrowIfSkipped(this.InterpolableString, b => b.ExpectedResourceTypeString()),
+                    GetSuppressionFlag(name),
+                    TokenType.Assignment, TokenType.NewLine);
+            }
+
+            var assignment = this.WithRecovery(this.Assignment, GetSuppressionFlag(type ?? name), TokenType.LeftBrace, TokenType.NewLine);
+            var ifCondition = this.WithRecoveryNullable(() =>
+                {
+                    var current = reader.Peek();
+                    return current.Type switch
+                    {
+                        TokenType.Identifier when current.Text == LanguageConstants.IfKeyword => this.IfCondition(),
+                        TokenType.LeftBrace => null,
+                        _ => throw new ExpectedTokenException(current, b => b.ExpectBodyStartOrIf())
+                    };
+                },
+                GetSuppressionFlag(assignment),
+                TokenType.LeftBrace,
+                TokenType.NewLine);
+
+            RecoveryFlags suppressionFlag =
+                ifCondition is IfConditionSyntax ifConditionSyntax && ifConditionSyntax.HasParseErrors()
+                ? RecoveryFlags.SuppressDiagnostics
+                : GetSuppressionFlag(ifCondition ?? assignment);
+
+            var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
+
+            return new ResourceTransformDeclarationSyntax(transform, name, type, assignment, ifCondition, body);
         }
 
         private SyntaxBase ModuleDeclaration()
@@ -883,6 +935,79 @@ namespace Bicep.Core.Parsing
             var closeBrace = Expect(TokenType.RightBrace, b => b.ExpectedCharacter("}"));
 
             return new ObjectSyntax(openBrace, propertiesOrTokens, closeBrace);
+        }
+
+        private ObjectSyntax ObjectWithDeclarations()
+        {
+            var openBrace = Expect(TokenType.LeftBrace, b => b.ExpectedCharacter("{"));
+
+            if (Check(TokenType.RightBrace))
+            {
+                // allow a close on the same line for an empty object
+                var emptyCloseBrace = reader.Read();
+                return new ObjectSyntax(openBrace, ImmutableArray<SyntaxBase>.Empty, emptyCloseBrace);
+            }
+
+            var propertiesOrTokens = new List<SyntaxBase>();
+            while (!this.IsAtEnd() && this.reader.Peek().Type != TokenType.RightBrace)
+            {
+                 // this produces a property node, skipped tokens node, or just a newline token
+                var parsed = this.ObjectPropertyOrDeclaration();
+
+                propertiesOrTokens.Add(parsed);
+                
+                // if skipped tokens node is returned above, the newline is not consumed
+                // if newline token is returned, we must not expect another (could be beginning of a new property)
+                if (parsed is IDeclarationSyntax)
+                {
+                    // properties must be followed by newlines
+                    var newLine = this.WithRecoveryNullable(this.NewLineOrEof, RecoveryFlags.ConsumeTerminator, TokenType.NewLine);
+                    if (newLine != null)
+                    {
+                        propertiesOrTokens.Add(newLine);
+                    }
+                }
+            }
+
+            var closeBrace = Expect(TokenType.RightBrace, b => b.ExpectedCharacter("}"));
+
+            return new ObjectSyntax(openBrace, propertiesOrTokens, closeBrace);
+        }
+
+        private SyntaxBase ObjectPropertyOrDeclaration()
+        {
+            return this.WithRecovery<SyntaxBase>(() =>
+            {
+                // TODO: Clean this up a bit
+                var current = this.reader.Peek();
+                if (current.Type == TokenType.NewLine)
+                {
+                    return this.NewLine();
+                }
+
+                var key = this.WithRecovery(
+                    () => ThrowIfSkipped(
+                        () =>
+                            current.Type switch
+                            {
+                                TokenType.Identifier => this.Identifier(b => b.ExpectedPropertyName()),
+                                TokenType.StringComplete => this.InterpolableString(),
+                                TokenType.StringLeftPiece => this.InterpolableString(),
+                                _ => throw new ExpectedTokenException(current, b => b.ExpectedPropertyName()),
+                            }, b => b.ExpectedPropertyName()),
+                    RecoveryFlags.None,
+                    TokenType.Colon, TokenType.Assignment, TokenType.NewLine);
+
+                reader.Prev();
+                if (key is IdentifierSyntax && reader.Peek().Type != TokenType.Colon)
+                {
+                    return Declaration();
+                }
+                else
+                {
+                    return ObjectProperty();
+                }
+            }, RecoveryFlags.None, TokenType.NewLine);
         }
 
         private SyntaxBase ObjectProperty()

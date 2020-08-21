@@ -6,12 +6,13 @@ using System.Linq;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Emit;
 using Bicep.Core.Extensions;
+using Bicep.Core.Semantics.Libraries;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Semantics
 {
-    public class SemanticModel
+    public partial class SemanticModel
     {
         private readonly Lazy<EmitLimitationInfo> emitLimitationInfoLazy;
 
@@ -26,8 +27,9 @@ namespace Bicep.Core.Semantics
             var symbolContext = new SymbolContext(compilation, this);
             SymbolContext = symbolContext;
 
+            LibraryManager = new DefaultLibraryManager(compilation.ResourceTypeProvider);
             Binder = new Binder(syntaxTree, symbolContext);
-            TypeManager = new TypeManager(compilation.ResourceTypeProvider, Binder);
+            TypeManager = new TypeManager(compilation.ResourceTypeProvider, LibraryManager, Binder);
 
             // name binding is done
             // allow type queries now
@@ -45,6 +47,8 @@ namespace Bicep.Core.Semantics
         public Compilation Compilation { get; }
 
         public ITypeManager TypeManager { get; }
+        
+        public LibraryManager LibraryManager { get;  }
 
         public EmitLimitationInfo EmitLimitationInfo => emitLimitationInfoLazy.Value;
 
@@ -69,6 +73,9 @@ namespace Bicep.Core.Semantics
 
             diagnosticWriter.WriteMultiple(EmitLimitationInfo.Diagnostics);
 
+            var (_, transformDiagnostics) = EvaluateTransforms();
+            diagnosticWriter.WriteMultiple(transformDiagnostics);
+            
             return diagnosticWriter.GetDiagnostics();
         }
 

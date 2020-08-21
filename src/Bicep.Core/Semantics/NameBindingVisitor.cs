@@ -49,10 +49,24 @@ namespace Bicep.Core.Semantics
             // bind what we got - the type checker will validate if it fits
             this.bindings.Add(syntax, symbol);
         }
-
+        
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
         {
             this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Type);
+            this.Visit(syntax.Assignment);
+            allowedFlags = FunctionFlags.Default;
+            this.Visit(syntax.IfCondition);
+            allowedFlags = FunctionFlags.RequiresInlining;
+            this.Visit(syntax.Body);
+            allowedFlags = FunctionFlags.Default;
+        }
+
+
+        public override void VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax)
+        {
+            this.Visit(syntax.Transform);
             this.Visit(syntax.Name);
             this.Visit(syntax.Type);
             this.Visit(syntax.Assignment);

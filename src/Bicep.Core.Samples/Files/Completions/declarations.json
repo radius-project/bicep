@@ -1,5 +1,59 @@
 [
   {
+    "label": "application",
+    "kind": "keyword",
+    "detail": "Application keyword",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_application",
+    "insertText": "application",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "application",
+    "kind": "snippet",
+    "detail": "Application with defaults",
+    "documentation": {
+      "kind": "markdown",
+      "value": "```bicep\napplication Identifier = {\n  name: \n  properties: {\n    \n  }\n}\n```"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_application",
+    "insertText": "application ${1:Identifier} = {\n  name: $2\n  properties: {\n    $0\n  }\n}",
+    "insertTextFormat": "snippet"
+  },
+  {
+    "label": "component",
+    "kind": "keyword",
+    "detail": "Component keyword",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_component",
+    "insertText": "component",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "deployment",
+    "kind": "keyword",
+    "detail": "Deployment keyword",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_deployment",
+    "insertText": "deployment",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "instance",
+    "kind": "keyword",
+    "detail": "Instance keyword",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_instance",
+    "insertText": "instance",
+    "insertTextFormat": "plainText"
+  },
+  {
     "label": "module",
     "kind": "keyword",
     "detail": "Module keyword",

@@ -10,6 +10,7 @@ using Bicep.Core.FileSystem;
 using Bicep.Core.Samples;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.Core.Workspaces;
@@ -243,7 +244,7 @@ resource resourceC 'My.Rp/myResource@2020-01-01' = {
 
         private EmitResult EmitTemplate(SyntaxTreeGrouping syntaxTreeGrouping, string filePath)
         {
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), syntaxTreeGrouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), syntaxTreeGrouping);
             var emitter = new TemplateEmitter(compilation.GetEntrypointSemanticModel());
 
             using var stream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
@@ -252,7 +253,7 @@ resource resourceC 'My.Rp/myResource@2020-01-01' = {
 
         private EmitResult EmitTemplate(SyntaxTreeGrouping syntaxTreeGrouping, MemoryStream memoryStream)
         {
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), syntaxTreeGrouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), syntaxTreeGrouping);
             var emitter = new TemplateEmitter(compilation.GetEntrypointSemanticModel());
 
             TextWriter tw = new StreamWriter(memoryStream);

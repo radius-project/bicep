@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 using System.Collections.Immutable;
 using Bicep.Core.Semantics;
-using Bicep.Core.Syntax;
 
 namespace Bicep.Core.Emit
 {
@@ -13,6 +12,7 @@ namespace Bicep.Core.Emit
             this.SemanticModel = semanticModel;
             this.VariablesToInline = InlineDependencyVisitor.GetVariablesToInline(semanticModel);
             this.ResourceDependencies = ResourceDependencyVisitor.GetResourceDependencies(semanticModel);
+            this.ProjectedResources = semanticModel.GetProjectedResources();
         }
 
         public SemanticModel SemanticModel { get; }
@@ -24,5 +24,6 @@ namespace Bicep.Core.Emit
         public ImmutableDictionary<ModuleSymbol, ScopeHelper.ScopeData> ModuleScopeData => SemanticModel.EmitLimitationInfo.ModuleScopeData;
 
         public ImmutableDictionary<ResourceSymbol, ResourceSymbol?> ResoureScopeData => SemanticModel.EmitLimitationInfo.ResoureScopeData;
+        public ImmutableArray<ProjectedResource> ProjectedResources { get; }
     }
 }

@@ -63,6 +63,10 @@ namespace Bicep.Core.TypeSystem
                     // When assigning a resource, we're really assigning the value of the resource body.
                     return AreTypesAssignable(sourceResourceType.Body.Type, targetType);
 
+                case TypeSymbol _ when sourceType is TransformType sourceTransformType:
+                    // When assigning a transform, we're really assigning the value of the output resource.
+                    return AreTypesAssignable(sourceTransformType.OutputType.Type, targetType);
+
                 case TypeSymbol _ when sourceType is ModuleType sourceModuleType:
                     // When assigning a module, we're really assigning the value of the module body.
                     return AreTypesAssignable(sourceModuleType.Body.Type, targetType);
@@ -149,6 +153,14 @@ namespace Bicep.Core.TypeSystem
                 var narrowedBody = NarrowTypeInternal(typeManager, expression, targetResourceType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
 
                 return new ResourceType(targetResourceType.TypeReference, narrowedBody);
+            }
+            
+            if (targetType is TransformType targetTransformType)
+            {
+                // When assigning a transform, we're really assigning the value of input (body).
+                var narrowedBody = NarrowTypeInternal(typeManager, expression, targetTransformType.InputType.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
+
+                return new TransformType(targetTransformType.Name, narrowedBody, targetTransformType.OutputType);
             }
             
             if (targetType is ModuleType targetModuleType)

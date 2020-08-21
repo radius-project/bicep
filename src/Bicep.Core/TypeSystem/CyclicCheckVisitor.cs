@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Bicep.Core.Diagnostics;
 using Bicep.Core.Navigation;
-using Bicep.Core.Parsing;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.Utils;
@@ -56,10 +54,11 @@ namespace Bicep.Core.TypeSystem
                 return;
             }
 
+            var previousDeclaration = currentDeclaration;
             currentDeclaration = declarations[syntax.Name.IdentifierName];
             declarationAccessDict[currentDeclaration] = new List<SyntaxBase>();
             visitBaseFunc(syntax);
-            currentDeclaration = null;
+            currentDeclaration = previousDeclaration;
         }
 
         public override void VisitVariableDeclarationSyntax(VariableDeclarationSyntax syntax)
@@ -67,6 +66,9 @@ namespace Bicep.Core.TypeSystem
 
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
             => VisitDeclaration(syntax, base.VisitResourceDeclarationSyntax);
+
+        public override void VisitResourceTransformDeclarationSyntax(ResourceTransformDeclarationSyntax syntax)
+            => VisitDeclaration(syntax, base.VisitResourceTransformDeclarationSyntax);
 
         public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
             => VisitDeclaration(syntax, base.VisitModuleDeclarationSyntax);

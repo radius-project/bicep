@@ -8,6 +8,7 @@ using Bicep.Core.Extensions;
 using Bicep.Core.Parsing;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -58,6 +59,9 @@ namespace Bicep.Core.TypeSystem
 
                 case ResourceDeclarationSyntax resource:
                     return GetResourceType(resource);
+                
+                case ResourceTransformDeclarationSyntax transform:
+                    return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(syntax), transform);
 
                 case ModuleDeclarationSyntax module:
                     return GetModuleType(module);

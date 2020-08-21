@@ -9,6 +9,7 @@ using Bicep.Core.Parsing;
 using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -132,6 +133,11 @@ namespace Bicep.Core.UnitTests.Diagnostics
             if (parameter.ParameterType == typeof(ResourceTypeReference))
             {
                 return ResourceTypeReference.Parse("Mock.ErrorParam/mockResources@2020-01-01");
+            }
+
+            if (parameter.ParameterType == typeof(ComponentTypeReference))
+            {
+                return ComponentTypeReference.Parse("Mock.ErrorParam/mockResources@v1alpha1");
             }
 
             return $"<param_{index}>";
