@@ -48,6 +48,10 @@ namespace Bicep.Core.Samples
 
         public static DataSet InvalidModules_LF => CreateDataSet(); 
 
+        public static DataSet OAM_Nested_LF => CreateDataSet();
+        
+        public static DataSet OAM_SyntaxTypes_LF => CreateDataSet();
+
         public static IEnumerable<DataSet> AllDataSets =>
             typeof(DataSets)
                 .GetProperties(BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Static)

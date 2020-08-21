@@ -26,6 +26,22 @@ namespace Bicep.Core.Emit
                 {
                     output[resourceSymbol] = kvp.Value.ToImmutableHashSet();
                 }
+                if (kvp.Key is ApplicationSymbol applicationSymbol)
+                {
+                    output[applicationSymbol] = kvp.Value.ToImmutableHashSet();
+                }
+                if (kvp.Key is ComponentSymbol componentSymbol)
+                {
+                    output[componentSymbol] = kvp.Value.ToImmutableHashSet();
+                }
+                if (kvp.Key is DeploymentSymbol deploymentSymbol)
+                {
+                    output[deploymentSymbol] = kvp.Value.ToImmutableHashSet();
+                }
+                if (kvp.Key is InstanceSymbol instanceSymbol)
+                {
+                    output[instanceSymbol] = kvp.Value.ToImmutableHashSet();
+                }
                 if (kvp.Key is ModuleSymbol moduleSymbol)
                 {
                     output[moduleSymbol] = kvp.Value.ToImmutableHashSet();
@@ -54,6 +70,78 @@ namespace Bicep.Core.Emit
             this.currentDeclaration = resourceSymbol;
             this.resourceDependencies[resourceSymbol] = new HashSet<DeclaredSymbol>();
             base.VisitResourceDeclarationSyntax(syntax);
+
+            // restore previous declaration
+            this.currentDeclaration = prevDeclaration;
+        }
+
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            if (!(this.model.GetSymbolInfo(syntax) is ApplicationSymbol symbol))
+            {
+                throw new InvalidOperationException("Unbound declaration");
+            }
+
+            // save previous declaration as we may call this recursively
+            var prevDeclaration = this.currentDeclaration;
+
+            this.currentDeclaration = symbol;
+            this.resourceDependencies[symbol] = new HashSet<DeclaredSymbol>();
+            base.VisitApplicationDeclarationSyntax(syntax);
+
+            // restore previous declaration
+            this.currentDeclaration = prevDeclaration;
+        }
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            if (!(this.model.GetSymbolInfo(syntax) is ComponentSymbol symbol))
+            {
+                throw new InvalidOperationException("Unbound declaration");
+            }
+
+            // save previous declaration as we may call this recursively
+            var prevDeclaration = this.currentDeclaration;
+
+            this.currentDeclaration = symbol;
+            this.resourceDependencies[symbol] = new HashSet<DeclaredSymbol>();
+            base.VisitComponentDeclarationSyntax(syntax);
+
+            // restore previous declaration
+            this.currentDeclaration = prevDeclaration;
+        }
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            if (!(this.model.GetSymbolInfo(syntax) is DeploymentSymbol symbol))
+            {
+                throw new InvalidOperationException("Unbound declaration");
+            }
+
+            // save previous declaration as we may call this recursively
+            var prevDeclaration = this.currentDeclaration;
+
+            this.currentDeclaration = symbol;
+            this.resourceDependencies[symbol] = new HashSet<DeclaredSymbol>();
+            base.VisitDeploymentDeclarationSyntax(syntax);
+
+            // restore previous declaration
+            this.currentDeclaration = prevDeclaration;
+        }
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            if (!(this.model.GetSymbolInfo(syntax) is InstanceSymbol symbol))
+            {
+                throw new InvalidOperationException("Unbound declaration");
+            }
+
+            // save previous declaration as we may call this recursively
+            var prevDeclaration = this.currentDeclaration;
+
+            this.currentDeclaration = symbol;
+            this.resourceDependencies[symbol] = new HashSet<DeclaredSymbol>();
+            base.VisitInstanceDeclarationSyntax(syntax);
 
             // restore previous declaration
             this.currentDeclaration = prevDeclaration;
@@ -124,8 +212,21 @@ namespace Bicep.Core.Emit
                         resourceDependencies[currentDeclaration].Add(dependency);
                     }
                     return;
+
                 case ResourceSymbol resourceSymbol:
                     resourceDependencies[currentDeclaration].Add(resourceSymbol);
+                    return;
+                case ApplicationSymbol applicationSymbol:
+                    resourceDependencies[currentDeclaration].Add(applicationSymbol);
+                    return;
+                case ComponentSymbol componentSymbol:
+                    resourceDependencies[currentDeclaration].Add(componentSymbol);
+                    return;
+                case DeploymentSymbol deploymentSymbol:
+                    resourceDependencies[currentDeclaration].Add(deploymentSymbol);
+                    return;
+                case InstanceSymbol instanceSymbol:
+                    resourceDependencies[currentDeclaration].Add(instanceSymbol);
                     return;
                 case ModuleSymbol moduleSymbol:
                     resourceDependencies[currentDeclaration].Add(moduleSymbol);

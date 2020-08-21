@@ -13,6 +13,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.Syntax.Visitors;
 using Bicep.Core.Text;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
@@ -47,7 +48,7 @@ namespace Bicep.Core.IntegrationTests.Semantics
         [TestMethod]
         public void EndOfFileFollowingSpaceAfterParameterKeyWordShouldNotThrow()
         {
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), SyntaxFactory.CreateFromText("parameter "));
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), SyntaxFactory.CreateFromText("parameter "));
             compilation.GetEntrypointSemanticModel().GetParseDiagnostics();
         }
 
@@ -105,6 +106,10 @@ namespace Bicep.Core.IntegrationTests.Semantics
                         s is ParameterSymbol ||
                         s is VariableSymbol ||
                         s is ResourceSymbol ||
+                        s is ApplicationSymbol ||
+                        s is ComponentSymbol ||
+                        s is DeploymentSymbol ||
+                        s is InstanceSymbol ||
                         s is ModuleSymbol ||
                         s is OutputSymbol ||
                         s is FunctionSymbol ||
@@ -118,6 +123,10 @@ namespace Bicep.Core.IntegrationTests.Semantics
                         s is ParameterSymbol ||
                         s is VariableSymbol ||
                         s is ResourceSymbol ||
+                        s is ApplicationSymbol ||
+                        s is ComponentSymbol ||
+                        s is DeploymentSymbol ||
+                        s is InstanceSymbol ||
                         s is ModuleSymbol ||
                         s is OutputSymbol ||
                         s is FunctionSymbol ||

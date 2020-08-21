@@ -7,6 +7,7 @@ using System.Linq;
 using Bicep.Core.FileSystem;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.Core.Workspaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,7 +32,7 @@ namespace Bicep.Core.Samples
             var fileUri = PathHelper.FilePathToFileUrl(Path.Combine(outputDirectory, DataSet.TestFileMain));
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), fileUri);
 
-            return new Compilation(TestResourceTypeProvider.Create(), syntaxTreeGrouping);
+            return new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(),  syntaxTreeGrouping);
         }
     }
 }

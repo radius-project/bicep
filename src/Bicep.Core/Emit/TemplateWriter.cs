@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Azure.Deployments.Expression.Expressions;
@@ -14,7 +15,7 @@ using Newtonsoft.Json;
 namespace Bicep.Core.Emit
 {
     // TODO: Are there discrepancies between parameter, variable, and output names between bicep and ARM?
-    public class TemplateWriter
+    public partial class TemplateWriter
     {
         public const string NestedDeploymentResourceType = "Microsoft.Resources/deployments";
         public const string NestedDeploymentResourceApiVersion = "2019-10-01";
@@ -209,6 +210,11 @@ namespace Bicep.Core.Emit
                 this.EmitResource(resourceSymbol);
             }
 
+            foreach (var applicationResource in this.context.ProjectedResources)
+            {
+                this.EmitResource(applicationResource);
+            }
+
             foreach (var moduleSymbol in this.context.SemanticModel.Root.ModuleDeclarations)
             {
                 this.EmitModule(moduleSymbol);
@@ -345,6 +351,27 @@ namespace Bicep.Core.Emit
             writer.WriteEndObject();
         }
 
+        private void EmitDependsOn(ProjectedResource resource)
+        {
+            var dependencies = new List<ResourceDependency>();
+            dependencies.AddRange(resource.ImplicitDependencies.Select(d => new ResourceDependency(d)));
+
+            if(resource.Declaration is DeclaredSymbol symbol)
+            {
+                dependencies.AddRange(context.ResourceDependencies[symbol].Select(d => new ResourceDependency(d)));
+            }
+
+            if (!dependencies.Any())
+            {
+                return;
+            }
+
+            writer.WritePropertyName("dependsOn");
+            writer.WriteStartArray();
+            emitter.EmitResourceIdReferences(dependencies);
+            writer.WriteEndArray();
+        }
+
         private void EmitDependsOn(DeclaredSymbol declaredSymbol)
         {
             var dependencies = context.ResourceDependencies[declaredSymbol];
@@ -362,6 +389,15 @@ namespace Bicep.Core.Emit
                 {
                     case ResourceSymbol resourceDependency:
                         emitter.EmitResourceIdReference(resourceDependency);
+                        break;
+                    case ApplicationSymbol applicationDependency:
+                        emitter.EmitResourceIdReference(applicationDependency);
+                        break;
+                    case ComponentSymbol componentDependency:
+                        emitter.EmitResourceIdReference(componentDependency);
+                        break;
+                    case DeploymentSymbol deploymentDependency:
+                        emitter.EmitResourceIdReference(deploymentDependency);
                         break;
                     case ModuleSymbol moduleDependency:
                         emitter.EmitResourceIdReference(moduleDependency);

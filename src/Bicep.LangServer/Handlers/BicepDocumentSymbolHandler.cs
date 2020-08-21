@@ -81,6 +81,15 @@ namespace Bicep.LanguageServer.Handlers
                 case ResourceSymbol resource:
                     return SymbolKind.Object;
 
+                case ApplicationSymbol application:
+                    return SymbolKind.Object;
+
+                case ComponentSymbol component:
+                    return SymbolKind.Object;
+
+                case DeploymentSymbol deployment:
+                    return SymbolKind.Object;
+
                 case ModuleSymbol module:
                     return SymbolKind.Module;
 

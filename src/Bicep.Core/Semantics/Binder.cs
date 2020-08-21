@@ -36,10 +36,14 @@ namespace Bicep.Core.Semantics
                 allDeclarations.OfType<ParameterSymbol>(),
                 allDeclarations.OfType<VariableSymbol>(),
                 allDeclarations.OfType<ResourceSymbol>(),
+                allDeclarations.OfType<ApplicationSymbol>(),
+                allDeclarations.OfType<ComponentSymbol>(),
+                allDeclarations.OfType<DeploymentSymbol>(),
+                allDeclarations.OfType<InstanceSymbol>(),
                 allDeclarations.OfType<ModuleSymbol>(),
                 allDeclarations.OfType<OutputSymbol>());
-        }
 
+        }
         public ResourceScopeType TargetScope { get; }
 
         public FileSymbol FileSymbol { get; }

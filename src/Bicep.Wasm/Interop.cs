@@ -17,6 +17,7 @@ using Bicep.Core.FileSystem;
 using Bicep.Core.Workspaces;
 using Bicep.Core.Extensions;
 using Bicep.Decompiler;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Wasm
 {
@@ -149,7 +150,7 @@ namespace Bicep.Wasm
 
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), workspace, fileUri);
 
-            return new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+            return new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
         }
 
         private static string ReadStreamToEnd(Stream stream)

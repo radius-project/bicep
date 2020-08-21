@@ -11,7 +11,7 @@ using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Semantics
 {
-    public class SemanticModel
+    public partial class SemanticModel
     {
         private readonly Lazy<EmitLimitationInfo> emitLimitationInfoLazy;
 
@@ -27,7 +27,7 @@ namespace Bicep.Core.Semantics
             SymbolContext = symbolContext;
 
             Binder = new Binder(syntaxTree, symbolContext);
-            TypeManager = new TypeManager(compilation.ResourceTypeProvider, Binder);
+            TypeManager = new TypeManager(compilation.ResourceTypeProvider, compilation.ComponentTypeProvider, Binder);
 
             // name binding is done
             // allow type queries now
@@ -69,6 +69,9 @@ namespace Bicep.Core.Semantics
 
             diagnosticWriter.WriteMultiple(EmitLimitationInfo.Diagnostics);
 
+            var (_, applicationDiagnostics) = ComputeProjectedResources();
+            diagnosticWriter.WriteMultiple(applicationDiagnostics);
+            
             return diagnosticWriter.GetDiagnostics();
         }
 

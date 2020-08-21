@@ -8,6 +8,7 @@ using Bicep.Core.Extensions;
 using Bicep.Core.Parsing;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -18,12 +19,14 @@ namespace Bicep.Core.TypeSystem
         private readonly IDictionary<SyntaxBase, DeclaredTypeAssignment?> declaredTypes = new Dictionary<SyntaxBase, DeclaredTypeAssignment?>();
 
         private readonly IResourceTypeProvider resourceTypeProvider;
+        private readonly IComponentTypeProvider componentTypeProvider;
         private readonly ITypeManager typeManager;
         private readonly IBinder binder;
 
-        public DeclaredTypeManager(IResourceTypeProvider resourceTypeProvider, TypeManager typeManager, IBinder binder)
+        public DeclaredTypeManager(IResourceTypeProvider resourceTypeProvider, IComponentTypeProvider componentTypeProvider, TypeManager typeManager, IBinder binder)
         {
             this.resourceTypeProvider = resourceTypeProvider;
+            this.componentTypeProvider = componentTypeProvider;
             this.typeManager = typeManager;
             this.binder = binder;
         }

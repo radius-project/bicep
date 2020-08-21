@@ -38,6 +38,26 @@ namespace Bicep.Core.Semantics
             VisitDescendants(symbol);
         }
 
+        public virtual void VisitApplicationSymbol(ApplicationSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
+        public virtual void VisitComponentSymbol(ComponentSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
+        public virtual void VisitDeploymentSymbol(DeploymentSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
+        public virtual void VisitInstanceSymbol(InstanceSymbol symbol)
+        {
+            VisitDescendants(symbol);
+        }
+
         public virtual void VisitModuleSymbol(ModuleSymbol symbol)
         {
             VisitDescendants(symbol);

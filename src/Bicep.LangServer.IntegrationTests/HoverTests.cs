@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -174,6 +175,18 @@ namespace Bicep.LangServer.IntegrationTests
                     hover.Contents.MarkupContent.Value.Should().Contain(resource.Type.Name);
                     break;
 
+                case ApplicationSymbol application:
+                    break;
+
+                case ComponentSymbol component:
+                    break;
+
+                case DeploymentSymbol deployment:
+                    break;
+
+                case InstanceSymbol instance:
+                    break;
+
                 case ModuleSymbol module:
                     hover.Contents.MarkupContent.Value.Should().Contain($"module {module.Name}");
                     break;
@@ -185,6 +198,7 @@ namespace Bicep.LangServer.IntegrationTests
                 case FunctionSymbol function:
                     hover.Contents.MarkupContent.Value.Should().Contain($"function {function.Name}(");
                     break;
+                
 
                 default:
                     throw new AssertFailedException($"Unexpected symbol type '{symbol.GetType().Name}'");
