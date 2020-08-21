@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bicep.Core.Parsing;
@@ -88,6 +89,40 @@ namespace Bicep.Core.Syntax
             this.Visit(syntax.Type);
             this.Visit(syntax.Assignment);
             this.Visit(syntax.IfCondition);
+            this.Visit(syntax.Body);
+        }
+
+        public virtual void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Assignment);
+            this.Visit(syntax.Body);
+        }
+
+        public virtual void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Type);
+            this.Visit(syntax.Assignment);
+            this.Visit(syntax.Body);
+        }
+
+        public virtual void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Assignment);
+            this.Visit(syntax.Body);
+        }
+
+        public virtual void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Type);
+            this.Visit(syntax.Assignment);
             this.Visit(syntax.Body);
         }
 

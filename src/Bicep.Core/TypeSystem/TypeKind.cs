@@ -35,6 +35,26 @@ namespace Bicep.Core.TypeSystem
         Resource,
 
         /// <summary>
+        /// Application type
+        /// </summary>
+        Application,
+
+        /// <summary>
+        /// Component type
+        /// </summary>
+        Component,
+
+        /// <summary>
+        /// Deployment type
+        /// </summary>
+        Deployment,
+
+        /// <summary>
+        /// Instance type
+        /// </summary>
+        Instance,
+
+        /// <summary>
         /// Union of multiple types.
         /// </summary>
         Union,

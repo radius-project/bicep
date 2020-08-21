@@ -4,6 +4,7 @@ using Bicep.Core.FileSystem;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.Workspaces;
 using Bicep.LanguageServer.CompilationManager;
 using OmniSharp.Extensions.LanguageServer.Protocol;
@@ -28,7 +29,7 @@ namespace Bicep.LanguageServer.Providers
         public CompilationContext Create(IReadOnlyWorkspace workspace, DocumentUri documentUri)
         {
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(fileResolver, workspace, documentUri.ToUri());
-            var compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+            var compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
 
             return new CompilationContext(compilation);
         }

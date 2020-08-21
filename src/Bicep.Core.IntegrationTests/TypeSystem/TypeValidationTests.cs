@@ -8,6 +8,7 @@ using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
@@ -23,7 +24,7 @@ namespace Bicep.Core.IntegrationTests
         {
             var typeProvider = ResourceTypeProviderHelper.CreateMockTypeProvider(definedTypes);
 
-            var compilation = new Compilation(typeProvider, SyntaxFactory.CreateFromText(programText));
+            var compilation = new Compilation(typeProvider, new ComponentTypeProvider(), SyntaxFactory.CreateFromText(programText));
             return compilation.GetEntrypointSemanticModel();
         }
 

@@ -14,13 +14,13 @@ using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Diagnostics
 {
-    public static class DiagnosticBuilder
+    public static partial class DiagnosticBuilder
     {
         public delegate ErrorDiagnostic ErrorBuilderDelegate(DiagnosticBuilderInternal builder);
 
         public delegate Diagnostic DiagnosticBuilderDelegate(DiagnosticBuilderInternal builder);
 
-        public class DiagnosticBuilderInternal
+        public partial class DiagnosticBuilderInternal
         {
             public DiagnosticBuilderInternal(TextSpan textSpan)
             {

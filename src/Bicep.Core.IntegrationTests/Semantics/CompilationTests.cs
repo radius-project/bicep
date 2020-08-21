@@ -3,6 +3,7 @@
 using Bicep.Core.Samples;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +17,7 @@ namespace Bicep.Core.IntegrationTests.Semantics
         public void EmptyProgram_SyntaxTreeGrouping_should_be_persisted()
         {
             var program = SyntaxFactory.CreateFromText(DataSets.Empty.Bicep);
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), program);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), program);
 
             compilation.SyntaxTreeGrouping.Should().BeSameAs(program);
             compilation.GetEntrypointSemanticModel().Should().NotBeNull();

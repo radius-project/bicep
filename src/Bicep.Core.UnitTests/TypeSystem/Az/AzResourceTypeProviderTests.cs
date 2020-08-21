@@ -16,6 +16,7 @@ using Azure.Bicep.Types.Az;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.UnitTests.TypeSystem.Az
 {
@@ -64,7 +65,7 @@ namespace Bicep.Core.UnitTests.TypeSystem.Az
             
             var typeLoader = CreateMockTypeLoader(ResourceTypeReference.Parse("Mock.Rp/mockType@2020-01-01"));
             Compilation createCompilation(string program)
-                => new Compilation(new AzResourceTypeProvider(typeLoader), SyntaxFactory.CreateFromText(program));
+                => new Compilation(new AzResourceTypeProvider(typeLoader), new ComponentTypeProvider(), SyntaxFactory.CreateFromText(program));
 
             // Missing top-level properties - should be an error
             var compilation = createCompilation(@"
@@ -82,7 +83,7 @@ resource missingResource 'Mock.Rp/madeUpResourceType@2020-01-01' = {
         {
             var typeLoader = CreateMockTypeLoader(ResourceTypeReference.Parse("Mock.Rp/mockType@2020-01-01"));
             Compilation createCompilation(string program)
-                => new Compilation(new AzResourceTypeProvider(typeLoader), SyntaxFactory.CreateFromText(program));
+                => new Compilation(new AzResourceTypeProvider(typeLoader), new ComponentTypeProvider(), SyntaxFactory.CreateFromText(program));
 
             // Missing top-level properties - should be an error
             var compilation = createCompilation(@"

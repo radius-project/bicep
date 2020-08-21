@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Bicep.Core.Emit
 {
-    public class ExpressionConverter
+    public partial class ExpressionConverter
     {
         private readonly EmitterContext context;
 
@@ -98,7 +98,7 @@ namespace Bicep.Core.Emit
                         switch (propertyAccess.PropertyName.IdentifierName)
                         {
                             case "id":
-                                return GetLocallyScopedResourceId(resourceSymbol);
+                                return GetLocallyScopedResourceId((ResourceSymbol)resourceSymbol);
                             case "name":
                                 return GetResourceNameExpression(resourceSymbol);
                             case "type":
@@ -107,7 +107,7 @@ namespace Bicep.Core.Emit
                                 return new JTokenExpression(typeReference.ApiVersion);
                             case "properties":
                                 // use the reference() overload without "full" to generate a shorter expression
-                                return GetReferenceExpression(resourceSymbol, typeReference, false);
+                                return GetReferenceExpression(resourceSymbol, false);
                         }
                     }
 
@@ -257,8 +257,28 @@ namespace Bicep.Core.Emit
                     return CreateFunction("variables", new JTokenExpression(name));
 
                 case ResourceSymbol resourceSymbol:
+                {
                     var typeReference = EmitHelpers.GetTypeReference(resourceSymbol);
                     return GetReferenceExpression(resourceSymbol, typeReference, true);
+                }
+
+                case ApplicationSymbol applicationSymbol:
+                {
+                    var typeReference = EmitHelpers.GetTypeReference(applicationSymbol);
+                    return GetReferenceExpression(applicationSymbol, typeReference, true);
+                }
+
+                case ComponentSymbol componentSymbol:
+                {
+                    var typeReference = EmitHelpers.GetTypeReference(componentSymbol);
+                    return GetReferenceExpression(componentSymbol, typeReference, true);
+                }
+
+                case DeploymentSymbol deploymentSymbol:
+                {
+                    var typeReference = EmitHelpers.GetTypeReference(deploymentSymbol);
+                    return GetReferenceExpression(deploymentSymbol, typeReference, true);
+                }
 
                 case ModuleSymbol moduleSymbol:
                     return GetModuleOutputsReferenceExpression(moduleSymbol);

@@ -48,6 +48,14 @@ namespace Bicep.Core.Syntax
 
         void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax);
 
+        void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax);
+
+        void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax);
+
+        void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax);
+
+        void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax);
+
         void VisitSeparatedSyntaxList(SeparatedSyntaxList syntax);
 
         void VisitSkippedTriviaSyntax(SkippedTriviaSyntax syntax);

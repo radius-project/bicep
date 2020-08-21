@@ -45,6 +45,24 @@ namespace Bicep.Core.Semantics
             this.CollectDiagnostics(symbol);
         }
 
+        public override void VisitApplicationSymbol(ApplicationSymbol symbol)
+        {
+            base.VisitApplicationSymbol(symbol);
+            this.CollectDiagnostics(symbol);
+        }
+
+        public override void VisitComponentSymbol(ComponentSymbol symbol)
+        {
+            base.VisitComponentSymbol(symbol);
+            this.CollectDiagnostics(symbol);
+        }
+
+        public override void VisitDeploymentSymbol(DeploymentSymbol symbol)
+        {
+            base.VisitDeploymentSymbol(symbol);
+            this.CollectDiagnostics(symbol);
+        }
+
         public override void VisitModuleSymbol(ModuleSymbol symbol)
         {
             base.VisitModuleSymbol(symbol);

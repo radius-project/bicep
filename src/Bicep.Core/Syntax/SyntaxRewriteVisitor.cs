@@ -175,6 +175,76 @@ namespace Bicep.Core.Syntax
         }
         void ISyntaxVisitor.VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceResourceDeclarationSyntax);
 
+        protected virtual ApplicationDeclarationSyntax ReplaceApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Keyword, out var keyword);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+            hasChanges |= Rewrite(syntax.Assignment, out var assignment);
+            hasChanges |= RewriteNullable(syntax.IfCondition, out var ifExpression);
+            hasChanges |= Rewrite(syntax.Body, out var body);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new ApplicationDeclarationSyntax(keyword, name, assignment, ifExpression, body);
+        }
+        void ISyntaxVisitor.VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceApplicationDeclarationSyntax);
+
+        protected virtual ComponentDeclarationSyntax ReplaceComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Keyword, out var keyword);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+            hasChanges |= Rewrite(syntax.Type, out var type);
+            hasChanges |= Rewrite(syntax.Assignment, out var assignment);
+            hasChanges |= RewriteNullable(syntax.IfCondition, out var ifExpression);
+            hasChanges |= Rewrite(syntax.Body, out var body);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new ComponentDeclarationSyntax(keyword, name, type, assignment, ifExpression, body);
+        }
+        void ISyntaxVisitor.VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceComponentDeclarationSyntax);
+
+        protected virtual DeploymentDeclarationSyntax ReplaceDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Keyword, out var keyword);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+            hasChanges |= Rewrite(syntax.Assignment, out var assignment);
+            hasChanges |= RewriteNullable(syntax.IfCondition, out var ifExpression);
+            hasChanges |= Rewrite(syntax.Body, out var body);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new DeploymentDeclarationSyntax(keyword, name, assignment, ifExpression, body);
+        }
+        void ISyntaxVisitor.VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceDeploymentDeclarationSyntax);
+
+        protected virtual InstanceDeclarationSyntax ReplaceInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            var hasChanges = Rewrite(syntax.Keyword, out var keyword);
+            hasChanges |= Rewrite(syntax.Name, out var name);
+            hasChanges |= Rewrite(syntax.Type, out var type);
+            hasChanges |= Rewrite(syntax.Assignment, out var assignment);
+            hasChanges |= RewriteNullable(syntax.IfCondition, out var ifExpression);
+            hasChanges |= Rewrite(syntax.Body, out var body);
+
+            if (!hasChanges)
+            {
+                return syntax;
+            }
+
+            return new InstanceDeclarationSyntax(keyword, name, type, assignment, ifExpression, body);
+        }
+        void ISyntaxVisitor.VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax) => ReplaceCurrent(syntax, ReplaceInstanceDeclarationSyntax);
+
         protected virtual ModuleDeclarationSyntax ReplaceModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
         {
             var hasChanges = Rewrite(syntax.Keyword, out var keyword);

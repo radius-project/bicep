@@ -9,6 +9,7 @@ using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1120,7 +1121,7 @@ namespace Bicep.Core.UnitTests.TypeSystem
             binderMock.Setup(x => x.GetParent(It.IsAny<SyntaxBase>()))
                 .Returns<SyntaxBase>(x => hierarchy.GetParent(x));
 
-            return new TypeManager(TestResourceTypeProvider.Create(), binderMock.Object);
+            return new TypeManager(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), binderMock.Object);
         }
     }
 }

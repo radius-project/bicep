@@ -14,6 +14,7 @@ using Bicep.Core.Extensions;
 using Bicep.Core.Semantics;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.Decompiler.Rewriters;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Decompiler
 {
@@ -110,7 +111,7 @@ namespace Bicep.Decompiler
         {
             var hasChanges = false;
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), workspace, entryUri);
-            var compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+            var compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
 
             foreach (var (fileUri, syntaxTree) in workspace.GetActiveSyntaxTrees())
             {
@@ -126,7 +127,7 @@ namespace Bicep.Decompiler
                     workspace.UpsertSyntaxTrees(newSyntaxTree.AsEnumerable());
 
                     syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), workspace, entryUri);
-                    compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+                    compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
                 }
             }
 

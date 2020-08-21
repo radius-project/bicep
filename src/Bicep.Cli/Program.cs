@@ -12,6 +12,7 @@ using Bicep.Core.FileSystem;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.TypeSystem.Az;
 using Bicep.Core.Workspaces;
 using Bicep.Decompiler;
@@ -136,7 +137,7 @@ namespace Bicep.Cli
         private void BuildSingleFile(IDiagnosticLogger logger, string bicepPath, string outputPath)
         {
             var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), PathHelper.FilePathToFileUrl(bicepPath));
-            var compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+            var compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
 
             var success = LogDiagnosticsAndCheckSuccess(logger, compilation);
             if (success)
@@ -161,7 +162,7 @@ namespace Bicep.Cli
             foreach(var bicepPath in bicepPaths)
             {
                 var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), PathHelper.FilePathToFileUrl(bicepPath));
-                var compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+                var compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
 
                 var success = LogDiagnosticsAndCheckSuccess(logger, compilation);
                 if (success)
@@ -231,7 +232,7 @@ namespace Bicep.Cli
                 }
 
                 var syntaxTreeGrouping = SyntaxTreeGroupingBuilder.Build(new FileResolver(), new Workspace(), bicepUri);
-                var compilation = new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+                var compilation = new Compilation(resourceTypeProvider, new ComponentTypeProvider(), syntaxTreeGrouping);
 
                 return LogDiagnosticsAndCheckSuccess(logger, compilation);
             }

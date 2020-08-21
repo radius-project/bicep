@@ -64,6 +64,7 @@ namespace Bicep.LanguageServer
 #pragma warning restore 0612
                     .WithServices(services => RegisterServices(creationOptions, services));
 
+                options.AddHandler<OamGraphHandler>("makegraph");
                 onOptionsFunc(options);
             });
         }
@@ -86,6 +87,7 @@ namespace Bicep.LanguageServer
             services.AddSingleton<ICompilationProvider, BicepCompilationProvider>();
             services.AddSingleton<ISymbolResolver, BicepSymbolResolver>();
             services.AddSingleton<ICompletionProvider, BicepCompletionProvider>();
+            services.AddSingleton<OamGraphHandler>();
         }
     }
 }

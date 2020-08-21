@@ -16,6 +16,10 @@ namespace Bicep.Core.Semantics
             IEnumerable<ParameterSymbol> parameterDeclarations,
             IEnumerable<VariableSymbol> variableDeclarations,
             IEnumerable<ResourceSymbol> resourceDeclarations,
+            IEnumerable<ApplicationSymbol> applicationDeclarations,
+            IEnumerable<ComponentSymbol> componentDeclarations,
+            IEnumerable<DeploymentSymbol> deploymentDeclarations,
+            IEnumerable<InstanceSymbol> instanceDeclarations,
             IEnumerable<ModuleSymbol> moduleDeclarations,
             IEnumerable<OutputSymbol> outputDeclarations)
             : base(name)
@@ -25,6 +29,10 @@ namespace Bicep.Core.Semantics
             this.ParameterDeclarations = parameterDeclarations.ToImmutableArray();
             this.VariableDeclarations = variableDeclarations.ToImmutableArray();
             this.ResourceDeclarations = resourceDeclarations.ToImmutableArray();
+            this.ApplicationDeclarations = applicationDeclarations.ToImmutableArray();
+            this.ComponentDeclarations = componentDeclarations.ToImmutableArray();
+            this.DeploymentDeclarations = deploymentDeclarations.ToImmutableArray();
+            this.InstanceDeclarations = instanceDeclarations.ToImmutableArray();
             this.ModuleDeclarations = moduleDeclarations.ToImmutableArray();
             this.OutputDeclarations = outputDeclarations.ToImmutableArray();
         }
@@ -33,6 +41,10 @@ namespace Bicep.Core.Semantics
             .Concat<Symbol>(this.ParameterDeclarations)
             .Concat(this.VariableDeclarations)
             .Concat(this.ResourceDeclarations)
+            .Concat(this.ApplicationDeclarations)
+            .Concat(this.ComponentDeclarations)
+            .Concat(this.DeploymentDeclarations)
+            .Concat(this.InstanceDeclarations)
             .Concat(this.ModuleDeclarations)
             .Concat(this.OutputDeclarations);
 
@@ -47,6 +59,14 @@ namespace Bicep.Core.Semantics
         public ImmutableArray<VariableSymbol> VariableDeclarations { get; }
 
         public ImmutableArray<ResourceSymbol> ResourceDeclarations { get; }
+
+        public ImmutableArray<ApplicationSymbol> ApplicationDeclarations { get; }
+
+        public ImmutableArray<ComponentSymbol> ComponentDeclarations { get; }
+
+        public ImmutableArray<DeploymentSymbol> DeploymentDeclarations { get; }
+
+        public ImmutableArray<InstanceSymbol> InstanceDeclarations { get; }
 
         public ImmutableArray<ModuleSymbol> ModuleDeclarations { get; }
 

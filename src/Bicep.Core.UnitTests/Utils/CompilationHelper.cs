@@ -12,6 +12,7 @@ using FluentAssertions.Execution;
 using FluentAssertions;
 using System;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.UnitTests.Utils
 {
@@ -53,7 +54,7 @@ namespace Bicep.Core.UnitTests.Utils
         {
             var syntaxTreeGrouping = SyntaxFactory.CreateForFiles(files, entryFileUri);
 
-            return new Compilation(resourceTypeProvider, syntaxTreeGrouping);
+            return new Compilation(resourceTypeProvider, new ComponentTypeProvider(),  syntaxTreeGrouping);
         }
 
         private static (string? jsonOutput, IEnumerable<Diagnostic> diagnostics) Compile(Compilation compilation)

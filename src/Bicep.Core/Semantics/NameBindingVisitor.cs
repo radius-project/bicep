@@ -63,6 +63,34 @@ namespace Bicep.Core.Semantics
             allowedFlags = FunctionFlags.Default;
         }
 
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            allowedFlags = FunctionFlags.RequiresInlining;
+            base.VisitApplicationDeclarationSyntax(syntax);
+            allowedFlags = FunctionFlags.Default;
+        }
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            allowedFlags = FunctionFlags.RequiresInlining;
+            base.VisitComponentDeclarationSyntax(syntax);
+            allowedFlags = FunctionFlags.Default;
+        }
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            allowedFlags = FunctionFlags.RequiresInlining;
+            base.VisitDeploymentDeclarationSyntax(syntax);
+            allowedFlags = FunctionFlags.Default;
+        }
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            allowedFlags = FunctionFlags.RequiresInlining;
+            base.VisitInstanceDeclarationSyntax(syntax);
+            allowedFlags = FunctionFlags.Default;
+        }
+
         public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
         {
             this.Visit(syntax.Keyword);

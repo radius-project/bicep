@@ -72,6 +72,10 @@ namespace Bicep.Core.Parsing
                             LanguageConstants.ParameterKeyword => this.ParameterDeclaration(),
                             LanguageConstants.VariableKeyword => this.VariableDeclaration(),
                             LanguageConstants.ResourceKeyword => this.ResourceDeclaration(),
+                            LanguageConstants.ApplicationKeyword => this.ApplicationDeclaration(),
+                            LanguageConstants.ComponentKeyword => this.ComponentDeclaration(),
+                            LanguageConstants.DeploymentKeyword => this.DeploymentDeclaration(),
+                            LanguageConstants.InstanceKeyword => this.InstanceDeclaration(),
                             LanguageConstants.OutputKeyword => this.OutputDeclaration(),
                             LanguageConstants.ModuleKeyword => this.ModuleDeclaration(),
                             _ => throw new ExpectedTokenException(current, b => b.UnrecognizedDeclaration()),
@@ -212,6 +216,138 @@ namespace Bicep.Core.Parsing
             var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
 
             return new ResourceDeclarationSyntax(keyword, name, type, assignment, ifCondition, body);
+        }
+
+        private SyntaxBase ApplicationDeclaration()
+        {
+            var keyword = ExpectKeyword(LanguageConstants.ApplicationKeyword);
+            var name = this.IdentifierWithRecovery(b => b.ExpectedResourceIdentifier(), TokenType.StringComplete, TokenType.StringLeftPiece, TokenType.NewLine);
+
+            var assignment = this.WithRecovery(this.Assignment, GetSuppressionFlag(name), TokenType.LeftBrace, TokenType.NewLine);
+            var ifCondition = this.WithRecoveryNullable(() =>
+                {
+                    var current = reader.Peek();
+                    return current.Type switch
+                    {
+                        TokenType.Identifier when current.Text == LanguageConstants.IfKeyword => this.IfCondition(),
+                        TokenType.LeftBrace => null,
+                        _ => throw new ExpectedTokenException(current, b => b.ExpectBodyStartOrIf())
+                    };
+                },
+                GetSuppressionFlag(assignment),
+                TokenType.LeftBrace,
+                TokenType.NewLine);
+
+            RecoveryFlags suppressionFlag =
+                ifCondition is IfConditionSyntax ifConditionSyntax && ifConditionSyntax.HasParseErrors()
+                ? RecoveryFlags.SuppressDiagnostics
+                : GetSuppressionFlag(ifCondition ?? assignment);
+
+            var body = this.WithRecovery(this.ObjectWithDeclarations, suppressionFlag, TokenType.NewLine);
+
+            return new ApplicationDeclarationSyntax(keyword, name, assignment, ifCondition, body);
+        }
+
+        private SyntaxBase ComponentDeclaration()
+        {
+            var keyword = ExpectKeyword(LanguageConstants.ComponentKeyword);
+            var name = this.IdentifierWithRecovery(b => b.ExpectedResourceIdentifier(), TokenType.StringComplete, TokenType.StringLeftPiece, TokenType.NewLine);
+
+            // TODO: Unify StringSyntax with TypeSyntax
+            var type = this.WithRecovery(
+                () => ThrowIfSkipped(this.InterpolableString, b => b.ExpectedResourceTypeString()),
+                GetSuppressionFlag(name),
+                TokenType.Assignment, TokenType.NewLine);
+
+            var assignment = this.WithRecovery(this.Assignment, GetSuppressionFlag(type), TokenType.LeftBrace, TokenType.NewLine);
+            var ifCondition = this.WithRecoveryNullable(() =>
+                {
+                    var current = reader.Peek();
+                    return current.Type switch
+                    {
+                        TokenType.Identifier when current.Text == LanguageConstants.IfKeyword => this.IfCondition(),
+                        TokenType.LeftBrace => null,
+                        _ => throw new ExpectedTokenException(current, b => b.ExpectBodyStartOrIf())
+                    };
+                },
+                GetSuppressionFlag(assignment),
+                TokenType.LeftBrace,
+                TokenType.NewLine);
+
+            RecoveryFlags suppressionFlag =
+                ifCondition is IfConditionSyntax ifConditionSyntax && ifConditionSyntax.HasParseErrors()
+                ? RecoveryFlags.SuppressDiagnostics
+                : GetSuppressionFlag(ifCondition ?? assignment);
+
+            var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
+
+            return new ComponentDeclarationSyntax(keyword, name, type, assignment, ifCondition, body);
+        }
+
+        private SyntaxBase DeploymentDeclaration()
+        {
+            var keyword = ExpectKeyword(LanguageConstants.DeploymentKeyword);
+            var name = this.IdentifierWithRecovery(b => b.ExpectedResourceIdentifier(), TokenType.StringComplete, TokenType.StringLeftPiece, TokenType.NewLine);
+
+            var assignment = this.WithRecovery(this.Assignment, GetSuppressionFlag(name), TokenType.LeftBrace, TokenType.NewLine);
+            var ifCondition = this.WithRecoveryNullable(() =>
+                {
+                    var current = reader.Peek();
+                    return current.Type switch
+                    {
+                        TokenType.Identifier when current.Text == LanguageConstants.IfKeyword => this.IfCondition(),
+                        TokenType.LeftBrace => null,
+                        _ => throw new ExpectedTokenException(current, b => b.ExpectBodyStartOrIf())
+                    };
+                },
+                GetSuppressionFlag(assignment),
+                TokenType.LeftBrace,
+                TokenType.NewLine);
+
+            RecoveryFlags suppressionFlag =
+                ifCondition is IfConditionSyntax ifConditionSyntax && ifConditionSyntax.HasParseErrors()
+                ? RecoveryFlags.SuppressDiagnostics
+                : GetSuppressionFlag(ifCondition ?? assignment);
+                
+            var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
+
+            return new DeploymentDeclarationSyntax(keyword, name, assignment, ifCondition, body);
+        }
+
+        private SyntaxBase InstanceDeclaration()
+        {
+            var keyword = ExpectKeyword(LanguageConstants.InstanceKeyword);
+            var name = this.IdentifierWithRecovery(b => b.ExpectedResourceIdentifier(), TokenType.StringComplete, TokenType.StringLeftPiece, TokenType.NewLine);
+
+            // TODO: Unify StringSyntax with TypeSyntax
+            var type = this.WithRecovery(
+                () => ThrowIfSkipped(this.InterpolableString, b => b.ExpectedResourceTypeString()),
+                GetSuppressionFlag(name),
+                TokenType.Assignment, TokenType.NewLine);
+
+            var assignment = this.WithRecovery(this.Assignment, GetSuppressionFlag(type), TokenType.LeftBrace, TokenType.NewLine);
+            var ifCondition = this.WithRecoveryNullable(() =>
+                {
+                    var current = reader.Peek();
+                    return current.Type switch
+                    {
+                        TokenType.Identifier when current.Text == LanguageConstants.IfKeyword => this.IfCondition(),
+                        TokenType.LeftBrace => null,
+                        _ => throw new ExpectedTokenException(current, b => b.ExpectBodyStartOrIf())
+                    };
+                },
+                GetSuppressionFlag(assignment),
+                TokenType.LeftBrace,
+                TokenType.NewLine);
+
+            RecoveryFlags suppressionFlag =
+                ifCondition is IfConditionSyntax ifConditionSyntax && ifConditionSyntax.HasParseErrors()
+                ? RecoveryFlags.SuppressDiagnostics
+                : GetSuppressionFlag(ifCondition ?? assignment);
+
+            var body = this.WithRecovery(this.Object, suppressionFlag, TokenType.NewLine);
+
+            return new InstanceDeclarationSyntax(keyword, name, type, assignment, ifCondition, body);
         }
 
         private SyntaxBase ModuleDeclaration()
@@ -871,6 +1007,59 @@ namespace Bicep.Core.Parsing
                         propertiesOrTokens.Add(skippedSyntax);
                     }
 
+                    // properties must be followed by newlines
+                    var newLine = this.WithRecoveryNullable(this.NewLineOrEof, RecoveryFlags.ConsumeTerminator, TokenType.NewLine);
+                    if (newLine != null)
+                    {
+                        propertiesOrTokens.Add(newLine);
+                    }
+                }
+            }
+
+            var closeBrace = Expect(TokenType.RightBrace, b => b.ExpectedCharacter("}"));
+
+            return new ObjectSyntax(openBrace, propertiesOrTokens, closeBrace);
+        }
+
+        private ObjectSyntax ObjectWithDeclarations()
+        {
+            var openBrace = Expect(TokenType.LeftBrace, b => b.ExpectedCharacter("{"));
+
+            if (Check(TokenType.RightBrace))
+            {
+                // allow a close on the same line for an empty object
+                var emptyCloseBrace = reader.Read();
+                return new ObjectSyntax(openBrace, ImmutableArray<SyntaxBase>.Empty, emptyCloseBrace);
+            }
+
+            var propertiesOrTokens = new List<SyntaxBase>();
+            while (!this.IsAtEnd() && this.reader.Peek().Type != TokenType.RightBrace)
+            {
+                SyntaxBase parsed;
+                if (Check(TokenType.Identifier) && this.reader.Peek().Text == LanguageConstants.ComponentKeyword)
+                {
+                    parsed = this.ComponentDeclaration();
+                }
+                else if (Check(TokenType.Identifier) && this.reader.Peek().Text == LanguageConstants.DeploymentKeyword)
+                {
+                    parsed = this.DeploymentDeclaration();
+                }
+                else if (Check(TokenType.Identifier) && this.reader.Peek().Text == LanguageConstants.InstanceKeyword)
+                {
+                    parsed = this.InstanceDeclaration();
+                }
+                else
+                {
+                    // this produces a property node, skipped tokens node, or just a newline token
+                    parsed = this.ObjectProperty();
+                }
+
+                propertiesOrTokens.Add(parsed);
+                
+                // if skipped tokens node is returned above, the newline is not consumed
+                // if newline token is returned, we must not expect another (could be beginning of a new property)
+                if (parsed is ObjectPropertySyntax || parsed is ComponentDeclarationSyntax || parsed is DeploymentDeclarationSyntax || parsed is InstanceDeclarationSyntax)
+                {
                     // properties must be followed by newlines
                     var newLine = this.WithRecoveryNullable(this.NewLineOrEof, RecoveryFlags.ConsumeTerminator, TokenType.NewLine);
                     if (newLine != null)

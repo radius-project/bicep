@@ -56,10 +56,11 @@ namespace Bicep.Core.TypeSystem
                 return;
             }
 
+            var previousDeclaration = currentDeclaration;
             currentDeclaration = declarations[syntax.Name.IdentifierName];
             declarationAccessDict[currentDeclaration] = new List<SyntaxBase>();
             visitBaseFunc(syntax);
-            currentDeclaration = null;
+            currentDeclaration = previousDeclaration;
         }
 
         public override void VisitVariableDeclarationSyntax(VariableDeclarationSyntax syntax)
@@ -67,6 +68,18 @@ namespace Bicep.Core.TypeSystem
 
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
             => VisitDeclaration(syntax, base.VisitResourceDeclarationSyntax);
+
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+            => VisitDeclaration(syntax, base.VisitApplicationDeclarationSyntax);
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+            => VisitDeclaration(syntax, base.VisitComponentDeclarationSyntax);
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+            => VisitDeclaration(syntax, base.VisitDeploymentDeclarationSyntax);
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+            => VisitDeclaration(syntax, base.VisitInstanceDeclarationSyntax);
 
         public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax syntax)
             => VisitDeclaration(syntax, base.VisitModuleDeclarationSyntax);

@@ -15,7 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Bicep.Core.Emit
 {
-    public class ExpressionEmitter
+    public partial class ExpressionEmitter
     {
         private static readonly ExpressionSerializer ExpressionSerializer = new ExpressionSerializer(new ExpressionSerializerSettings
         {

@@ -23,6 +23,15 @@ namespace Bicep.Core
         public const string OutputKeyword = "output";
         public const string VariableKeyword = "var";
         public const string ResourceKeyword = "resource";
+
+        public const string ApplicationKeyword = "application";
+
+        public const string ComponentKeyword = "component";
+
+        public const string DeploymentKeyword = "deployment";
+
+        public const string InstanceKeyword = "instance";
+
         public const string ModuleKeyword = "module";
 
         public const string IfKeyword = "if";
@@ -31,8 +40,18 @@ namespace Bicep.Core
         public const string TargetScopeTypeManagementGroup = "managementGroup";
         public const string TargetScopeTypeSubscription = "subscription";
         public const string TargetScopeTypeResourceGroup = "resourceGroup";
-
-        public static ImmutableSortedSet<string> DeclarationKeywords = new[] {ParameterKeyword, VariableKeyword, ResourceKeyword, OutputKeyword, ModuleKeyword}.ToImmutableSortedSet(StringComparer.Ordinal);
+        public static ImmutableSortedSet<string> DeclarationKeywords = new[]
+        {
+            ParameterKeyword,
+            VariableKeyword,
+            ResourceKeyword,
+            ApplicationKeyword,
+            ComponentKeyword,
+            DeploymentKeyword,
+            InstanceKeyword,
+            OutputKeyword,
+            ModuleKeyword,
+        }.ToImmutableSortedSet(StringComparer.Ordinal);
 
         public static ImmutableSortedSet<string> ContextualKeywords = DeclarationKeywords
             .Add(TargetScopeKeyword)
@@ -83,7 +102,7 @@ namespace Bicep.Core
         public static readonly TypeSymbol Tags = new NamedObjectType(nameof(Tags), TypeSymbolValidationFlags.Default, Enumerable.Empty<TypeProperty>(), String, TypePropertyFlags.None);
 
         // types allowed to use in output and parameter declarations
-        public static readonly ImmutableSortedDictionary<string, TypeSymbol> DeclarationTypes = new[] {String, Object, Int, Bool, Array}.ToImmutableSortedDictionary(type => type.Name, type => type, StringComparer.Ordinal);
+        public static readonly ImmutableSortedDictionary<string, TypeSymbol> DeclarationTypes = new[] { String, Object, Int, Bool, Array }.ToImmutableSortedDictionary(type => type.Name, type => type, StringComparer.Ordinal);
 
         public static TypeSymbol? TryGetDeclarationType(string? typeName)
         {
@@ -172,7 +191,7 @@ namespace Bicep.Core
             var moduleBody = new NamedObjectType(
                 typeName,
                 TypeSymbolValidationFlags.Default,
-                new []
+                new[]
                 {
                     new TypeProperty(ResourceNamePropertyName, LanguageConstants.String, TypePropertyFlags.Required | TypePropertyFlags.DeployTimeConstant),
                     new TypeProperty(ResourceScopePropertyName, CreateResourceScopeReference(moduleScope), TypePropertyFlags.WriteOnly | scopeRequiredFlag),

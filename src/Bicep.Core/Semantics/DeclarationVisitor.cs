@@ -10,6 +10,7 @@ namespace Bicep.Core.Semantics
         private readonly ISymbolContext context;
 
         private readonly IList<DeclaredSymbol> declaredSymbols;
+        private ApplicationSymbol? applicationSymbol;
 
         public DeclarationVisitor(ISymbolContext context, IList<DeclaredSymbol> declaredSymbols)
         {
@@ -38,6 +39,40 @@ namespace Bicep.Core.Semantics
             base.VisitResourceDeclarationSyntax(syntax);
 
             var symbol = new ResourceSymbol(this.context, syntax.Name.IdentifierName, syntax);
+            this.declaredSymbols.Add(symbol);
+        }
+
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+        {
+            var symbol = new ApplicationSymbol(this.context, syntax.Name.IdentifierName, syntax);
+            this.applicationSymbol = symbol;
+            base.VisitApplicationDeclarationSyntax(syntax);
+            this.applicationSymbol = null;
+
+            this.declaredSymbols.Add(symbol);
+        }
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+        {
+            base.VisitComponentDeclarationSyntax(syntax);
+
+            var symbol = new ComponentSymbol(this.context, syntax.Name.IdentifierName, syntax, this.applicationSymbol);
+            this.declaredSymbols.Add(symbol);
+        }
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+        {
+            base.VisitDeploymentDeclarationSyntax(syntax);
+
+            var symbol = new DeploymentSymbol(this.context, syntax.Name.IdentifierName, syntax, this.applicationSymbol);
+            this.declaredSymbols.Add(symbol);
+        }
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+        {
+            base.VisitInstanceDeclarationSyntax(syntax);
+
+            var symbol = new InstanceSymbol(this.context, syntax.Name.IdentifierName, syntax, this.applicationSymbol);
             this.declaredSymbols.Add(symbol);
         }
 

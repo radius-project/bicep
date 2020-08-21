@@ -12,6 +12,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.Syntax.Visitors;
 using Bicep.Core.Text;
+using Bicep.Core.TypeSystem.Applications;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -36,13 +37,15 @@ namespace Bicep.Core.TypeSystem
         }
 
         private readonly IResourceTypeProvider resourceTypeProvider;
+        private readonly IComponentTypeProvider componentTypeProvider;
         private readonly TypeManager typeManager;
         private readonly IBinder binder;
         private readonly IDictionary<SyntaxBase, TypeAssignment> assignedTypes;
 
-        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, TypeManager typeManager, IBinder binder)
+        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, IComponentTypeProvider componentTypeProvider, TypeManager typeManager, IBinder binder)
         {
             this.resourceTypeProvider = resourceTypeProvider;
+            this.componentTypeProvider = componentTypeProvider;
             this.typeManager = typeManager;
             this.binder = binder;
             this.assignedTypes = new Dictionary<SyntaxBase, TypeAssignment>();
@@ -133,6 +136,62 @@ namespace Bicep.Core.TypeSystem
                 if (declaredType is ResourceType resourceType && !resourceTypeProvider.HasType(resourceType.TypeReference))
                 {
                     diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Type).ResourceTypesUnavailable(resourceType.TypeReference));
+                }
+
+                if (syntax.IfCondition is IfConditionSyntax ifConditionSyntax)
+                {
+                    diagnostics.WriteMultiple(this.ValidateIfCondition(ifConditionSyntax));
+                }
+
+                return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, declaredType, diagnostics);
+            });
+
+        public override void VisitApplicationDeclarationSyntax(ApplicationDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, ApplicationType.Instance, diagnostics);
+            });
+
+        public override void VisitComponentDeclarationSyntax(ComponentDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                var declaredType = syntax.GetDeclaredType(componentTypeProvider);
+                if (declaredType is ErrorType)
+                {
+                    return declaredType;
+                }
+
+                if (declaredType is ComponentType componentType && !componentTypeProvider.HasType(componentType.TypeReference))
+                {
+                    diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Type).ResourceTypesUnavailable(componentType.TypeReference));
+                }
+
+                if (syntax.IfCondition is IfConditionSyntax ifConditionSyntax)
+                {
+                    diagnostics.WriteMultiple(this.ValidateIfCondition(ifConditionSyntax));
+                }
+
+                return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, declaredType, diagnostics);
+            });
+
+        public override void VisitDeploymentDeclarationSyntax(DeploymentDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, syntax.Body, DeploymentType.Instance, diagnostics);
+            });
+
+        public override void VisitInstanceDeclarationSyntax(InstanceDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                var declaredType = syntax.GetDeclaredType(componentTypeProvider);
+                if (declaredType is ErrorType)
+                {
+                    return declaredType;
+                }
+
+                if (declaredType is ComponentType componentType && !componentTypeProvider.HasType(componentType.TypeReference))
+                {
+                    diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Type).ResourceTypesUnavailable(componentType.TypeReference));
                 }
 
                 if (syntax.IfCondition is IfConditionSyntax ifConditionSyntax)
@@ -727,6 +786,21 @@ namespace Bicep.Core.TypeSystem
                         // resource bodies can participate in cycles
                         // need to explicitly force a type check on the body
                         return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, resource));
+
+                    case ApplicationSymbol application:
+                        // resource bodies can participate in cycles
+                        // need to explicitly force a type check on the body
+                        return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, application));
+
+                    case ComponentSymbol component:
+                        // resource bodies can participate in cycles
+                        // need to explicitly force a type check on the body
+                        return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, component));
+
+                    case DeploymentSymbol deployment:
+                        // resource bodies can participate in cycles
+                        // need to explicitly force a type check on the body
+                        return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, deployment));
 
                     case ModuleSymbol module:
                         return new DeferredTypeReference(() => VisitDeclaredSymbol(syntax, module));

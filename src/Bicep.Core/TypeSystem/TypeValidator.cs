@@ -63,6 +63,22 @@ namespace Bicep.Core.TypeSystem
                     // When assigning a resource, we're really assigning the value of the resource body.
                     return AreTypesAssignable(sourceResourceType.Body.Type, targetType);
 
+                case TypeSymbol _ when sourceType is ApplicationType sourceApplicationType:
+                    // When assigning an application, we're really assigning the value of the application body.
+                    return AreTypesAssignable(sourceApplicationType.Body.Type, targetType);
+
+                case TypeSymbol _ when sourceType is ComponentType sourceApplicationType:
+                    // When assigning an application, we're really assigning the value of the application body.
+                    return AreTypesAssignable(sourceApplicationType.Body.Type, targetType);
+                
+                case TypeSymbol _ when sourceType is InstanceType sourceInstanceType:
+                    // When assigning an application, we're really assigning the value of the application body.
+                    return AreTypesAssignable(sourceInstanceType.Body.Type, targetType);
+
+                case TypeSymbol _ when sourceType is DeploymentType sourceDeploymentType:
+                    // When assigning an application, we're really assigning the value of the application body.
+                    return AreTypesAssignable(sourceDeploymentType.Body.Type, targetType);
+
                 case TypeSymbol _ when sourceType is ModuleType sourceModuleType:
                     // When assigning a module, we're really assigning the value of the module body.
                     return AreTypesAssignable(sourceModuleType.Body.Type, targetType);
@@ -149,6 +165,38 @@ namespace Bicep.Core.TypeSystem
                 var narrowedBody = NarrowTypeInternal(typeManager, expression, targetResourceType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
 
                 return new ResourceType(targetResourceType.TypeReference, narrowedBody);
+            }
+
+            if (targetType is ApplicationType targetApplicationType)
+            {
+                // When assigning a resource, we're really assigning the value of the application body.
+                var narrowedBody = NarrowTypeInternal(typeManager, expression, targetApplicationType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
+
+                return targetApplicationType;
+            }
+
+            if (targetType is ComponentType targetComponentType)
+            {
+                // When assigning a resource, we're really assigning the value of the component body.
+                var narrowedBody = NarrowTypeInternal(typeManager, expression, targetComponentType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
+
+                return new ComponentType(targetComponentType.TypeReference, narrowedBody);
+            }
+
+            if (targetType is InstanceType targetInstanceType)
+            {
+                // When assigning a resource, we're really assigning the value of the component body.
+                var narrowedBody = NarrowTypeInternal(typeManager, expression, targetInstanceType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
+
+                return new InstanceType(targetInstanceType.TypeReference, narrowedBody);
+            }
+
+            if (targetType is DeploymentType targetDeploymentType)
+            {
+                // When assigning a resource, we're really assigning the value of the resource body.
+                var narrowedBody = NarrowTypeInternal(typeManager, expression, targetDeploymentType.Body.Type, diagnosticWriter, typeMismatchErrorFactory, skipConstantCheck, skipTypeErrors);
+
+                return targetDeploymentType;
             }
             
             if (targetType is ModuleType targetModuleType)

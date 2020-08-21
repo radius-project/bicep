@@ -12,6 +12,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Applications;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.LangServer.UnitTests.Completions;
 using Bicep.LanguageServer.Completions;
@@ -30,7 +31,7 @@ namespace Bicep.LangServer.UnitTests
         public void DeclarationSnippetsShouldBeValid()
         {
             var grouping = SyntaxFactory.CreateFromText(string.Empty);
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             compilation.GetEntrypointSemanticModel().GetAllDiagnostics().Should().BeEmpty();
 
             var provider = new BicepCompletionProvider();
@@ -61,6 +62,7 @@ namespace Bicep.LangServer.UnitTests
                 ["Resource with defaults"] = new[] {"prop1: 'val1'", "myResource", "myProvider", "myType", "2020-01-01", "'parent'", "'West US'"},
                 ["Child Resource with defaults"] = new[] {"prop1: 'val1'", "myResource", "myProvider", "myType", "myChildType", "2020-01-01", "'parent/child'"},
                 ["Resource without defaults"] = new[] {"properties: {\nprop1: 'val1'\n}", "myResource", "myProvider", "myType", "2020-01-01", "'parent'"},
+                ["Application with defaults"] = new[] {"name"},
                 ["Child Resource without defaults"] = new[] {"properties: {\nprop1: 'val1'\n}", "myResource", "myProvider", "myType", "myChildType", "2020-01-01", "'parent/child'"},
                 ["Output declaration"] = new[] {"'stringVal'", "myOutput", "string"}
             };
@@ -96,7 +98,7 @@ namespace Bicep.LangServer.UnitTests
         public void DeclarationContextShouldReturnKeywordCompletions()
         {
             var grouping = SyntaxFactory.CreateFromText(string.Empty);
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             compilation.GetEntrypointSemanticModel().GetAllDiagnostics().Should().BeEmpty();
 
             var provider = new BicepCompletionProvider();
@@ -109,6 +111,38 @@ namespace Bicep.LangServer.UnitTests
                 .ToList();
 
             keywordCompletions.Should().SatisfyRespectively(
+                c =>
+                {
+                    c.Label.Should().Be("application");
+                    c.Kind.Should().Be(CompletionItemKind.Keyword);
+                    c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
+                    c.InsertText.Should().Be("application");
+                    c.Detail.Should().Be("Application keyword");
+                },
+                c =>
+                {
+                    c.Label.Should().Be("component");
+                    c.Kind.Should().Be(CompletionItemKind.Keyword);
+                    c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
+                    c.InsertText.Should().Be("component");
+                    c.Detail.Should().Be("Component keyword");
+                },
+                c =>
+                {
+                    c.Label.Should().Be("deployment");
+                    c.Kind.Should().Be(CompletionItemKind.Keyword);
+                    c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
+                    c.InsertText.Should().Be("deployment");
+                    c.Detail.Should().Be("Deployment keyword");
+                },
+                c =>
+                {
+                    c.Label.Should().Be("instance");
+                    c.Kind.Should().Be(CompletionItemKind.Keyword);
+                    c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
+                    c.InsertText.Should().Be("instance");
+                    c.Detail.Should().Be("Instance keyword");
+                },
                 c =>
                 {
                     c.Label.Should().Be("module");
@@ -177,7 +211,7 @@ resource r 'Microsoft.Foo/foos@2020-09-01' = {
 output o int = 42
 ");
             var offset = grouping.EntryPoint.ProgramSyntax.Declarations.OfType<VariableDeclarationSyntax>().Single().Value.Span.Position;
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             
             var provider = new BicepCompletionProvider();
             var context = BicepCompletionContext.Create(grouping.EntryPoint, offset);
@@ -214,7 +248,7 @@ output o int = 42
         public void CompletionsForOneLinerParameterDefaultValueShouldIncludeFunctionsValidInDefaultValues()
         {
             var grouping = SyntaxFactory.CreateFromText(@"param p string = ");
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
 
             var offset = ((ParameterDefaultValueSyntax) grouping.EntryPoint.ProgramSyntax.Declarations.OfType<ParameterDeclarationSyntax>().Single().Modifier!).DefaultValue.Span.Position;
 
@@ -246,7 +280,7 @@ output o int = 42
 
             var offset = ((ObjectSyntax) grouping.EntryPoint.ProgramSyntax.Declarations.OfType<ParameterDeclarationSyntax>().Single().Modifier!).Properties.Single().Value.Span.Position;
 
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             var context = BicepCompletionContext.Create(grouping.EntryPoint, offset);
 
             var provider = new BicepCompletionProvider();
@@ -279,7 +313,7 @@ output length int =
 ");
             var offset = grouping.EntryPoint.ProgramSyntax.Declarations.OfType<OutputDeclarationSyntax>().Single().Value.Span.Position;
 
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             var provider = new BicepCompletionProvider();
             var context = BicepCompletionContext.Create(grouping.EntryPoint, offset);
             var completions = provider.GetFilteredCompletions(compilation, context).ToList();
@@ -321,7 +355,7 @@ output length int =
         public void OutputTypeContextShouldReturnDeclarationTypeCompletions()
         {
             var grouping = SyntaxFactory.CreateFromText("output test ");
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             var provider = new BicepCompletionProvider();
 
             var offset = grouping.EntryPoint.ProgramSyntax.Declarations.OfType<OutputDeclarationSyntax>().Single().Type.Span.Position;
@@ -338,7 +372,7 @@ output length int =
         public void ParameterTypeContextShouldReturnDeclarationTypeCompletions()
         {
             var grouping = SyntaxFactory.CreateFromText("param foo ");
-            var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+            var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
             var provider = new BicepCompletionProvider();
 
             var offset = grouping.EntryPoint.ProgramSyntax.Declarations.OfType<ParameterDeclarationSyntax>().Single().Type.Span.Position;
@@ -382,7 +416,7 @@ output length int =
         public void CommentShouldNotGiveAnyCompletions(string codeFragment)
         {
         var grouping = SyntaxFactory.CreateFromText(codeFragment);
-        var compilation = new Compilation(TestResourceTypeProvider.Create(), grouping);
+        var compilation = new Compilation(TestResourceTypeProvider.Create(), new ComponentTypeProvider(), grouping);
         var provider = new BicepCompletionProvider();
 
         var offset = codeFragment.IndexOf('|');
