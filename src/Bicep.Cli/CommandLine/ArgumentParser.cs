@@ -62,10 +62,19 @@ Usage:
     Builds one or more .bicep files
 
     Arguments:
-      <files>     The list of one or more .bicep files to build
+      <files>               The list of one or more .bicep files to build
 
     Options:
-      --stdout    Prints all output to stdout instead of corresponding files
+      --outdir <directory>  Saves all output at the specified directory.
+      --outfiles            Changes the behavior of <files> from list of of input files to a list of input file-output file pairs. 
+      --stdout              Prints all output to stdout instead of corresponding files
+
+    Examples:
+      bicep build file.bicep
+      bicep build file1.bicep file2.bicep file3.bicep
+      bicep build --stdout file1.bicep file2.bicep file3.bicep
+      bicep build --outdir dir1 file1.bicep file2.bicep
+      bicep build --outfiles file1.bicep dir1{Path.DirectorySeparatorChar}file1.json file2.bicep dir2{Path.DirectorySeparatorChar}file2.json
 
   {exeName} [options]
     Options:
