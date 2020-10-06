@@ -58,23 +58,24 @@ namespace Bicep.Cli.CommandLine
 $@"Bicep CLI version {GetVersionString()}
 
 Usage:
-  {exeName} build [options] [<files>...]
+  {exeName} build [options] <file>|<dir>
     Builds one or more .bicep files
 
     Arguments:
-      <files>               The list of one or more .bicep files to build
+      <file>        The input file.
+      <dir>         The input directory. The file named main.bicep will be 
+                    compiled.
 
     Options:
-      --outdir <directory>  Saves all output at the specified directory.
-      --outfiles            Changes the behavior of <files> from list of of input files to a list of input file-output file pairs. 
-      --stdout              Prints all output to stdout instead of corresponding files
+      --outdir <dir>    Saves the output at the specified directory.
+      --outfile <file>  Saves the output as the specified file path.
+      --stdout          Prints the output to stdout.
 
     Examples:
       bicep build file.bicep
-      bicep build file1.bicep file2.bicep file3.bicep
-      bicep build --stdout file1.bicep file2.bicep file3.bicep
-      bicep build --outdir dir1 file1.bicep file2.bicep
-      bicep build --outfiles file1.bicep dir1{Path.DirectorySeparatorChar}file1.json file2.bicep dir2{Path.DirectorySeparatorChar}file2.json
+      bicep build file.bicep --stdout
+      bicep build file.bicep --outdir dir1
+      bicep build file.bicep --outfile file.json
 
   {exeName} [options]
     Options:
