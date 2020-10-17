@@ -1,41 +1,5 @@
 [
   {
-    "label": "_",
-    "kind": "variable",
-    "detail": "_",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "_",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "__",
-    "kind": "variable",
-    "detail": "__",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "__",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "_0a_1b",
-    "kind": "variable",
-    "detail": "_0a_1b",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "_0a_1b",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "_1_",
-    "kind": "variable",
-    "detail": "_1_",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "_1_",
-    "insertTextFormat": "plainText"
-  },
-  {
     "label": "add",
     "kind": "function",
     "detail": "add",
@@ -63,21 +27,30 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "anyIndexOnAny",
-    "kind": "variable",
-    "detail": "anyIndexOnAny",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "anyIndexOnAny",
-    "insertTextFormat": "plainText"
-  },
-  {
     "label": "array",
     "kind": "function",
     "detail": "array",
     "deprecated": false,
     "preselect": false,
     "insertText": "array",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "badInterpolatedString",
+    "kind": "field",
+    "detail": "badInterpolatedString",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "badInterpolatedString",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "badInterpolatedString2",
+    "kind": "field",
+    "detail": "badInterpolatedString2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "badInterpolatedString2",
     "insertTextFormat": "plainText"
   },
   {
@@ -117,24 +90,6 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "bracketInTheMiddle",
-    "kind": "variable",
-    "detail": "bracketInTheMiddle",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "bracketInTheMiddle",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "bracketStringInExpression",
-    "kind": "variable",
-    "detail": "bracketStringInExpression",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "bracketStringInExpression",
-    "insertTextFormat": "plainText"
-  },
-  {
     "label": "coalesce",
     "kind": "function",
     "detail": "coalesce",
@@ -168,24 +123,6 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "createArray",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "curliesInInterp",
-    "kind": "variable",
-    "detail": "curliesInInterp",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "curliesInInterp",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "curliesWithNoInterp",
-    "kind": "variable",
-    "detail": "curliesWithNoInterp",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "curliesWithNoInterp",
     "insertTextFormat": "plainText"
   },
   {
@@ -234,12 +171,12 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "doubleInterp",
-    "kind": "variable",
-    "detail": "doubleInterp",
+    "label": "duplicatedModifierProperty",
+    "kind": "field",
+    "detail": "duplicatedModifierProperty",
     "deprecated": false,
     "preselect": false,
-    "insertText": "doubleInterp",
+    "insertText": "duplicatedModifierProperty",
     "insertTextFormat": "plainText"
   },
   {
@@ -249,24 +186,6 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "empty",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "emptyJsonArray",
-    "kind": "variable",
-    "detail": "emptyJsonArray",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "emptyJsonArray",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "enclosingBrackets",
-    "kind": "variable",
-    "detail": "enclosingBrackets",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "enclosingBrackets",
     "insertTextFormat": "plainText"
   },
   {
@@ -297,12 +216,12 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "expressionIndexOnAny",
-    "kind": "variable",
-    "detail": "expressionIndexOnAny",
+    "label": "expressionInModifier",
+    "kind": "field",
+    "detail": "expressionInModifier",
     "deprecated": false,
     "preselect": false,
-    "insertText": "expressionIndexOnAny",
+    "insertText": "expressionInModifier",
     "insertTextFormat": "plainText"
   },
   {
@@ -330,33 +249,6 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "format",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "functionOnIndexer1",
-    "kind": "variable",
-    "detail": "functionOnIndexer1",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "functionOnIndexer1",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "functionOnIndexer2",
-    "kind": "variable",
-    "detail": "functionOnIndexer2",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "functionOnIndexer2",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "functionOnIndexer3",
-    "kind": "variable",
-    "detail": "functionOnIndexer3",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "functionOnIndexer3",
     "insertTextFormat": "plainText"
   },
   {
@@ -414,51 +306,6 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "interp1",
-    "kind": "variable",
-    "detail": "interp1",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "interp1",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "interp2",
-    "kind": "variable",
-    "detail": "interp2",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "interp2",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "interp3",
-    "kind": "variable",
-    "detail": "interp3",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "interp3",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "interp4",
-    "kind": "variable",
-    "detail": "interp4",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "interp4",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "interpolatedBrackets",
-    "kind": "variable",
-    "detail": "interpolatedBrackets",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "interpolatedBrackets",
-    "insertTextFormat": "plainText"
-  },
-  {
     "label": "intersection",
     "kind": "function",
     "detail": "intersection",
@@ -468,30 +315,12 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "intIndexer",
-    "kind": "variable",
-    "detail": "intIndexer",
+    "label": "intModifierCompletions",
+    "kind": "field",
+    "detail": "intModifierCompletions",
     "deprecated": false,
     "preselect": false,
-    "insertText": "intIndexer",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "isFalse",
-    "kind": "variable",
-    "detail": "isFalse",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "isFalse",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "isTrue",
-    "kind": "variable",
-    "detail": "isTrue",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "isTrue",
+    "insertText": "intModifierCompletions",
     "insertTextFormat": "plainText"
   },
   {
@@ -549,12 +378,30 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "listKeys",
-    "kind": "function",
-    "detail": "listKeys",
+    "label": "malformedModifier",
+    "kind": "field",
+    "detail": "malformedModifier",
     "deprecated": false,
     "preselect": false,
-    "insertText": "listKeys",
+    "insertText": "malformedModifier",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "malformedType",
+    "kind": "field",
+    "detail": "malformedType",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "malformedType",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "malformedType2",
+    "kind": "field",
+    "detail": "malformedType2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "malformedType2",
     "insertTextFormat": "plainText"
   },
   {
@@ -576,6 +423,33 @@
     "insertTextFormat": "plainText"
   },
   {
+    "label": "missingType",
+    "kind": "field",
+    "detail": "missingType",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "missingType",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "missingTypeWithSpaceAfter",
+    "kind": "field",
+    "detail": "missingTypeWithSpaceAfter",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "missingTypeWithSpaceAfter",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "missingTypeWithTabAfter",
+    "kind": "field",
+    "detail": "missingTypeWithTabAfter",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "missingTypeWithTabAfter",
+    "insertTextFormat": "plainText"
+  },
+  {
     "label": "mod",
     "kind": "function",
     "detail": "mod",
@@ -594,44 +468,17 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "myArr",
-    "kind": "variable",
-    "detail": "myArr",
+    "label": "myBool",
+    "kind": "field",
+    "detail": "myBool",
     "deprecated": false,
     "preselect": false,
-    "insertText": "myArr",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myArrWithObjects",
-    "kind": "variable",
-    "detail": "myArrWithObjects",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myArrWithObjects",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myEmptyArray",
-    "kind": "variable",
-    "detail": "myEmptyArray",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myEmptyArray",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myEmptyObj",
-    "kind": "variable",
-    "detail": "myEmptyObj",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myEmptyObj",
+    "insertText": "myBool",
     "insertTextFormat": "plainText"
   },
   {
     "label": "myFalsehood",
-    "kind": "variable",
+    "kind": "field",
     "detail": "myFalsehood",
     "deprecated": false,
     "preselect": false,
@@ -640,7 +487,7 @@
   },
   {
     "label": "myInt",
-    "kind": "variable",
+    "kind": "field",
     "detail": "myInt",
     "deprecated": false,
     "preselect": false,
@@ -648,102 +495,39 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "myObj",
-    "kind": "variable",
-    "detail": "myObj",
+    "label": "myInt2",
+    "kind": "field",
+    "detail": "myInt2",
     "deprecated": false,
     "preselect": false,
-    "insertText": "myObj",
+    "insertText": "myInt2",
     "insertTextFormat": "plainText"
   },
   {
-    "label": "myPropertyName",
-    "kind": "variable",
-    "detail": "myPropertyName",
+    "label": "myString",
+    "kind": "field",
+    "detail": "myString",
     "deprecated": false,
     "preselect": false,
-    "insertText": "myPropertyName",
+    "insertText": "myString",
     "insertTextFormat": "plainText"
   },
   {
-    "label": "myStr",
-    "kind": "variable",
-    "detail": "myStr",
+    "label": "myString2",
+    "kind": "field",
+    "detail": "myString2",
     "deprecated": false,
     "preselect": false,
-    "insertText": "myStr",
+    "insertText": "myString2",
     "insertTextFormat": "plainText"
   },
   {
     "label": "myTruth",
-    "kind": "variable",
+    "kind": "field",
     "detail": "myTruth",
     "deprecated": false,
     "preselect": false,
     "insertText": "myTruth",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myVar",
-    "kind": "variable",
-    "detail": "myVar",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myVar",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myVar2",
-    "kind": "variable",
-    "detail": "myVar2",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myVar2",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myVar3",
-    "kind": "variable",
-    "detail": "myVar3",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myVar3",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "myVar4",
-    "kind": "variable",
-    "detail": "myVar4",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "myVar4",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "namedPropertyIndexer",
-    "kind": "variable",
-    "detail": "namedPropertyIndexer",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "namedPropertyIndexer",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "nestedBrackets",
-    "kind": "variable",
-    "detail": "nestedBrackets",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "nestedBrackets",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "nestedInterpolatedBrackets",
-    "kind": "variable",
-    "detail": "nestedInterpolatedBrackets",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "nestedInterpolatedBrackets",
     "insertTextFormat": "plainText"
   },
   {
@@ -765,12 +549,21 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "objWithInterp",
-    "kind": "variable",
-    "detail": "objWithInterp",
+    "label": "noValueAfterColon",
+    "kind": "field",
+    "detail": "noValueAfterColon",
     "deprecated": false,
     "preselect": false,
-    "insertText": "objWithInterp",
+    "insertText": "noValueAfterColon",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "'one'",
+    "kind": "enumMember",
+    "detail": "'one'",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "'one'",
     "insertTextFormat": "plainText"
   },
   {
@@ -792,48 +585,156 @@
     "insertTextFormat": "plainText"
   },
   {
+    "label": "paramAccessingOutput",
+    "kind": "field",
+    "detail": "paramAccessingOutput",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingOutput",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramAccessingOutput2",
+    "kind": "field",
+    "detail": "paramAccessingOutput2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingOutput2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramAccessingResource",
+    "kind": "field",
+    "detail": "paramAccessingResource",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingResource",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramAccessingResource2",
+    "kind": "field",
+    "detail": "paramAccessingResource2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingResource2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramAccessingVar",
+    "kind": "field",
+    "detail": "paramAccessingVar",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingVar",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramAccessingVar2",
+    "kind": "field",
+    "detail": "paramAccessingVar2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramAccessingVar2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramDefaultOneCycle",
+    "kind": "field",
+    "detail": "paramDefaultOneCycle",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramDefaultOneCycle",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramDefaultTwoCycle1",
+    "kind": "field",
+    "detail": "paramDefaultTwoCycle1",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramDefaultTwoCycle1",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramDefaultTwoCycle2",
+    "kind": "field",
+    "detail": "paramDefaultTwoCycle2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramDefaultTwoCycle2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramMixedTwoCycle1",
+    "kind": "field",
+    "detail": "paramMixedTwoCycle1",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramMixedTwoCycle1",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramMixedTwoCycle2",
+    "kind": "field",
+    "detail": "paramMixedTwoCycle2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramMixedTwoCycle2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramModifierOneCycle",
+    "kind": "field",
+    "detail": "paramModifierOneCycle",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramModifierOneCycle",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramModifierSelfCycle",
+    "kind": "field",
+    "detail": "paramModifierSelfCycle",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramModifierSelfCycle",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramModifierTwoCycle1",
+    "kind": "field",
+    "detail": "paramModifierTwoCycle1",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramModifierTwoCycle1",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "paramModifierTwoCycle2",
+    "kind": "field",
+    "detail": "paramModifierTwoCycle2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "paramModifierTwoCycle2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "partialType",
+    "kind": "field",
+    "detail": "partialType",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "partialType",
+    "insertTextFormat": "plainText"
+  },
+  {
     "label": "pickZones",
     "kind": "function",
     "detail": "pickZones",
     "deprecated": false,
     "preselect": false,
     "insertText": "pickZones",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "previousEmitLimit",
-    "kind": "variable",
-    "detail": "previousEmitLimit",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "previousEmitLimit",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "previousEmitLimit2",
-    "kind": "variable",
-    "detail": "previousEmitLimit2",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "previousEmitLimit2",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "previousEmitLimit3",
-    "kind": "variable",
-    "detail": "previousEmitLimit3",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "previousEmitLimit3",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "propertyAccessFromObject",
-    "kind": "variable",
-    "detail": "propertyAccessFromObject",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "propertyAccessFromObject",
     "insertTextFormat": "plainText"
   },
   {
@@ -874,29 +775,11 @@
   },
   {
     "label": "resourceGroup",
-    "kind": "variable",
+    "kind": "function",
     "detail": "resourceGroup",
     "deprecated": false,
     "preselect": false,
     "insertText": "resourceGroup",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "resourceGroupName",
-    "kind": "variable",
-    "detail": "resourceGroupName",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "resourceGroupName",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "resourceGroupObject",
-    "kind": "variable",
-    "detail": "resourceGroupObject",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "resourceGroupObject",
     "insertTextFormat": "plainText"
   },
   {
@@ -909,12 +792,30 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "singleQuote",
-    "kind": "variable",
-    "detail": "singleQuote",
+    "label": "sampleResource",
+    "kind": "interface",
+    "detail": "sampleResource",
     "deprecated": false,
     "preselect": false,
-    "insertText": "singleQuote",
+    "insertText": "sampleResource",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "sampleVar",
+    "kind": "variable",
+    "detail": "sampleVar",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "sampleVar",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "secureInt",
+    "kind": "field",
+    "detail": "secureInt",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "secureInt",
     "insertTextFormat": "plainText"
   },
   {
@@ -927,12 +828,12 @@
     "insertTextFormat": "plainText"
   },
   {
-    "label": "someText",
-    "kind": "variable",
-    "detail": "someText",
+    "label": "someArray",
+    "kind": "field",
+    "detail": "someArray",
     "deprecated": false,
     "preselect": false,
-    "insertText": "someText",
+    "insertText": "someArray",
     "insertTextFormat": "plainText"
   },
   {
@@ -960,6 +861,42 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "string",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "stringLiteral",
+    "kind": "field",
+    "detail": "stringLiteral",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "stringLiteral",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "stringLiteral2",
+    "kind": "field",
+    "detail": "stringLiteral2",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "stringLiteral2",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "stringLiteral3",
+    "kind": "field",
+    "detail": "stringLiteral3",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "stringLiteral3",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "stringModifierCompletions",
+    "kind": "field",
+    "detail": "stringModifierCompletions",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "stringModifierCompletions",
     "insertTextFormat": "plainText"
   },
   {
@@ -1017,6 +954,15 @@
     "insertTextFormat": "plainText"
   },
   {
+    "label": "'three'",
+    "kind": "enumMember",
+    "detail": "'three'",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "'three'",
+    "insertTextFormat": "plainText"
+  },
+  {
     "label": "toLower",
     "kind": "function",
     "detail": "toLower",
@@ -1044,6 +990,15 @@
     "insertTextFormat": "plainText"
   },
   {
+    "label": "'two'",
+    "kind": "enumMember",
+    "detail": "'two'",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "'two'",
+    "insertTextFormat": "plainText"
+  },
+  {
     "label": "union",
     "kind": "function",
     "detail": "union",
@@ -1059,24 +1014,6 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "uniqueString",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "unusedIntermediate",
-    "kind": "variable",
-    "detail": "unusedIntermediate",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "unusedIntermediate",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "unusedIntermediateRef",
-    "kind": "variable",
-    "detail": "unusedIntermediateRef",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "unusedIntermediateRef",
     "insertTextFormat": "plainText"
   },
   {
@@ -1113,6 +1050,60 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "utcNow",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "WhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLong",
+    "kind": "field",
+    "detail": "WhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLong",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "WhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLongWhySoLong",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "wrongAssignmentToken",
+    "kind": "field",
+    "detail": "wrongAssignmentToken",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "wrongAssignmentToken",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "wrongDefaultValue",
+    "kind": "field",
+    "detail": "wrongDefaultValue",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "wrongDefaultValue",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "wrongIntModifier",
+    "kind": "field",
+    "detail": "wrongIntModifier",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "wrongIntModifier",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "wrongMetadataSchema",
+    "kind": "field",
+    "detail": "wrongMetadataSchema",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "wrongMetadataSchema",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "wrongType",
+    "kind": "field",
+    "detail": "wrongType",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "wrongType",
     "insertTextFormat": "plainText"
   }
 ]
