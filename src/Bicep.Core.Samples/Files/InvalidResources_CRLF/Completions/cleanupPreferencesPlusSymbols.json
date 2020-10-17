@@ -1,20 +1,38 @@
 [
   {
-    "label": "add",
-    "kind": "function",
-    "detail": "add",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "add",
-    "insertTextFormat": "plainText"
-  },
-  {
     "label": "'Always'",
     "kind": "enumMember",
     "detail": "'Always'",
     "deprecated": false,
     "preselect": false,
     "insertText": "'Always'",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "'OnExpiration'",
+    "kind": "enumMember",
+    "detail": "'OnExpiration'",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "'OnExpiration'",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "'OnSuccess'",
+    "kind": "enumMember",
+    "detail": "'OnSuccess'",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "'OnSuccess'",
+    "insertTextFormat": "plainText"
+  },
+  {
+    "label": "add",
+    "kind": "function",
+    "detail": "add",
+    "deprecated": false,
+    "preselect": false,
+    "insertText": "add",
     "insertTextFormat": "plainText"
   },
   {
@@ -555,24 +573,6 @@
     "deprecated": false,
     "preselect": false,
     "insertText": "not",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "'OnExpiration'",
-    "kind": "enumMember",
-    "detail": "'OnExpiration'",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "'OnExpiration'",
-    "insertTextFormat": "plainText"
-  },
-  {
-    "label": "'OnSuccess'",
-    "kind": "enumMember",
-    "detail": "'OnSuccess'",
-    "deprecated": false,
-    "preselect": false,
-    "insertText": "'OnSuccess'",
     "insertTextFormat": "plainText"
   },
   {
