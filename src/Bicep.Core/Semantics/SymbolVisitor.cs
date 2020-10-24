@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+using System.Runtime.CompilerServices;
 using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Semantics
@@ -8,6 +9,7 @@ namespace Bicep.Core.Semantics
     {
         public void Visit(Symbol node)
         {
+            RuntimeHelpers.EnsureSufficientExecutionStack();
             VisitInternal(node);
         }
 

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bicep.Core.Parsing;
+using System.Runtime.CompilerServices;
 
 namespace Bicep.Core.Syntax
 {
@@ -15,6 +16,7 @@ namespace Bicep.Core.Syntax
                 return;
             }
 
+            RuntimeHelpers.EnsureSufficientExecutionStack();
             VisitInternal(node);
         }
 
