@@ -17,6 +17,15 @@ using Bicep.Core.FileSystem;
 using Bicep.Core.Workspaces;
 using Bicep.Core.Extensions;
 using Bicep.Decompiler;
+using System.IO.Pipelines;
+using Bicep.LanguageServer;
+using SemanticTokenVisitor = Bicep.Wasm.LanguageHelpers.SemanticTokenVisitor;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Buffers;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Concurrency;
 
 namespace Bicep.Wasm
 {
@@ -25,22 +34,90 @@ namespace Bicep.Wasm
         private static readonly IResourceTypeProvider resourceTypeProvider = new AzResourceTypeProvider();
 
         private readonly IJSRuntime jsRuntime;
+        private readonly Server server;
+        private readonly PipeWriter inputWriter;
+        private readonly PipeReader outputReader;
 
         public Interop(IJSRuntime jsRuntime)
         {
             this.jsRuntime = jsRuntime;
+            var inputPipe = new Pipe();
+            var outputPipe = new Pipe();
+
+            server = new Server(inputPipe.Reader, outputPipe.Writer, new Server.CreationOptions {
+                FileResolver = new FileResolver(),
+                ResourceTypeProvider = resourceTypeProvider,
+            }, options => options.Services.AddSingleton<IScheduler>(ImmediateScheduler.Instance));
+
+            inputWriter = inputPipe.Writer;
+            outputReader = outputPipe.Reader;
+
+#pragma warning disable VSTHRD110
+            Task.Run(() => server.RunAsync(CancellationToken.None));
+            Task.Run(() => ProcessInputStreamAsync());
+#pragma warning restore VSTHRD110
         }
 
         [JSInvokable]
-        public object CompileAndEmitDiagnostics(string content)
+        public async Task SendLspDataAsync(string jsonContent)
         {
-            var (output, diagnostics) = CompileInternal(content);
-            
-            return new
+            var cancelToken = CancellationToken.None;
+
+            await inputWriter.WriteAsync(Encoding.UTF8.GetBytes(jsonContent)).ConfigureAwait(false);
+        }
+
+        private async Task ProcessInputStreamAsync()
+        {
+            try
             {
-                template = output,
-                diagnostics = diagnostics,
-            };
+                do
+                {
+                    var result = await outputReader.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+                    var buffer = result.Buffer;
+
+                    await jsRuntime.InvokeVoidAsync("ReceiveLspData", Encoding.UTF8.GetString(buffer.Slice(buffer.Start, buffer.End)));
+                    outputReader.AdvanceTo(buffer.End, buffer.End);
+
+                    // Stop reading if there's no more data coming.
+                    if (result.IsCompleted && buffer.IsEmpty)
+                    {
+                        break;
+                    }
+                    // TODO: Add cancellation token
+                } while (!CancellationToken.None.IsCancellationRequested);
+            }
+            catch (Exception e)
+            {
+                // TODO: Needed?
+                await Console.Error.WriteLineAsync(e.Message);
+                await Console.Error.WriteLineAsync(e.StackTrace);
+            }
+        }
+
+        [JSInvokable]
+        public string Compile(string bicepContent)
+        {
+            try
+            {
+                var compilation = GetCompilation(bicepContent);
+                var emitter = new TemplateEmitter(compilation.GetEntrypointSemanticModel());
+
+                var templateWriter = new StringWriter();
+                var emitResult = emitter.Emit(templateWriter);
+
+                if (emitResult.Status != EmitStatus.Failed)
+                {
+                    // compilation was successful or had warnings - return the compiled template
+                    return templateWriter.ToString();
+                }
+
+                // compilation failed
+                return "Compilation failed!";
+            }
+            catch (Exception exception)
+            {
+                return exception.ToString();
+            }
         }
 
         public record DecompileResult(string? bicepFile, string? error);
@@ -112,34 +189,6 @@ namespace Bicep.Wasm
             };
         }
 
-        private static (string, IEnumerable<object>) CompileInternal(string content)
-        {
-            try
-            {
-                var lineStarts = TextCoordinateConverter.GetLineStarts(content);
-                var compilation = GetCompilation(content);
-                var emitter = new TemplateEmitter(compilation.GetEntrypointSemanticModel());
-
-                // memory stream is not ideal for frequent large allocations
-                using var stream = new MemoryStream();
-                var emitResult = emitter.Emit(stream);
-
-                if (emitResult.Status != EmitStatus.Failed)
-                {
-                    // compilation was successful or had warnings - return the compiled template
-                    stream.Position = 0;
-                    return (ReadStreamToEnd(stream), emitResult.Diagnostics.Select(d => ToMonacoDiagnostic(d, lineStarts)));
-                }
-
-                // compilation failed
-                return ("Compilation failed!", emitResult.Diagnostics.Select(d => ToMonacoDiagnostic(d, lineStarts)));
-            }
-            catch (Exception exception)
-            {
-                return (exception.ToString(), Enumerable.Empty<object>());
-            }
-        }
-
         private static Compilation GetCompilation(string fileContents)
         {
             var fileUri = new Uri("inmemory:///main.bicep");
@@ -151,35 +200,5 @@ namespace Bicep.Wasm
 
             return new Compilation(resourceTypeProvider, syntaxTreeGrouping);
         }
-
-        private static string ReadStreamToEnd(Stream stream)
-        {
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
-        }
-
-        private static object ToMonacoDiagnostic(Diagnostic diagnostic, IReadOnlyList<int> lineStarts)
-        {
-            var (startLine, startChar) = TextCoordinateConverter.GetPosition(lineStarts, diagnostic.Span.Position);
-            var (endLine, endChar) = TextCoordinateConverter.GetPosition(lineStarts, diagnostic.Span.Position + diagnostic.Span.Length);
-
-            return new {
-                code = diagnostic.Code,
-                message = diagnostic.Message,
-                severity = ToMonacoSeverity(diagnostic.Level),
-                startLineNumber = startLine + 1,
-                startColumn = startChar + 1,
-                endLineNumber = endLine + 1,
-                endColumn = endChar + 1,
-            };
-        }
-
-        private static int ToMonacoSeverity(DiagnosticLevel level)
-            => level switch {
-                DiagnosticLevel.Info => 2,
-                DiagnosticLevel.Warning => 4,
-                DiagnosticLevel.Error => 8,
-                _ => throw new ArgumentException($"Unrecognized level {level}"),
-            };
     }
 }

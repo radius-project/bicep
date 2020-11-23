@@ -12,19 +12,6 @@ namespace Bicep.Wasm.LanguageHelpers
         public static TextSpan GetSpanSlice(this IPositionable positionable, int start, int length)
             => new TextSpan(positionable.Span.Position + start, length);
 
-        public static TextSpan SafeGetSpanSlice(this IPositionable positionable, int start, int length)
-            => GetSpanSlice(
-                positionable,
-                Math.Min(start, positionable.Span.Length),
-                Math.Min(length, positionable.Span.Length - start));
-
-        public static Range ToRange(this IPositionable positionable, ImmutableArray<int> lineStarts) =>
-            new Range
-            {
-                Start = PositionHelper.GetPosition(lineStarts, positionable.Span.Position),
-                End = PositionHelper.GetPosition(lineStarts, positionable.Span.Position + positionable.Span.Length)
-            };
-
         public static IEnumerable<Range> ToRangeSpanningLines(this IPositionable positionable, ImmutableArray<int> lineStarts)
         {
             var start = PositionHelper.GetPosition(lineStarts, positionable.Span.Position);

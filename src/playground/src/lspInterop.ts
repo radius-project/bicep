@@ -21,8 +21,16 @@ export function getSemanticTokens(content: string): languages.SemanticTokens {
   return interop.invokeMethod('GetSemanticTokens', content);
 }
 
-export function compileAndEmitDiagnostics(content: string): {template: string, diagnostics: editor.IMarkerData[]} {
-  return interop.invokeMethod('CompileAndEmitDiagnostics', content);
+export async function sendLspData(jsonRpcRequest: string) {
+  return await interop.invokeMethodAsync('SendLspDataAsync', jsonRpcRequest);
+}
+
+export function onLspData(callback: (data: string | Buffer) => void) {
+  self['ReceiveLspData'] = callback;
+}
+
+export function compile(content: string): string {
+  return interop.invokeMethod('Compile', content);
 }
 
 export function decompile(jsonContent: string): string {
