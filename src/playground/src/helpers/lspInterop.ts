@@ -1,4 +1,4 @@
-import { editor, languages } from 'monaco-editor/esm/vs/editor/editor.api';
+import { languages } from 'monaco-editor';
 
 let interop: any;
 
@@ -9,7 +9,7 @@ export function initializeInterop(self: any): Promise<boolean> {
       resolve(true);
     }
   
-    const test = require('../../Bicep.Wasm/bin/Release/net5.0/wwwroot/_framework/blazor.webassembly.js');  
+    const test = require('../../../Bicep.Wasm/bin/Release/net5.0/wwwroot/_framework/blazor.webassembly.js');  
   });
 }
 
@@ -21,12 +21,16 @@ export function getSemanticTokens(content: string): languages.SemanticTokens {
   return interop.invokeMethod('GetSemanticTokens', content);
 }
 
-export async function sendLspData(jsonRpcRequest: string) {
-  return await interop.invokeMethodAsync('SendLspDataAsync', jsonRpcRequest);
+export async function sendLspData(message: string) {
+  // console.log(message);
+  return await interop.invokeMethodAsync('SendLspDataAsync', message);
 }
 
-export function onLspData(callback: (data: string | Buffer) => void) {
-  self['ReceiveLspData'] = callback;
+export function onLspData(callback: (message: string | Buffer) => void) {
+  (self as any)['ReceiveLspData'] = (message: string) => {
+    // console.log(message);
+    callback(message);
+  }
 }
 
 export function compile(content: string): string {

@@ -4,8 +4,9 @@ import { Container, Row, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './index.css';
-import { initializeInterop } from './lspInterop';
-import { Playground } from './playground';
+import { initializeInterop } from './helpers/lspInterop';
+import { Playground } from './components/Playground';
+import { createLanguageClient } from './helpers/client';
 
 ReactDOM.render(
   <Container className="d-flex vh-100">
@@ -16,10 +17,17 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-initializeInterop(self)
-  .then(() => ReactDOM.render(
+initializeAndCreateClient()
+  .then((client) => ReactDOM.render(
     <div className="app-container">
-      <Playground/>
+      <Playground client={client} />
     </div>,
     document.getElementById('root')
   ));
+
+async function initializeAndCreateClient() {
+  await initializeInterop(self);
+  const client = await createLanguageClient();
+
+  return client;
+}

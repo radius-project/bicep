@@ -19,7 +19,7 @@ export const JsonEditor : React.FC<JsonEditorProps> = props=> {
   const monacoRef = useRef<MonacoEditor>();
   
   // clear the selection after rendering completes
-  setTimeout(() => monacoRef.current.editor.setSelection({startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1}), 0);
+  setTimeout(() => monacoRef.current?.editor.setSelection({startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1}), 0);
 
   return <MonacoEditor
     ref={monacoRef}

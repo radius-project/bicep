@@ -1,14 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, ButtonGroup, Col, Container, Dropdown, FormControl, Nav, Navbar, NavLink, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
+import { BaseLanguageClient } from 'monaco-languageclient';
 
 import './playground.css';
-import examples from '../../../docs/examples/index.json';
+import examples from '../../../../docs/examples/index.json';
 import { JsonEditor } from './jsonEditor';
 import { BicepEditor } from './bicepEditor';
-import { copyShareLinkToClipboard, handleShareLink } from './utils';
-import { decompile } from './lspInterop';
+import { copyShareLinkToClipboard, handleShareLink } from '../helpers/utils';
+import { decompile } from '../helpers/lspInterop';
 
-export const Playground : React.FC = () => {
+interface Props {
+  client: BaseLanguageClient,
+}
+
+export const Playground : React.FC<Props> = (props) => {
+  const { client } = props;
   const [jsonContent, setJsonContent] = useState('');
   const [bicepContent, setBicepContent] = useState('');
   const [initialContent, setInitialContent] = useState('');
@@ -129,7 +135,7 @@ export const Playground : React.FC = () => {
       </Container> :
       <>
         <div className="playground-editorpane">
-          <BicepEditor onBicepChange={setBicepContent} onJsonChange={setJsonContent} initialCode={initialContent} />
+          <BicepEditor client={client} initialContent={initialContent} onBicepChange={setBicepContent} onJsonChange={setJsonContent} />
         </div>
         <div className="playground-editorpane">
           <JsonEditor content={jsonContent} />
