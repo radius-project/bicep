@@ -590,10 +590,10 @@ var cosmosDbResourceId = resourceId('Microsoft.DocumentDB/databaseAccounts', cos
 //@[25:35)   IdentifierSyntax
 //@[25:35)    Identifier |resourceId|
 //@[35:36)   LeftParen |(|
-//@[36:76)   FunctionArgumentSyntax
+//@[36:75)   FunctionArgumentSyntax
 //@[36:75)    StringSyntax
 //@[36:75)     StringComplete |'Microsoft.DocumentDB/databaseAccounts'|
-//@[75:76)    Comma |,|
+//@[75:76)   Comma |,|
 //@[77:93)   FunctionArgumentSyntax
 //@[77:93)    PropertyAccessSyntax
 //@[77:85)     VariableAccessSyntax
@@ -773,11 +773,11 @@ resource site 'Microsoft.Web/sites@2019-08-01' = {
 //@[17:25)              IdentifierSyntax
 //@[17:25)               Identifier |listKeys|
 //@[25:26)              LeftParen |(|
-//@[26:45)              FunctionArgumentSyntax
+//@[26:44)              FunctionArgumentSyntax
 //@[26:44)               VariableAccessSyntax
 //@[26:44)                IdentifierSyntax
 //@[26:44)                 Identifier |cosmosDbResourceId|
-//@[44:45)               Comma |,|
+//@[44:45)              Comma |,|
 //@[46:58)              FunctionArgumentSyntax
 //@[46:58)               StringSyntax
 //@[46:58)                StringComplete |'2020-04-01'|

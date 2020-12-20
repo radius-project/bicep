@@ -419,12 +419,21 @@ namespace Bicep.Decompiler
                 // Try to correct the name - ARM JSON is case-insensitive, but Bicep is sensitive
                 var functionName = SyntaxHelpers.CorrectWellKnownFunctionCasing(expression.Function);
 
-                var expressions = expression.Parameters.Select(ParseLanguageExpression).ToArray();
+                var children = new List<SyntaxBase>();
+                for (int i = 0; i < expression.Parameters.Length; i++)
+                {
+                    children.Add(ParseLanguageExpression(expression.Parameters[i]));
+
+                    if (i < expression.Parameters.Length - 1)
+                    {
+                        children.Add(SyntaxHelpers.CreateToken(TokenType.Comma, ","));
+                    }
+                }
 
                 baseSyntax = new FunctionCallSyntax(
                     SyntaxHelpers.CreateIdentifier(functionName),
                     SyntaxHelpers.CreateToken(TokenType.LeftParen, "("),
-                    expressions.Select((x, i) => new FunctionArgumentSyntax(x, i < expressions.Length - 1 ? SyntaxHelpers.CreateToken(TokenType.Comma, ",") : null)),
+                    children,
                     SyntaxHelpers.CreateToken(TokenType.RightParen, ")"));
             }
 
@@ -718,9 +727,10 @@ namespace Bicep.Decompiler
                     return new FunctionCallSyntax(
                         SyntaxHelpers.CreateIdentifier("resourceGroup"),
                         SyntaxHelpers.CreateToken(TokenType.LeftParen, "("),
-                        new [] { 
-                            new FunctionArgumentSyntax(ParseJToken(subId.Value), SyntaxHelpers.CreateToken(TokenType.Comma, ",")),
-                            new FunctionArgumentSyntax(ParseJToken(rgName.Value), null),
+                        new SyntaxBase[] { 
+                            new FunctionArgumentSyntax(ParseJToken(subId.Value)),
+                            SyntaxHelpers.CreateToken(TokenType.Comma, ","),
+                            new FunctionArgumentSyntax(ParseJToken(rgName.Value)),
                         },
                         SyntaxHelpers.CreateToken(TokenType.RightParen, ")"));
                 case (null, JProperty rgName):
@@ -728,7 +738,7 @@ namespace Bicep.Decompiler
                         SyntaxHelpers.CreateIdentifier("resourceGroup"),
                         SyntaxHelpers.CreateToken(TokenType.LeftParen, "("),
                         new [] { 
-                            new FunctionArgumentSyntax(ParseJToken(rgName.Value), null),
+                            new FunctionArgumentSyntax(ParseJToken(rgName.Value))
                         },
                         SyntaxHelpers.CreateToken(TokenType.RightParen, ")"));
                 case (JProperty subId, null):
@@ -736,7 +746,7 @@ namespace Bicep.Decompiler
                         SyntaxHelpers.CreateIdentifier("subscription"),
                         SyntaxHelpers.CreateToken(TokenType.LeftParen, "("),
                         new [] { 
-                            new FunctionArgumentSyntax(ParseJToken(subId.Value), null),
+                            new FunctionArgumentSyntax(ParseJToken(subId.Value))
                         },
                         SyntaxHelpers.CreateToken(TokenType.RightParen, ")"));
             }

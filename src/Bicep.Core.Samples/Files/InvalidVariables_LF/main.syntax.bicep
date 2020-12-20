@@ -426,10 +426,10 @@ var mySum = az.add(1,2)
 //@[15:18)   IdentifierSyntax
 //@[15:18)    Identifier |add|
 //@[18:19)   LeftParen |(|
-//@[19:21)   FunctionArgumentSyntax
+//@[19:20)   FunctionArgumentSyntax
 //@[19:20)    NumericLiteralSyntax
 //@[19:20)     Number |1|
-//@[20:21)    Comma |,|
+//@[20:21)   Comma |,|
 //@[21:22)   FunctionArgumentSyntax
 //@[21:22)    NumericLiteralSyntax
 //@[21:22)     Number |2|
@@ -449,10 +449,10 @@ var myConcat = sys.concat('a', az.concat('b', 'c'))
 //@[19:25)   IdentifierSyntax
 //@[19:25)    Identifier |concat|
 //@[25:26)   LeftParen |(|
-//@[26:30)   FunctionArgumentSyntax
+//@[26:29)   FunctionArgumentSyntax
 //@[26:29)    StringSyntax
 //@[26:29)     StringComplete |'a'|
-//@[29:30)    Comma |,|
+//@[29:30)   Comma |,|
 //@[31:50)   FunctionArgumentSyntax
 //@[31:50)    InstanceFunctionCallSyntax
 //@[31:33)     VariableAccessSyntax
@@ -462,10 +462,10 @@ var myConcat = sys.concat('a', az.concat('b', 'c'))
 //@[34:40)     IdentifierSyntax
 //@[34:40)      Identifier |concat|
 //@[40:41)     LeftParen |(|
-//@[41:45)     FunctionArgumentSyntax
+//@[41:44)     FunctionArgumentSyntax
 //@[41:44)      StringSyntax
 //@[41:44)       StringComplete |'b'|
-//@[44:45)      Comma |,|
+//@[44:45)     Comma |,|
 //@[46:49)     FunctionArgumentSyntax
 //@[46:49)      StringSyntax
 //@[46:49)       StringComplete |'c'|

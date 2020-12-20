@@ -369,7 +369,7 @@ namespace Bicep.Core.Parsing
                             dot,
                             functionCall.Identifier,
                             functionCall.OpenParen,
-                            functionCall.ArgumentNodes,
+                            functionCall.Children,
                             functionCall.CloseParen);
                     }
                     else
@@ -443,7 +443,7 @@ namespace Bicep.Core.Parsing
                 return new FunctionCallSyntax(
                     functionCall.Identifier,
                     functionCall.OpenParen,
-                    functionCall.ArgumentNodes,
+                    functionCall.Children,
                     functionCall.CloseParen);
             }
             // returns variable access
@@ -453,15 +453,15 @@ namespace Bicep.Core.Parsing
         /// <summary>
         /// Method that gets a function call identifier, its arguments plus open and close parens
         /// </summary>
-        private (IdentifierSyntax Identifier, Token OpenParen, IEnumerable<FunctionArgumentSyntax> ArgumentNodes, Token CloseParen) FunctionCallAccess(IdentifierSyntax functionName, bool allowComplexLiterals)
+        private (IdentifierSyntax Identifier, Token OpenParen, ImmutableArray<SyntaxBase> Children, Token CloseParen) FunctionCallAccess(IdentifierSyntax functionName, bool allowComplexLiterals)
         {
             var openParen = this.Expect(TokenType.LeftParen, b => b.ExpectedCharacter("("));
 
-            var argumentNodes = FunctionCallArguments(allowComplexLiterals);
+            var children = FunctionCallArguments(allowComplexLiterals);
 
             var closeParen = this.Expect(TokenType.RightParen, b => b.ExpectedCharacter(")"));
 
-            return (functionName, openParen, argumentNodes, closeParen);
+            return (functionName, openParen, children, closeParen);
         }
 
         /// <summary>
@@ -470,39 +470,29 @@ namespace Bicep.Core.Parsing
         /// consume the right paren token.
         /// </summary>
         /// <param name="allowComplexLiterals"></param>
-        private IEnumerable<FunctionArgumentSyntax> FunctionCallArguments(bool allowComplexLiterals)
+        private ImmutableArray<SyntaxBase> FunctionCallArguments(bool allowComplexLiterals)
         {
             if (this.Check(TokenType.RightParen))
             {
-                return ImmutableArray<FunctionArgumentSyntax>.Empty;
+                return ImmutableArray<SyntaxBase>.Empty;
             }
 
-            var arguments = new List<(SyntaxBase expression, Token? comma)>();
+            var children = new List<SyntaxBase>();
 
             while (true)
             {
                 var expression = this.Expression(allowComplexLiterals);
-                arguments.Add((expression, null));
+                children.Add(new FunctionArgumentSyntax(expression));
 
                 if (this.Check(TokenType.RightParen))
                 {
                     // end of function call
-                    // return the accumulated arguments without consuming right paren a caller must consume it
-                    var functionArguments = new List<FunctionArgumentSyntax>(arguments.Count);
-                    foreach (var argument in arguments)
-                    {
-                        functionArguments.Add(
-                            new FunctionArgumentSyntax(argument.expression, argument.comma));
-                    }
-                    return functionArguments.ToImmutableArray();
+                    // return the accumulated arguments without consuming the right paren (the caller must consume it)
+                    return children.ToImmutableArray();
                 }
 
                 var comma = this.Expect(TokenType.Comma, b => b.ExpectedCharacter(","));
-
-                // update the tuple
-                var lastArgument = arguments.Last();
-                lastArgument.comma = comma;
-                arguments[arguments.Count - 1] = lastArgument;
+                children.Add(comma);
             }
         }
 

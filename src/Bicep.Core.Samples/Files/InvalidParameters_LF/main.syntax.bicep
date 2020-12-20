@@ -1212,11 +1212,11 @@ param paramAccessingVar string = concat(sampleVar, 's')
 //@[33:39)    IdentifierSyntax
 //@[33:39)     Identifier |concat|
 //@[39:40)    LeftParen |(|
-//@[40:50)    FunctionArgumentSyntax
+//@[40:49)    FunctionArgumentSyntax
 //@[40:49)     VariableAccessSyntax
 //@[40:49)      IdentifierSyntax
 //@[40:49)       Identifier |sampleVar|
-//@[49:50)     Comma |,|
+//@[49:50)    Comma |,|
 //@[51:54)    FunctionArgumentSyntax
 //@[51:54)     StringSyntax
 //@[51:54)      StringComplete |'s'|

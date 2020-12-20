@@ -214,14 +214,14 @@ var bracketStringInExpression = concat('[', '\'test\'',']')
 //@[32:38)   IdentifierSyntax
 //@[32:38)    Identifier |concat|
 //@[38:39)   LeftParen |(|
-//@[39:43)   FunctionArgumentSyntax
+//@[39:42)   FunctionArgumentSyntax
 //@[39:42)    StringSyntax
 //@[39:42)     StringComplete |'['|
-//@[42:43)    Comma |,|
-//@[44:55)   FunctionArgumentSyntax
+//@[42:43)   Comma |,|
+//@[44:54)   FunctionArgumentSyntax
 //@[44:54)    StringSyntax
 //@[44:54)     StringComplete |'\'test\''|
-//@[54:55)    Comma |,|
+//@[54:55)   Comma |,|
 //@[55:58)   FunctionArgumentSyntax
 //@[55:58)    StringSyntax
 //@[55:58)     StringComplete |']'|
@@ -809,7 +809,7 @@ var functionOnIndexer1 = concat([
 //@[25:31)   IdentifierSyntax
 //@[25:31)    Identifier |concat|
 //@[31:32)   LeftParen |(|
-//@[32:45)   FunctionArgumentSyntax
+//@[32:44)   FunctionArgumentSyntax
 //@[32:44)    ArrayAccessSyntax
 //@[32:41)     ArraySyntax
 //@[32:33)      LeftSquare |[|
@@ -825,7 +825,7 @@ var functionOnIndexer1 = concat([
 //@[2:3)     NumericLiteralSyntax
 //@[2:3)      Number |0|
 //@[3:4)     RightSquare |]|
-//@[4:5)    Comma |,|
+//@[4:5)   Comma |,|
 //@[6:9)   FunctionArgumentSyntax
 //@[6:9)    StringSyntax
 //@[6:9)     StringComplete |'s'|
@@ -842,7 +842,7 @@ var functionOnIndexer2 = concat([
 //@[25:31)   IdentifierSyntax
 //@[25:31)    Identifier |concat|
 //@[31:32)   LeftParen |(|
-//@[32:39)   FunctionArgumentSyntax
+//@[32:38)   FunctionArgumentSyntax
 //@[32:38)    ArrayAccessSyntax
 //@[32:35)     ArraySyntax
 //@[32:33)      LeftSquare |[|
@@ -853,7 +853,7 @@ var functionOnIndexer2 = concat([
 //@[2:3)     NumericLiteralSyntax
 //@[2:3)      Number |0|
 //@[3:4)     RightSquare |]|
-//@[4:5)    Comma |,|
+//@[4:5)   Comma |,|
 //@[6:9)   FunctionArgumentSyntax
 //@[6:9)    StringSyntax
 //@[6:9)     StringComplete |'s'|
@@ -870,7 +870,7 @@ var functionOnIndexer3 = concat([
 //@[25:31)   IdentifierSyntax
 //@[25:31)    Identifier |concat|
 //@[31:32)   LeftParen |(|
-//@[32:39)   FunctionArgumentSyntax
+//@[32:38)   FunctionArgumentSyntax
 //@[32:38)    ArrayAccessSyntax
 //@[32:35)     ArraySyntax
 //@[32:33)      LeftSquare |[|
@@ -881,7 +881,7 @@ var functionOnIndexer3 = concat([
 //@[2:3)     NumericLiteralSyntax
 //@[2:3)      Number |0|
 //@[3:4)     RightSquare |]|
-//@[4:5)    Comma |,|
+//@[4:5)   Comma |,|
 //@[6:14)   FunctionArgumentSyntax
 //@[6:14)    FunctionCallSyntax
 //@[6:9)     IdentifierSyntax
@@ -931,20 +931,20 @@ var unusedIntermediate = listKeys(resourceId('Mock.RP/type', 'steve'), '2020-01-
 //@[25:33)   IdentifierSyntax
 //@[25:33)    Identifier |listKeys|
 //@[33:34)   LeftParen |(|
-//@[34:70)   FunctionArgumentSyntax
+//@[34:69)   FunctionArgumentSyntax
 //@[34:69)    FunctionCallSyntax
 //@[34:44)     IdentifierSyntax
 //@[34:44)      Identifier |resourceId|
 //@[44:45)     LeftParen |(|
-//@[45:60)     FunctionArgumentSyntax
+//@[45:59)     FunctionArgumentSyntax
 //@[45:59)      StringSyntax
 //@[45:59)       StringComplete |'Mock.RP/type'|
-//@[59:60)      Comma |,|
+//@[59:60)     Comma |,|
 //@[61:68)     FunctionArgumentSyntax
 //@[61:68)      StringSyntax
 //@[61:68)       StringComplete |'steve'|
 //@[68:69)     RightParen |)|
-//@[69:70)    Comma |,|
+//@[69:70)   Comma |,|
 //@[71:83)   FunctionArgumentSyntax
 //@[71:83)    StringSyntax
 //@[71:83)     StringComplete |'2020-01-01'|
@@ -1031,7 +1031,7 @@ var previousEmitLimit = [
 //@[9:15)         IdentifierSyntax
 //@[9:15)          Identifier |concat|
 //@[15:16)         LeftParen |(|
-//@[16:41)         FunctionArgumentSyntax
+//@[16:40)         FunctionArgumentSyntax
 //@[16:40)          ArraySyntax
 //@[16:17)           LeftSquare |[|
 //@[17:18)           NewLine |\n|
@@ -1046,7 +1046,7 @@ var previousEmitLimit = [
 //@[14:15)           NewLine |\n|
       ], [
 //@[6:7)           RightSquare |]|
-//@[7:8)          Comma |,|
+//@[7:8)         Comma |,|
 //@[9:48)         FunctionArgumentSyntax
 //@[9:48)          ArraySyntax
 //@[9:10)           LeftSquare |[|
@@ -1210,7 +1210,7 @@ var previousEmitLimit2 = [
 //@[9:14)         IdentifierSyntax
 //@[9:14)          Identifier |union|
 //@[14:15)         LeftParen |(|
-//@[15:43)         FunctionArgumentSyntax
+//@[15:42)         FunctionArgumentSyntax
 //@[15:42)          ObjectSyntax
 //@[15:16)           LeftBrace |{|
 //@[16:17)           NewLine |\n|
@@ -1228,7 +1228,7 @@ var previousEmitLimit2 = [
 //@[17:18)           NewLine |\n|
       }, {
 //@[6:7)           RightBrace |}|
-//@[7:8)          Comma |,|
+//@[7:8)         Comma |,|
 //@[9:54)         FunctionArgumentSyntax
 //@[9:54)          ObjectSyntax
 //@[9:10)           LeftBrace |{|
@@ -1283,7 +1283,7 @@ var previousEmitLimit2 = [
 //@[9:14)         IdentifierSyntax
 //@[9:14)          Identifier |union|
 //@[14:15)         LeftParen |(|
-//@[15:41)         FunctionArgumentSyntax
+//@[15:40)         FunctionArgumentSyntax
 //@[15:40)          ObjectSyntax
 //@[15:16)           LeftBrace |{|
 //@[16:17)           NewLine |\n|
@@ -1297,7 +1297,7 @@ var previousEmitLimit2 = [
 //@[15:16)           NewLine |\n|
       }, {})
 //@[6:7)           RightBrace |}|
-//@[7:8)          Comma |,|
+//@[7:8)         Comma |,|
 //@[9:11)         FunctionArgumentSyntax
 //@[9:11)          ObjectSyntax
 //@[9:10)           LeftBrace |{|
@@ -1313,7 +1313,7 @@ var previousEmitLimit2 = [
 //@[9:21)         IdentifierSyntax
 //@[9:21)          Identifier |intersection|
 //@[21:22)         LeftParen |(|
-//@[22:53)         FunctionArgumentSyntax
+//@[22:52)         FunctionArgumentSyntax
 //@[22:52)          ObjectSyntax
 //@[22:23)           LeftBrace |{|
 //@[23:24)           NewLine |\n|
@@ -1331,7 +1331,7 @@ var previousEmitLimit2 = [
 //@[20:21)           NewLine |\n|
       }, {})
 //@[6:7)           RightBrace |}|
-//@[7:8)          Comma |,|
+//@[7:8)         Comma |,|
 //@[9:11)         FunctionArgumentSyntax
 //@[9:11)          ObjectSyntax
 //@[9:10)           LeftBrace |{|
@@ -1410,14 +1410,14 @@ var previousEmitLimit3 = {
 //@[7:13)       IdentifierSyntax
 //@[7:13)        Identifier |concat|
 //@[13:14)       LeftParen |(|
-//@[14:23)       FunctionArgumentSyntax
+//@[14:22)       FunctionArgumentSyntax
 //@[14:22)        ArraySyntax
 //@[14:15)         LeftSquare |[|
 //@[15:17)         NewLine |\n\n|
 
     ], [
 //@[4:5)         RightSquare |]|
-//@[5:6)        Comma |,|
+//@[5:6)       Comma |,|
 //@[7:25)       FunctionArgumentSyntax
 //@[7:25)        ArraySyntax
 //@[7:8)         LeftSquare |[|
@@ -1530,10 +1530,10 @@ var myVar4 = length(any(concat('s','a')))
 //@[24:30)       IdentifierSyntax
 //@[24:30)        Identifier |concat|
 //@[30:31)       LeftParen |(|
-//@[31:35)       FunctionArgumentSyntax
+//@[31:34)       FunctionArgumentSyntax
 //@[31:34)        StringSyntax
 //@[31:34)         StringComplete |'s'|
-//@[34:35)        Comma |,|
+//@[34:35)       Comma |,|
 //@[35:38)       FunctionArgumentSyntax
 //@[35:38)        StringSyntax
 //@[35:38)         StringComplete |'a'|
@@ -1953,10 +1953,10 @@ var isTrue = sys.max(1, 2) == 3
 //@[17:20)    IdentifierSyntax
 //@[17:20)     Identifier |max|
 //@[20:21)    LeftParen |(|
-//@[21:23)    FunctionArgumentSyntax
+//@[21:22)    FunctionArgumentSyntax
 //@[21:22)     NumericLiteralSyntax
 //@[21:22)      Number |1|
-//@[22:23)     Comma |,|
+//@[22:23)    Comma |,|
 //@[24:25)    FunctionArgumentSyntax
 //@[24:25)     NumericLiteralSyntax
 //@[24:25)      Number |2|
@@ -1996,10 +1996,10 @@ var someText = isTrue ? sys.concat('a', sys.concat('b', 'c')) : 'someText'
 //@[28:34)    IdentifierSyntax
 //@[28:34)     Identifier |concat|
 //@[34:35)    LeftParen |(|
-//@[35:39)    FunctionArgumentSyntax
+//@[35:38)    FunctionArgumentSyntax
 //@[35:38)     StringSyntax
 //@[35:38)      StringComplete |'a'|
-//@[38:39)     Comma |,|
+//@[38:39)    Comma |,|
 //@[40:60)    FunctionArgumentSyntax
 //@[40:60)     InstanceFunctionCallSyntax
 //@[40:43)      VariableAccessSyntax
@@ -2009,10 +2009,10 @@ var someText = isTrue ? sys.concat('a', sys.concat('b', 'c')) : 'someText'
 //@[44:50)      IdentifierSyntax
 //@[44:50)       Identifier |concat|
 //@[50:51)      LeftParen |(|
-//@[51:55)      FunctionArgumentSyntax
+//@[51:54)      FunctionArgumentSyntax
 //@[51:54)       StringSyntax
 //@[51:54)        StringComplete |'b'|
-//@[54:55)       Comma |,|
+//@[54:55)      Comma |,|
 //@[56:59)      FunctionArgumentSyntax
 //@[56:59)       StringSyntax
 //@[56:59)        StringComplete |'c'|
@@ -2072,10 +2072,10 @@ var scopesWithoutArmRepresentation = {
 //@[20:33)     IdentifierSyntax
 //@[20:33)      Identifier |resourceGroup|
 //@[33:34)     LeftParen |(|
-//@[34:73)     FunctionArgumentSyntax
+//@[34:72)     FunctionArgumentSyntax
 //@[34:72)      StringSyntax
 //@[34:72)       StringComplete |'10b57a01-6350-4ce2-972a-6a13642f00bf'|
-//@[72:73)      Comma |,|
+//@[72:73)     Comma |,|
 //@[74:84)     FunctionArgumentSyntax
 //@[74:84)      StringSyntax
 //@[74:84)       StringComplete |'myRgName'|

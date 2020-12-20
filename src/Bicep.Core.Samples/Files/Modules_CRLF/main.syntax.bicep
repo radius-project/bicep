@@ -526,7 +526,7 @@ module optionalWithImplicitDependency './child/optionalParams.bicep'= {
 //@[20:26)       IdentifierSyntax
 //@[20:26)        Identifier |concat|
 //@[26:27)       LeftParen |(|
-//@[27:50)       FunctionArgumentSyntax
+//@[27:49)       FunctionArgumentSyntax
 //@[27:49)        PropertyAccessSyntax
 //@[27:46)         VariableAccessSyntax
 //@[27:46)          IdentifierSyntax
@@ -534,7 +534,7 @@ module optionalWithImplicitDependency './child/optionalParams.bicep'= {
 //@[46:47)         Dot |.|
 //@[47:49)         IdentifierSyntax
 //@[47:49)          Identifier |id|
-//@[49:50)        Comma |,|
+//@[49:50)       Comma |,|
 //@[51:96)       FunctionArgumentSyntax
 //@[51:96)        PropertyAccessSyntax
 //@[51:91)         VariableAccessSyntax
@@ -626,7 +626,7 @@ module moduleWithCalculatedName './child/optionalParams.bicep'= {
 //@[20:26)       IdentifierSyntax
 //@[20:26)        Identifier |concat|
 //@[26:27)       LeftParen |(|
-//@[27:50)       FunctionArgumentSyntax
+//@[27:49)       FunctionArgumentSyntax
 //@[27:49)        PropertyAccessSyntax
 //@[27:46)         VariableAccessSyntax
 //@[27:46)          IdentifierSyntax
@@ -634,7 +634,7 @@ module moduleWithCalculatedName './child/optionalParams.bicep'= {
 //@[46:47)         Dot |.|
 //@[47:49)         IdentifierSyntax
 //@[47:49)          Identifier |id|
-//@[49:50)        Comma |,|
+//@[49:50)       Comma |,|
 //@[51:96)       FunctionArgumentSyntax
 //@[51:96)        PropertyAccessSyntax
 //@[51:91)         VariableAccessSyntax

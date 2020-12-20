@@ -255,7 +255,7 @@ var concatWrongTypesContradiction = concat('s', [
 //@[48:51) [BCP070 (Error)] Argument of type "array" is not assignable to parameter of type "bool | int | string". |[\n]|
 ])
 var indexOfWrongTypes = indexOf(1,1)
-//@[32:34) [BCP070 (Error)] Argument of type "int" is not assignable to parameter of type "string". |1,|
+//@[32:33) [BCP070 (Error)] Argument of type "int" is not assignable to parameter of type "string". |1|
 
 // not enough params
 var test1 = listKeys('abcd')

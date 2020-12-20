@@ -9,7 +9,7 @@ namespace Bicep.Core.Syntax
 {
     public class InstanceFunctionCallSyntax : ExpressionSyntax, ISymbolReference
     {
-        public InstanceFunctionCallSyntax(SyntaxBase baseExpression, Token dot, IdentifierSyntax name, Token openParen, IEnumerable<FunctionArgumentSyntax> arguments, Token closeParen)
+        public InstanceFunctionCallSyntax(SyntaxBase baseExpression, Token dot, IdentifierSyntax name, Token openParen, IEnumerable<SyntaxBase> children, Token closeParen)
         {
             AssertTokenType(openParen, nameof(openParen), TokenType.LeftParen);
             AssertTokenType(closeParen, nameof(closeParen), TokenType.RightParen);
@@ -19,8 +19,10 @@ namespace Bicep.Core.Syntax
             this.Dot = dot;
             this.Name = name;
             this.OpenParen = openParen;
-            this.Arguments = arguments.ToImmutableArray();
+            this.Children = children.ToImmutableArray();
             this.CloseParen = closeParen;
+
+            this.Arguments = this.Children.OfType<FunctionArgumentSyntax>().ToImmutableArray();
         }
 
         public SyntaxBase BaseExpression { get; }
@@ -31,12 +33,14 @@ namespace Bicep.Core.Syntax
 
         public Token OpenParen { get; }
 
-        public ImmutableArray<FunctionArgumentSyntax> Arguments { get; }
+        public ImmutableArray<SyntaxBase> Children { get; }
 
         public Token CloseParen { get; }
 
         public override void Accept(ISyntaxVisitor visitor) => visitor.VisitInstanceFunctionCallSyntax(this);
 
         public override TextSpan Span => TextSpan.Between(BaseExpression, CloseParen);
+
+        public ImmutableArray<FunctionArgumentSyntax> Arguments { get; }
     }
 }

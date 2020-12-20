@@ -476,7 +476,7 @@ namespace Bicep.Core.Syntax
         {
             var hasChanges = Rewrite(syntax.Name, out var name);
             hasChanges |= Rewrite(syntax.OpenParen, out var openParen);
-            hasChanges |= Rewrite(syntax.Arguments, out var arguments);
+            hasChanges |= Rewrite(syntax.Children, out var children);
             hasChanges |= Rewrite(syntax.CloseParen, out var closeParen);
 
             if (!hasChanges)
@@ -484,7 +484,7 @@ namespace Bicep.Core.Syntax
                 return syntax;
             }
 
-            return new FunctionCallSyntax(name, openParen, arguments, closeParen);
+            return new FunctionCallSyntax(name, openParen, children, closeParen);
         }
         void ISyntaxVisitor.VisitFunctionCallSyntax(FunctionCallSyntax syntax) => ReplaceCurrent(syntax, ReplaceFunctionCallSyntax);
 
@@ -494,7 +494,7 @@ namespace Bicep.Core.Syntax
             hasChanges |= Rewrite(syntax.Dot, out var dot);
             hasChanges |= Rewrite(syntax.Name, out var name);
             hasChanges |= Rewrite(syntax.OpenParen, out var openParen);
-            hasChanges |= Rewrite(syntax.Arguments, out var arguments);
+            hasChanges |= Rewrite(syntax.Children, out var children);
             hasChanges |= Rewrite(syntax.CloseParen, out var closeParen);
 
             if (!hasChanges)
@@ -502,7 +502,7 @@ namespace Bicep.Core.Syntax
                 return syntax;
             }
 
-            return new InstanceFunctionCallSyntax(baseExpression, dot, name, openParen, arguments, closeParen);
+            return new InstanceFunctionCallSyntax(baseExpression, dot, name, openParen, children, closeParen);
         }
 
         void ISyntaxVisitor.VisitInstanceFunctionCallSyntax(InstanceFunctionCallSyntax syntax) => ReplaceCurrent(syntax, ReplaceInstanceFunctionCallSyntax);
@@ -510,14 +510,13 @@ namespace Bicep.Core.Syntax
         protected virtual FunctionArgumentSyntax ReplaceFunctionArgumentSyntax(FunctionArgumentSyntax syntax)
         {
             var hasChanges = Rewrite(syntax.Expression, out var expression);
-            hasChanges |= RewriteNullable(syntax.Comma, out var comma);
-
+            
             if (!hasChanges)
             {
                 return syntax;
             }
 
-            return new FunctionArgumentSyntax(expression, comma);
+            return new FunctionArgumentSyntax(expression);
         }
         void ISyntaxVisitor.VisitFunctionArgumentSyntax(FunctionArgumentSyntax syntax) => ReplaceCurrent(syntax, ReplaceFunctionArgumentSyntax);
 

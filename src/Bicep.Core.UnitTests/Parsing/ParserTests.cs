@@ -103,7 +103,7 @@ namespace Bicep.Core.UnitTests.Parsing
         public void FunctionsShouldParseCorrectly(string text, string expected, int expectedArgumentCount)
         {
             var expression = (FunctionCallSyntax) RunExpressionTest(text, expected, typeof(FunctionCallSyntax));
-            expression.Arguments.Length.Should().Be(expectedArgumentCount);
+            expression.Arguments.Should().HaveCount(expectedArgumentCount);
         }
 
         [DataTestMethod]

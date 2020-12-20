@@ -422,10 +422,10 @@ resource foo 'Microsoft.Foo/foos@2020-02-02-alpha' = if (reference('Micorosft.Ma
 //@[57:66)       IdentifierSyntax
 //@[57:66)        Identifier |reference|
 //@[66:67)       LeftParen |(|
-//@[67:110)       FunctionArgumentSyntax
+//@[67:109)       FunctionArgumentSyntax
 //@[67:109)        StringSyntax
 //@[67:109)         StringComplete |'Micorosft.Management/managementGroups/MG'|
-//@[109:110)        Comma |,|
+//@[109:110)       Comma |,|
 //@[111:123)       FunctionArgumentSyntax
 //@[111:123)        StringSyntax
 //@[111:123)         StringComplete |'2020-05-01'|
@@ -470,10 +470,10 @@ resource foo 'Microsoft.Foo/foos@2020-02-02-alpha' = if (listKeys('foo', '2020-0
 //@[57:65)       IdentifierSyntax
 //@[57:65)        Identifier |listKeys|
 //@[65:66)       LeftParen |(|
-//@[66:72)       FunctionArgumentSyntax
+//@[66:71)       FunctionArgumentSyntax
 //@[66:71)        StringSyntax
 //@[66:71)         StringComplete |'foo'|
-//@[71:72)        Comma |,|
+//@[71:72)       Comma |,|
 //@[73:85)       FunctionArgumentSyntax
 //@[73:85)        StringSyntax
 //@[73:85)         StringComplete |'2020-05-01'|
