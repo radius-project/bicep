@@ -15,15 +15,15 @@ namespace Bicep.Core.UnitTests.TypeSystem
         {
             var namedObjectA = new NamedObjectType("objA", TypeSymbolValidationFlags.Default, new []
             { 
-                new TypeProperty("discKey", new StringLiteralType("keyA")),
-                new TypeProperty("keyAProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("discKey", new StringLiteralType("keyA"), TypePropertyFlags.None),
+                new TypeProperty("keyAProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
 
             var namedObjectB = new NamedObjectType("objB", TypeSymbolValidationFlags.Default, new []
             { 
-                new TypeProperty("discKey", new StringLiteralType("keyB")),
-                new TypeProperty("keyBProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("discKey", new StringLiteralType("keyB"), TypePropertyFlags.None),
+                new TypeProperty("keyBProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
 
             var discObj = new DiscriminatedObjectType("discObj", TypeSymbolValidationFlags.Default, "discKey", new [] { namedObjectA, namedObjectB });
 
@@ -39,30 +39,30 @@ namespace Bicep.Core.UnitTests.TypeSystem
         {
             var namedObjectA = new NamedObjectType("objA", TypeSymbolValidationFlags.Default, new []
             { 
-                new TypeProperty("discKey", new StringLiteralType("keyA")),
-                new TypeProperty("keyAProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("discKey", new StringLiteralType("keyA"), TypePropertyFlags.None),
+                new TypeProperty("keyAProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
 
             var missingKeyObject = new NamedObjectType("objB", TypeSymbolValidationFlags.Default, new []
             {
-                new TypeProperty("keyBProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("keyBProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
             Action missingKeyConstructorAction = () => new DiscriminatedObjectType("discObj", TypeSymbolValidationFlags.Default, "discKey", new [] { namedObjectA, missingKeyObject });
             missingKeyConstructorAction.Should().Throw<ArgumentException>();
 
             var invalidKeyTypeObject = new NamedObjectType("objB", TypeSymbolValidationFlags.Default, new []
             { 
-                new TypeProperty("discKey", LanguageConstants.String),
-                new TypeProperty("keyBProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("discKey", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("keyBProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
             Action invalidKeyTypeConstructorAction = () => new DiscriminatedObjectType("discObj", TypeSymbolValidationFlags.Default, "discKey", new [] { namedObjectA, invalidKeyTypeObject });
             invalidKeyTypeConstructorAction.Should().Throw<ArgumentException>();
 
             var duplicateKeyObject = new NamedObjectType("objB", TypeSymbolValidationFlags.Default, new []
             { 
-                new TypeProperty("discKey", new StringLiteralType("keyA")),
-                new TypeProperty("keyBProp", LanguageConstants.String),
-            }, null);
+                new TypeProperty("discKey", new StringLiteralType("keyA"), TypePropertyFlags.None),
+                new TypeProperty("keyBProp", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
             Action duplicateKeyConstructorAction = () => new DiscriminatedObjectType("discObj", TypeSymbolValidationFlags.Default, "discKey", new [] { namedObjectA, duplicateKeyObject });
             duplicateKeyConstructorAction.Should().Throw<ArgumentException>();
         }

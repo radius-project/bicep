@@ -9,7 +9,7 @@ namespace Bicep.Core.TypeSystem.Az
     public class ResourceGroupScopeType : NamedObjectType, IResourceScopeType
     {
         public ResourceGroupScopeType(IEnumerable<FunctionArgumentSyntax> arguments, IEnumerable<TypeProperty> properties)
-            : base("resourceGroup", TypeSymbolValidationFlags.Default, properties, null)
+            : base("resourceGroup", TypeSymbolValidationFlags.Default, properties, null, TypePropertyFlags.None)
         {
             Arguments = arguments.ToImmutableArray();
         }

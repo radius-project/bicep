@@ -42,9 +42,9 @@ namespace Bicep.Core.UnitTests.Utils
             var reference = ResourceTypeReference.Parse($"{fullyQualifiedType}@{apiVersion}");
 
             var resourceProperties = LanguageConstants.GetCommonResourceProperties(reference)
-                .Concat(new TypeProperty("properties", new NamedObjectType("properties", validationFlags, customProperties, null), TypePropertyFlags.Required));
+                .Concat(new TypeProperty("properties", new NamedObjectType("properties", validationFlags, customProperties, null, TypePropertyFlags.None), TypePropertyFlags.Required));
 
-            return new ResourceType(reference, new NamedObjectType(reference.FormatName(), validationFlags, resourceProperties, null));
+            return new ResourceType(reference, new NamedObjectType(reference.FormatName(), validationFlags, resourceProperties, null, TypePropertyFlags.None));
         }
     }
 }

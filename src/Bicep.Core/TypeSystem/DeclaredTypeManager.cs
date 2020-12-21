@@ -75,7 +75,7 @@ namespace Bicep.Core.TypeSystem
                     return GetArrayAccessType(arrayAccess);
 
                 case VariableDeclarationSyntax variable:
-                    return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(syntax), variable);
+                    return new DeclaredTypeAssignment(LanguageConstants.Any, variable);
 
                 case FunctionCallSyntax _:
                 case InstanceFunctionCallSyntax _:
@@ -100,7 +100,7 @@ namespace Bicep.Core.TypeSystem
             return null;
         }
 
-        private DeclaredTypeAssignment GetParameterType(ParameterDeclarationSyntax syntax) => new DeclaredTypeAssignment(syntax.GetDeclaredType(), syntax);
+        private DeclaredTypeAssignment GetParameterType(ParameterDeclarationSyntax syntax) => new DeclaredTypeAssignment(SyntaxHelper.GetDeclaredType(syntax), syntax);
 
         private DeclaredTypeAssignment GetResourceType(ResourceDeclarationSyntax syntax) => new DeclaredTypeAssignment(syntax.GetDeclaredType(this.resourceTypeProvider), syntax);
 
@@ -288,7 +288,7 @@ namespace Bicep.Core.TypeSystem
                     // the object is a modifier of a parameter type
                     // the declared type should be the appropriate modifier type
                     // however we need the parameter's assigned type to determine the modifier type
-                    var parameterAssignedType = parameterDeclaration.GetAssignedType(this.typeManager);
+                    var parameterAssignedType = SyntaxHelper.GetDeclaredType(parameterDeclaration);
                     return CreateAssignment(LanguageConstants.CreateParameterModifierType(parentType, parameterAssignedType));
 
                 case ObjectPropertySyntax _:

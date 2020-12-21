@@ -877,14 +877,14 @@ namespace Bicep.Core.UnitTests.TypeSystem
                 {
                     new NamedObjectType("typeA", TypeSymbolValidationFlags.Default, new []
                     { 
-                        new TypeProperty("myDiscriminator", new StringLiteralType("valA")),
+                        new TypeProperty("myDiscriminator", new StringLiteralType("valA"), TypePropertyFlags.None),
                         new TypeProperty("fieldA", LanguageConstants.Any, TypePropertyFlags.Required),
-                    }, null),
+                    }, null, TypePropertyFlags.None),
                     new NamedObjectType("typeB", TypeSymbolValidationFlags.Default, new []
                     { 
-                        new TypeProperty("myDiscriminator", new StringLiteralType("valB")),
+                        new TypeProperty("myDiscriminator", new StringLiteralType("valB"), TypePropertyFlags.None),
                         new TypeProperty("fieldB", LanguageConstants.Any, TypePropertyFlags.Required),
-                    }, null),
+                    }, null, TypePropertyFlags.None),
                 });
 
             {
@@ -1111,7 +1111,7 @@ namespace Bicep.Core.UnitTests.TypeSystem
         {
             var typeReference = ResourceTypeReference.Parse("Mock.Rp/mockType@2020-01-01");
 
-            return new ResourceType(typeReference, new NamedObjectType(typeReference.FormatName(), TypeSymbolValidationFlags.Default, LanguageConstants.CreateResourceProperties(typeReference), null));
+            return new ResourceType(typeReference, new NamedObjectType(typeReference.FormatName(), TypeSymbolValidationFlags.Default, LanguageConstants.CreateResourceProperties(typeReference), null, TypePropertyFlags.None));
         }
 
         private static TypeManager CreateTypeManager(SyntaxHierarchy hierarchy) 

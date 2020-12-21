@@ -9,7 +9,7 @@ namespace Bicep.Core.TypeSystem.Az
     public class ManagementGroupScopeType : NamedObjectType, IResourceScopeType
     {
         public ManagementGroupScopeType(IEnumerable<FunctionArgumentSyntax> arguments, IEnumerable<TypeProperty> properties)
-            : base("managementGroup", TypeSymbolValidationFlags.Default, properties, null)
+            : base("managementGroup", TypeSymbolValidationFlags.Default, properties, null, TypePropertyFlags.None)
         {
             Arguments = arguments.ToImmutableArray();
         }

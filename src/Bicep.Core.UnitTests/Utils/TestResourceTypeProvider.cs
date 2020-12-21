@@ -12,7 +12,7 @@ namespace Bicep.Core.UnitTests.Utils
     public class TestResourceTypeProvider : IResourceTypeProvider
     {
         public ResourceType GetType(ResourceTypeReference reference)
-            => new ResourceType(reference, new NamedObjectType(reference.FormatName(), TypeSymbolValidationFlags.Default, LanguageConstants.CreateResourceProperties(reference), null));
+            => new ResourceType(reference, new NamedObjectType(reference.FormatName(), TypeSymbolValidationFlags.Default, LanguageConstants.CreateResourceProperties(reference), null, TypePropertyFlags.None));
 
         public bool HasType(ResourceTypeReference typeReference)
             => true;

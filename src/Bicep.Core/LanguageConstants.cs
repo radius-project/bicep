@@ -97,7 +97,7 @@ namespace Bicep.Core
 
         public static TypeSymbol CreateParameterModifierType(TypeSymbol primitiveType, TypeSymbol allowedValuesType)
         {
-            return new NamedObjectType($"ParameterModifier<{allowedValuesType.Name}>", TypeSymbolValidationFlags.Default, CreateParameterModifierProperties(primitiveType, allowedValuesType), additionalPropertiesType: null);
+            return new NamedObjectType($"ParameterModifier<{allowedValuesType.Name}>", TypeSymbolValidationFlags.Default, CreateParameterModifierProperties(primitiveType, allowedValuesType), null, TypePropertyFlags.None);
         }
 
         private static IEnumerable<TypeProperty> CreateParameterModifierProperties(TypeSymbol primitiveType, TypeSymbol allowedValuesType)
@@ -114,7 +114,7 @@ namespace Bicep.Core
             }
 
             // default value is allowed to have expressions
-            yield return new TypeProperty(ParameterDefaultPropertyName, allowedValuesType);
+            yield return new TypeProperty(ParameterDefaultPropertyName, allowedValuesType, TypePropertyFlags.None);
 
             yield return new TypeProperty(ParameterAllowedPropertyName, new TypedArrayType(allowedValuesType, TypeSymbolValidationFlags.Default), TypePropertyFlags.Constant);
 
@@ -159,11 +159,11 @@ namespace Bicep.Core
 
         public static TypeSymbol CreateModuleType(IEnumerable<TypeProperty> paramsProperties, IEnumerable<TypeProperty> outputProperties, ResourceScopeType moduleScope, ResourceScopeType containingScope, string typeName)
         {
-            var paramsType = new NamedObjectType(ModuleParamsPropertyName, TypeSymbolValidationFlags.Default, paramsProperties, null);
+            var paramsType = new NamedObjectType(ModuleParamsPropertyName, TypeSymbolValidationFlags.Default, paramsProperties, null, TypePropertyFlags.None);
             // If none of the params are reqired, we can allow the 'params' declaration to be ommitted entirely
             var paramsRequiredFlag = paramsProperties.Any(x => x.Flags.HasFlag(TypePropertyFlags.Required)) ? TypePropertyFlags.Required : TypePropertyFlags.None;
 
-            var outputsType = new NamedObjectType(ModuleOutputsPropertyName, TypeSymbolValidationFlags.Default, outputProperties, null);
+            var outputsType = new NamedObjectType(ModuleOutputsPropertyName, TypeSymbolValidationFlags.Default, outputProperties, null, TypePropertyFlags.None);
             var resourceRefArray = new TypedArrayType(ResourceRef, TypeSymbolValidationFlags.Default);
 
             // If the module scope matches the parent scope, we can safely omit the scope property
@@ -180,7 +180,8 @@ namespace Bicep.Core
                     new TypeProperty(ModuleOutputsPropertyName, outputsType, TypePropertyFlags.ReadOnly),
                     new TypeProperty(ResourceDependsOnPropertyName, resourceRefArray, TypePropertyFlags.WriteOnly),
                 },
-                null);
+                null,
+                TypePropertyFlags.None);
 
             return new ModuleType(typeName, moduleBody);
         }
@@ -201,34 +202,34 @@ namespace Bicep.Core
             }
 
             // TODO: Model type fully
-            yield return new TypeProperty("sku", Object);
+            yield return new TypeProperty("sku", Object, TypePropertyFlags.None);
 
-            yield return new TypeProperty("kind", String);
-            yield return new TypeProperty("managedBy", String);
+            yield return new TypeProperty("kind", String, TypePropertyFlags.None);
+            yield return new TypeProperty("managedBy", String, TypePropertyFlags.None);
 
             var stringArray = new TypedArrayType(String, TypeSymbolValidationFlags.Default);
-            yield return new TypeProperty("managedByExtended", stringArray);
+            yield return new TypeProperty("managedByExtended", stringArray, TypePropertyFlags.None);
 
-            yield return new TypeProperty("location", String);
-
-            // TODO: Model type fully
-            yield return new TypeProperty("extendedLocation", Object);
-
-            yield return new TypeProperty("zones", stringArray);
-
-            yield return new TypeProperty("plan", Object);
-
-            yield return new TypeProperty("eTag", String);
-
-            yield return new TypeProperty("tags", Tags);
+            yield return new TypeProperty("location", String, TypePropertyFlags.None);
 
             // TODO: Model type fully
-            yield return new TypeProperty("scale", Object);
+            yield return new TypeProperty("extendedLocation", Object, TypePropertyFlags.None);
+
+            yield return new TypeProperty("zones", stringArray, TypePropertyFlags.None);
+
+            yield return new TypeProperty("plan", Object, TypePropertyFlags.None);
+
+            yield return new TypeProperty("eTag", String, TypePropertyFlags.None);
+
+            yield return new TypeProperty("tags", Tags, TypePropertyFlags.None);
 
             // TODO: Model type fully
-            yield return new TypeProperty("identity", Object);
+            yield return new TypeProperty("scale", Object, TypePropertyFlags.None);
 
-            yield return new TypeProperty("properties", Object);
+            // TODO: Model type fully
+            yield return new TypeProperty("identity", Object, TypePropertyFlags.None);
+
+            yield return new TypeProperty("properties", Object, TypePropertyFlags.None);
 
             var resourceRefArray = new TypedArrayType(ResourceRef, TypeSymbolValidationFlags.Default);
             yield return new TypeProperty(ResourceDependsOnPropertyName, resourceRefArray, TypePropertyFlags.WriteOnly);

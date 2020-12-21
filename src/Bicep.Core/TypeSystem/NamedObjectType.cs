@@ -8,7 +8,7 @@ namespace Bicep.Core.TypeSystem
 {
     public class NamedObjectType : ObjectType
     {
-        public NamedObjectType(string name, TypeSymbolValidationFlags validationFlags, IEnumerable<TypeProperty> properties, ITypeReference? additionalPropertiesType, TypePropertyFlags additionalPropertiesFlags = TypePropertyFlags.None, IEnumerable<FunctionOverload>? functions = null)
+        public NamedObjectType(string name, TypeSymbolValidationFlags validationFlags, IEnumerable<TypeProperty> properties, ITypeReference? additionalPropertiesType, TypePropertyFlags additionalPropertiesFlags, IEnumerable<FunctionOverload>? functions = null)
             : base(name)
         {
             this.ValidationFlags = validationFlags;

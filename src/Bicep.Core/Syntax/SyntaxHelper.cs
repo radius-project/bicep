@@ -29,21 +29,6 @@ namespace Bicep.Core.Syntax
             return allowedArraySyntax;
         }
 
-        public static SyntaxBase? TryGetDefaultValue(ParameterDeclarationSyntax parameterDeclarationSyntax)
-        {
-            if (parameterDeclarationSyntax.Modifier is ParameterDefaultValueSyntax defaultValueSyntax)
-            {
-                return defaultValueSyntax.DefaultValue;
-            }
-
-            if (parameterDeclarationSyntax.Modifier is ObjectSyntax modifierObject)
-            {
-                return TryGetObjectProperty(modifierObject, LanguageConstants.ParameterDefaultPropertyName);
-            }
-
-            return null;
-        }
-
         public static string? TryGetModulePath(ModuleDeclarationSyntax moduleDeclarationSyntax, out DiagnosticBuilder.ErrorBuilderDelegate? failureBuilder)
         {
             var pathSyntax = moduleDeclarationSyntax.TryGetPath();
@@ -110,6 +95,85 @@ namespace Bicep.Core.Syntax
             }
 
             return targetScope;
+        }
+
+        public static SyntaxBase? TryGetDefaultValue(ParameterDeclarationSyntax parameterDeclarationSyntax)
+        {
+            if (parameterDeclarationSyntax.Modifier is ParameterDefaultValueSyntax defaultValueSyntax)
+            {
+                return defaultValueSyntax.DefaultValue;
+            }
+
+            if (parameterDeclarationSyntax.Modifier is ObjectSyntax modifierObject)
+            {
+                return TryGetObjectProperty(modifierObject, LanguageConstants.ParameterDefaultPropertyName);
+            }
+
+            return null;
+        }
+
+        private static TypeSymbol GetDeclaredTypeFromAllowed(TypeSymbol declaredType, ArraySyntax allowedSyntax)
+        {
+            if (!object.ReferenceEquals(declaredType, LanguageConstants.LooseString))
+            {
+                return declaredType;
+            }
+
+            var allowedTypes = new List<StringLiteralType>();
+            
+            foreach (var syntax in allowedSyntax.Items)
+            {
+                var literalValue = (syntax.Value as StringSyntax)?.TryGetLiteralValue();
+
+                if (literalValue is null)
+                {
+                    return declaredType;
+                }
+
+                allowedTypes.Add(new StringLiteralType(literalValue));
+            }
+
+            return UnionType.Create(allowedTypes);
+        }
+
+        public static TypeSymbol GetDeclaredType(ParameterDeclarationSyntax syntax)
+        {
+            // assume "any" type when the parameter has parse errors (either missing or was skipped)
+            var declaredType = syntax.ParameterType == null
+                ? LanguageConstants.Any
+                : LanguageConstants.TryGetDeclarationType(syntax.ParameterType.TypeName);
+
+            if (declaredType is null)
+            {
+                return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.Type).InvalidParameterType());
+            }
+
+            return declaredType;
+        }
+
+        public static TypeSymbol GetAssignedType(ParameterDeclarationSyntax syntax)
+        {
+            var declaredType = GetDeclaredType(syntax);
+
+            if (object.ReferenceEquals(declaredType, LanguageConstants.String))
+            {
+                // In order to support assignment for a generic string to enum-typed properties (which generally is forbidden),
+                // we need to relax the validation for string parameters without 'allowed' values specified.
+                declaredType = LanguageConstants.LooseString;
+            }
+
+            var allowedSyntax = TryGetAllowedSyntax(syntax);
+            if (allowedSyntax is null)
+            {
+                return declaredType;
+            }
+
+            if (!allowedSyntax.Items.Any())
+            {
+                return ErrorType.Create(DiagnosticBuilder.ForPosition(allowedSyntax).AllowedMustContainItems());
+            }
+
+            return GetDeclaredTypeFromAllowed(declaredType, allowedSyntax);
         }
     }
 }

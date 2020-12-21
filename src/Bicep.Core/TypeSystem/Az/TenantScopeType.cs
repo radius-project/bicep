@@ -9,7 +9,7 @@ namespace Bicep.Core.TypeSystem.Az
     public class TenantScopeType : NamedObjectType, IResourceScopeType
     {
         public TenantScopeType(IEnumerable<FunctionArgumentSyntax> arguments, IEnumerable<TypeProperty> properties)
-            : base("tenant", TypeSymbolValidationFlags.Default, properties, null)
+            : base("tenant", TypeSymbolValidationFlags.Default, properties, null, TypePropertyFlags.None)
         {
             Arguments = arguments.ToImmutableArray();
         }

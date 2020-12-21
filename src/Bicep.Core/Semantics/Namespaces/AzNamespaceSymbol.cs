@@ -30,18 +30,18 @@ namespace Bicep.Core.Semantics.Namespaces
         {
             var properties = new NamedObjectType("properties", TypeSymbolValidationFlags.Default, new []
             {
-                new TypeProperty("provisioningState", LanguageConstants.String),
-            }, null);
+                new TypeProperty("provisioningState", LanguageConstants.String, TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
 
             return new ResourceGroupScopeType(arguments, new []
             {
-                new TypeProperty("id", LanguageConstants.String),
-                new TypeProperty("name", LanguageConstants.String),
-                new TypeProperty("type", LanguageConstants.String),
-                new TypeProperty("location", LanguageConstants.String),
-                new TypeProperty("managedBy", LanguageConstants.String),
-                new TypeProperty("tags", LanguageConstants.Tags),
-                new TypeProperty("properties", properties),
+                new TypeProperty("id", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("location", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("managedBy", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("tags", LanguageConstants.Tags, TypePropertyFlags.None),
+                new TypeProperty("properties", properties, TypePropertyFlags.None),
             });
         }
 
@@ -49,10 +49,10 @@ namespace Bicep.Core.Semantics.Namespaces
         {
             return new SubscriptionScopeType(arguments, new []
             {
-                new TypeProperty("id", LanguageConstants.String),
-                new TypeProperty("subscriptionId", LanguageConstants.String),
-                new TypeProperty("tenantId", LanguageConstants.String),
-                new TypeProperty("displayName", LanguageConstants.String),
+                new TypeProperty("id", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("subscriptionId", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("tenantId", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("displayName", LanguageConstants.String, TypePropertyFlags.None),
             });
         }
         
@@ -60,41 +60,41 @@ namespace Bicep.Core.Semantics.Namespaces
         {
             return new NamedObjectType("environment", TypeSymbolValidationFlags.Default, new []
             {
-                new TypeProperty("name", LanguageConstants.String),
-                new TypeProperty("gallery", LanguageConstants.String),
-                new TypeProperty("graph", LanguageConstants.String),
-                new TypeProperty("portal", LanguageConstants.String),
-                new TypeProperty("graphAudience", LanguageConstants.String),
-                new TypeProperty("activeDirectoryDataLake", LanguageConstants.String),
-                new TypeProperty("batch", LanguageConstants.String),
-                new TypeProperty("media", LanguageConstants.String),
-                new TypeProperty("sqlManagement", LanguageConstants.String),
-                new TypeProperty("vmImageAliasDoc", LanguageConstants.String),
-                new TypeProperty("resourceManager", LanguageConstants.String),
+                new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("gallery", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("graph", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("portal", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("graphAudience", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("activeDirectoryDataLake", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("batch", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("media", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("sqlManagement", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("vmImageAliasDoc", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("resourceManager", LanguageConstants.String, TypePropertyFlags.None),
                 new TypeProperty("authentication", new NamedObjectType("authentication", TypeSymbolValidationFlags.Default, new []
                 {
-                    new TypeProperty("loginEndpoint", LanguageConstants.String),
-                    new TypeProperty("audiences", new TypedArrayType(LanguageConstants.String, TypeSymbolValidationFlags.Default)),
-                    new TypeProperty("tenant", LanguageConstants.String),
-                    new TypeProperty("identityProvider", LanguageConstants.String),
-                }, null)),
+                    new TypeProperty("loginEndpoint", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("audiences", new TypedArrayType(LanguageConstants.String, TypeSymbolValidationFlags.Default), TypePropertyFlags.None),
+                    new TypeProperty("tenant", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("identityProvider", LanguageConstants.String, TypePropertyFlags.None),
+                }, null, TypePropertyFlags.None), TypePropertyFlags.None),
                 new TypeProperty("suffixes", new NamedObjectType("suffixes", TypeSymbolValidationFlags.Default, new []
                 {
-                    new TypeProperty("acrLoginServer", LanguageConstants.String),
-                    new TypeProperty("azureDatalakeAnalyticsCatalogAndJob", LanguageConstants.String),
-                    new TypeProperty("azureDatalakeStoreFileSystem", LanguageConstants.String),
-                    new TypeProperty("keyvaultDns", LanguageConstants.String),
-                    new TypeProperty("sqlServerHostname", LanguageConstants.String),
-                    new TypeProperty("storage", LanguageConstants.String),
-                }, null)),
+                    new TypeProperty("acrLoginServer", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("azureDatalakeAnalyticsCatalogAndJob", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("azureDatalakeStoreFileSystem", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("keyvaultDns", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("sqlServerHostname", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("storage", LanguageConstants.String, TypePropertyFlags.None),
+                }, null, TypePropertyFlags.None), TypePropertyFlags.None),
                 new TypeProperty("locations", new TypedArrayType(new NamedObjectType("locations", TypeSymbolValidationFlags.Default, new []
                 {
-                    new  TypeProperty("id", LanguageConstants.String),
-                    new  TypeProperty("name", LanguageConstants.String),
-                    new  TypeProperty("displayName", LanguageConstants.String),
-                    new  TypeProperty("longitude", LanguageConstants.String),
-                }, null), TypeSymbolValidationFlags.Default)),
-            }, null);
+                    new  TypeProperty("id", LanguageConstants.String, TypePropertyFlags.None),
+                    new  TypeProperty("name", LanguageConstants.String, TypePropertyFlags.None),
+                    new  TypeProperty("displayName", LanguageConstants.String, TypePropertyFlags.None),
+                    new  TypeProperty("longitude", LanguageConstants.String, TypePropertyFlags.None),
+                }, null, TypePropertyFlags.None), TypeSymbolValidationFlags.Default), TypePropertyFlags.None),
+            }, null, TypePropertyFlags.None);
         }
 
         private static NamedObjectType GetDeploymentReturnType(ResourceScopeType targetScope)
@@ -104,24 +104,24 @@ namespace Bicep.Core.Semantics.Namespaces
             // Properties such as 'template', 'templateHash', 'parameters' depend on the codegen, and feel like they could be fragile.
             IEnumerable<TypeProperty> properties = new []
             {
-                new TypeProperty("name", LanguageConstants.String),
+                new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.None),
                 new TypeProperty("properties", new NamedObjectType("properties", TypeSymbolValidationFlags.Default, new []
                 {
                     new TypeProperty("templateLink", new NamedObjectType("properties", TypeSymbolValidationFlags.Default, new []
                     {
-                        new TypeProperty("uri", LanguageConstants.String)
-                    }, null))
-                }, null)),
+                        new TypeProperty("uri", LanguageConstants.String, TypePropertyFlags.None)
+                    }, null, TypePropertyFlags.None), TypePropertyFlags.None)
+                }, null, TypePropertyFlags.None), TypePropertyFlags.None),
             };
 
             if (!targetScope.HasFlag(ResourceScopeType.ResourceGroupScope))
             {
                 // deployments in the 'resourcegroup' scope do not have the 'location' property. All other scopes do.
-                var locationProperty = new TypeProperty("location", LanguageConstants.String);
+                var locationProperty = new TypeProperty("location", LanguageConstants.String, TypePropertyFlags.None);
                 properties = properties.Concat(locationProperty.AsEnumerable());
             }
 
-            return new NamedObjectType("deployment", TypeSymbolValidationFlags.Default, properties, null);
+            return new NamedObjectType("deployment", TypeSymbolValidationFlags.Default, properties, null, TypePropertyFlags.None);
         }
 
         private static IEnumerable<(FunctionOverload functionOverload, ResourceScopeType allowedScopes)> GetScopeFunctions()

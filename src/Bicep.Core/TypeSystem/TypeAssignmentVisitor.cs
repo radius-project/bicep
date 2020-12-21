@@ -36,11 +36,11 @@ namespace Bicep.Core.TypeSystem
         }
 
         private readonly IResourceTypeProvider resourceTypeProvider;
-        private readonly TypeManager typeManager;
+        private readonly ITypeManager typeManager;
         private readonly IBinder binder;
         private readonly IDictionary<SyntaxBase, TypeAssignment> assignedTypes;
 
-        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, TypeManager typeManager, IBinder binder)
+        public TypeAssignmentVisitor(IResourceTypeProvider resourceTypeProvider, ITypeManager typeManager, IBinder binder)
         {
             this.resourceTypeProvider = resourceTypeProvider;
             this.typeManager = typeManager;
@@ -175,13 +175,12 @@ namespace Bicep.Core.TypeSystem
             => AssignTypeWithDiagnostics(syntax, diagnostics => {
                 diagnostics.WriteMultiple(this.ValidateIdentifierAccess(syntax));
 
-                var declaredType = syntax.GetDeclaredType();
-                if (declaredType is ErrorType)
+                var declaredType = SyntaxHelper.GetDeclaredType(syntax);
+                var assignedType = SyntaxHelper.GetAssignedType(syntax);
+                if (assignedType is ErrorType)
                 {
-                    return declaredType;
+                    return assignedType;
                 }
-
-                var assignedType = syntax.GetAssignedType(this.typeManager);
 
                 switch (syntax.Modifier)
                 {
@@ -284,7 +283,7 @@ namespace Bicep.Core.TypeSystem
             });
 
         public override void VisitObjectSyntax(ObjectSyntax syntax)
-            => AssignType(syntax, () => 
+            => AssignTypeWithDiagnostics(syntax, diagnosticWriter => 
             {
                 var errors = new List<ErrorDiagnostic>();
 
@@ -301,10 +300,21 @@ namespace Bicep.Core.TypeSystem
                     return ErrorType.Create(errors);
                 }
 
+                var additionalPropertiesFlags = TypePropertyFlags.None;
+                var properties = ImmutableDictionary<string, TypeProperty>.Empty;
+                if (typeManager.GetDeclaredType(syntax) is ObjectType objectType)
+                {
+                    properties = objectType.Properties;
+                    additionalPropertiesFlags = objectType.AdditionalPropertiesFlags;
+                }
+
                 // type results are cached
                 var namedProperties = syntax.Properties
                     .GroupByExcludingNull(p => p.TryGetKeyText(), LanguageConstants.IdentifierComparer)
-                    .Select(group => new TypeProperty(group.Key, UnionType.Create(group.Select(p => typeManager.GetTypeInfo(p)))));
+                    .Select(group => new TypeProperty(
+                        group.Key,
+                        UnionType.Create(group.Select(p => typeManager.GetTypeInfo(p))),
+                        properties.TryGetValue(group.Key, out var property) ? property.Flags : TypePropertyFlags.None));
 
                 var additionalProperties = syntax.Properties
                     .Where(p => p.TryGetKeyText() == null)
@@ -313,7 +323,7 @@ namespace Bicep.Core.TypeSystem
                 var additionalPropertiesType = additionalProperties.Any() ? UnionType.Create(additionalProperties) : null;
 
                 // TODO: Add structural naming?
-                return new NamedObjectType(LanguageConstants.Object.Name, TypeSymbolValidationFlags.Default, namedProperties, additionalPropertiesType);
+                return new NamedObjectType(LanguageConstants.Object.Name, TypeSymbolValidationFlags.Default, namedProperties, additionalPropertiesType, additionalPropertiesFlags);
             });
 
         public override void VisitObjectPropertySyntax(ObjectPropertySyntax syntax)

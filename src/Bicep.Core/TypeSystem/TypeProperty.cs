@@ -5,7 +5,7 @@ namespace Bicep.Core.TypeSystem
 {
     public class TypeProperty
     {
-        public TypeProperty(string name, ITypeReference typeReference, TypePropertyFlags flags = TypePropertyFlags.None)
+        public TypeProperty(string name, ITypeReference typeReference, TypePropertyFlags flags)
         {
             this.Name = name;
             this.TypeReference = typeReference;

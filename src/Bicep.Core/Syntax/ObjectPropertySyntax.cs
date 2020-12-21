@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using System;
+using System.Diagnostics;
 using Bicep.Core.Parsing;
 
 namespace Bicep.Core.Syntax
 {
+    [DebuggerDisplay("Property {TryGetKeyText()}")]
     public class ObjectPropertySyntax : ExpressionSyntax
     {
         public ObjectPropertySyntax(SyntaxBase key, SyntaxBase colon, SyntaxBase value)
