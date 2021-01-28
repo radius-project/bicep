@@ -53,10 +53,37 @@ namespace Bicep.Core.TypeSystem.Applications
             additionalPropertiesType: LanguageConstants.Any,
             additionalPropertiesFlags: TypePropertyFlags.None);
 
+        public static readonly NamedObjectType IngressTraitPropertiesType = new NamedObjectType(
+            "radius.dev/Ingress@v1alpha1 properties",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new[]
+            {
+                new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.Required),
+                new TypeProperty("service", LanguageConstants.String, TypePropertyFlags.Required),
+            },
+            additionalPropertiesType: LanguageConstants.Any,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
+        public static readonly StringLiteralType IngressTraitKindType = new StringLiteralType("radius.dev/Ingress@v1alpha1");
+
+        public static readonly NamedObjectType IngressTraitType = new NamedObjectType(
+            "radius.dev/Ingress@v1alpha",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new[]
+            {
+                new TypeProperty("kind", IngressTraitKindType, TypePropertyFlags.Required),
+                new TypeProperty("properties", IngressTraitPropertiesType, TypePropertyFlags.Required),
+            },
+            additionalPropertiesType: LanguageConstants.Any,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
+        
+
         public static readonly DiscriminatedObjectType TraitType = new DiscriminatedObjectType("trait", TypeSymbolValidationFlags.WarnOnTypeMismatch, "kind", new[] 
         { 
             ManualScalerTraitType,
             DaprTraitType, 
+            IngressTraitType,
         });
 
         public static readonly TypedArrayType TraitArrayType = new TypedArrayType(TraitType, TypeSymbolValidationFlags.Default);

@@ -18,6 +18,9 @@ namespace Bicep.Core.TypeSystem.Applications
                 ComponentTypeReference.Parse("oam.dev/Container@v1alpha1"),
                 KnownTypes.MakeContainer());
             types.Add(
+                ComponentTypeReference.Parse("radius.dev/Container@v1alpha1"),
+                KnownTypes.MakeContainer());
+            types.Add(
                 ComponentTypeReference.Parse("azure.com/Function@v1alpha1"),
                 KnownTypes.MakeFunction());
             types.Add(
@@ -25,6 +28,9 @@ namespace Bicep.Core.TypeSystem.Applications
                 KnownTypes.MakeWebApp());
             types.Add(
                 ComponentTypeReference.Parse("dapr.io/Component@v1alpha1"),
+                KnownTypes.MakeDaprComponent());
+            types.Add(
+                ComponentTypeReference.Parse("dapr.io/StateStore@v1alpha1"),
                 KnownTypes.MakeDaprComponent());
             types.Add(
                 ComponentTypeReference.Parse("core.oam.dev/ContainerizedWorkload@v1alpha3"),

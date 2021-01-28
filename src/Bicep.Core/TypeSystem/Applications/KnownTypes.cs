@@ -200,6 +200,44 @@ namespace Bicep.Core.TypeSystem.Applications
                 additionalPropertiesFlags: TypePropertyFlags.None);
         }
 
+        public static NamedObjectType MakeDaprStateStore()
+        {
+            var configProperty = new TypeProperty("config", LanguageConstants.Object);
+
+            var propertiesType = new NamedObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    configProperty,
+                    CommonProperties.ComponentDependsOn,
+                    CommonProperties.Provides,
+                    CommonProperties.Traits,
+                    CommonProperties.Scopes,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            return new NamedObjectType(
+                name: ComponentType.FullyQualifiedTypeName,
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    CommonProperties.Type,
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    CommonProperties.Application,
+                    CommonProperties.Kind,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+        }
+
         public static NamedObjectType MakeContainerizedWorkload()
         {
             var propertiesType = new NamedObjectType(
