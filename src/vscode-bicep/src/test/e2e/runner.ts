@@ -5,7 +5,6 @@ import * as path from "path";
 // eslint-disable-next-line jest/no-jest-import
 import { runCLI } from "jest";
 import { WriteStream } from "tty";
-import { RevealOutputChannelOn } from "vscode-languageclient";
 
 // https://github.com/microsoft/vscode/blob/87dd7d6a9c2f5fcc2bf3abe555fee79fbbde34bb/src/vs/workbench/api/common/extHostExtensionService.ts#L44
 export type TestRunner = () => Promise<void>;
