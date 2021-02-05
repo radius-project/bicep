@@ -27,7 +27,7 @@ async function go() {
       );
     }
 
-    const vscodeVersionsToVerify = [minSupportedVSCodeSemver.version, "stable"];
+    const vscodeVersionsToVerify = ["stable"];
 
     for (const vscodeVersion of vscodeVersionsToVerify) {
       console.log(`Running tests against VSCode-${vscodeVersion}`);
