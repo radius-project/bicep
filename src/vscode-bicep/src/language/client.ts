@@ -11,13 +11,9 @@ import {
   parseError,
 } from "vscode-azureextensionui";
 import { ErrorAction, Message, CloseAction } from "vscode-languageclient/node";
-<<<<<<< HEAD
-=======
-import { SemanticTokensFeature } from "vscode-languageclient/lib/common/semanticTokens";
 import { Uri } from "vscode";
 import { Module, render } from "viz.js/full.render.js";
 import Viz = require("viz.js");
->>>>>>> Implement OAM diagrams
 
 const dotnetRuntimeVersion = "5.0";
 const packagedServerPath = "bicepLanguageServer/Bicep.LangServer.dll";
