@@ -2603,6 +2603,34 @@
     }
   },
   {
+    "label": "propertyLoopsCannotNest",
+    "kind": "interface",
+    "detail": "propertyLoopsCannotNest",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_propertyLoopsCannotNest",
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "propertyLoopsCannotNest"
+    }
+  },
+  {
+    "label": "propertyLoopsCannotNest2",
+    "kind": "interface",
+    "detail": "propertyLoopsCannotNest2",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_propertyLoopsCannotNest2",
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "propertyLoopsCannotNest2"
+    }
+  },
+  {
     "label": "providers",
     "kind": "function",
     "detail": "providers()",
@@ -3358,6 +3386,20 @@
     },
     "command": {
       "command": "editor.action.triggerParameterHints"
+    }
+  },
+  {
+    "label": "stuffs",
+    "kind": "interface",
+    "detail": "stuffs",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_stuffs",
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "stuffs"
     }
   },
   {

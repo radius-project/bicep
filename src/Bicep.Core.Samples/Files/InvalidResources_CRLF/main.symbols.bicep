@@ -1115,6 +1115,75 @@ resource nonexistentArrays 'Microsoft.Network/virtualNetworks@2020-06-01' = [for
   }
 }]
 
+// property loops cannot be nested
+resource propertyLoopsCannotNest 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[87:94) Local account. Type: any. Declaration start char: 87, length: 7
+//@[9:32) Resource propertyLoopsCannotNest. Type: Microsoft.Storage/storageAccounts@2019-06-01[]. Declaration start char: 0, length: 428
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+
+    networkAcls: {
+      virtualNetworkRules: [for rule in []: {
+//@[32:36) Local rule. Type: any. Declaration start char: 32, length: 4
+        id: '${account.name}-${account.location}'
+        state: [for lol in []: 4]
+//@[20:23) Local lol. Type: any. Declaration start char: 20, length: 3
+      }]
+    }
+  }
+}]
+
+// property loops cannot be nested (even more nesting)
+resource propertyLoopsCannotNest2 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[88:95) Local account. Type: any. Declaration start char: 88, length: 7
+//@[9:33) Resource propertyLoopsCannotNest2. Type: Microsoft.Storage/storageAccounts@2019-06-01[]. Declaration start char: 0, length: 487
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+
+    networkAcls: {
+      virtualNetworkRules: [for rule in []: {
+//@[32:36) Local rule. Type: any. Declaration start char: 32, length: 4
+        id: '${account.name}-${account.location}'
+        state: [for state in []: {
+//@[20:25) Local state. Type: any. Declaration start char: 20, length: 5
+          fake: [for something in []: true]
+//@[21:30) Local something. Type: any. Declaration start char: 21, length: 9
+        }]
+      }]
+    }
+  }
+}]
+
+// loops cannot be used inside of expressions
+resource stuffs 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[70:77) Local account. Type: any. Declaration start char: 70, length: 7
+//@[9:15) Resource stuffs. Type: Microsoft.Storage/storageAccounts@2019-06-01[]. Declaration start char: 0, length: 381
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    networkAcls: {
+      virtualNetworkRules: concat([for lol in []: {
+//@[39:42) Local lol. Type: any. Declaration start char: 39, length: 3
+        id: '${account.name}-${account.location}'
+      }])
+    }
+  }
+}]
+
 /*
   valid loop cases - this should be moved to Resources_* test case after codegen works
 */ 

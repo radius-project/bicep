@@ -3996,6 +3996,344 @@ resource nonexistentArrays 'Microsoft.Network/virtualNetworks@2020-06-01' = [for
 //@[1:2) RightSquare |]|
 //@[2:6) NewLine |\r\n\r\n|
 
+// property loops cannot be nested
+//@[34:36) NewLine |\r\n|
+resource propertyLoopsCannotNest 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[0:8) Identifier |resource|
+//@[9:32) Identifier |propertyLoopsCannotNest|
+//@[33:79) StringComplete |'Microsoft.Storage/storageAccounts@2019-06-01'|
+//@[80:81) Assignment |=|
+//@[82:83) LeftSquare |[|
+//@[83:86) Identifier |for|
+//@[87:94) Identifier |account|
+//@[95:97) Identifier |in|
+//@[98:113) Identifier |storageAccounts|
+//@[113:114) Colon |:|
+//@[115:116) LeftBrace |{|
+//@[116:118) NewLine |\r\n|
+  name: account.name
+//@[2:6) Identifier |name|
+//@[6:7) Colon |:|
+//@[8:15) Identifier |account|
+//@[15:16) Dot |.|
+//@[16:20) Identifier |name|
+//@[20:22) NewLine |\r\n|
+  location: account.location
+//@[2:10) Identifier |location|
+//@[10:11) Colon |:|
+//@[12:19) Identifier |account|
+//@[19:20) Dot |.|
+//@[20:28) Identifier |location|
+//@[28:30) NewLine |\r\n|
+  sku: {
+//@[2:5) Identifier |sku|
+//@[5:6) Colon |:|
+//@[7:8) LeftBrace |{|
+//@[8:10) NewLine |\r\n|
+    name: 'Standard_LRS'
+//@[4:8) Identifier |name|
+//@[8:9) Colon |:|
+//@[10:24) StringComplete |'Standard_LRS'|
+//@[24:26) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+  kind: 'StorageV2'
+//@[2:6) Identifier |kind|
+//@[6:7) Colon |:|
+//@[8:19) StringComplete |'StorageV2'|
+//@[19:21) NewLine |\r\n|
+  properties: {
+//@[2:12) Identifier |properties|
+//@[12:13) Colon |:|
+//@[14:15) LeftBrace |{|
+//@[15:19) NewLine |\r\n\r\n|
+
+    networkAcls: {
+//@[4:15) Identifier |networkAcls|
+//@[15:16) Colon |:|
+//@[17:18) LeftBrace |{|
+//@[18:20) NewLine |\r\n|
+      virtualNetworkRules: [for rule in []: {
+//@[6:25) Identifier |virtualNetworkRules|
+//@[25:26) Colon |:|
+//@[27:28) LeftSquare |[|
+//@[28:31) Identifier |for|
+//@[32:36) Identifier |rule|
+//@[37:39) Identifier |in|
+//@[40:41) LeftSquare |[|
+//@[41:42) RightSquare |]|
+//@[42:43) Colon |:|
+//@[44:45) LeftBrace |{|
+//@[45:47) NewLine |\r\n|
+        id: '${account.name}-${account.location}'
+//@[8:10) Identifier |id|
+//@[10:11) Colon |:|
+//@[12:15) StringLeftPiece |'${|
+//@[15:22) Identifier |account|
+//@[22:23) Dot |.|
+//@[23:27) Identifier |name|
+//@[27:31) StringMiddlePiece |}-${|
+//@[31:38) Identifier |account|
+//@[38:39) Dot |.|
+//@[39:47) Identifier |location|
+//@[47:49) StringRightPiece |}'|
+//@[49:51) NewLine |\r\n|
+        state: [for lol in []: 4]
+//@[8:13) Identifier |state|
+//@[13:14) Colon |:|
+//@[15:16) LeftSquare |[|
+//@[16:19) Identifier |for|
+//@[20:23) Identifier |lol|
+//@[24:26) Identifier |in|
+//@[27:28) LeftSquare |[|
+//@[28:29) RightSquare |]|
+//@[29:30) Colon |:|
+//@[31:32) Integer |4|
+//@[32:33) RightSquare |]|
+//@[33:35) NewLine |\r\n|
+      }]
+//@[6:7) RightBrace |}|
+//@[7:8) RightSquare |]|
+//@[8:10) NewLine |\r\n|
+    }
+//@[4:5) RightBrace |}|
+//@[5:7) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+}]
+//@[0:1) RightBrace |}|
+//@[1:2) RightSquare |]|
+//@[2:6) NewLine |\r\n\r\n|
+
+// property loops cannot be nested (even more nesting)
+//@[54:56) NewLine |\r\n|
+resource propertyLoopsCannotNest2 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[0:8) Identifier |resource|
+//@[9:33) Identifier |propertyLoopsCannotNest2|
+//@[34:80) StringComplete |'Microsoft.Storage/storageAccounts@2019-06-01'|
+//@[81:82) Assignment |=|
+//@[83:84) LeftSquare |[|
+//@[84:87) Identifier |for|
+//@[88:95) Identifier |account|
+//@[96:98) Identifier |in|
+//@[99:114) Identifier |storageAccounts|
+//@[114:115) Colon |:|
+//@[116:117) LeftBrace |{|
+//@[117:119) NewLine |\r\n|
+  name: account.name
+//@[2:6) Identifier |name|
+//@[6:7) Colon |:|
+//@[8:15) Identifier |account|
+//@[15:16) Dot |.|
+//@[16:20) Identifier |name|
+//@[20:22) NewLine |\r\n|
+  location: account.location
+//@[2:10) Identifier |location|
+//@[10:11) Colon |:|
+//@[12:19) Identifier |account|
+//@[19:20) Dot |.|
+//@[20:28) Identifier |location|
+//@[28:30) NewLine |\r\n|
+  sku: {
+//@[2:5) Identifier |sku|
+//@[5:6) Colon |:|
+//@[7:8) LeftBrace |{|
+//@[8:10) NewLine |\r\n|
+    name: 'Standard_LRS'
+//@[4:8) Identifier |name|
+//@[8:9) Colon |:|
+//@[10:24) StringComplete |'Standard_LRS'|
+//@[24:26) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+  kind: 'StorageV2'
+//@[2:6) Identifier |kind|
+//@[6:7) Colon |:|
+//@[8:19) StringComplete |'StorageV2'|
+//@[19:21) NewLine |\r\n|
+  properties: {
+//@[2:12) Identifier |properties|
+//@[12:13) Colon |:|
+//@[14:15) LeftBrace |{|
+//@[15:19) NewLine |\r\n\r\n|
+
+    networkAcls: {
+//@[4:15) Identifier |networkAcls|
+//@[15:16) Colon |:|
+//@[17:18) LeftBrace |{|
+//@[18:20) NewLine |\r\n|
+      virtualNetworkRules: [for rule in []: {
+//@[6:25) Identifier |virtualNetworkRules|
+//@[25:26) Colon |:|
+//@[27:28) LeftSquare |[|
+//@[28:31) Identifier |for|
+//@[32:36) Identifier |rule|
+//@[37:39) Identifier |in|
+//@[40:41) LeftSquare |[|
+//@[41:42) RightSquare |]|
+//@[42:43) Colon |:|
+//@[44:45) LeftBrace |{|
+//@[45:47) NewLine |\r\n|
+        id: '${account.name}-${account.location}'
+//@[8:10) Identifier |id|
+//@[10:11) Colon |:|
+//@[12:15) StringLeftPiece |'${|
+//@[15:22) Identifier |account|
+//@[22:23) Dot |.|
+//@[23:27) Identifier |name|
+//@[27:31) StringMiddlePiece |}-${|
+//@[31:38) Identifier |account|
+//@[38:39) Dot |.|
+//@[39:47) Identifier |location|
+//@[47:49) StringRightPiece |}'|
+//@[49:51) NewLine |\r\n|
+        state: [for state in []: {
+//@[8:13) Identifier |state|
+//@[13:14) Colon |:|
+//@[15:16) LeftSquare |[|
+//@[16:19) Identifier |for|
+//@[20:25) Identifier |state|
+//@[26:28) Identifier |in|
+//@[29:30) LeftSquare |[|
+//@[30:31) RightSquare |]|
+//@[31:32) Colon |:|
+//@[33:34) LeftBrace |{|
+//@[34:36) NewLine |\r\n|
+          fake: [for something in []: true]
+//@[10:14) Identifier |fake|
+//@[14:15) Colon |:|
+//@[16:17) LeftSquare |[|
+//@[17:20) Identifier |for|
+//@[21:30) Identifier |something|
+//@[31:33) Identifier |in|
+//@[34:35) LeftSquare |[|
+//@[35:36) RightSquare |]|
+//@[36:37) Colon |:|
+//@[38:42) TrueKeyword |true|
+//@[42:43) RightSquare |]|
+//@[43:45) NewLine |\r\n|
+        }]
+//@[8:9) RightBrace |}|
+//@[9:10) RightSquare |]|
+//@[10:12) NewLine |\r\n|
+      }]
+//@[6:7) RightBrace |}|
+//@[7:8) RightSquare |]|
+//@[8:10) NewLine |\r\n|
+    }
+//@[4:5) RightBrace |}|
+//@[5:7) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+}]
+//@[0:1) RightBrace |}|
+//@[1:2) RightSquare |]|
+//@[2:6) NewLine |\r\n\r\n|
+
+// loops cannot be used inside of expressions
+//@[45:47) NewLine |\r\n|
+resource stuffs 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+//@[0:8) Identifier |resource|
+//@[9:15) Identifier |stuffs|
+//@[16:62) StringComplete |'Microsoft.Storage/storageAccounts@2019-06-01'|
+//@[63:64) Assignment |=|
+//@[65:66) LeftSquare |[|
+//@[66:69) Identifier |for|
+//@[70:77) Identifier |account|
+//@[78:80) Identifier |in|
+//@[81:96) Identifier |storageAccounts|
+//@[96:97) Colon |:|
+//@[98:99) LeftBrace |{|
+//@[99:101) NewLine |\r\n|
+  name: account.name
+//@[2:6) Identifier |name|
+//@[6:7) Colon |:|
+//@[8:15) Identifier |account|
+//@[15:16) Dot |.|
+//@[16:20) Identifier |name|
+//@[20:22) NewLine |\r\n|
+  location: account.location
+//@[2:10) Identifier |location|
+//@[10:11) Colon |:|
+//@[12:19) Identifier |account|
+//@[19:20) Dot |.|
+//@[20:28) Identifier |location|
+//@[28:30) NewLine |\r\n|
+  sku: {
+//@[2:5) Identifier |sku|
+//@[5:6) Colon |:|
+//@[7:8) LeftBrace |{|
+//@[8:10) NewLine |\r\n|
+    name: 'Standard_LRS'
+//@[4:8) Identifier |name|
+//@[8:9) Colon |:|
+//@[10:24) StringComplete |'Standard_LRS'|
+//@[24:26) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+  kind: 'StorageV2'
+//@[2:6) Identifier |kind|
+//@[6:7) Colon |:|
+//@[8:19) StringComplete |'StorageV2'|
+//@[19:21) NewLine |\r\n|
+  properties: {
+//@[2:12) Identifier |properties|
+//@[12:13) Colon |:|
+//@[14:15) LeftBrace |{|
+//@[15:17) NewLine |\r\n|
+    networkAcls: {
+//@[4:15) Identifier |networkAcls|
+//@[15:16) Colon |:|
+//@[17:18) LeftBrace |{|
+//@[18:20) NewLine |\r\n|
+      virtualNetworkRules: concat([for lol in []: {
+//@[6:25) Identifier |virtualNetworkRules|
+//@[25:26) Colon |:|
+//@[27:33) Identifier |concat|
+//@[33:34) LeftParen |(|
+//@[34:35) LeftSquare |[|
+//@[35:38) Identifier |for|
+//@[39:42) Identifier |lol|
+//@[43:45) Identifier |in|
+//@[46:47) LeftSquare |[|
+//@[47:48) RightSquare |]|
+//@[48:49) Colon |:|
+//@[50:51) LeftBrace |{|
+//@[51:53) NewLine |\r\n|
+        id: '${account.name}-${account.location}'
+//@[8:10) Identifier |id|
+//@[10:11) Colon |:|
+//@[12:15) StringLeftPiece |'${|
+//@[15:22) Identifier |account|
+//@[22:23) Dot |.|
+//@[23:27) Identifier |name|
+//@[27:31) StringMiddlePiece |}-${|
+//@[31:38) Identifier |account|
+//@[38:39) Dot |.|
+//@[39:47) Identifier |location|
+//@[47:49) StringRightPiece |}'|
+//@[49:51) NewLine |\r\n|
+      }])
+//@[6:7) RightBrace |}|
+//@[7:8) RightSquare |]|
+//@[8:9) RightParen |)|
+//@[9:11) NewLine |\r\n|
+    }
+//@[4:5) RightBrace |}|
+//@[5:7) NewLine |\r\n|
+  }
+//@[2:3) RightBrace |}|
+//@[3:5) NewLine |\r\n|
+}]
+//@[0:1) RightBrace |}|
+//@[1:2) RightSquare |]|
+//@[2:6) NewLine |\r\n\r\n|
+
 /*
   valid loop cases - this should be moved to Resources_* test case after codegen works
 */ 
