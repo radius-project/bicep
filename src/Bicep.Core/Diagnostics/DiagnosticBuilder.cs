@@ -792,7 +792,7 @@ namespace Bicep.Core.Diagnostics
             public ErrorDiagnostic LoopsNotSupported() => new(
                 TextSpan,
                 "BCP138",
-                "For-expressions are not supported in this context. For-expressions are only allowed in resource and module declarations.");
+                "For-expressions are not supported in this context. For-expressions may be used as values of resource and module declarations or as values of resource and module properties.");
 
             public ErrorDiagnostic TooManyPropertyLoops() => new(
                 TextSpan,

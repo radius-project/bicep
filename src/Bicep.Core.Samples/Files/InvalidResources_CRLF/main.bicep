@@ -900,6 +900,63 @@ resource nonexistentArrays 'Microsoft.Network/virtualNetworks@2020-06-01' = [for
   }
 }]
 
+// property loops cannot be nested
+resource propertyLoopsCannotNest 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+
+    networkAcls: {
+      virtualNetworkRules: [for rule in []: {
+        id: '${account.name}-${account.location}'
+        state: [for lol in []: 4]
+      }]
+    }
+  }
+}]
+
+// property loops cannot be nested (even more nesting)
+resource propertyLoopsCannotNest2 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+
+    networkAcls: {
+      virtualNetworkRules: [for rule in []: {
+        id: '${account.name}-${account.location}'
+        state: [for state in []: {
+          fake: [for something in []: true]
+        }]
+      }]
+    }
+  }
+}]
+
+// loops cannot be used inside of expressions
+resource stuffs 'Microsoft.Storage/storageAccounts@2019-06-01' = [for account in storageAccounts: {
+  name: account.name
+  location: account.location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    networkAcls: {
+      virtualNetworkRules: concat([for lol in []: {
+        id: '${account.name}-${account.location}'
+      }])
+    }
+  }
+}]
+
 /*
   valid loop cases - this should be moved to Resources_* test case after codegen works
 */ 

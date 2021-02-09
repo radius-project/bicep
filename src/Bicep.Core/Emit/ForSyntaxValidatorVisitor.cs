@@ -61,9 +61,9 @@ namespace Bicep.Core.Emit
 
         private LoopValidationItem CreateValidationItem(ForSyntax syntax)
         {
-            var currentPropertyLoopCount = this.loopParents.TryPeek(out var lastStatus)
-                ? lastStatus.PropertyLoopCount
-                : 0;
+            var (lastParentValid, lastPropertyLoopCount) = this.loopParents.TryPeek(out var lastStatus)
+                ? (lastStatus.IsValidParent, lastStatus.PropertyLoopCount)
+                : (true, 0);
 
             var parent = this.semanticModel.SyntaxTree.Hierarchy.GetParent(syntax);
 
@@ -73,14 +73,14 @@ namespace Bicep.Core.Emit
                 // loops are allowed in top-level module/resource values
                 case ResourceDeclarationSyntax resource when ReferenceEquals(resource.Value, syntax):
                 case ModuleDeclarationSyntax module when ReferenceEquals(module.Value, syntax):
-                    return new LoopValidationItem(parent, true, currentPropertyLoopCount);
+                    return new LoopValidationItem(parent, lastParentValid, lastPropertyLoopCount);
 
                 // loops are generally allowed in property values
                 case ObjectPropertySyntax property when ReferenceEquals(property.Value, syntax):
-                    return new LoopValidationItem(parent, true, currentPropertyLoopCount + 1);
+                    return new LoopValidationItem(parent, lastParentValid, lastPropertyLoopCount + 1);
 
                 default:
-                    return new LoopValidationItem(parent, false, currentPropertyLoopCount);
+                    return new LoopValidationItem(parent, false, lastPropertyLoopCount);
             }
         }
 
