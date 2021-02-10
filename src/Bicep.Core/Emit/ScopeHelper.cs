@@ -312,21 +312,29 @@ namespace Bicep.Core.Emit
 
         public static ImmutableDictionary<ModuleSymbol, ScopeData> GetModuleScopeInfo(SemanticModel semanticModel, IDiagnosticWriter diagnosticWriter)
         {
-            void logInvalidScopeDiagnostic(IPositionable positionable, ResourceScope suppliedScope, ResourceScope supportedScopes)
+            void LogInvalidScopeDiagnostic(IPositionable positionable, ResourceScope suppliedScope, ResourceScope supportedScopes)
                 => diagnosticWriter.Write(positionable, x => x.UnsupportedModuleScope(suppliedScope, supportedScopes));
+
+            ModuleType? GetModuleType(ModuleSymbol symbol) => symbol.Type switch
+            {
+                ModuleType moduleType => moduleType,
+                ArrayType {Item: ModuleType moduleType} => moduleType,
+                _ => null
+            };
 
             var scopeInfo = new Dictionary<ModuleSymbol, ScopeData>();
 
             foreach (var moduleSymbol in semanticModel.Root.ModuleDeclarations)
             {
-                if (moduleSymbol.Type is not ModuleType moduleType)
+                var moduleType = GetModuleType(moduleSymbol);
+                if (moduleType is null)
                 {
                     // missing type should be caught during type validation
                     continue;
                 }
 
                 var scopeProperty = moduleSymbol.SafeGetBodyProperty(LanguageConstants.ResourceScopePropertyName);
-                var scopeData = ScopeHelper.ValidateScope(semanticModel, logInvalidScopeDiagnostic, moduleType.ValidParentScopes, moduleSymbol.DeclaringModule.Value, scopeProperty);
+                var scopeData = ScopeHelper.ValidateScope(semanticModel, LogInvalidScopeDiagnostic, moduleType.ValidParentScopes, moduleSymbol.DeclaringModule.Value, scopeProperty);
 
                 if (scopeData is null)
                 {
