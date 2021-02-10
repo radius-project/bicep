@@ -34,7 +34,17 @@
       "id": "[resourceId('My.Rp/typeA/typeB', split(format('{0}/myName', 'resourceA'), '/')[0], split(format('{0}/myName', 'resourceA'), '/')[1])]"
     },
     "setResourceCRef": true,
-    "myInterpKey": "abc"
+    "myInterpKey": "abc",
+    "storageAccounts": [
+      {
+        "name": "one",
+        "location": "eastus2"
+      },
+      {
+        "name": "two",
+        "location": "westus"
+      }
+    ]
   },
   "resources": [
     {
@@ -300,6 +310,20 @@
       "scope": "[extensionResourceId(extensionResourceId(resourceId('Microsoft.Compute/virtualMachines', 'vmName'), 'My.Rp/extensionResource', 'extension'), 'Mock.Rp/existingExtensionResource', 'existing1')]",
       "name": "extension3",
       "dependsOn": []
+    },
+    {
+      "copy": {
+        "name": "storageResources",
+        "count": "[length(variables('storageAccounts'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('storageAccounts')[copyIndex()].name]",
+      "location": "[variables('storageAccounts')[copyIndex()].location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2"
     }
   ],
   "outputs": {

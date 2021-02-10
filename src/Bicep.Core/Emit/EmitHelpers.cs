@@ -14,17 +14,34 @@ namespace Bicep.Core.Emit
         /// </summary>
         /// <param name="resourceSymbol">The resource symbol</param>
         /// <exception cref="ArgumentException">If the resource symbol is not for a valid resource type.</exception>
-        public static ResourceTypeReference GetTypeReference(ResourceSymbol resourceSymbol)
+        public static ResourceTypeReference GetSingleResourceTypeReference(ResourceSymbol resourceSymbol)
         {
             // TODO: come up with safety mechanism to ensure type checking has already occurred
-            if (!(resourceSymbol.Type is ResourceType resourceType))
+            if (resourceSymbol.Type is ResourceType resourceType)
             {
-                // throw here because the semantic model should be completely valid at this point
-                // (it's a code defect if it some errors were not emitted)
-                throw new ArgumentException($"Resource symbol does not have a valid type (found {resourceSymbol.Type.Name})");
+                return resourceType.TypeReference;
             }
 
-            return resourceType.TypeReference;
+            // throw here because the semantic model should be completely valid at this point
+            // (it's a code defect if it some errors were not emitted)
+            throw new ArgumentException($"Resource symbol does not have a valid type (found {resourceSymbol.Type.Name})");
+        }
+
+        /// <summary>
+        /// Gets the resource type reference from a resource collection, assuming it has already been type-checked.
+        /// </summary>
+        /// <param name="resourceSymbol">The resource symbol</param>
+        /// <exception cref="ArgumentException">If the resource symbol is not for a valid resource type.</exception>
+        public static ResourceTypeReference GetResourceCollectionTypeReference(ResourceSymbol resourceSymbol)
+        {
+            if (resourceSymbol.Type is ArrayType {Item: ResourceType resourceType})
+            {
+                return resourceType.TypeReference;
+            }
+
+            // throw here because the semantic model should be completely valid at this point
+            // (it's a code defect if it some errors were not emitted)
+            throw new ArgumentException($"Resource collection symbol does not have a valid type (found {resourceSymbol.Type.Name})");
         }
     }
 }

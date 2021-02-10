@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Azure.Deployments.Expression.Expressions;
 using Bicep.Core.Extensions;
+using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
@@ -237,7 +238,6 @@ namespace Bicep.Core.Emit
 
         private void EmitVariable(VariableSymbol variableSymbol)
         {
-            // TODO: When we have expressions, only expressions without runtime functions can be emitted this way. Everything else will need to be inlined.
             this.emitter.EmitExpression(variableSymbol.Value);
         }
 
@@ -268,12 +268,25 @@ namespace Bicep.Core.Emit
         {
             writer.WriteStartObject();
 
-            var typeReference = EmitHelpers.GetTypeReference(resourceSymbol);
-            var body = resourceSymbol.DeclaringResource.Value;
+            ResourceTypeReference? typeReference;
+            SyntaxBase body = resourceSymbol.DeclaringResource.Value;
             if (body is IfConditionSyntax ifCondition)
             {
                 body = ifCondition.Body;
+                typeReference = EmitHelpers.GetSingleResourceTypeReference(resourceSymbol);
+
                 this.emitter.EmitProperty("condition", ifCondition.ConditionExpression);
+            }
+            else if (body is ForSyntax @for)
+            {
+                body = @for.Body;
+                typeReference = EmitHelpers.GetResourceCollectionTypeReference(resourceSymbol);
+
+                this.EmitResourceCopyProperty(resourceSymbol.Name, @for);
+            }
+            else
+            {
+                typeReference = EmitHelpers.GetSingleResourceTypeReference(resourceSymbol);
             }
 
             this.emitter.EmitProperty("type", typeReference.FullyQualifiedType);
@@ -289,6 +302,25 @@ namespace Bicep.Core.Emit
             this.EmitDependsOn(resourceSymbol);
 
             writer.WriteEndObject();
+        }
+
+        private void EmitResourceCopyProperty(string name, ForSyntax syntax)
+        {
+            this.emitter.EmitProperty("copy", () =>
+            {
+                writer.WriteStartObject();
+
+                this.emitter.EmitProperty("name", name);
+
+                // construct the length ARM expression from the Bicep array expression
+                // type check has already ensured that the array expression is an array
+                this.emitter.EmitTransformedProperty(
+                    "count",
+                    syntax.Expression,
+                    arrayExpression => new FunctionExpression("length", new[] {arrayExpression}, Array.Empty<LanguageExpression>()));
+
+                writer.WriteEndObject();
+            });
         }
 
         private void EmitModuleParameters(ModuleSymbol moduleSymbol)
@@ -328,10 +360,19 @@ namespace Bicep.Core.Emit
             writer.WriteStartObject();
 
             var body = moduleSymbol.DeclaringModule.Value;
-            if (body is IfConditionSyntax ifCondition)
+            switch (body)
             {
-                body = ifCondition.Body;
-                this.emitter.EmitProperty("condition", ifCondition.ConditionExpression);
+                case IfConditionSyntax ifCondition:
+                    body = ifCondition.Body;
+                    this.emitter.EmitProperty("condition", ifCondition.ConditionExpression);
+
+                    break;
+
+                case ForSyntax @for:
+                    body = @for.Body;
+                    this.EmitResourceCopyProperty(moduleSymbol.Name, @for);
+
+                    break;
             }
 
             this.emitter.EmitProperty("type", NestedDeploymentResourceType);

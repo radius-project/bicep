@@ -189,6 +189,16 @@ namespace Bicep.Core.Emit
                 writer.WriteValue(propertyValue);
             });
 
+        public void EmitTransformedProperty(string name, SyntaxBase value, Func<LanguageExpression, LanguageExpression> convertedValueTransform)
+            => EmitPropertyInternal(new JTokenExpression(name), () =>
+            {
+                var converted = converter.ConvertExpression(value);
+                var transformed = convertedValueTransform(converted);
+                var serialized = ExpressionSerializer.SerializeExpression(transformed);
+                
+                this.writer.WriteValue(serialized);
+            });
+
         public void EmitProperty(string name, Action valueFunc)
             => EmitPropertyInternal(new JTokenExpression(name), valueFunc);
 
