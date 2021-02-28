@@ -44,7 +44,7 @@ namespace Bicep.Core.Semantics
             {
                 var name = new CompoundName(new[]
                 {
-                    new CompoundName.Segment("oam"),
+                    new CompoundName.Segment("radius"),
                     new CompoundName.Segment(kvp.Key),
                 });
 
@@ -64,7 +64,7 @@ namespace Bicep.Core.Semantics
             {
                 var name = new CompoundName(new[]
                 {
-                    new CompoundName.Segment("oam"),
+                    new CompoundName.Segment("radius"),
                     new CompoundName.Segment(kvp.Key.Item1),
                     new CompoundName.Segment(kvp.Key.Item2),
                 });
@@ -78,7 +78,7 @@ namespace Bicep.Core.Semantics
                     ComponentPropertiesToOmit, 
                     new []
                     {
-                        new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("oam"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
+                        new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("radius"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
                     });
                 resources.Add(component);
             }
@@ -88,7 +88,7 @@ namespace Bicep.Core.Semantics
             {
                 var name = new CompoundName(new[]
                 {
-                    new CompoundName.Segment("oam"),
+                    new CompoundName.Segment("radius"),
                     new CompoundName.Segment(kvp.Key.Item1),
                     new CompoundName.Segment(kvp.Key.Item2),
                 });
@@ -102,7 +102,7 @@ namespace Bicep.Core.Semantics
                     DeploymentPropertiesToOmit, 
                     new []
                     {
-                        new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("oam"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
+                        new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("radius"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
                     });
                 resources.Add(deployment);
             }
@@ -119,7 +119,7 @@ namespace Bicep.Core.Semantics
                             EmitHelpers.GetTypeReference(kvp.Value),
                             new CompoundName(new[]
                             {
-                                new CompoundName.Segment("oam"),
+                                new CompoundName.Segment("radius"),
                                 new CompoundName.Segment(kvp.Key.Item1),
                                 new CompoundName.Segment(kvp.Key.Item2),
                             }),
@@ -128,20 +128,20 @@ namespace Bicep.Core.Semantics
                             ComponentPropertiesToOmit, 
                             new []
                             {
-                                new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("oam"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
+                                new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("radius"), new CompoundName.Segment(kvp.Key.Item1),}), ApplicationType.ResourceType),
                             });
                         resources.Add(component);
                         references.Add(new ResourceReference(component.Name, component.ResourceType));
                     }
 
-                    references.Add(new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("oam"), new CompoundName.Segment(group.Key),}), ApplicationType.ResourceType));
+                    references.Add(new ResourceReference(new CompoundName(new[]{new CompoundName.Segment("radius"), new CompoundName.Segment(group.Key),}), ApplicationType.ResourceType));
                     var body = SynthesizeDeployment(group);
                     var deployment = new ProjectedResource(
                         null,
                         DeploymentType.ResourceType,
                         new CompoundName(new[]
                         {
-                            new CompoundName.Segment("oam"),
+                            new CompoundName.Segment("radius"),
                             new CompoundName.Segment(group.Key),
                             new CompoundName.Segment("implicit"),
                         }),

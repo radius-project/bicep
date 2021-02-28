@@ -6,7 +6,7 @@ namespace Bicep.Core.TypeSystem.Applications
     internal static class CommonTraits
     {
         public static readonly NamedObjectType ManualScalerPropertiesType = new NamedObjectType(
-            "oam.dev/ManualScaler@v1alpha1 properties",
+            "radius.dev/ManualScaler@v1alpha1 properties",
             validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
             properties: new[]
             {
@@ -15,10 +15,10 @@ namespace Bicep.Core.TypeSystem.Applications
             additionalPropertiesType: LanguageConstants.Any,
             additionalPropertiesFlags: TypePropertyFlags.None);
 
-        public static readonly StringLiteralType ManualScalerKindType = new StringLiteralType("oam.dev/ManualScaler@v1alpha1");
+        public static readonly StringLiteralType ManualScalerKindType = new StringLiteralType("radius.dev/ManualScaler@v1alpha1");
 
         public static readonly NamedObjectType ManualScalerTraitType = new NamedObjectType(
-            "oam.dev/ManualScaler@v1alpha1",
+            "radius.dev/ManualScaler@v1alpha1",
             validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
             properties: new[]
             {

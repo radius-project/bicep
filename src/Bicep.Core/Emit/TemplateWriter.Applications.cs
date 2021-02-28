@@ -24,7 +24,7 @@ namespace Bicep.Core.Emit
             this.emitter.EmitProperty("type", resource.ResourceType.FullyQualifiedType);
             this.emitter.EmitProperty("apiVersion", resource.ResourceType.ApiVersion);
 
-            // rewrite the name property - it needs to be prefixed with "oam/"
+            // rewrite the name property - it needs to be prefixed with "radius/"
             this.emitter.EmitProperty("name", () => this.emitter.EmitResourceName(resource.Name));
             if (resource.Kind != null)
             {

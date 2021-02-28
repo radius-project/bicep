@@ -39,14 +39,14 @@ namespace Bicep.Core.Emit
             var expression = new StringSyntax(
                 new []
                 { 
-                    new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "oam/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
+                    new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "radius/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                     new Token(TokenType.StringRightPiece, new TextSpan(0, 0), "", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                 },
                 new SyntaxBase[]
                 {
                     nameValueSyntax,
                 },
-                new [] { "oam/", "", });
+                new [] { "radius/", "", });
             return ConvertExpression(expression);
         }
 
@@ -118,7 +118,7 @@ namespace Bicep.Core.Emit
                 var expression = new StringSyntax(
                     new []
                     { 
-                        new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "oam/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
+                        new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "radius/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                         new Token(TokenType.StringMiddlePiece, new TextSpan(0, 0), "/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                         new Token(TokenType.StringRightPiece, new TextSpan(0, 0), "", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                     },
@@ -127,7 +127,7 @@ namespace Bicep.Core.Emit
                         applicationValue,
                         namePropertySyntax.Value,
                     },
-                    new [] { "oam/", "/", "", });
+                    new [] { "radius/", "/", "", });
                 return ConvertExpression(expression);
             }
         }
@@ -200,7 +200,7 @@ namespace Bicep.Core.Emit
                 var expression = new StringSyntax(
                     new []
                     { 
-                        new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "oam/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
+                        new Token(TokenType.StringLeftPiece, new TextSpan(0, 0), "radius/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                         new Token(TokenType.StringMiddlePiece, new TextSpan(0, 0), "/", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                         new Token(TokenType.StringRightPiece, new TextSpan(0, 0), "", Array.Empty<SyntaxTrivia>(), Array.Empty<SyntaxTrivia>()),
                     },
@@ -209,7 +209,7 @@ namespace Bicep.Core.Emit
                         applicationValue,
                         namePropertySyntax.Value,
                     },
-                    new [] { "oam/", "/", "", });
+                    new [] { "radius/", "/", "", });
                 return ConvertExpression(expression);
             }
         }

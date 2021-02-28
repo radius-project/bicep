@@ -15,9 +15,6 @@ namespace Bicep.Core.TypeSystem.Applications
         {
             var types = ImmutableDictionary.CreateBuilder<ComponentTypeReference, NamedObjectType>();
             types.Add(
-                ComponentTypeReference.Parse("oam.dev/Container@v1alpha1"),
-                KnownTypes.MakeContainer());
-            types.Add(
                 ComponentTypeReference.Parse("radius.dev/Container@v1alpha1"),
                 KnownTypes.MakeContainer());
             types.Add(
@@ -32,9 +29,6 @@ namespace Bicep.Core.TypeSystem.Applications
             types.Add(
                 ComponentTypeReference.Parse("dapr.io/StateStore@v1alpha1"),
                 KnownTypes.MakeDaprComponent());
-            types.Add(
-                ComponentTypeReference.Parse("core.oam.dev/ContainerizedWorkload@v1alpha3"),
-                KnownTypes.MakeContainerizedWorkload());
 
             knownTypes = types.ToImmutableDictionary();
 

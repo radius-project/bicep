@@ -185,7 +185,7 @@ function configureTelemetry(client: lsp.LanguageClient) {
 }
 
 function registerOamCommand(context: vscode.ExtensionContext, client: lsp.LanguageClient) {
-  const command = vscode.commands.registerCommand("oam.graph", async () => {
+  const command = vscode.commands.registerCommand("radius.graph", async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document.languageId != "bicep") {
       return;
@@ -193,8 +193,8 @@ function registerOamCommand(context: vscode.ExtensionContext, client: lsp.Langua
 
     const contentRoot = path.join(context.extensionPath, "content");
     const panel = vscode.window.createWebviewPanel(
-      "oam",
-      "OAM Application Diagram",
+      "radius",
+      "Radius Application Diagram",
       vscode.ViewColumn.Beside,
       {
         enableFindWidget: true,

@@ -36,15 +36,15 @@
   "homepage": "https://github.com/Azure/bicep/blob/main/README.md",
   "activationEvents": [
     "onLanguage:bicep",
-    "onCommand:oam.graph"
+    "onCommand:radius.graph"
   ],
   "main": "./out/extension",
   "enableProposedApi": true,
   "contributes": {
     "commands": [
       {
-        "command": "oam.graph",
-        "title": "Show OAM Application Diagram"
+        "command": "radius.graph",
+        "title": "Show Radius Application Diagram"
       }
     ],
     "configurationDefaults": {
