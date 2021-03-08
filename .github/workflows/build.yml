@@ -2,326 +2,87 @@ name: Build
 
 on:
   push:
-    tags:
-    - 'latest'
-    - 'v*'
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ radius-compiler ]
 
 jobs:
-  build-bicep:
-    name: 'Build CLI'
-    runs-on: ${{ matrix.os }}
-
-    env:
-      # don't print dotnet logo
-      DOTNET_NOLOGO: true
-
-      # disable telemetry (reduces dotnet tool output in logs)
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-
-    strategy:
-      # let us get failures from other jobs even if one fails
-      fail-fast: false
-
-      matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
-        include:
-        - os: 'windows-latest'
-          rid: 'win-x64'
-          configuration: 'release'
-          publishLanguageServer: 'false'
-        - os: 'ubuntu-latest'
-          rid: 'linux-x64'
-          configuration: 'release'
-          publishLanguageServer: 'true'
-        - os: 'macos-latest'
-          rid: 'osx-x64'
-          configuration: 'release'
-          publishLanguageServer: 'false'
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          submodules: true
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1.7.2
-      
-      - name: Build
-        run: dotnet build --configuration ${{ matrix.configuration }}
-      
-      - name: Test
-        run: dotnet test --configuration ${{ matrix.configuration }} --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings
-
-      - name: Publish Language Server
-        if: ${{ matrix.publishLanguageServer == 'true' }}
-        run: dotnet publish --configuration ${{ matrix.configuration }} ./src/Bicep.LangServer/Bicep.LangServer.csproj
-      
-      - name: Publish Bicep
-        run: dotnet publish --configuration ${{ matrix.configuration }} --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r ${{ matrix.rid }} ./src/Bicep.Cli/Bicep.Cli.csproj
-
-      - name: Run Bicep E2E Tests
-        run: npm ci && npm test
-        env:
-          BICEP_CLI_EXECUTABLE: ../Bicep.Cli/bin/${{ matrix.configuration }}/net5.0/${{ matrix.rid }}/publish/bicep
-        working-directory: ./src/Bicep.Cli.E2eTests
-
-      - name: Upload Language Server
-        uses: actions/upload-artifact@v2
-        if: ${{ matrix.publishLanguageServer == 'true' }}
-        with:
-          name: Bicep.LangServer
-          path: ./src/Bicep.LangServer/bin/${{ matrix.configuration }}/net5.0/publish/*
-      
-      - name: Upload Bicep
-        uses: actions/upload-artifact@v2
-        with:
-          name: bicep-${{ matrix.configuration }}-${{ matrix.rid }}
-          path: ./src/Bicep.Cli/bin/${{ matrix.configuration }}/net5.0/${{ matrix.rid }}/publish/*
-          if-no-files-found: error
-
-      - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1
-        with:
-          flags: dotnet
-
-  build-windows-setup:
-    name: 'Build Windows Setup'
-    runs-on: 'windows-latest'
-    needs: build-bicep
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          submodules: true
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1.7.2
-      
-      - name: Download Bicep CLI
-        uses: actions/download-artifact@v2
-        with:
-          name: bicep-release-win-x64
-          path: ./src/installer-win/bicep
-      
-      - name: Build Windows Installer
-        run: dotnet build --configuration release ./src/installer-win/installer.proj
-      
-      - name: Upload Windows Installer
-        uses: actions/upload-artifact@v2
-        with:
-          name: bicep-setup-win-x64
-          path: ./src/installer-win/bin/release/net46/bicep-setup-win-x64.exe
-
-  build-vsix:
-    name: 'Build VSIX'
-    runs-on: ${{ matrix.os }}
-    needs: build-bicep
-
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     env:
       CI: true
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
-        include:
-        - os: 'windows-latest'
-          rid: 'win-x64'
-        - os: 'ubuntu-latest'
-          rid: 'linux-x64'
-        - os: 'macos-latest'
-          rid: 'osx-x64'
-
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          submodules: true
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        submodules: true
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+      
+    - name: Publish Bicep (Linux)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'linux-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/linux-x64
+    - name: Publish Bicep (MacOS)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'osx-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/macos-x64
+    - name: Publish Bicep (Windows)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'win-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/windows-x64
+    - name: Publish Language Server
+      run: dotnet publish "./../Bicep.LangServer" -o "./bicepLanguageServer"
+      working-directory: ./src/vscode-bicep
+    - name: Publish VSIX
+      run: npm ci && npm run package
+      working-directory: ./src/vscode-bicep
+    - name: Copy VSIX
+      run: mkdir -p ./artifacts/vscode && cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
+    - name: Upload artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: artifacts
+        path: ./artifacts
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2.1.4
-        with:
-          node-version: 10.x
-
-      - name: npm ci
-        run: npm ci
-        working-directory: ./src/vscode-bicep
-        
-      - name: Compile
-        run: npm run compile
-        working-directory: ./src/vscode-bicep
-
-      - name: Run lint
-        run: npm run lint
-        working-directory: ./src/vscode-bicep
-
-      - name: Download Language Server
-        uses: actions/download-artifact@v2
-        with:
-          name: Bicep.LangServer
-          path: ./src/vscode-bicep/bicepLanguageServer
-          
-      - name: Run unit tests
-        run: npm run test:unit
-        working-directory: ./src/vscode-bicep
-
-      - name: Run E2E tests
-        run: npm run test:e2e
-        if: runner.os != 'Linux'
-        working-directory: ./src/vscode-bicep
-
-      # In headless Linux CI machines xvfb is required to run VS Code, so need a separate path for Linux.
-      - name: Run E2E tests (Linux)
-        run: xvfb-run -a npm run test:e2e
-        if: runner.os == 'Linux'
-        working-directory: ./src/vscode-bicep
-
-      - name: Show extension logs of E2E tests
-        run: cat ./bicep.log
-        if: ${{ always() }}
-        working-directory: ./src/vscode-bicep
-
-      - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1
-        with:
-          flags: typescript
-          directory: ./src/vscode-bicep/coverage
-
-      - name: Create VSIX
-        run: npm run package
-        if: runner.os == 'Linux'
-        working-directory: ./src/vscode-bicep
-
-      - name: Upload VSIX
-        uses: actions/upload-artifact@v2
-        if: runner.os == 'Linux'
-        with:
-          name: vscode-bicep.vsix
-          path: ./src/vscode-bicep/vscode-bicep.vsix
-          if-no-files-found: error
-
-  build-playground:
-    name: 'Build Playground'
-    runs-on: 'ubuntu-latest'
-
+  publish:
+    name: Publish 
+    needs: ['build']
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          submodules: true
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1.7.2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2.1.4
-        with:
-          node-version: 10.x
-      
-      - name: npm ci
-        run: npm ci
-        working-directory: ./src/playground
-
-      - name: Build
-        run: npm run package
-        working-directory: ./src/playground
-
-      - name: Upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: playground
-          path: ./src/playground/dist/*
-          if-no-files-found: error
-
-  create-release:
-    name: 'Create Release'
-    runs-on: 'ubuntu-latest'
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-    needs: [build-bicep, build-vsix, build-playground, build-windows-setup]
-
-    steps:
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v2
-
-      - name: Create Release
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }} (alpha)
-          draft: true
-          prerelease: false
-
-      - name: Upload bicep-win-x64.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./bicep-release-win-x64/bicep.exe
-          asset_name: bicep-win-x64.exe
-          asset_content_type: binary/octet-stream
-
-      - name: Upload bicep-linux-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./bicep-release-linux-x64/bicep
-          asset_name: bicep-linux-x64
-          asset_content_type: binary/octet-stream
-
-      - name: Upload bicep-osx-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./bicep-release-osx-x64/bicep
-          asset_name: bicep-osx-x64
-          asset_content_type: binary/octet-stream
-
-      - name: Upload vscode-bicep.vsix
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./vscode-bicep.vsix/vscode-bicep.vsix
-          asset_name: vscode-bicep.vsix
-          asset_content_type: binary/octet-stream
-      
-      - name: Upload bicep-setup-win-x64.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./bicep-setup-win-x64/bicep-setup-win-x64.exe
-          asset_name: bicep-setup-win-x64.exe
-          asset_content_type: binary/octet-stream
-      
-      - name: Zip language server
-        uses: papeloto/action-zip@v1
-        with:
-          files: ./Bicep.LangServer
-          dest: ./bicep-langserver.zip
-      
-      - name: Upload bicep-langserver.zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./bicep-langserver.zip
-          asset_name: bicep-langserver.zip
-          asset_content_type: application/zip
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts
+    - name: Display artifacts
+      run: ls -R
+      working-directory: ./artifacts
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      name: Upload rad-bicep (Linux)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/linux-x64/
+        extra_args: '--destination-path ./bicep/edge/linux-x64/ --pattern rad-bicep'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      name: Upload rad-bicep (MacOS)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/macos-x64/
+        extra_args: '--destination-path ./bicep/edge/macos-x64/ --pattern rad-bicep'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      name: Upload rad-bicep (Windows)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/windows-x64/
+        extra_args: '--destination-path ./bicep/edge/windows-x64/ --pattern rad-bicep.exe'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      name: Upload rad-bicep (Linux)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/vscode/
+        extra_args: '--destination-path ./vscode/edge/'
+        sync: true
