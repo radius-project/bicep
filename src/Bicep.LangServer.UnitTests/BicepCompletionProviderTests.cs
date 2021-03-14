@@ -116,7 +116,7 @@ namespace Bicep.LangServer.UnitTests
                     c.Label.Should().Be("application");
                     c.Kind.Should().Be(CompletionItemKind.Keyword);
                     c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
-                    c.InsertText.Should().Be("application");
+                    c.InsertText.Should().BeNull();
                     c.Detail.Should().Be("Application keyword");
                 },
                 c =>
@@ -124,7 +124,7 @@ namespace Bicep.LangServer.UnitTests
                     c.Label.Should().Be("component");
                     c.Kind.Should().Be(CompletionItemKind.Keyword);
                     c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
-                    c.InsertText.Should().Be("component");
+                    c.InsertText.Should().BeNull();
                     c.Detail.Should().Be("Component keyword");
                 },
                 c =>
@@ -132,7 +132,7 @@ namespace Bicep.LangServer.UnitTests
                     c.Label.Should().Be("deployment");
                     c.Kind.Should().Be(CompletionItemKind.Keyword);
                     c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
-                    c.InsertText.Should().Be("deployment");
+                    c.InsertText.Should().BeNull();
                     c.Detail.Should().Be("Deployment keyword");
                 },
                 c =>
@@ -140,7 +140,7 @@ namespace Bicep.LangServer.UnitTests
                     c.Label.Should().Be("instance");
                     c.Kind.Should().Be(CompletionItemKind.Keyword);
                     c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
-                    c.InsertText.Should().Be("instance");
+                    c.InsertText.Should().BeNull();
                     c.Detail.Should().Be("Instance keyword");
                 },
                 c =>

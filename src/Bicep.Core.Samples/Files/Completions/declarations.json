@@ -6,8 +6,12 @@
     "deprecated": false,
     "preselect": false,
     "sortText": "2_application",
-    "insertText": "application",
-    "insertTextFormat": "plainText"
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "application"
+    }
   },
   {
     "label": "application",
@@ -20,8 +24,12 @@
     "deprecated": false,
     "preselect": false,
     "sortText": "2_application",
-    "insertText": "application ${1:Identifier} = {\n  name: $2\n  properties: {\n    $0\n  }\n}",
-    "insertTextFormat": "snippet"
+    "insertTextFormat": "snippet",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "application ${1:Identifier} = {\n  name: $2\n  properties: {\n    $0\n  }\n}"
+    }
   },
   {
     "label": "component",
@@ -30,8 +38,12 @@
     "deprecated": false,
     "preselect": false,
     "sortText": "2_component",
-    "insertText": "component",
-    "insertTextFormat": "plainText"
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "component"
+    }
   },
   {
     "label": "deployment",
@@ -40,8 +52,12 @@
     "deprecated": false,
     "preselect": false,
     "sortText": "2_deployment",
-    "insertText": "deployment",
-    "insertTextFormat": "plainText"
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "deployment"
+    }
   },
   {
     "label": "instance",
@@ -50,8 +66,12 @@
     "deprecated": false,
     "preselect": false,
     "sortText": "2_instance",
-    "insertText": "instance",
-    "insertTextFormat": "plainText"
+    "insertTextFormat": "plainText",
+    "insertTextMode": "asIs",
+    "textEdit": {
+      "range": {},
+      "newText": "instance"
+    }
   },
   {
     "label": "module",

@@ -88,8 +88,8 @@ namespace Bicep.Core.Emit
                         ConvertExpression(arrayAccess.IndexExpression));
 
                 case PropertyAccessSyntax propertyAccess:
-                    if (propertyAccess.BaseExpression is VariableAccessSyntax propVariableAccess &&
-                        context.SemanticModel.GetSymbolInfo(propVariableAccess) is ResourceSymbol resourceSymbol)
+                    if (propertyAccess.BaseExpression is VariableAccessSyntax &&
+                        context.SemanticModel.GetSymbolInfo(propertyAccess.BaseExpression) is ResourceSymbol resourceSymbol)
                     {
                         // special cases for certain resource property access. if we recurse normally, we'll end up
                         // generating statements like reference(resourceId(...)).id which are not accepted by ARM
@@ -98,7 +98,7 @@ namespace Bicep.Core.Emit
                         switch (propertyAccess.PropertyName.IdentifierName)
                         {
                             case "id":
-                                return GetLocallyScopedResourceId((ResourceSymbol)resourceSymbol);
+                                return GetLocallyScopedResourceId(resourceSymbol);
                             case "name":
                                 return GetResourceNameExpression(resourceSymbol);
                             case "type":
@@ -108,6 +108,29 @@ namespace Bicep.Core.Emit
                             case "properties":
                                 // use the reference() overload without "full" to generate a shorter expression
                                 return GetReferenceExpression(resourceSymbol, false);
+                        }
+                    }
+
+                    if (propertyAccess.BaseExpression is VariableAccessSyntax  &&
+                        context.SemanticModel.GetSymbolInfo(propertyAccess.BaseExpression) is ComponentSymbol componentSymbol)
+                    {
+                        // special cases for certain resource property access. if we recurse normally, we'll end up
+                        // generating statements like reference(resourceId(...)).id which are not accepted by ARM
+
+                        var typeReference = EmitHelpers.GetTypeReference(componentSymbol);
+                        switch (propertyAccess.PropertyName.IdentifierName)
+                        {
+                            case "id":
+                                return GetLocallyScopedResourceId(componentSymbol);
+                            case "name":
+                                return GetResourceNameExpression(componentSymbol);
+                            case "type":
+                                return new JTokenExpression(typeReference.FullyQualifiedType);
+                            case "apiVersion":
+                                return new JTokenExpression(typeReference.ApiVersion);
+                            case "properties":
+                                // use the reference() overload without "full" to generate a shorter expression
+                                return GetReferenceExpression(componentSymbol, false);
                         }
                     }
 
@@ -180,6 +203,22 @@ namespace Bicep.Core.Emit
                     new JTokenExpression(i)));
         }
 
+        public IEnumerable<LanguageExpression> GetResourceNameSegments(ComponentSymbol componentSymbol, ResourceTypeReference typeReference)
+        {
+            if (typeReference.Types.Length == 1)
+            {
+                return GetResourceNameExpression(componentSymbol).AsEnumerable();
+            }
+            
+            return typeReference.Types.Select(
+                (type, i) => AppendProperties(
+                    CreateFunction(
+                        "split",
+                        GetResourceNameExpression(componentSymbol),
+                        new JTokenExpression("/")),
+                    new JTokenExpression(i)));
+        }
+
         private LanguageExpression GenerateScopedResourceId(ResourceSymbol resourceSymbol, ResourceScopeType? targetScope)
         {
             var typeReference = EmitHelpers.GetTypeReference(resourceSymbol);
@@ -196,11 +235,22 @@ namespace Bicep.Core.Emit
             return ScopeHelper.FormatLocallyScopedResourceId(targetScope, typeReference.FullyQualifiedType, nameSegments);
         }
 
+        private LanguageExpression GenerateScopedResourceId(ComponentSymbol componentSymbol, ResourceScopeType? targetScope)
+        {
+            var typeReference = EmitHelpers.GetTypeReference(componentSymbol);
+            var nameSegments = GetResourceNameSegments(componentSymbol, typeReference);
+
+            return ScopeHelper.FormatLocallyScopedResourceId(targetScope, typeReference.FullyQualifiedType, nameSegments);
+        }
+
         public LanguageExpression GetUnqualifiedResourceId(ResourceSymbol resourceSymbol)
             => GenerateScopedResourceId(resourceSymbol, null);
 
         public LanguageExpression GetLocallyScopedResourceId(ResourceSymbol resourceSymbol)
             => GenerateScopedResourceId(resourceSymbol, context.SemanticModel.TargetScope);
+
+        public LanguageExpression GetLocallyScopedResourceId(ComponentSymbol componentSymbol)
+            => GenerateScopedResourceId(componentSymbol, context.SemanticModel.TargetScope);
 
         public LanguageExpression GetModuleResourceIdExpression(ModuleSymbol moduleSymbol)
         {

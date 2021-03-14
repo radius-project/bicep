@@ -4,6 +4,7 @@
 using System.Linq;
 using Bicep.Core.FileSystem;
 using FluentAssertions;
+using FluentAssertions.Collections;
 using FluentAssertions.Execution;
 using JsonDiffPatchDotNet;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,6 +17,11 @@ namespace Bicep.Core.UnitTests.Assertions
         public static JTokenAssertions Should(this JToken instance)
         {
             return new JTokenAssertions(instance); 
+        }
+
+        public static GenericCollectionAssertions<JToken> Should(this JArray? instance)
+        {
+            return new GenericCollectionAssertions<JToken>(instance!); 
         }
 
         public static AndConstraint<JTokenAssertions> EqualWithJsonDiffOutput(this JTokenAssertions instance, TestContext testContext, JToken expected, string expectedLocation, string actualLocation, string because = "", params object[] becauseArgs)

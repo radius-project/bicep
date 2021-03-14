@@ -48,7 +48,7 @@ namespace Bicep.Cli.UnitTests
         [TestMethod]
         public void GetExeName_ShouldReturnExecutableName()
         {
-            ArgumentParser.GetExeName().Should().Be("bicep");
+            ArgumentParser.GetExeName().Should().Be("rad-bicep");
         }
 
         [TestMethod]
