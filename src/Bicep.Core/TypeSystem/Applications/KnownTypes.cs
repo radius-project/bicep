@@ -310,5 +310,40 @@ namespace Bicep.Core.TypeSystem.Applications
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None);
         }
+
+        public static TypeSymbol MakeBuildSectionType()
+        {
+            var dotnetGenericBuilderType = new NamedObjectType(
+                "generic builder",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("builder", LanguageConstants.String, TypePropertyFlags.Required | TypePropertyFlags.Constant),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+
+            var dotnetBuilderType = new NamedObjectType(
+                "dotnet builder",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("builder", new StringLiteralType("dotnet"), TypePropertyFlags.Required | TypePropertyFlags.Constant),
+                    new TypeProperty("projectFile", LanguageConstants.String, TypePropertyFlags.Required | TypePropertyFlags.Constant),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+
+            var buildType = new DiscriminatedObjectType(
+                name: "build",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                discriminatorKey: "builder",
+                unionMembers: new []
+                {
+                    dotnetGenericBuilderType,
+                    dotnetBuilderType,
+                });
+            return buildType;
+        }
     }
 }
