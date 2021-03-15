@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bicep.Core.Diagnostics;
+using Bicep.Core.IR;
 using Bicep.Core.Semantics;
 using Newtonsoft.Json;
 
@@ -35,7 +36,7 @@ namespace Bicep.Core.Emit
                 Formatting = Formatting.Indented
             };
 
-            new TemplateWriter(writer, this.model).Write();
+            new TemplateWriter(writer, ModelBuilder.Build(this.model)).Write();
         });
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace Bicep.Core.Emit
                 Formatting = Formatting.Indented
             };
 
-            new TemplateWriter(writer, this.model).Write();
+            new TemplateWriter(writer, ModelBuilder.Build(this.model)).Write();
         });
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Bicep.Core.Emit
         /// <param name="writer">The json writer to write the template</param>
         public EmitResult Emit(JsonTextWriter writer) => this.EmitOrFail(() =>
         {
-            new TemplateWriter(writer, this.model).Write();
+            new TemplateWriter(writer, ModelBuilder.Build(this.model)).Write();
         });
 
         private EmitResult EmitOrFail(Action write)

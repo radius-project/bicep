@@ -31,11 +31,14 @@ namespace Bicep.Core.TypeSystem.Applications
                 additionalPropertiesFlags: TypePropertyFlags.None);
             var runProperty = new TypeProperty("run", runType, TypePropertyFlags.Required);
 
+            var buildProperty = new TypeProperty("build", MakeBuildSectionType(), TypePropertyFlags.None);
+
             var propertiesType = new NamedObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
+                    buildProperty,
                     runProperty,
                     CommonProperties.ComponentDependsOn,
                     CommonProperties.Provides,
@@ -313,16 +316,6 @@ namespace Bicep.Core.TypeSystem.Applications
 
         public static TypeSymbol MakeBuildSectionType()
         {
-            var dotnetGenericBuilderType = new NamedObjectType(
-                "generic builder",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new TypeProperty[]
-                {
-                    new TypeProperty("builder", LanguageConstants.String, TypePropertyFlags.Required | TypePropertyFlags.Constant),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-
             var dotnetBuilderType = new NamedObjectType(
                 "dotnet builder",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -340,7 +333,6 @@ namespace Bicep.Core.TypeSystem.Applications
                 discriminatorKey: "builder",
                 unionMembers: new []
                 {
-                    dotnetGenericBuilderType,
                     dotnetBuilderType,
                 });
             return buildType;

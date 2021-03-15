@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Azure.Deployments.Expression.Expressions;
-using Bicep.Core.Extensions;
+using Bicep.Core.IR;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
@@ -19,16 +19,6 @@ namespace Bicep.Core.Emit
     {
         public const string NestedDeploymentResourceType = "Microsoft.Resources/deployments";
         public const string NestedDeploymentResourceApiVersion = "2019-10-01";
-
-        // these are top-level parameter modifier properties whose values can be emitted without any modifications
-        private static readonly ImmutableArray<string> ParameterModifierPropertiesToEmitDirectly = new[]
-        {
-            "minValue",
-            "maxValue",
-            "minLength",
-            "maxLength",
-            "metadata"
-        }.ToImmutableArray();
 
         private static ImmutableHashSet<string> ResourcePropertiesToOmit = new [] {
             LanguageConstants.ResourceScopePropertyName,
@@ -55,46 +45,32 @@ namespace Bicep.Core.Emit
         private readonly JsonTextWriter writer;
         private readonly EmitterContext context;
         private readonly ExpressionEmitter emitter;
+        private readonly TemplateModel model;
 
-        public TemplateWriter(JsonTextWriter writer, SemanticModel semanticModel)
+        public TemplateWriter(JsonTextWriter writer, TemplateModel model)
         {
             this.writer = writer;
-            this.context = new EmitterContext(semanticModel);
+            this.model = model;
+            this.context = new EmitterContext(model.SemanticModel);
             this.emitter = new ExpressionEmitter(writer, context);
-        }
-
-        private static string GetSchema(ResourceScopeType targetScope)
-        {
-            if (targetScope.HasFlag(ResourceScopeType.TenantScope))
-            {
-                return "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#";
-            }
-
-            if (targetScope.HasFlag(ResourceScopeType.ManagementGroupScope))
-            {
-                return "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#";
-            }
-
-            if (targetScope.HasFlag(ResourceScopeType.SubscriptionScope))
-            {
-                return "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#";
-            }
-
-            return "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#";
         }
 
         public void Write()
         {
             writer.WriteStartObject();
 
-            this.emitter.EmitProperty("$schema", GetSchema(context.SemanticModel.TargetScope));
+            this.emitter.EmitProperty("$schema", this.model.Schema);
 
-            this.emitter.EmitProperty("contentVersion", "1.0.0.0");
+            this.emitter.EmitProperty("contentVersion", this.model.ContentVersion);
 
             this.EmitParametersIfPresent();
 
             writer.WritePropertyName("functions");
             writer.WriteStartArray();
+            foreach (var function in this.model.Functions)
+            {
+                throw new NotImplementedException("No support for functions yet");
+            }
             writer.WriteEndArray();
 
             this.EmitVariablesIfPresent();
@@ -108,7 +84,7 @@ namespace Bicep.Core.Emit
 
         private void EmitParametersIfPresent()
         {
-            if (this.context.SemanticModel.Root.ParameterDeclarations.Length == 0)
+            if (this.model.Parameters.Length == 0)
             {
                 return;
             }
@@ -116,57 +92,22 @@ namespace Bicep.Core.Emit
             writer.WritePropertyName("parameters");
             writer.WriteStartObject();
 
-            foreach (var parameterSymbol in this.context.SemanticModel.Root.ParameterDeclarations)
+            foreach (var parameterModel in this.model.Parameters)
             {
-                writer.WritePropertyName(parameterSymbol.Name);
-                this.EmitParameter(parameterSymbol);
+                writer.WritePropertyName(parameterModel.Name);
+                this.EmitParameter(parameterModel);
             }
 
             writer.WriteEndObject();
         }
 
-        private void EmitParameter(ParameterSymbol parameterSymbol)
+        private void EmitParameter(ParameterModel parameterModel)
         {
-            // local function
-            bool IsSecure(SyntaxBase? value) => value is BooleanLiteralSyntax boolLiteral && boolLiteral.Value;
-
-            if (!(SyntaxHelper.TryGetPrimitiveType(parameterSymbol.DeclaringParameter) is TypeSymbol primitiveType))
-            {
-                // this should have been caught by the type checker long ago
-                throw new ArgumentException($"Unable to find primitive type for parameter {parameterSymbol.Name}");
-            }
-
             writer.WriteStartObject();
 
-            switch (parameterSymbol.Modifier)
+            foreach (var property in parameterModel.Properties)
             {
-                case null:
-                    this.emitter.EmitProperty("type", GetTemplateTypeName(primitiveType, secure: false));
-
-                    break;
-
-                case ParameterDefaultValueSyntax defaultValueSyntax:
-                    this.emitter.EmitProperty("type", GetTemplateTypeName(primitiveType, secure: false));
-                    this.emitter.EmitProperty("defaultValue", defaultValueSyntax.DefaultValue);
-
-                    break;
-
-                case ObjectSyntax modifierSyntax:
-                    // this would throw on duplicate properties in the object node - we are relying on emitter checking for errors at the beginning
-                    var properties = modifierSyntax.ToKnownPropertyValueDictionary();
-
-                    this.emitter.EmitProperty("type", GetTemplateTypeName(primitiveType, IsSecure(properties.TryGetValue("secure"))));
-
-                    // relying on validation here as well (not all of the properties are valid in all contexts)
-                    foreach (string modifierPropertyName in ParameterModifierPropertiesToEmitDirectly)
-                    {
-                        this.emitter.EmitOptionalPropertyExpression(modifierPropertyName, properties.TryGetValue(modifierPropertyName));
-                    }
-
-                    this.emitter.EmitOptionalPropertyExpression("defaultValue", properties.TryGetValue(LanguageConstants.ParameterDefaultPropertyName));
-                    this.emitter.EmitOptionalPropertyExpression("allowedValues", properties.TryGetValue(LanguageConstants.ParameterAllowedPropertyName));
-                    
-                    break;
+                this.emitter.EmitProperty(property);
             }
 
             writer.WriteEndObject();
@@ -174,7 +115,7 @@ namespace Bicep.Core.Emit
 
         private void EmitVariablesIfPresent()
         {
-            if (!this.context.SemanticModel.Root.VariableDeclarations.Any(symbol => !this.context.VariablesToInline.Contains(symbol)))
+            if (this.model.Variables.Length == 0)
             {
                 return;
             }
@@ -182,22 +123,18 @@ namespace Bicep.Core.Emit
             writer.WritePropertyName("variables");
             writer.WriteStartObject();
 
-            foreach (var variableSymbol in this.context.SemanticModel.Root.VariableDeclarations)
+            foreach (var variableModel in this.model.Variables)
             {
-                if (!this.context.VariablesToInline.Contains(variableSymbol))
-                {
-                    writer.WritePropertyName(variableSymbol.Name);
-                    this.EmitVariable(variableSymbol);
-                }
+                writer.WritePropertyName(variableModel.Name);
+                this.EmitVariable(variableModel);
             }
 
             writer.WriteEndObject();
         }
 
-        private void EmitVariable(VariableSymbol variableSymbol)
+        private void EmitVariable(VariableModel variableModel)
         {
-            // TODO: When we have expressions, only expressions without runtime functions can be emitted this way. Everything else will need to be inlined.
-            this.emitter.EmitExpression(variableSymbol.Value);
+            this.emitter.EmitExpression(variableModel.Value);
         }
 
         private void EmitResources()
@@ -221,6 +158,46 @@ namespace Bicep.Core.Emit
             }
 
             writer.WriteEndArray();
+        }
+
+        private void EmitResource(ResourceModel resourceModel)
+        {
+            writer.WriteStartObject();
+
+            if (resourceModel.Conditions.Length == 1)
+            {
+                this.emitter.EmitProperty("condition", resourceModel.Conditions[0]);
+            }
+
+            this.emitter.EmitProperty("type", resourceModel.Type);
+            this.emitter.EmitProperty("apiVersion", resourceModel.ApiVersion);
+
+            if (resourceModel.Scope is LanguageExpression scope)
+            {
+                this.emitter.EmitProperty("scope", scope);
+            }
+
+            foreach (var property in resourceModel.Properties)
+            {
+                this.emitter.EmitProperty(property);
+            }
+
+            // dependsOn is currently not allowed as a top-level resource property in bicep
+            // we will need to revisit this and probably merge the two if we decide to allow it
+            if (resourceModel.DependsOn.Length > 0)
+            {
+                writer.WritePropertyName("dependsOn");
+                writer.WriteStartArray();
+
+                foreach (var dependency in resourceModel.DependsOn)
+                {
+                    this.emitter.EmitExpression(dependency);
+                }
+
+                writer.WriteEndArray();
+            }
+
+            writer.WriteEndObject();
         }
 
         private void EmitResource(ResourceSymbol resourceSymbol)
@@ -339,7 +316,7 @@ namespace Bicep.Core.Emit
                 writer.WritePropertyName("template");
                 {
                     var moduleSemanticModel = GetModuleSemanticModel(moduleSymbol);
-                    var moduleWriter = new TemplateWriter(writer, moduleSemanticModel);
+                    var moduleWriter = new TemplateWriter(writer, ModelBuilder.Build(moduleSemanticModel));
                     moduleWriter.Write();
                 }
 
@@ -411,7 +388,7 @@ namespace Bicep.Core.Emit
 
         private void EmitOutputsIfPresent()
         {
-            if (this.context.SemanticModel.Root.OutputDeclarations.Length == 0)
+            if (this.model.Outputs.Length == 0)
             {
                 return;
             }
@@ -419,41 +396,23 @@ namespace Bicep.Core.Emit
             writer.WritePropertyName("outputs");
             writer.WriteStartObject();
 
-            foreach (var outputSymbol in this.context.SemanticModel.Root.OutputDeclarations)
+            foreach (var outputModel in this.model.Outputs)
             {
-                writer.WritePropertyName(outputSymbol.Name);
-                this.EmitOutput(outputSymbol);
+                writer.WritePropertyName(outputModel.Name);
+                this.EmitOutput(outputModel);
             }
 
             writer.WriteEndObject();
         }
 
-        private void EmitOutput(OutputSymbol outputSymbol)
+        private void EmitOutput(OutputModel outputSymbol)
         {
             writer.WriteStartObject();
 
-            this.emitter.EmitProperty("type", outputSymbol.Type.Name);
+            this.emitter.EmitProperty("type", outputSymbol.Type);
             this.emitter.EmitProperty("value", outputSymbol.Value);
 
             writer.WriteEndObject();
-        }
-
-        private string GetTemplateTypeName(TypeSymbol type, bool secure)
-        {
-            if (secure)
-            {
-                if (ReferenceEquals(type, LanguageConstants.String))
-                {
-                    return "secureString";
-                }
-
-                if (ReferenceEquals(type, LanguageConstants.Object))
-                {
-                    return "secureObject";
-                }
-            }
-
-            return type.Name;
         }
     }
 }

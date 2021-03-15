@@ -6,6 +6,7 @@ using System.Linq;
 using Azure.Deployments.Expression.Configuration;
 using Azure.Deployments.Expression.Expressions;
 using Azure.Deployments.Expression.Serializers;
+using Bicep.Core.IR;
 using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
@@ -88,6 +89,35 @@ namespace Bicep.Core.Emit
 
                 default:
                     throw new NotImplementedException($"Cannot emit unexpected expression of type {syntax.GetType().Name}");
+            }
+        }
+
+        public void EmitExpression(ValueModel value)
+        {
+            switch (value)
+            {
+                case ValueSyntaxModel syntax:
+                {
+                    this.EmitExpression(syntax.Value);
+                    break;
+                }
+
+                case ValueExpressionModel expression:
+                {
+                    var serialized = ExpressionSerializer.SerializeExpression(expression.Value);
+                    writer.WriteValue(serialized);
+                    break;
+                }
+
+                case ValueJTokenModel token:
+                {
+                    var propertyValue = ExpressionSerializer.SerializeExpression(token.Value);
+                    writer.WriteValue(propertyValue);
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Unknown value type {value}");
             }
         }
 
@@ -182,6 +212,114 @@ namespace Bicep.Core.Emit
             }
         }
 
+        public void EmitProperty(PropertyModel property)
+        {
+            switch (property.Name)
+            {
+                case ValueSyntaxModel syntax:
+                {
+                    this.EmitProperty(syntax.Value, property.Value);
+                    break;
+                }
+
+                case ValueExpressionModel expression:
+                {
+                    this.EmitProperty(expression.Value, property.Value);
+                    break;
+                }
+
+                case ValueJTokenModel token:
+                {
+                    this.EmitProperty(token.Value.Value.Value<string>(), property.Value);
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Unknown value type {property.Name}");
+            }
+        }
+
+        public void EmitProperty(SyntaxBase name, ValueModel value)
+        {
+            switch (value)
+            {
+                case ValueSyntaxModel syntax:
+                {
+                    this.EmitProperty(name, syntax.Value);
+                    break;
+                }
+
+                case ValueExpressionModel expression:
+                {
+                    this.EmitProperty(name, expression.Value);
+                    break;
+                }
+
+                case ValueJTokenModel token:
+                {
+                    this.EmitProperty(name, token.Value);
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Unknown value type {value}");
+            }
+        }
+
+        public void EmitProperty(string name, ValueModel value)
+        {
+            switch (value)
+            {
+                case ValueSyntaxModel syntax:
+                {
+                    this.EmitProperty(name, syntax.Value);
+                    break;
+                }
+
+                case ValueExpressionModel expression:
+                {
+                    this.EmitProperty(name, expression.Value);
+                    break;
+                }
+
+                case ValueJTokenModel token:
+                {
+                    this.EmitProperty(name, token.Value);
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Unknown value type {value}");
+            }
+        }
+
+        public void EmitProperty(LanguageExpression name, ValueModel value)
+        {
+            switch (value)
+            {
+                case ValueSyntaxModel syntax:
+                {
+                    this.EmitPropertyInternal(name, syntax.Value);
+                    break;
+                }
+
+                case ValueExpressionModel expression:
+                {
+                    this.EmitPropertyInternal(name, expression.Value);
+                    break;
+                }
+
+                case ValueJTokenModel token:
+                {
+                    this.EmitPropertyInternal(name, token.Value);
+                    break;
+                }
+
+                default:
+                    throw new InvalidOperationException($"Unknown value type {value}");
+            }
+        }
+
         public void EmitProperty(string name, LanguageExpression expressionValue)
             => EmitPropertyInternal(new JTokenExpression(name), () =>
             {
@@ -201,6 +339,13 @@ namespace Bicep.Core.Emit
         public void EmitProperty(SyntaxBase syntaxKey, SyntaxBase syntaxValue)
             => EmitPropertyInternal(converter.ConvertExpression(syntaxKey), syntaxValue);
 
+        public void EmitProperty(SyntaxBase syntaxKey, LanguageExpression expressionValue)
+            => EmitPropertyInternal(converter.ConvertExpression(syntaxKey), () => 
+            {
+                var propertyValue = ExpressionSerializer.SerializeExpression(expressionValue);
+                writer.WriteValue(propertyValue);
+            });
+
         private void EmitPropertyInternal(LanguageExpression expressionKey, Action valueFunc)
         {
             var serializedName = ExpressionSerializer.SerializeExpression(expressionKey);
@@ -218,6 +363,13 @@ namespace Bicep.Core.Emit
 
         private void EmitPropertyInternal(LanguageExpression expressionKey, SyntaxBase syntaxValue)
             => EmitPropertyInternal(expressionKey, () => EmitExpression(syntaxValue));
+
+        private void EmitPropertyInternal(LanguageExpression expressionKey, LanguageExpression expressionValue)
+            => EmitPropertyInternal(expressionKey, () => 
+            {
+                var serialized = ExpressionSerializer.SerializeExpression(expressionValue);
+                writer.WriteValue(serialized);
+            });
 
         public void EmitOptionalPropertyExpression(string name, SyntaxBase? expression)
         {
