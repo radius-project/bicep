@@ -9,6 +9,7 @@ using Azure.Deployments.Expression.Serializers;
 using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Metadata;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -298,6 +299,17 @@ namespace Bicep.Core.Emit
             {
                 // property whose value is not a for-expression
 
+                // HACK: our synthesized resources don't have bindings or types
+                var v = new ChildVisitor(propertySyntax);
+                v.Visit(context.SemanticModel.Root.Syntax);
+
+                var isExpression = false;
+                if (v.Found &&
+                    context.SemanticModel.GetDeclaredType(propertySyntax) is ExpressionType)
+                {
+                    isExpression = true;
+                }
+
                 if (propertySyntax.TryGetKeyText() is string keyName)
                 {
                     if (propertiesToOmit?.Contains(keyName) == true)
@@ -305,11 +317,27 @@ namespace Bicep.Core.Emit
                         continue;
                     }
 
-                    EmitProperty(keyName, propertySyntax.Value);
+                    if (isExpression)
+                    {
+                        var propertyValue = ExpressionSerializer.SerializeExpression(converter.ConvertExpression(propertySyntax.Value));
+                        EmitProperty(keyName, propertyValue);
+                    }
+                    else
+                    {
+                        EmitProperty(keyName, propertySyntax.Value);
+                    }
                 }
                 else
                 {
-                    EmitProperty(propertySyntax.Key, propertySyntax.Value);
+                    if (isExpression)
+                    {
+                        var propertyValue = ExpressionSerializer.SerializeExpression(converter.ConvertExpression(propertySyntax.Value));
+                        EmitProperty(propertySyntax.Key, new JTokenExpression(propertyValue));
+                    }
+                    else
+                    {
+                        EmitProperty(propertySyntax.Key, propertySyntax.Value);
+                    }
                 }
             }
         }
@@ -397,6 +425,9 @@ namespace Bicep.Core.Emit
         public void EmitProperty(SyntaxBase syntaxKey, SyntaxBase syntaxValue)
             => EmitPropertyInternal(converter.ConvertExpression(syntaxKey), syntaxValue);
 
+        public void EmitProperty(SyntaxBase syntaxKey, LanguageExpression expression)
+            => EmitPropertyInternal(converter.ConvertExpression(syntaxKey), () => writer.WriteValue(expression));
+
         private void EmitPropertyInternal(LanguageExpression expressionKey, Action valueFunc)
         {
             var serializedName = ExpressionSerializer.SerializeExpression(expressionKey);
@@ -420,6 +451,27 @@ namespace Bicep.Core.Emit
             if (expression != null)
             {
                 EmitProperty(name, expression);
+            }
+        }
+
+        private class ChildVisitor : SyntaxVisitor
+        {
+            private readonly SyntaxBase candidate;
+            public ChildVisitor(SyntaxBase candidate)
+            {
+                this.candidate = candidate;
+            }
+
+            public bool Found { get; private set; }
+
+            protected override void VisitInternal(SyntaxBase node)
+            {
+                if (object.ReferenceEquals(node, candidate))
+                {
+                    this.Found = true;
+                }
+
+                base.VisitInternal(node);
             }
         }
     }

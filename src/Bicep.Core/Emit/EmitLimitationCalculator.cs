@@ -106,7 +106,8 @@ namespace Bicep.Core.Emit
                 }
                 else
                 {
-                    resourceScope = semanticModel.ResourceAncestors.GetAncestors(resource).LastOrDefault()?.Resource;
+                    var scopeSymbol = semanticModel.ResourceAncestors.GetAncestors(resource.Symbol).LastOrDefault()?.Resource;
+                    resourceScope = scopeSymbol is null ? null : semanticModel.ResourceMetadata.TryLookup(scopeSymbol!.DeclaringSyntax);
                 }
 
                 if (resource.NameSyntax is not StringSyntax namePropertyValue)
@@ -129,7 +130,7 @@ namespace Bicep.Core.Emit
                     continue;
                 }
 
-                var ancestors = semanticModel.ResourceAncestors.GetAncestors(resource);
+                var ancestors = semanticModel.ResourceAncestors.GetAncestors(resource.Symbol);
                 if (ancestors.Any())
                 {
                     // try to detect cases where someone has applied top-level resource declaration naming to a nested/parent resource
@@ -142,7 +143,7 @@ namespace Bicep.Core.Emit
                 else
                 {
                     var slashCount = resourceNameString.SegmentValues.Sum(x => x.Count(y => y == '/'));
-                    var expectedSlashCount = resource.TypeReference.Types.Length - 1;
+                    var expectedSlashCount = resource.Symbol.TryGetResourceTypeReference()!.Types.Length - 1;
 
                     // Try to detect cases where someone has applied nested/parent resource declaration naming to a top-level resource - e.g. 'child'.
                     if (resourceNameString.IsInterpolated())
@@ -150,7 +151,7 @@ namespace Bicep.Core.Emit
                         // This is best-effort for interpolated strings, as variables may pull in additional '/' characters.
                         // So we can only accurately show a diagnostic if there are TOO MANY '/' characters.
                         if (slashCount > expectedSlashCount)
-                        {   
+                        {
                             diagnosticWriter.Write(resource.NameSyntax, x => x.TopLevelChildResourceNameIncorrectQualifierCount(expectedSlashCount));
                         }
                     }

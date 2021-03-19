@@ -6,12 +6,13 @@ namespace Bicep.Core.TypeSystem
 {
     public class ResourceType : TypeSymbol, IScopeReference
     {
-        public ResourceType(ResourceTypeReference typeReference, ResourceScope validParentScopes, ITypeReference body)
+        public ResourceType(ResourceTypeReference typeReference, ResourceScope validParentScopes, ITypeReference body, IResourceTypeProvider? provider = null)
             : base(typeReference.FormatName())
         {
             TypeReference = typeReference;
             ValidParentScopes = validParentScopes;
             Body = body;
+            Provider = provider;
         }
 
         public override TypeKind TypeKind => TypeKind.Resource;
@@ -27,6 +28,8 @@ namespace Bicep.Core.TypeSystem
         public ITypeReference Body { get; }
 
         public ResourceScope Scope => ResourceScope.Resource;
+
+        public IResourceTypeProvider? Provider { get; }
 
         public static ResourceType? TryUnwrap(TypeSymbol typeSymbol)
             => typeSymbol switch

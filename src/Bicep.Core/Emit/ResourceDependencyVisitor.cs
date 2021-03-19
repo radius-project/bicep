@@ -8,6 +8,7 @@ using Bicep.Core.DataFlow;
 using Bicep.Core.Extensions;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Emit
 {
@@ -16,6 +17,7 @@ namespace Bicep.Core.Emit
         private readonly SemanticModel model;
         private readonly IDictionary<DeclaredSymbol, HashSet<ResourceDependency>> resourceDependencies;
         private DeclaredSymbol? currentDeclaration;
+        private bool isInsideExpressionContext;
 
         public static ImmutableDictionary<DeclaredSymbol, ImmutableHashSet<ResourceDependency>> GetResourceDependencies(SemanticModel model)
         {
@@ -50,20 +52,23 @@ namespace Bicep.Core.Emit
 
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
         {
-            if (model.ResourceMetadata.TryLookup(syntax) is not {} resource)
+            // Skip analysis for ErrorSymbol and similar cases, these are invalid cases, and won't be emitted.
+            if (model.GetSymbolInfo(syntax) is not ResourceSymbol resourceSymbol ||
+                resourceSymbol.TryGetResourceType() is not { } resourceType ||
+                resourceSymbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceNamePropertyName) is not { } nameSyntax)
             {
                 // When invoked by BicepDeploymentGraphHandler, it's possible that the declaration is unbound.
                 return;
             }
 
             // Resource ancestors are always dependencies.
-            var ancestors = this.model.ResourceAncestors.GetAncestors(resource);
+            var ancestors = this.model.ResourceAncestors.GetAncestors(resourceSymbol);
 
             // save previous declaration as we may call this recursively
             var prevDeclaration = this.currentDeclaration;
 
-            this.currentDeclaration = resource.Symbol;
-            this.resourceDependencies[resource.Symbol] = new HashSet<ResourceDependency>(ancestors.Select(a => new ResourceDependency(a.Resource.Symbol, a.IndexExpression)));
+            this.currentDeclaration = resourceSymbol;
+            this.resourceDependencies[resourceSymbol] = new HashSet<ResourceDependency>(ancestors.Select(a => new ResourceDependency(a.Resource, a.IndexExpression)));
             base.VisitResourceDeclarationSyntax(syntax);
 
             // restore previous declaration
@@ -113,15 +118,37 @@ namespace Bicep.Core.Emit
                 // recursively visit dependent variables
                 this.Visit(declaredSymbol.DeclaringSyntax);
 
-                dependencies = resourceDependencies[declaredSymbol];
+                resourceDependencies.TryGetValue(declaredSymbol, out dependencies);
+                dependencies ??= new();
             }
 
             return dependencies;
         }
 
+        public override void VisitObjectPropertySyntax(ObjectPropertySyntax syntax)
+        {
+            var type = model.GetDeclaredType(syntax);
+            if (type is ExpressionType)
+            {
+                isInsideExpressionContext = true;
+            }
+
+            base.VisitObjectPropertySyntax(syntax);
+
+            if (type is ExpressionType)
+            {
+                isInsideExpressionContext = false;
+            }
+        }
+
         public override void VisitVariableAccessSyntax(VariableAccessSyntax syntax)
         {
             if (currentDeclaration is null)
+            {
+                return;
+            }
+
+            if (isInsideExpressionContext)
             {
                 return;
             }
@@ -178,7 +205,7 @@ namespace Bicep.Core.Emit
                     return;
             }
         }
-            
+
         private SyntaxBase? GetIndexExpression(SyntaxBase syntax, bool isCollection)
         {
             SyntaxBase? candidateIndexExpression = isCollection && this.model.Binder.GetParent(syntax) is ArrayAccessSyntax arrayAccess && ReferenceEquals(arrayAccess.BaseExpression, syntax)

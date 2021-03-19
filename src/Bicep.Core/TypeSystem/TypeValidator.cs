@@ -86,6 +86,12 @@ namespace Bicep.Core.TypeSystem
                 return true;
             }
 
+            if (targetType is ExpressionType expressionType)
+            {
+                // "T" is assignable to "Expression<T>"
+                return AreTypesAssignable(sourceType, expressionType.ReturnType.Type);
+            }
+
             switch (targetType)
             {
                 case AnyType _:
@@ -210,7 +216,7 @@ namespace Bicep.Core.TypeSystem
                     {
                         var narrowedBody = NarrowType(config, expression, targetResourceType.Body.Type);
 
-                        return new ResourceType(targetResourceType.TypeReference, targetResourceType.ValidParentScopes, narrowedBody);
+                        return new ResourceType(targetResourceType.TypeReference, targetResourceType.ValidParentScopes, narrowedBody, targetResourceType.Provider);
                     }
                 case ModuleType targetModuleType:
                     {
@@ -597,6 +603,12 @@ namespace Bicep.Core.TypeSystem
 
                     // although we don't use the result here, it's important to call NarrowType to collect diagnostics
                     var narrowedType = NarrowType(newConfig, extraProperty.Value, additionalPropertiesAssignmentType);
+
+                    if (extraProperty.TryGetKeyText() is string name)
+                    {
+                         var narrowedProperty = new TypeProperty(name, narrowedType, targetType.AdditionalPropertiesFlags);
+                        narrowedProperties.Add(narrowedProperty);
+                    }
 
                     // TODO should we try and narrow the additional properties type? May be difficult
                 }

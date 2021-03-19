@@ -45,7 +45,7 @@ namespace Bicep.Core.Emit
             public ResourceMetadata? ResourceScope { get; set; }
 
             /// <summary>
-            /// The expression for the loop index. This is used with loops when indexing into resource collections. 
+            /// The expression for the loop index. This is used with loops when indexing into resource collections.
             /// </summary>
             public SyntaxBase? IndexExpression { get; set; }
         }
@@ -74,7 +74,7 @@ namespace Bicep.Core.Emit
                 // all other scope expressions
                 _ => (semanticModel.GetSymbolInfo(scopeValue), null)
             };
-                
+
             var scopeType = semanticModel.GetTypeInfo(scopeValue);
 
             switch (scopeType)
@@ -175,7 +175,7 @@ namespace Bicep.Core.Emit
                         // otherwise, the errors produced by the type check are sufficient
                         logInvalidScopeFunc(scopeValue, ResourceScope.Module, supportedScopes);
                     }
-                    
+
                     return null;
             }
 
@@ -395,7 +395,7 @@ namespace Bicep.Core.Emit
             {
                 return;
             }
-            
+
             var rootResource = GetRootResource(scopeInfo, resource);
             if (rootResource is null ||
                 !scopeInfo.TryGetValue(rootResource, out var scopeData))
@@ -432,7 +432,7 @@ namespace Bicep.Core.Emit
             var ancestorsLookup = semanticModel.AllResources
                 .ToDictionary(
                     x => x,
-                    x => semanticModel.ResourceAncestors.GetAncestors(x));
+                    x => semanticModel.ResourceAncestors.GetAncestors(x.Symbol));
 
             // process symbols in order of ancestor depth.
             // this is because we want to avoid recomputing the scope for child resources which inherit it from their parents.
@@ -443,18 +443,18 @@ namespace Bicep.Core.Emit
                     if (resource.ScopeSyntax is not null)
                     {
                         // it doesn't make sense to have scope on a descendent resource; it should be inherited from the oldest ancestor.
-                        diagnosticWriter.Write(resource.ScopeSyntax, x => x.ScopeUnsupportedOnChildResource(ancestors.Last().Resource.Symbol.Name));
+                        diagnosticWriter.Write(resource.ScopeSyntax, x => x.ScopeUnsupportedOnChildResource(ancestors.Last().Resource.Name));
                         // TODO: format the ancestor name using the resource accessor (::) for nested resources
                         continue;
                     }
 
-                    var firstAncestor = ancestors.First();
-                    if (!resource.IsExistingResource && 
-                        firstAncestor.Resource.IsExistingResource && 
-                        firstAncestor.Resource.ScopeSyntax is {} firstAncestorScope)
+                    var firstAncestor = semanticModel.ResourceMetadata.TryLookup(ancestors.First().Resource.DeclaringSyntax)!;
+                    if (!resource.IsExistingResource &&
+                        firstAncestor.IsExistingResource &&
+                        firstAncestor.ScopeSyntax is {} firstAncestorScope)
                     {
                         // it doesn't make sense to have scope on a descendent resource; it should be inherited from the oldest ancestor.
-                        diagnosticWriter.Write(resource.Symbol.DeclaringResource.Value, x => x.ScopeDisallowedForAncestorResource(firstAncestor.Resource.Symbol.Name));
+                        diagnosticWriter.Write(resource.Symbol.DeclaringResource.Value, x => x.ScopeDisallowedForAncestorResource(firstAncestor.Symbol.Name));
                         // TODO: format the ancestor name using the resource accessor (::) for nested resources
                         continue;
                     }
@@ -466,7 +466,7 @@ namespace Bicep.Core.Emit
 
                     // we really just want the scope allocated to the oldest ancestor.
                     // since we are looping in order of depth, we can just read back the value from a previous iteration.
-                    scopeInfo[resource] = scopeInfo[firstAncestor.Resource];
+                    scopeInfo[resource] = scopeInfo[firstAncestor];
                     continue;
                 }
 
@@ -500,9 +500,9 @@ namespace Bicep.Core.Emit
             var isValid = scopeData.RequestedScope switch {
                 // If you update this switch block to add new supported nested template scope combinations,
                 // please ensure you update the wording of error messages BCP113, BCP114, BCP115 & BCP116 to reflect this!
-                ResourceScope.Tenant 
+                ResourceScope.Tenant
                     => checkScopes(ResourceScope.Tenant, ResourceScope.ManagementGroup, ResourceScope.Subscription, ResourceScope.ResourceGroup),
-                ResourceScope.ManagementGroup when scopeData.ManagementGroupNameProperty is not null 
+                ResourceScope.ManagementGroup when scopeData.ManagementGroupNameProperty is not null
                     => checkScopes(ResourceScope.Tenant, ResourceScope.ManagementGroup),
                 ResourceScope.ManagementGroup
                     => checkScopes(ResourceScope.Tenant, ResourceScope.ManagementGroup),
@@ -518,7 +518,7 @@ namespace Bicep.Core.Emit
                     => checkScopes(ResourceScope.ResourceGroup),
                 _ => false,
             };
-            
+
             if (isValid)
             {
                 return;

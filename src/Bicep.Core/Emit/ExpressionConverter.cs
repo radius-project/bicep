@@ -144,9 +144,9 @@ namespace Bicep.Core.Emit
 
                                 return CreateFunction(instanceFunctionCall.Name.IdentifierName, listArgs);
                             }
-                            
+
                             break;
-                    }                 
+                    }
                     throw new InvalidOperationException($"Unrecognized base expression {baseSymbol?.Kind}");
                 default:
                     throw new NotImplementedException($"Cannot emit unexpected expression of type {functionCall.GetType().Name}");
@@ -162,7 +162,7 @@ namespace Bicep.Core.Emit
             {
                 case 0:
                     // moving the name expression does not produce any inaccessible locals (no locals means no loops)
-                    // regardless if there is an index expression or not, we don't need to append replacements 
+                    // regardless if there is an index expression or not, we don't need to append replacements
                     return this;
 
                 case 1 when indexExpression != null:
@@ -339,45 +339,59 @@ namespace Bicep.Core.Emit
         public IEnumerable<LanguageExpression> GetResourceNameSegments(ResourceMetadata resource)
         {
             var typeReference = resource.TypeReference;
-            var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
             var nameSyntax = resource.NameSyntax;
-            var nameExpression = ConvertExpression(nameSyntax);
 
-            if (ancestors.Length > 0)
+            if (resource.Parent is null)
             {
-                var firstAncestorNameLength = typeReference.Types.Length - ancestors.Length;
-
-                var resourceName = ConvertExpression(resource.NameSyntax);
-
-                var parentNames = ancestors.SelectMany((x, i) =>
+                var nameExpression = ConvertExpression(nameSyntax);
+                if (typeReference.Types.Length == 1)
                 {
-                    var nameSyntax = x.Resource.NameSyntax;
-                    var nameExpression = CreateConverterForIndexReplacement(nameSyntax, x.IndexExpression, x.Resource.Symbol.NameSyntax)
-                        .ConvertExpression(nameSyntax);
-
-                    if (i == 0 && firstAncestorNameLength > 1)
-                    {
-                        return Enumerable.Range(0, firstAncestorNameLength).Select(
-                            (_, i) => AppendProperties(
-                                CreateFunction("split", nameExpression, new JTokenExpression("/")),
-                                new JTokenExpression(i)));
-                    }
-
                     return nameExpression.AsEnumerable();
-                });
+                }
 
-                return parentNames.Concat(resourceName.AsEnumerable());
+                return typeReference.Types.Select(
+                    (type, i) => AppendProperties(
+                        CreateFunction("split", nameExpression, new JTokenExpression("/")),
+                        new JTokenExpression(i)));
             }
 
-            if (typeReference.Types.Length == 1)
+            var segments = new List<LanguageExpression>()
             {
-                return nameExpression.AsEnumerable();
+                ConvertExpression(nameSyntax),
+            };
+            var current = resource.Parent;
+            while (current != null)
+            {
+                LanguageExpression nameExpression;
+                if (current.Name is not null)
+                {
+                    nameExpression = new JTokenExpression(current.Name);
+                }
+                else
+                {
+                    nameExpression = CreateConverterForIndexReplacement(current.Metadata!.NameSyntax, current.IndexExpression, current.Metadata!.Symbol.NameSyntax)
+                        .ConvertExpression(current.Metadata!.NameSyntax);
+                }
+
+                var remaining = resource.TypeReference.Types.Length - segments.Count;
+                if (current.Metadata?.Parent is null && remaining > 1)
+                {
+                    for (var i = 0; i < remaining; i++)
+                    {
+                        segments.Insert(i, AppendProperties(
+                            CreateFunction("split", nameExpression, new JTokenExpression("/")),
+                            new JTokenExpression(i)));
+                    }
+                }
+                else
+                {
+                    segments.Insert(0, nameExpression);
+                }
+
+                current = current.Metadata?.Parent;
             }
 
-            return typeReference.Types.Select(
-                (type, i) => AppendProperties(
-                    CreateFunction("split", nameExpression, new JTokenExpression("/")),
-                    new JTokenExpression(i)));
+            return segments;
         }
 
         public LanguageExpression GetFullyQualifiedResourceName(ResourceMetadata resource)
@@ -385,8 +399,7 @@ namespace Bicep.Core.Emit
             var nameValueSyntax = resource.NameSyntax;
 
             // For a nested resource we need to compute the name
-            var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
-            if (ancestors.Length == 0)
+            if (resource.Parent is null)
             {
                 return ConvertExpression(nameValueSyntax);
             }

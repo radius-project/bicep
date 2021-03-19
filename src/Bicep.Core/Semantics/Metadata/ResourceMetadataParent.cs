@@ -14,7 +14,15 @@ namespace Bicep.Core.Semantics.Metadata
             IsNested = isNested;
         }
 
-        public ResourceMetadata Metadata { get; }
+        // 'virtual' parent resource.
+        public ResourceMetadataParent(string name)
+        {
+            Name = name;
+        }
+
+        public string? Name { get; }
+
+        public ResourceMetadata? Metadata { get; }
 
         public SyntaxBase? IndexExpression { get; }
 

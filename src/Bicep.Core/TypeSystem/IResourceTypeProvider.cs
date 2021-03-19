@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Bicep.Core.Resources;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -13,5 +14,7 @@ namespace Bicep.Core.TypeSystem
         bool HasType(ResourceTypeReference typeReference);
 
         IEnumerable<ResourceTypeReference> GetAvailableTypes();
+
+        ResourceMetadata CreateMetadata(ResourceMetadata input);
     }
 }

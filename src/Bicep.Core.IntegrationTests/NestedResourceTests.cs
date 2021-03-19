@@ -418,13 +418,13 @@ resource parent 'My.RP/parentType@2020-01-01' = {
             model.GetAllDiagnostics().Should().BeEmpty();
 
             var parent = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "parent").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(parent).Should().BeEmpty();
+            model.ResourceAncestors.GetAncestors(parent.Symbol).Should().BeEmpty();
 
             var child = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "child").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(child).Select(x => x.Resource).Should().Equal(new[] { parent, });
+            model.ResourceAncestors.GetAncestors(child.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, });
 
             var grandchild = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "grandchild").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(grandchild).Select(x => x.Resource).Should().Equal(new[] { parent, child, }); // order matters
+            model.ResourceAncestors.GetAncestors(grandchild.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, child.Symbol, }); // order matters
         }
 
         [TestMethod]
@@ -467,19 +467,19 @@ resource parent 'My.RP/parentType@2020-01-01' = {
             model.GetAllDiagnostics().Should().BeEmpty();
 
             var parent = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "parent").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(parent).Should().BeEmpty();
+            model.ResourceAncestors.GetAncestors(parent.Symbol).Should().BeEmpty();
 
             var child = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "child").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(child).Select(x => x.Resource).Should().Equal(new[] { parent, });
+            model.ResourceAncestors.GetAncestors(child.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, });
 
             var childGrandChild = model.ResourceMetadata.TryLookup(child.Symbol.DeclaringResource.GetBody().Resources.Single())!;
-            model.ResourceAncestors.GetAncestors(childGrandChild).Select(x => x.Resource).Should().Equal(new[] { parent, child, });
+            model.ResourceAncestors.GetAncestors(childGrandChild.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, child.Symbol, });
 
             var sibling = model.ResourceMetadata.TryLookup(model.AllResources.Select(x => x.Symbol).Single(r => r.Name == "sibling").DeclaringSyntax)!;
-            model.ResourceAncestors.GetAncestors(child).Select(x => x.Resource).Should().Equal(new[] { parent, });
+            model.ResourceAncestors.GetAncestors(child.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, });
 
             var siblingGrandChild = model.ResourceMetadata.TryLookup(sibling.Symbol.DeclaringResource.GetBody().Resources.Single())!;
-            model.ResourceAncestors.GetAncestors(siblingGrandChild).Select(x => x.Resource).Should().Equal(new[] { parent, sibling, });
+            model.ResourceAncestors.GetAncestors(siblingGrandChild.Symbol).Select(x => x.Resource).Should().Equal(new[] { parent.Symbol, sibling.Symbol, });
         }
 
         [TestMethod] // Should turn into positive test when support is added.

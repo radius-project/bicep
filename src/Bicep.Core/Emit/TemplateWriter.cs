@@ -27,7 +27,7 @@ namespace Bicep.Core.Emit
     {
         public const string GeneratorMetadataPath = "metadata._generator";
         public const string NestedDeploymentResourceType = AzResourceTypeProvider.ResourceTypeDeployments;
-        
+
         // IMPORTANT: Do not update this API version until the new one is confirmed to be deployed and available in ALL the clouds.
         public const string NestedDeploymentResourceApiVersion = "2019-10-01";
 
@@ -118,7 +118,7 @@ namespace Bicep.Core.Emit
             emitter.EmitProperty("$schema", GetSchema(context.SemanticModel.TargetScope));
 
             emitter.EmitProperty("contentVersion", "1.0.0.0");
-            
+
             this.EmitMetadata(jsonWriter, emitter);
 
             this.EmitParametersIfPresent(jsonWriter, emitter);
@@ -265,7 +265,9 @@ namespace Bicep.Core.Emit
             jsonWriter.WritePropertyName("resources");
             jsonWriter.WriteStartArray();
 
-            foreach (var resource in this.context.SemanticModel.AllResources)
+            var extra = ResourceRewriter.Transform(this.context.SemanticModel, this.context.ResourceDependencies);
+
+            foreach (var resource in this.context.SemanticModel.AllResources.Concat(extra))
             {
                 if (resource.IsExistingResource)
                 {
@@ -303,28 +305,31 @@ namespace Bicep.Core.Emit
             //
             // Children inherit the conditions of their parents, etc. This avoids a problem
             // where we emit a dependsOn to something that's not in the template, or not
-            // being evaulated i the template. 
+            // being evaulated i the template.
             var conditions = new List<SyntaxBase>();
             var loops = new List<(string name, ForSyntax @for, SyntaxBase? input)>();
 
-            var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
-            foreach (var ancestor in ancestors)
+            if (resource.Symbol != null)
             {
-                if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
-                    ancestor.Resource.Symbol.DeclaringResource.Value is IfConditionSyntax ifCondition)
+                var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource.Symbol);
+                foreach (var ancestor in ancestors)
                 {
-                    conditions.Add(ifCondition.ConditionExpression);
-                }
+                    if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
+                        ancestor.Resource.DeclaringResource.Value is IfConditionSyntax ifCondition)
+                    {
+                        conditions.Add(ifCondition.ConditionExpression);
+                    }
 
-                if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
-                    ancestor.Resource.Symbol.DeclaringResource.Value is ForSyntax @for)
-                {
-                    loops.Add((ancestor.Resource.Symbol.Name, @for, null));
+                    if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
+                        ancestor.Resource.DeclaringResource.Value is ForSyntax @for)
+                    {
+                        loops.Add((ancestor.Resource.Name, @for, null));
+                    }
                 }
             }
 
             // Unwrap the 'real' resource body if there's a condition
-            var body = resource.Symbol.DeclaringResource.Value;
+            var body = resource.DeclaringSyntax.Value;
             switch (body)
             {
                 case IfConditionSyntax ifCondition:
@@ -333,7 +338,7 @@ namespace Bicep.Core.Emit
                     break;
 
                 case ForSyntax @for:
-                    loops.Add((resource.Symbol.Name, @for, null));
+                    loops.Add((resource.Symbol!.Name, @for, null));
                     if (@for.Body is IfConditionSyntax loopFilter)
                     {
                         body = loopFilter.Body;
@@ -370,7 +375,7 @@ namespace Bicep.Core.Emit
 
             if (loops.Count == 1)
             {
-                var batchSize = GetBatchSize(resource.Symbol.DeclaringResource);
+                var batchSize = GetBatchSize(resource.Symbol!.DeclaringResource);
                 emitter.EmitProperty("copy", () => emitter.EmitCopyObject(loops[0].name, loops[0].@for, loops[0].input, batchSize: batchSize));
             }
             else if (loops.Count > 1)
@@ -389,7 +394,7 @@ namespace Bicep.Core.Emit
 
             emitter.EmitObjectProperties((ObjectSyntax)body, ResourcePropertiesToOmit);
 
-            this.EmitDependsOn(jsonWriter, resource.Symbol, emitter, body);
+            this.EmitDependsOn(jsonWriter, resource, emitter, body);
 
             jsonWriter.WriteEndObject();
         }
@@ -464,7 +469,7 @@ namespace Bicep.Core.Emit
                     {
                         body = @for.Body;
                     }
-                    
+
                     var batchSize = GetBatchSize(moduleSymbol.DeclaringModule);
                     emitter.EmitProperty("copy", () => emitter.EmitCopyObject(moduleSymbol.Name, @for, input: null, batchSize: batchSize));
                     break;
@@ -535,6 +540,20 @@ namespace Bicep.Core.Emit
 
             jsonWriter.WriteEndObject();
         }
+        private static bool ShouldGenerateDependsOn(ResourceDependencyMetadata dependency)
+        {
+            switch (dependency.Symbol)
+            {
+                case ResourceSymbol resource:
+                    // We only want to add a 'dependsOn' for resources being deployed in this file.
+                    return !resource.DeclaringResource.IsExistingResource();
+                case ModuleSymbol:
+                    return true;
+                default:
+                    throw new InvalidOperationException($"Found dependency '{dependency.Symbol.Name}' of unexpected type {dependency.GetType()}");
+            }
+        }
+
         private static bool ShouldGenerateDependsOn(ResourceDependency dependency)
         {
             switch (dependency.Resource)
@@ -547,6 +566,57 @@ namespace Bicep.Core.Emit
                 default:
                     throw new InvalidOperationException($"Found dependency '{dependency.Resource.Name}' of unexpected type {dependency.GetType()}");
             }
+        }
+
+        private void EmitDependsOn(JsonTextWriter jsonWriter, ResourceMetadata metadata, ExpressionEmitter emitter, SyntaxBase newContext)
+        {
+            var dependencies = metadata.Dependencies.Where(dep => ShouldGenerateDependsOn(dep));
+
+            if (!dependencies.Any())
+            {
+                return;
+            }
+
+            jsonWriter.WritePropertyName("dependsOn");
+            jsonWriter.WriteStartArray();
+            // need to put dependencies in a deterministic order to generate a deterministic template
+            foreach (var dependency in dependencies.OrderBy(x => x.Symbol.Name))
+            {
+                switch (dependency.Symbol)
+                {
+                    case ResourceSymbol resourceDependency:
+                        if (resourceDependency.IsCollection && dependency.IndexExpression == null)
+                        {
+                            // dependency is on the entire resource collection
+                            // write the name of the resource collection as the dependency
+                            jsonWriter.WriteValue(resourceDependency.DeclaringResource.Name.IdentifierName);
+
+                            break;
+                        }
+
+                        var resource = context.SemanticModel.ResourceMetadata.TryLookup(resourceDependency.DeclaringSyntax) ??
+                            throw new ArgumentException($"Unable to find resource metadata for dependency '{dependency.Symbol.Name}'");
+
+                        emitter.EmitResourceIdReference(resource, dependency.IndexExpression, newContext);
+                        break;
+                    case ModuleSymbol moduleDependency:
+                        if (moduleDependency.IsCollection && dependency.IndexExpression == null)
+                        {
+                            // dependency is on the entire module collection
+                            // write the name of the module collection as the dependency
+                            jsonWriter.WriteValue(moduleDependency.DeclaringModule.Name.IdentifierName);
+
+                            break;
+                        }
+
+                        emitter.EmitResourceIdReference(moduleDependency, dependency.IndexExpression, newContext);
+
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Found dependency '{dependency.Symbol.Name}' of unexpected type {dependency.GetType()}");
+                }
+            }
+            jsonWriter.WriteEndArray();
         }
 
         private void EmitDependsOn(JsonTextWriter jsonWriter, DeclaredSymbol declaredSymbol, ExpressionEmitter emitter, SyntaxBase newContext)

@@ -8,6 +8,7 @@ using Bicep.Core.Semantics;
 using System.Collections.Immutable;
 using Bicep.Core.Emit;
 using System.Text.RegularExpressions;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem.Az
 {
@@ -95,7 +96,7 @@ namespace Bicep.Core.TypeSystem.Az
                 CreateGenericResourceBody(typeReference, p => true));
         }
 
-        private static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags)
+        internal static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags)
         {
             var bodyType = resourceType.Body.Type;
 
@@ -150,7 +151,7 @@ namespace Bicep.Core.TypeSystem.Az
                     throw new ArgumentException($"Resource {resourceType.Name} has unexpected body type {bodyType.GetType()}");
             }
 
-            return new ResourceType(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType);
+            return new ResourceType(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType, resourceType.Provider);
         }
 
         private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
@@ -305,5 +306,10 @@ namespace Bicep.Core.TypeSystem.Az
 
         public IEnumerable<ResourceTypeReference> GetAvailableTypes()
             => availableResourceTypes;
+
+        public ResourceMetadata CreateMetadata(ResourceMetadata input)
+        {
+            return input;
+        }
     }
 }
