@@ -10,6 +10,7 @@ using Bicep.Core.Registry.Auth;
 using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.Tracing;
 using Bicep.Core.TypeSystem.Az;
+using Bicep.Core.TypeSystem.Radius;
 using Bicep.Core.Workspaces;
 using Bicep.LanguageServer.CompilationManager;
 using Bicep.LanguageServer.Completions;
@@ -53,7 +54,7 @@ namespace Bicep.LanguageServer
             : this(creationOptions, options => options.WithInput(input).WithOutput(output))
         {
         }
-        
+
         private Server(CreationOptions creationOptions, Action<LanguageServerOptions> onOptionsFunc)
         {
             BicepDeploymentsInterop.Initialize();

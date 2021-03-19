@@ -45,7 +45,7 @@ namespace Bicep.Core.Emit
             public ResourceMetadata? ResourceScope { get; set; }
 
             /// <summary>
-            /// The expression for the loop index. This is used with loops when indexing into resource collections. 
+            /// The expression for the loop index. This is used with loops when indexing into resource collections.
             /// </summary>
             public SyntaxBase? IndexExpression { get; set; }
         }
@@ -456,7 +456,7 @@ namespace Bicep.Core.Emit
             var ancestorsLookup = semanticModel.AllResources
                 .ToDictionary(
                     x => x,
-                    x => semanticModel.ResourceAncestors.GetAncestors(x));
+                    x => semanticModel.ResourceAncestors.GetAncestors(x.Symbol));
 
             var defaultScopeData = new ScopeData { RequestedScope = semanticModel.TargetScope };
 
@@ -469,20 +469,20 @@ namespace Bicep.Core.Emit
                     if (resource.ScopeSyntax is not null)
                     {
                         // it doesn't make sense to have scope on a descendent resource; it should be inherited from the oldest ancestor.
-                        diagnosticWriter.Write(resource.ScopeSyntax, x => x.ScopeUnsupportedOnChildResource(ancestors.Last().Resource.Symbol.Name));
+                        diagnosticWriter.Write(resource.ScopeSyntax, x => x.ScopeUnsupportedOnChildResource(ancestors.Last().Resource.Name));
                         // TODO: format the ancestor name using the resource accessor (::) for nested resources
                         scopeInfo[resource] = defaultScopeData;
                         continue;
                     }
 
-                    var firstAncestor = ancestors.First();
+                    var firstAncestor = semanticModel.ResourceMetadata.TryLookup(ancestors.First().Resource.DeclaringSyntax)!;
                     if (!resource.IsExistingResource &&
-                        firstAncestor.Resource.IsExistingResource &&
-                        !IsDeployableResourceScope(semanticModel, scopeInfo[firstAncestor.Resource]))
+                        firstAncestor.IsExistingResource &&
+                        !IsDeployableResourceScope(semanticModel, scopeInfo[firstAncestor]))
                     {
                         // Setting 'scope' is blocked for child resources, so we just need to check whether the root ancestor has 'scope' set.
                         // If it does, it could be an 'existing' resource - which can be assigned any scope - so we need to ensure the assigned scope can be used to deploy.
-                        diagnosticWriter.Write(resource.Symbol.DeclaringResource.Value, x => x.ScopeDisallowedForAncestorResource(firstAncestor.Resource.Symbol.Name));
+                        diagnosticWriter.Write(resource.Symbol.DeclaringResource.Value, x => x.ScopeDisallowedForAncestorResource(firstAncestor.Symbol.Name));
                         // TODO: format the ancestor name using the resource accessor (::) for nested resources
                         scopeInfo[resource] = defaultScopeData;
                         continue;
@@ -496,7 +496,7 @@ namespace Bicep.Core.Emit
 
                     // we really just want the scope allocated to the oldest ancestor.
                     // since we are looping in order of depth, we can just read back the value from a previous iteration.
-                    scopeInfo[resource] = scopeInfo[firstAncestor.Resource];
+                    scopeInfo[resource] = scopeInfo[firstAncestor];
                     continue;
                 }
 

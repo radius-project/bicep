@@ -4,6 +4,7 @@
 using Bicep.Core.Features;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.TypeSystem.Az;
+using Bicep.Core.TypeSystem.Radius;
 
 namespace Bicep.Core.Semantics.Namespaces
 {
@@ -26,6 +27,9 @@ namespace Bicep.Core.Semantics.Namespaces
                     return SystemNamespaceType.Create(aliasName);
                 case AzNamespaceType.BuiltInName:
                     return AzNamespaceType.Create(aliasName, resourceScope, new AzResourceTypeProvider(azResourceTypeLoader));
+                case RadiusArmNamespace.BuiltInName:
+                    return RadiusArmNamespace.Create(aliasName);
+
             }
 
             return null;

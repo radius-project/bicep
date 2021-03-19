@@ -602,6 +602,12 @@ namespace Bicep.Core.TypeSystem
                     // although we don't use the result here, it's important to call NarrowType to collect diagnostics
                     var narrowedType = NarrowType(newConfig, extraProperty.Value, additionalPropertiesAssignmentType);
 
+                    if (extraProperty.TryGetKeyText() is string name)
+                    {
+                         var narrowedProperty = new TypeProperty(name, narrowedType, targetType.AdditionalPropertiesFlags);
+                        narrowedProperties.Add(narrowedProperty);
+                    }
+
                     // TODO should we try and narrow the additional properties type? May be difficult
                 }
             }

@@ -11,35 +11,35 @@ namespace Bicep.Core.Semantics
     public sealed class ResourceAncestorVisitor : SyntaxVisitor
     {
         private readonly SemanticModel semanticModel;
-        private readonly ImmutableDictionary<ResourceMetadata, ResourceAncestor>.Builder ancestry;
+        private readonly ImmutableDictionary<ResourceSymbol, ResourceAncestor>.Builder ancestry;
 
         public ResourceAncestorVisitor(SemanticModel semanticModel)
         {
             this.semanticModel = semanticModel;
-            this.ancestry = ImmutableDictionary.CreateBuilder<ResourceMetadata, ResourceAncestor>();
+            this.ancestry = ImmutableDictionary.CreateBuilder<ResourceSymbol, ResourceAncestor>();
         }
 
-        public ImmutableDictionary<ResourceMetadata, ResourceAncestor> Ancestry 
+        public ImmutableDictionary<ResourceSymbol, ResourceAncestor> Ancestry
             => this.ancestry.ToImmutableDictionary();
 
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
         {
             // Skip analysis for ErrorSymbol and similar cases, these are invalid cases, and won't be emitted.
-            if (semanticModel.ResourceMetadata.TryLookup(syntax) is not {} resource)
+            if (semanticModel.GetSymbolInfo(syntax) is not ResourceSymbol resourceSymbol)
             {
                 base.VisitResourceDeclarationSyntax(syntax);
                 return;
             }
-            
+
             if (semanticModel.Binder.GetNearestAncestor<ResourceDeclarationSyntax>(syntax) is {} nestedParentSyntax)
             {
                 // nested resource parent syntax
-                if (semanticModel.ResourceMetadata.TryLookup(nestedParentSyntax) is {} parentResource)
+                if (semanticModel.GetSymbolInfo(nestedParentSyntax) is ResourceSymbol parentResource)
                 {
-                    this.ancestry.Add(resource, new ResourceAncestor(ResourceAncestorType.Nested, parentResource, null));
+                    this.ancestry.Add(resourceSymbol, new ResourceAncestor(ResourceAncestorType.Nested, parentResource, null));
                 }
             }
-            else if (resource.Symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceParentPropertyName) is {} referenceParentSyntax)
+            else if (resourceSymbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceParentPropertyName) is {} referenceParentSyntax)
             {
                 SyntaxBase? indexExpression = null;
                 if (referenceParentSyntax is ArrayAccessSyntax arrayAccess)
@@ -49,9 +49,9 @@ namespace Bicep.Core.Semantics
                 }
 
                 // parent property reference syntax
-                if (semanticModel.ResourceMetadata.TryLookup(referenceParentSyntax) is {} parentResource)
+                if (semanticModel.GetSymbolInfo(referenceParentSyntax) is ResourceSymbol parentResource)
                 {
-                    this.ancestry.Add(resource, new ResourceAncestor(ResourceAncestorType.ParentProperty, parentResource, indexExpression));
+                    this.ancestry.Add(resourceSymbol, new ResourceAncestor(ResourceAncestorType.ParentProperty, parentResource, indexExpression));
                 }
             }
 

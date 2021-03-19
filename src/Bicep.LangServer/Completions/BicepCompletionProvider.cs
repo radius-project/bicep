@@ -691,6 +691,11 @@ namespace Bicep.LanguageServer.Completions
                     .Select(symbol => CreateSymbolCompletion(symbol, context.ReplacementRange));
             }
 
+            if (declaredType is ObjectType objectType && objectType.AdditionalPropertiesType != null)
+            {
+                declaredType = compilation.GetEntrypointSemanticModel().GetTypeInfo(context.PropertyAccess.BaseExpression);
+            }
+
             return GetProperties(declaredType)
                 .Where(p => !p.Flags.HasFlag(TypePropertyFlags.WriteOnly))
                 .Select(p => CreatePropertyAccessCompletion(p, compilation.SourceFileGrouping.EntryPoint, context.PropertyAccess, context.ReplacementRange))

@@ -6,6 +6,7 @@ using Bicep.Core.Extensions;
 using Bicep.Core.Resources;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.Semantics;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.IntegrationTests.Extensibility
 {
@@ -76,6 +77,11 @@ namespace Bicep.Core.IntegrationTests.Extensibility
 
             public IEnumerable<ResourceTypeReference> GetAvailableTypes()
                 => resourceTypes.Keys;
+
+            public ResourceMetadata CreateMetadata(ResourceMetadata input)
+            {
+                return input;
+            }
         }
 
         public static NamespaceType Create(string aliasName)

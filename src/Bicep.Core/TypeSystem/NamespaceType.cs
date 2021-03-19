@@ -1,8 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bicep.Core.Semantics;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem
 {
@@ -11,7 +13,8 @@ namespace Bicep.Core.TypeSystem
         string BicepProviderName,
         ITypeReference? ConfigurationType,
         string ArmTemplateProviderName,
-        string ArmTemplateProviderVersion);
+        string ArmTemplateProviderVersion,
+        Func<ResourceMetadata, ResourceMetadata>? Transformer = null);
 
     public sealed class NamespaceType : ObjectType
     {

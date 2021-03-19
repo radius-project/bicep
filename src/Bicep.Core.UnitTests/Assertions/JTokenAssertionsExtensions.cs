@@ -4,6 +4,7 @@
 using System.Linq;
 using Bicep.Core.FileSystem;
 using FluentAssertions;
+using FluentAssertions.Collections;
 using FluentAssertions.Execution;
 using JsonDiffPatchDotNet;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,16 @@ namespace Bicep.Core.UnitTests.Assertions
 {
     public static class JTokenAssertionsExtensions
     {
+        public static GenericCollectionAssertions<JToken> Should(this JArray? instance)
+        {
+            return new GenericCollectionAssertions<JToken>(instance);
+        }
         public static JTokenAssertions Should(this JToken? instance)
+        {
+            return new JTokenAssertions(instance);
+        }
+
+        public static JTokenAssertions Should(this JObject? instance)
         {
             return new JTokenAssertions(instance);
         }

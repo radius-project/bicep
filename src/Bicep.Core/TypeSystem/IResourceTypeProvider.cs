@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 using System.Collections.Generic;
 using Bicep.Core.Resources;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem
 {

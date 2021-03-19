@@ -154,7 +154,7 @@ namespace Bicep.Core.Syntax
         {
             var valuesArray = values.ToArray();
             var expressionsArray = expressions.ToArray();
-            
+
             if (valuesArray.Length != expressionsArray.Length + 1)
             {
                 throw new ArgumentException($"The number of values must be 1 greater than the number of expressions");
@@ -204,6 +204,11 @@ namespace Bicep.Core.Syntax
                 (false, false) => CreateToken(TokenType.StringMiddlePiece, $"}}{EscapeBicepString(value)}${{"),
                 (false, true) => CreateToken(TokenType.StringRightPiece, $"}}{EscapeBicepString(value)}'"),
             };
+        }
+
+        public static PropertyAccessSyntax CreatePropertyAccess(SyntaxBase baseExpression, string propertyName)
+        {
+            return new PropertyAccessSyntax(baseExpression, SyntaxFactory.DotToken, SyntaxFactory.CreateIdentifier(propertyName));
         }
 
         public static FunctionCallSyntax CreateFunctionCall(string functionName)
