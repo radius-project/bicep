@@ -9,6 +9,7 @@ using System.Linq;
 using Azure.Deployments.Core.Extensions;
 using Azure.Deployments.Expression.Expressions;
 using Bicep.Core.Extensions;
+using Bicep.Core.Resources;
 using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Metadata;
 using Bicep.Core.Syntax;
@@ -502,6 +503,10 @@ namespace Bicep.Core.Emit
             var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
             var nameExpression = ConvertExpression(resource.NameSyntax);
 
+            var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
+
+            // We do this calculation based on the original type, since the Radius custom RP never appears in
+            // code.
             var typesAfterProvider = typeReference.TypeSegments.Skip(1).ToImmutableArray();
 
             if (ancestors.Length > 0)
@@ -524,29 +529,52 @@ namespace Bicep.Core.Emit
                     return nameExpression.AsEnumerable();
                 });
 
+                if (radiusType is {})
+                {
+                    parentNames = new JTokenExpression("radiusv3").AsEnumerable().Concat(parentNames);
+                }
                 return parentNames.Concat(nameExpression.AsEnumerable());
             }
 
             if (typesAfterProvider.Length == 1)
             {
+                if (radiusType is {})
+                {
+                    return new[] { new JTokenExpression("radiusv3"), nameExpression, };
+                }
+
                 return nameExpression.AsEnumerable();
             }
 
-            return typesAfterProvider.Select(
+            var rest = typesAfterProvider.Select(
                 (type, i) => AppendProperties(
                     CreateFunction("split", nameExpression, new JTokenExpression("/")),
                     new JTokenExpression(i)));
+            if (radiusType is {})
+            {
+                return new JTokenExpression("radiusv3").AsEnumerable<LanguageExpression>().Concat(rest);
+            }
+
+            return rest;
         }
 
         public LanguageExpression GetFullyQualifiedResourceName(DeclaredResourceMetadata resource)
         {
             var nameValueSyntax = resource.NameSyntax;
 
+            var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
+
             // For a nested resource we need to compute the name
             var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
             if (ancestors.Length == 0)
             {
-                return ConvertExpression(nameValueSyntax);
+                var nameExpression = ConvertExpression(nameValueSyntax);
+                if (radiusType is {})
+                {
+                    nameExpression = CreateFunction("format", new JTokenExpression("{0}/{1}"), new JTokenExpression("radiusv3"), nameExpression);
+                }
+
+                return nameExpression;
             }
 
             // Build an expression like '${parent.name}/${child.name}'
@@ -577,11 +605,12 @@ namespace Bicep.Core.Emit
 
         public LanguageExpression GetUnqualifiedResourceId(DeclaredResourceMetadata resource)
         {
+            var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
             return ScopeHelper.FormatUnqualifiedResourceId(
                 context,
                 this,
                 context.ResourceScopeData[resource],
-                resource.TypeReference.FormatType(),
+                typeReference.FormatType(),
                 GetResourceNameSegments(resource));
         }
 
@@ -603,11 +632,12 @@ namespace Bicep.Core.Emit
             }
             else if (resource is DeclaredResourceMetadata declared)
             {
+                var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(declared) ?? declared.TypeReference;
                 return ScopeHelper.FormatFullyQualifiedResourceId(
                     context,
                     this,
                     context.ResourceScopeData[declared],
-                    resource.TypeReference.FormatType(),
+                    typeReference.FormatType(),
                     GetResourceNameSegments(declared));
             }
             else
@@ -666,6 +696,7 @@ namespace Bicep.Core.Emit
                 _ => throw new InvalidOperationException($"Unexpected resource metadata type: {resource.GetType()}"),
             };
 
+            var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
             if (!resource.IsAzResource)
             {
                 // For an extensible resource, always generate a 'reference' statement.
@@ -678,7 +709,7 @@ namespace Bicep.Core.Emit
             // full gives access to top-level resource properties, but generates a longer statement
             if (full)
             {
-                var apiVersion = resource.TypeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {resource.TypeReference.FormatName()} to contain version");
+                var apiVersion = typeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {typeReference.FormatName()} to contain version");
 
                 return CreateFunction(
                     "reference",
@@ -689,7 +720,7 @@ namespace Bicep.Core.Emit
 
             if (resource.IsExistingResource && !context.Settings.EnableSymbolicNames)
             {
-                var apiVersion = resource.TypeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {resource.TypeReference.FormatName()} to contain version");
+                var apiVersion = typeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {typeReference.FormatName()} to contain version");
 
                 // we must include an API version for an existing resource, because it cannot be inferred from any deployed template resource
                 return CreateFunction(

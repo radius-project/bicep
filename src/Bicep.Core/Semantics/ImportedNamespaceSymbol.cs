@@ -18,6 +18,8 @@ namespace Bicep.Core.Semantics
 
         public ImportDeclarationSyntax DeclaringImport => (ImportDeclarationSyntax)this.DeclaringSyntax;
 
+        public bool ExcludeFromCompletion => false;
+
         public override void Accept(SymbolVisitor visitor)
         {
             visitor.VisitImportedNamespaceSymbol(this);

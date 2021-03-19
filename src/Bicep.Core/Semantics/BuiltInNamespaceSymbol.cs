@@ -16,6 +16,8 @@ namespace Bicep.Core.Semantics
 
         public NamespaceType Type { get; }
 
+        public bool ExcludeFromCompletion => Type.Settings.ExcludeFromCompletion;
+
         public override IEnumerable<Symbol> Descendants
         {
             get

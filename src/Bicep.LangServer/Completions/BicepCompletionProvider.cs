@@ -551,7 +551,7 @@ namespace Bicep.LanguageServer.Completions
 
         private static ImmutableDictionary<Symbol, NamespaceType> GetNamespaceTypeBySymbol(SemanticModel model)
         {
-            return model.Root.Namespaces
+            return model.Root.Namespaces.Where(s => s is INamespaceSymbol ns && !ns.ExcludeFromCompletion)
                 .Select(ns => (symbol: ns, type: (ns as INamespaceSymbol)?.TryGetNamespaceType()))
                 .Where(x => x.type is not null)
                 .ToImmutableDictionary(x => x.symbol, x => x.type!);
@@ -1283,6 +1283,11 @@ namespace Bicep.LanguageServer.Completions
             {
                 foreach (var builtInNamespace in model.Root.Namespaces.OfType<BuiltInNamespaceSymbol>().OrderBy(x => x.Name, LanguageConstants.IdentifierComparer))
                 {
+                    if (builtInNamespace.ExcludeFromCompletion)
+                    {
+                        continue;
+                    }
+
                     // We don't want to trigger follow-up completions for a namespace as we just want to insert "ns" rather than "ns."
                     yield return CreateSymbolCompletion(builtInNamespace, context.ReplacementRange, disableFollowUp: true);
                 }

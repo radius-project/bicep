@@ -491,10 +491,11 @@ namespace Bicep.Core.Emit
 
             if (resource.IsAzResource)
             {
-                emitter.EmitProperty("type", resource.TypeReference.FormatType());
-                if (resource.TypeReference.ApiVersion is not null)
+                var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
+                emitter.EmitProperty("type", typeReference.FormatType());
+                if (typeReference.ApiVersion is not null)
                 {
-                    emitter.EmitProperty("apiVersion", resource.TypeReference.ApiVersion);
+                    emitter.EmitProperty("apiVersion", typeReference.ApiVersion);
                 }
             }
             else

@@ -59,7 +59,7 @@ namespace Bicep.Core.IntegrationTests.Semantics
 
             var (_, _, compilation) = CompilationHelper.Compile(TestTypeHelper.CreateEmptyAzResourceTypeLoader(), ("main.bicep", string.Empty));
 
-            return compilation.GetEntrypointSemanticModel().Root.Namespaces.OfType<INamespaceSymbol>().Select(CreateRow);
+            return compilation.GetEntrypointSemanticModel().Root.Namespaces.OfType<INamespaceSymbol>().Where(ns => !ns.ExcludeFromCompletion).Select(CreateRow);
         }
 
         public static string GetDisplayName(MethodInfo info, object[] data)

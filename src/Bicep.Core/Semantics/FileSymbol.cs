@@ -146,7 +146,7 @@ namespace Bicep.Core.Semantics
                 // to fully qualify a function
                 this.Diagnostics.AddRange(nonOutputDeclarations
                     .Where(decl => decl.NameSyntax.IsValid && this.builtInNamespaces.ContainsKey(decl.Name))
-                    .Select(reservedSymbol => DiagnosticBuilder.ForPosition(reservedSymbol.NameSyntax).SymbolicNameCannotUseReservedNamespaceName(reservedSymbol.Name, this.builtInNamespaces.Keys)));
+                    .Select(reservedSymbol => DiagnosticBuilder.ForPosition(reservedSymbol.NameSyntax).SymbolicNameCannotUseReservedNamespaceName(reservedSymbol.Name, this.builtInNamespaces.Where(ns => !ns.Value.ExcludeFromCompletion).Select(ns => ns.Key))));
 
                 // singleton namespaces cannot be duplicated
                 this.Diagnostics.AddRange(

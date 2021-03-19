@@ -8,6 +8,8 @@ namespace Bicep.Core.Semantics
     {
         string Name { get; }
 
+        bool ExcludeFromCompletion { get; }
+
         NamespaceType? TryGetNamespaceType();
     }
 }

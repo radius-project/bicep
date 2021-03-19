@@ -8,8 +8,8 @@ using Bicep.Core.Semantics;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
 using Bicep.Core.Emit;
-using Bicep.Core.Semantics.Namespaces;
 using System.Text.RegularExpressions;
+using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem.Az
 {
@@ -191,7 +191,7 @@ namespace Bicep.Core.TypeSystem.Az
             => resourceType.TypeReference.TypeSegments.Length == 2 ||
             flags.HasFlag(ResourceTypeGenerationFlags.HasParentDefined);
 
-        private static ResourceTypeComponents SetBicepResourceProperties(ResourceTypeComponents resourceType, ResourceTypeGenerationFlags flags)
+        internal static ResourceTypeComponents SetBicepResourceProperties(ResourceTypeComponents resourceType, ResourceTypeGenerationFlags flags, bool isExtensibility = false)
         {
             var bodyType = resourceType.Body.Type;
 
@@ -213,11 +213,11 @@ namespace Bicep.Core.TypeSystem.Az
                             bodyObjectType.AdditionalPropertiesFlags,
                             bodyObjectType.MethodResolver.CopyToObject);
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                         break;
                     }
 
-                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                     break;
 
                 case DiscriminatedObjectType bodyDiscriminatedType:
@@ -230,7 +230,7 @@ namespace Bicep.Core.TypeSystem.Az
                         // Keep it simple for now - we eventually plan to phase out the 'top-level child' syntax.
                         var bodyObjectType = CreateGenericResourceBody(resourceType.TypeReference, p => bodyDiscriminatedType.UnionMembersByKey.Values.Any(x => x.Properties.ContainsKey(p)));
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                     }
                     else if (bodyDiscriminatedType.TryGetDiscriminatorProperty(ResourceNamePropertyName) is null &&
                              flags.HasFlag(ResourceTypeGenerationFlags.ExistingResource))
@@ -240,12 +240,12 @@ namespace Bicep.Core.TypeSystem.Az
                         // For now, we just make a generic type. It's better than compilation error
 
                         var bodyObjectType = CreateGenericResourceBody(resourceType.TypeReference, p => bodyDiscriminatedType.UnionMembersByKey.Values.Any(x => x.Properties.ContainsKey(p)));
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                     }
                     else
                     {
                         var bodyTypes = bodyDiscriminatedType.UnionMembersByKey.Values
-                            .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags));
+                            .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility));
                         bodyType = new DiscriminatedObjectType(
                             bodyDiscriminatedType.Name,
                             bodyDiscriminatedType.ValidationFlags,
@@ -262,7 +262,7 @@ namespace Bicep.Core.TypeSystem.Az
             return new ResourceTypeComponents(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType);
         }
 
-        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
+        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags, bool isExtensibility)
         {
             // Local function.
             static TypeProperty UpdateFlags(TypeProperty typeProperty, TypePropertyFlags flags) =>
@@ -336,13 +336,15 @@ namespace Bicep.Core.TypeSystem.Az
                 properties = properties.SetItem("subscriptionId", new TypeProperty("subscriptionId", LanguageConstants.String, TypePropertyFlags.DeployTimeConstant));
             }
 
-            var functions = objectType.MethodResolver.functionOverloads.AddRange(GetBicepMethods(typeReference));
-
-            foreach (var item in KnownTopLevelResourceProperties())
+            var functions = isExtensibility ? objectType.MethodResolver.functionOverloads : objectType.MethodResolver.functionOverloads.AddRange(GetBicepMethods(typeReference));
+            if (!isExtensibility)
             {
-                if (!properties.ContainsKey(item.Name))
+                foreach (var item in KnownTopLevelResourceProperties())
                 {
-                    properties = properties.Add(item.Name, new TypeProperty(item.Name, item.TypeReference, item.Flags | TypePropertyFlags.FallbackProperty));
+                    if (!properties.ContainsKey(item.Name))
+                    {
+                        properties = properties.Add(item.Name, new TypeProperty(item.Name, item.TypeReference, item.Flags | TypePropertyFlags.FallbackProperty));
+                    }
                 }
             }
 
@@ -408,8 +410,8 @@ namespace Bicep.Core.TypeSystem.Az
            {
                var resourceType = this.resourceTypeLoader.LoadType(typeReference);
 
-               return SetBicepResourceProperties(resourceType, flags);
-           });
+                return SetBicepResourceProperties(resourceType, flags, isExtensibility: false);
+            });
 
             return new(declaringNamespace, resourceType.TypeReference, resourceType.ValidParentScopes, resourceType.Body, UniqueIdentifierProperties);
         }
@@ -431,7 +433,7 @@ namespace Bicep.Core.TypeSystem.Az
                     ResourceScope.Tenant | ResourceScope.ManagementGroup | ResourceScope.Subscription | ResourceScope.ResourceGroup | ResourceScope.Resource,
                     CreateGenericResourceBody(typeReference, p => true));
 
-                return SetBicepResourceProperties(resourceType, flags);
+                return SetBicepResourceProperties(resourceType, flags, isExtensibility: false);
             });
 
             return new(declaringNamespace, resourceType.TypeReference, resourceType.ValidParentScopes, resourceType.Body, UniqueIdentifierProperties);

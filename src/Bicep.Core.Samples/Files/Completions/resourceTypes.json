@@ -28078,5 +28078,265 @@
     "command": {
       "command": "editor.action.triggerSuggest"
     }
+  },
+  {
+    "label": "'radius.dev/Application'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "0000057c",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/ContainerComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/ContainerComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "0000057f",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/ContainerComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/HttpRoute'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/HttpRoute`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000583",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/HttpRoute@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/Volume'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/Volume`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000588",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/Volume@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/azure.com.KeyVaultComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/azure.com.KeyVaultComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "0000057d",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/azure.com.KeyVaultComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/azure.com.ServiceBusQueueComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/azure.com.ServiceBusQueueComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "0000057e",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/azure.com.ServiceBusQueueComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/dapr.io.DaprHttpRoute'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/dapr.io.DaprHttpRoute`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000580",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/dapr.io.DaprHttpRoute@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/dapr.io.PubSubTopicComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/dapr.io.PubSubTopicComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000581",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/dapr.io.PubSubTopicComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/dapr.io.StateStoreComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/dapr.io.StateStoreComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000582",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/dapr.io.StateStoreComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/microsoft.com.SQLComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/microsoft.com.SQLComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000584",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/microsoft.com.SQLComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/mongodb.com.MongoDBComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/mongodb.com.MongoDBComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000585",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/mongodb.com.MongoDBComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/rabbitmq.com.MessageQueueComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/rabbitmq.com.MessageQueueComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000586",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/rabbitmq.com.MessageQueueComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
+  },
+  {
+    "label": "'radius.dev/Application/redislabs.com.RedisComponent'",
+    "kind": "class",
+    "documentation": {
+      "kind": "markdown",
+      "value": "Type: `radius.dev/Application/redislabs.com.RedisComponent`  \n`"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "00000587",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "'radius.dev/Application/redislabs.com.RedisComponent@$0'"
+    },
+    "command": {
+      "command": "editor.action.triggerSuggest"
+    }
   }
 ]

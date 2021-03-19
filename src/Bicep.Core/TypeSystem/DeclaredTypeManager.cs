@@ -846,7 +846,7 @@ namespace Bicep.Core.TypeSystem
 
                 if (binder.NamespaceResolver.TryGetNamespace(scheme) is not { } namespaceType)
                 {
-                    return ErrorType.Create(DiagnosticBuilder.ForPosition(span).UnknownResourceReferenceScheme(scheme, binder.NamespaceResolver.GetNamespaceNames().OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
+                    return ErrorType.Create(DiagnosticBuilder.ForPosition(span).UnknownResourceReferenceScheme(scheme, binder.NamespaceResolver.GetNamespaceNames().Where(ns => ns != "Radius").OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
                 }
 
                 if (parentResourceType is not null &&

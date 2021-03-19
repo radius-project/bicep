@@ -5,6 +5,7 @@ using Bicep.Core.Extensions;
 using Bicep.Core.Resources;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Radius;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -57,6 +58,7 @@ namespace Bicep.Core.Semantics.Namespaces
 
             TryAddBuiltInNamespace(SystemNamespaceType.BuiltInName);
             TryAddBuiltInNamespace(AzNamespaceType.BuiltInName);
+            TryAddBuiltInNamespace(RadiusArmNamespace.BuiltInName);
 
             return new(namespaceTypes, builtInNamespaceSymbols.ToImmutableDictionary(LanguageConstants.IdentifierComparer));
         }

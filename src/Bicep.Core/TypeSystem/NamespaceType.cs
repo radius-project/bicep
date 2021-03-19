@@ -11,7 +11,8 @@ namespace Bicep.Core.TypeSystem
         string BicepProviderName,
         ObjectType? ConfigurationType,
         string ArmTemplateProviderName,
-        string ArmTemplateProviderVersion);
+        string ArmTemplateProviderVersion,
+        bool ExcludeFromCompletion = false);
 
     public sealed class NamespaceType : ObjectType
     {
