@@ -103,7 +103,7 @@ namespace Bicep.Core.Emit
                 var emitter = new ExpressionEmitter(memoryWriter, this.context);
                 // no templatehash, write to memory
                 this.Write(memoryWriter, emitter, emitMetadata: true);
-                // TODO: avoid reading the whole template into a string. Address this when ComputeTemplateHash 
+                // TODO: avoid reading the whole template into a string. Address this when ComputeTemplateHash
                 // has a streaming variant.
                 templateString = stringWriter.ToString();
             }
@@ -120,7 +120,6 @@ namespace Bicep.Core.Emit
         {
             this.Write(this.writer, new ExpressionEmitter(this.writer, this.context), emitMetadata: false);
         }
-
 
         private void Write(JsonTextWriter memoryWriter, ExpressionEmitter emitter, bool emitMetadata)
         {
@@ -298,14 +297,15 @@ namespace Bicep.Core.Emit
             memoryWriter.WritePropertyName("resources");
             memoryWriter.WriteStartArray();
 
-            foreach (var resourceSymbol in this.context.SemanticModel.Root.GetAllResourceDeclarations())
+            var resources = this.context.ResourceItems;
+            foreach (var resource in resources)
             {
-                if (resourceSymbol.DeclaringResource.IsExistingResource())
+                if (resource.IsExistingResource)
                 {
                     continue;
                 }
 
-                this.EmitResource(memoryWriter, resourceSymbol, emitter);
+                this.EmitResource(memoryWriter, resource, emitter);
             }
 
             foreach (var moduleSymbol in this.context.SemanticModel.Root.ModuleDeclarations)
@@ -328,103 +328,53 @@ namespace Bicep.Core.Emit
             };
         }
 
-        private void EmitResource(JsonTextWriter memoryWriter, ResourceSymbol resourceSymbol, ExpressionEmitter emitter)
+        private void EmitResource(JsonTextWriter memoryWriter, ResourceItem resource, ExpressionEmitter emitter)
         {
             memoryWriter.WriteStartObject();
 
-            var typeReference = EmitHelpers.GetTypeReference(resourceSymbol);
-
-            // Note: conditions STACK with nesting.
-            //
-            // Children inherit the conditions of their parents, etc. This avoids a problem
-            // where we emit a dependsOn to something that's not in the template, or not
-            // being evaulated i the template. 
-            var conditions = new List<SyntaxBase>();
-            var loops = new List<(string name, ForSyntax @for, SyntaxBase? input)>();
-
-            var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resourceSymbol);
-            foreach (var ancestor in ancestors)
+            if (resource.Conditions.Length == 1)
             {
-                if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
-                    ancestor.Resource.DeclaringResource.Value is IfConditionSyntax ifCondition)
-                {
-                    conditions.Add(ifCondition.ConditionExpression);
-                }
-
-                if (ancestor.AncestorType == ResourceAncestorGraph.ResourceAncestorType.Nested &&
-                    ancestor.Resource.DeclaringResource.Value is ForSyntax @for)
-                {
-                    loops.Add((ancestor.Resource.Name, @for, null));
-                }
+                emitter.EmitProperty("condition", resource.Conditions[0]);
             }
-
-            // Unwrap the 'real' resource body if there's a condition
-            var body = resourceSymbol.DeclaringResource.Value;
-            switch (body)
-            {
-                case IfConditionSyntax ifCondition:
-                    body = ifCondition.Body;
-                    conditions.Add(ifCondition.ConditionExpression);
-                    break;
-
-                case ForSyntax @for:
-                    loops.Add((resourceSymbol.Name, @for, null));
-                    if (@for.Body is IfConditionSyntax loopFilter)
-                    {
-                        body = loopFilter.Body;
-                        conditions.Add(loopFilter.ConditionExpression);
-                    }
-                    else
-                    {
-                        body = @for.Body;
-                    }
-
-                    break;
-            }
-
-            if (conditions.Count == 1)
-            {
-                emitter.EmitProperty("condition", conditions[0]);
-            }
-            else if (conditions.Count > 1)
+            else if (resource.Conditions.Length > 1)
             {
                 var @operator = new BinaryOperationSyntax(
-                    conditions[0], 
+                    resource.Conditions[0],
                     SyntaxFactory.CreateToken(TokenType.LogicalAnd),
-                    conditions[1]);
-                for (var i = 2; i < conditions.Count; i++)
+                    resource.Conditions[1]);
+                for (var i = 2; i < resource.Conditions.Length; i++)
                 {
                     @operator = new BinaryOperationSyntax(
                         @operator,
                         SyntaxFactory.CreateToken(TokenType.LogicalAnd),
-                        conditions[i]);
+                        resource.Conditions[i]);
                 }
 
                 emitter.EmitProperty("condition", @operator);
             }
 
-            if (loops.Count == 1)
+            if (resource.Loops.Length == 1)
             {
-                var batchSize = GetBatchSize(resourceSymbol.DeclaringResource);
-                emitter.EmitProperty("copy", () => emitter.EmitCopyObject(loops[0].name, loops[0].@for, loops[0].input, batchSize: batchSize));
+                var loop = resource.Loops[0];
+                emitter.EmitProperty("copy", () => emitter.EmitCopyObject(loop.Name, loop.For, loop.Input, batchSize: loop.BatchSize));
             }
-            else if (loops.Count > 1)
+            else if (resource.Loops.Length> 1)
             {
                 throw new InvalidOperationException("nested loops are not supported");
             }
 
-            emitter.EmitProperty("type", typeReference.FullyQualifiedType);
-            emitter.EmitProperty("apiVersion", typeReference.ApiVersion);
-            if (context.SemanticModel.EmitLimitationInfo.ResourceScopeData.TryGetValue(resourceSymbol, out var scopeData) && scopeData.ResourceScopeSymbol is { } scopeResource)
+            emitter.EmitProperty("type", resource.Type.FullyQualifiedType);
+            emitter.EmitProperty("apiVersion", resource.Type.ApiVersion);
+            if (resource.Scope is not null)
             {
-                emitter.EmitProperty("scope", () => emitter.EmitUnqualifiedResourceId(scopeResource, scopeData.IndexExpression, body));
+                emitter.EmitProperty("scope", () => emitter.EmitUnqualifiedResourceId(resource.Scope.ScopeResource, resource.Scope.IndexExpression, resource.Body));
             }
 
-            emitter.EmitProperty("name", emitter.GetFullyQualifiedResourceName(resourceSymbol));
+            emitter.EmitProperty("name", emitter.GetFullyQualifiedResourceName(resource));
 
-            emitter.EmitObjectProperties((ObjectSyntax)body, ResourcePropertiesToOmit);
+            emitter.EmitObjectProperties(resource.Body, ResourcePropertiesToOmit);
 
-            this.EmitDependsOn(memoryWriter, resourceSymbol, emitter, body);
+            this.EmitDependsOn(memoryWriter, emitter, resource.Dependencies);
 
             memoryWriter.WriteEndObject();
         }
@@ -499,7 +449,7 @@ namespace Bicep.Core.Emit
                     {
                         body = @for.Body;
                     }
-                    
+
                     var batchSize = GetBatchSize(moduleSymbol.DeclaringModule);
                     emitter.EmitProperty("copy", () => emitter.EmitCopyObject(moduleSymbol.Name, @for, input: null, batchSize: batchSize));
                     break;
@@ -566,6 +516,27 @@ namespace Bicep.Core.Emit
             memoryWriter.WriteEndObject();
         }
 
+        private void EmitDependsOn(JsonTextWriter memoryWriter, ExpressionEmitter emitter, ImmutableArray<DependencyItem> dependencies)
+        {
+            if (!dependencies.Any())
+            {
+                return;
+            }
+
+            memoryWriter.WritePropertyName("dependsOn");
+            memoryWriter.WriteStartArray();
+            foreach (var dependency in dependencies)
+            {
+                if (dependency.Existing)
+                {
+                    continue;
+                }
+
+                emitter.EmitDependency(dependency);
+            }
+            memoryWriter.WriteEndArray();
+        }
+
         private void EmitDependsOn(JsonTextWriter memoryWriter, DeclaredSymbol declaredSymbol, ExpressionEmitter emitter, SyntaxBase newContext)
         {
             var dependencies = context.ResourceDependencies[declaredSymbol];
@@ -606,9 +577,9 @@ namespace Bicep.Core.Emit
 
                             break;
                         }
-                        
+
                         emitter.EmitResourceIdReference(moduleDependency, dependency.IndexExpression, newContext);
-                        
+
                         break;
                     default:
                         throw new InvalidOperationException($"Found dependency '{dependency.Resource.Name}' of unexpected type {dependency.GetType()}");

@@ -82,7 +82,7 @@ namespace Bicep.Core.Emit
                 case ResourceAccessSyntax _:
                 case VariableAccessSyntax _:
                     EmitLanguageExpression(syntax);
-                    
+
                     break;
 
                 default:
@@ -90,43 +90,88 @@ namespace Bicep.Core.Emit
             }
         }
 
-        public void EmitUnqualifiedResourceId(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
+        public LanguageExpression GetUnqualifiedResourceId(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
         {
             var converterForContext = converter.CreateConverterForIndexReplacement(ExpressionConverter.GetResourceNameSyntax(resourceSymbol), indexExpression, newContext);
+            return converterForContext.GetUnqualifiedResourceId(resourceSymbol);
+        }
 
-            var unqualifiedResourceId = converterForContext.GetUnqualifiedResourceId(resourceSymbol);
+        public void EmitUnqualifiedResourceId(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
+        {
+            var unqualifiedResourceId = GetUnqualifiedResourceId(resourceSymbol, indexExpression, newContext);
             var serialized = ExpressionSerializer.SerializeExpression(unqualifiedResourceId);
 
             writer.WriteValue(serialized);
         }
 
-        public void EmitResourceIdReference(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
+        public LanguageExpression GetResourceIdReference(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
         {
             var converterForContext = this.converter.CreateConverterForIndexReplacement(ExpressionConverter.GetResourceNameSyntax(resourceSymbol), indexExpression, newContext);
-            
-            var resourceIdExpression = converterForContext.GetFullyQualifiedResourceId(resourceSymbol);
+            return converterForContext.GetFullyQualifiedResourceId(resourceSymbol);
+        }
+
+        public void EmitResourceIdReference(ResourceSymbol resourceSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
+        {
+            var resourceIdExpression = GetResourceIdReference(resourceSymbol, indexExpression, newContext);
             var serialized = ExpressionSerializer.SerializeExpression(resourceIdExpression);
 
             writer.WriteValue(serialized);
+        }
+
+        public LanguageExpression GetResourceIdReference(ModuleSymbol moduleSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
+        {
+            var converterForContext = this.converter.CreateConverterForIndexReplacement(ExpressionConverter.GetModuleNameSyntax(moduleSymbol), indexExpression, newContext);
+            return converterForContext.GetFullyQualifiedResourceId(moduleSymbol);
         }
 
         public void EmitResourceIdReference(ModuleSymbol moduleSymbol, SyntaxBase? indexExpression, SyntaxBase newContext)
         {
-            var converterForContext = this.converter.CreateConverterForIndexReplacement(ExpressionConverter.GetModuleNameSyntax(moduleSymbol), indexExpression, newContext);
-            
-            var resourceIdExpression = converterForContext.GetFullyQualifiedResourceId(moduleSymbol);
+            var resourceIdExpression = GetResourceIdReference(moduleSymbol, indexExpression, newContext);
             var serialized = ExpressionSerializer.SerializeExpression(resourceIdExpression);
 
             writer.WriteValue(serialized);
         }
 
-        public LanguageExpression GetFullyQualifiedResourceName(ResourceSymbol resourceSymbol)
+        public LanguageExpression GetFullyQualifiedResourceName(ResourceItem resourceItem)
         {
-            return converter.GetFullyQualifiedResourceName(resourceSymbol);
+            return converter.GetFullyQualifiedResourceName(resourceItem);
         }
 
         public LanguageExpression GetManagementGroupResourceId(SyntaxBase managementGroupNameProperty, bool fullyQualified)
             => converter.GenerateManagementGroupResourceId(managementGroupNameProperty, fullyQualified);
+
+        public void EmitDependency(DependencyItem dependency)
+        {
+            switch (dependency.Symbol)
+                {
+                    case ResourceSymbol resourceDependency:
+                        if (resourceDependency.IsCollection && dependency.IndexExpression == null)
+                        {
+                            // dependency is on the entire resource collection
+                            // write the name of the resource collection as the dependency
+                            writer.WriteValue(resourceDependency.DeclaringResource.Name.IdentifierName);
+                            break;
+                        }
+
+                        EmitResourceIdReference(resourceDependency, dependency.IndexExpression, dependency.NewContext);
+                        break;
+
+                    case ModuleSymbol moduleDependency:
+                        if (moduleDependency.IsCollection && dependency.IndexExpression == null)
+                        {
+                            // dependency is on the entire module collection
+                            // write the name of the module collection as the dependency
+                            writer.WriteValue(moduleDependency.DeclaringModule.Name.IdentifierName);
+                            break;
+                        }
+
+                        EmitResourceIdReference(moduleDependency, dependency.IndexExpression, dependency.NewContext);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Found dependency '{dependency.Symbol.Name}' of unexpected type {dependency.GetType()}");
+                }
+        }
 
         public void EmitLanguageExpression(SyntaxBase syntax)
         {
@@ -137,8 +182,8 @@ namespace Bicep.Core.Emit
                 return;
             }
 
-            if (syntax is FunctionCallSyntax functionCall && 
-                symbol is FunctionSymbol functionSymbol && 
+            if (syntax is FunctionCallSyntax functionCall &&
+                symbol is FunctionSymbol functionSymbol &&
                 string.Equals(functionSymbol.Name, "any", LanguageConstants.IdentifierComparison))
             {
                 // the outermost function in the current syntax node is the "any" function
@@ -225,7 +270,7 @@ namespace Bicep.Core.Emit
 
                         // mutate the expression
                         expression.Accept(visitor);
-                        
+
                         return expression;
                     });
                 }
@@ -296,7 +341,7 @@ namespace Bicep.Core.Emit
                 var converted = converter.ConvertExpression(value);
                 var transformed = convertedValueTransform(converted);
                 var serialized = ExpressionSerializer.SerializeExpression(transformed);
-                
+
                 this.writer.WriteValue(serialized);
             });
 

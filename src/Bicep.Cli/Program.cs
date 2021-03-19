@@ -13,6 +13,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.TypeSystem.Az;
+using Bicep.Core.TypeSystem.Radius;
 using Bicep.Core.Workspaces;
 using Bicep.Decompiler;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,7 @@ namespace Bicep.Cli
         public static int Main(string[] args)
         {
             BicepDeploymentsInterop.Initialize();
-            var program = new Program(new AzResourceTypeProvider(), Console.Out, Console.Error, ThisAssembly.AssemblyFileVersion);
+            var program = new Program(RadiusTypeProvider.MakeComposite(new AzResourceTypeProvider()), Console.Out, Console.Error, ThisAssembly.AssemblyFileVersion);
             return program.Run(args);
         }
 

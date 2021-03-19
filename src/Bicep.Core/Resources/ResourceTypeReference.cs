@@ -12,9 +12,11 @@ namespace Bicep.Core.Resources
 {
     public class ResourceTypeReference
     {
-        private static readonly Regex ResourceTypePattern = new Regex(@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-]+))+@(?<version>(\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?$)", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly Regex ResourceTypePattern = new Regex($@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-]+))+@{VersionPattern}$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        private static readonly Regex SingleTypePattern = new Regex(@"^(?<type>[a-z0-9\-]+)(@(?<version>(\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?))?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly Regex SingleTypePattern = new Regex($@"^(?<type>[a-z0-9\-]+)(@{VersionPattern})?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        private const string VersionPattern = @"(?<version>(((\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?)|(v[0-9][a-z0-9]+)))";
 
         public ResourceTypeReference(string @namespace, IEnumerable<string> types, string apiVersion)
         {
@@ -55,7 +57,7 @@ namespace Bicep.Core.Resources
 
         public bool IsParentOf(ResourceTypeReference other)
         {
-            return 
+            return
                 StringComparer.OrdinalIgnoreCase.Equals(this.Namespace, other.Namespace) &&
 
                 // Parent should have N types, child should have N+1, first N types should be equal
@@ -120,7 +122,7 @@ namespace Bicep.Core.Resources
             {
                 version = null;
             }
-            
+
             return true;
         }
     }
