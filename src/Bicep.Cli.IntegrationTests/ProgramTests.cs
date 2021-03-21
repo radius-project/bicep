@@ -24,7 +24,7 @@ namespace Bicep.Cli.IntegrationTests
 {
     [TestClass]
     public class ProgramTests
-    { 
+    {
         [NotNull]
         public TestContext? TestContext { get; set; }
 
@@ -60,7 +60,7 @@ namespace Bicep.Cli.IntegrationTests
 
             result.Should().Be(0);
             error.Should().BeEmpty();
-            
+
             output.Should().NotBeEmpty();
             output.Should().ContainAll(
                 "build",
@@ -93,7 +93,7 @@ namespace Bicep.Cli.IntegrationTests
             output.Should().BeEmpty();
 
             error.Should().NotBeEmpty();
-            error.Should().Be($"Unrecognized arguments 'wrong fake broken' specified. Use 'bicep --help' to view available options.{Environment.NewLine}");
+            error.Should().Be($"Unrecognized arguments 'wrong fake broken' specified. Use 'rad-bicep --help' to view available options.{Environment.NewLine}");
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@ namespace Bicep.Cli.IntegrationTests
             var actual = JToken.Parse(File.ReadAllText(compiledFilePath));
 
             actual.Should().EqualWithJsonDiffOutput(
-                TestContext, 
+                TestContext,
                 JToken.Parse(dataSet.Compiled!),
                 expectedLocation: Path.Combine("src", "Bicep.Core.Samples", "Files", dataSet.Name, DataSet.TestFileMainCompiled),
                 actualLocation: compiledFilePath);
@@ -170,7 +170,7 @@ namespace Bicep.Cli.IntegrationTests
             var actual = JToken.Parse(output);
 
             actual.Should().EqualWithJsonDiffOutput(
-                TestContext, 
+                TestContext,
                 JToken.Parse(dataSet.Compiled!),
                 expectedLocation: Path.Combine("src", "Bicep.Core.Samples", "Files", dataSet.Name, DataSet.TestFileMainCompiled),
                 actualLocation: compiledFilePath);
@@ -366,7 +366,7 @@ output myOutput string = 'hello!'
         {
             if (dataSetName == "Parameters_LF" || dataSetName == "Parameters_CRLF")
             {
-                // TODO: remove this branch when the support of parameter modifiers is dropped. 
+                // TODO: remove this branch when the support of parameter modifiers is dropped.
                 foreach(var line in error.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     line.Should().Contain("BCP161");
