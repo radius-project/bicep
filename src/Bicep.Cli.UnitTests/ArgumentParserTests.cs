@@ -110,7 +110,7 @@ namespace Bicep.Cli.UnitTests
         public void Build_with_outputdir_parameter_should_parse_correctly()
         {
             // Use relative . to ensure directory exists else the parser will throw.
-            var arguments = ArgumentParser.TryParse(new[] {"build", "--outdir", ".", "file1"}); 
+            var arguments = ArgumentParser.TryParse(new[] {"build", "--outdir", ".", "file1"});
             var bulidOrDecompileArguments = (BuildArguments?) arguments;
 
             // using classic assert so R# understands the value is not null
@@ -215,7 +215,7 @@ namespace Bicep.Cli.UnitTests
         public void Decompile_with_outputdir_parameter_should_parse_correctly()
         {
             // Use relative . to ensure directory exists else the parser will throw.
-            var arguments = ArgumentParser.TryParse(new[] {"decompile", "--outdir", ".", "file1"}); 
+            var arguments = ArgumentParser.TryParse(new[] {"decompile", "--outdir", ".", "file1"});
             var bulidOrDecompileArguments = (DecompileArguments?) arguments;
 
             // using classic assert so R# understands the value is not null

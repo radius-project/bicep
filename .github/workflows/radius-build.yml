@@ -1,0 +1,133 @@
+name: Radius Build
+
+on:
+  push:
+    branches: [ radius-compiler ]
+    tags:
+    - v*
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        submodules: true
+    - name: Parse release version and set environment variables
+      run: python ./.github/scripts/get_release_version.py
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+      
+    - name: Publish Bicep (Linux)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'linux-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/linux-x64
+    - name: Publish Bicep (MacOS)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'osx-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/macos-x64
+    - name: Publish Bicep (Windows)
+      run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -r 'win-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/windows-x64
+    - name: Publish Language Server
+      run: dotnet publish "./../Bicep.LangServer" -o "./bicepLanguageServer"
+      working-directory: ./src/vscode-bicep
+    - name: Publish VSIX
+      run: npm ci && npm run package
+      working-directory: ./src/vscode-bicep
+    - name: Copy VSIX
+      run: mkdir -p ./artifacts/vscode && cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
+    - name: Upload artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: artifacts
+        path: ./artifacts
+
+  publish:
+    name: Publish 
+    needs: ['build']
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        submodules: true
+    - name: Parse release version and set environment variables
+      run: python ./.github/scripts/get_release_version.py
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts
+    - name: Display artifacts
+      run: ls -R
+      working-directory: ./artifacts
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      name: Upload rad-bicep (Linux)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/linux-x64/
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      name: Upload rad-bicep (MacOS)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/macos-x64/
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      name: Upload rad-bicep (Windows)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/bicep/windows-x64/
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe'
+        sync: true
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      name: Upload VS Code (channel)
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/vscode/
+        extra_args: '--destination-path ./vscode/${{ env.REL_CHANNEL }}/'
+        sync: true
+
+    # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
+    # release and see if it's newer. This prevents a patch release of an older vintage from overwriting
+    # a newer release
+    - name: Download version marker file
+      run: |
+        curl https://radiuspublic.blob.core.windows.net/version/stable.txt -o current-stable.txt
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+    - name: Get version
+      id: setcurrentversion
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      run: echo ::set-output name=version::$(cat current-stable.txt)
+    - name: Compare versions
+      uses: madhead/semver-utils@latest
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      id: compare
+      with:
+        version: ${{ env.REL_CHANNEL }}.0
+        compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
+    - name: Print info (for sanity)
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      run: |
+        echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
+        echo "this build channel: ${{ env.REL_CHANNEL }}"
+        echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      name: Upload VS Code (channel)
+      if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/vscode/
+        extra_args: '--destination-path ./vscode/stable/'
+        sync: true

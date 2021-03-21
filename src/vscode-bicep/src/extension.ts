@@ -38,7 +38,15 @@ class BicepExtension extends Disposable {
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  const stable = vscode.extensions.getExtension('ms-azuretools.vscode-bicep');
+  if (stable !== undefined) {
+    throw new Error(
+      'The Radius Bicep extension cannot be used while the official Bicep extension is also enabled. Please ensure that only one version of the extension is enabled.',
+    );
+  }
+
   const extension = BicepExtension.create(context);
+
   const outputChannel = createAzExtOutputChannel("Bicep", "bicep");
 
   extension.register(outputChannel);

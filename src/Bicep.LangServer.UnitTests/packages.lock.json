@@ -2221,15 +2221,6 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "bicep": {
-        "type": "Project",
-        "dependencies": {
-          "Bicep.Core": "1.0.0",
-          "Bicep.Decompiler": "1.0.0",
-          "Microsoft.Extensions.Logging": "5.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "5.0.0"
-        }
-      },
       "bicep.core": {
         "type": "Project",
         "dependencies": {
@@ -2262,7 +2253,7 @@
           "MSTest.TestAdapter": "2.2.3",
           "MSTest.TestFramework": "2.2.5",
           "Microsoft.NET.Test.Sdk": "16.10.0",
-          "bicep": "1.0.0"
+          "rad-bicep": "1.0.0"
         }
       },
       "bicep.core.unittests": {
@@ -2296,6 +2287,15 @@
         "dependencies": {
           "Bicep.Core": "1.0.0",
           "OmniSharp.Extensions.LanguageServer": "0.19.2"
+        }
+      },
+      "rad-bicep": {
+        "type": "Project",
+        "dependencies": {
+          "Bicep.Core": "1.0.0",
+          "Bicep.Decompiler": "1.0.0",
+          "Microsoft.Extensions.Logging": "5.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "5.0.0"
         }
       }
     },

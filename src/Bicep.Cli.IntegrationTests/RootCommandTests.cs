@@ -26,7 +26,7 @@ namespace Bicep.Cli.IntegrationTests
                 output.Should().BeEmpty();
 
                 error.Should().NotBeEmpty();
-                error.Should().Contain($"Unrecognized arguments \"wrong fake broken\" specified. Use \"bicep --help\" to view available options.");
+                error.Should().Contain($"Unrecognized arguments \"wrong fake broken\" specified. Use \"rad-bicep --help\" to view available options.");
             }
         }
 
