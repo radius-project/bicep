@@ -1341,15 +1341,6 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "bicep": {
-        "type": "Project",
-        "dependencies": {
-          "Bicep.Core": "1.0.0",
-          "Bicep.Decompiler": "1.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
-        }
-      },
       "bicep.core": {
         "type": "Project",
         "dependencies": {
@@ -1375,6 +1366,15 @@
           "Bicep.Core": "1.0.0",
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "6.0.0"
+        }
+      },
+      "rad-bicep": {
+        "type": "Project",
+        "dependencies": {
+          "Bicep.Core": "1.0.0",
+          "Bicep.Decompiler": "1.0.0",
+          "Microsoft.Extensions.Logging": "6.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
         }
       }
     },

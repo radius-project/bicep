@@ -3,5 +3,8 @@
   "version": "0.4",
   "cloudBuild": {
     "setVersionVariables": false
-  }
+  },
+  "publicReleaseRefSpec": [
+    "^refs/heads/radius-compiler$"
+  ]
 }

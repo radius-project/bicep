@@ -2276,15 +2276,6 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "bicep": {
-        "type": "Project",
-        "dependencies": {
-          "Bicep.Core": "1.0.0",
-          "Bicep.Decompiler": "1.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
-        }
-      },
       "bicep.core": {
         "type": "Project",
         "dependencies": {
@@ -2335,6 +2326,15 @@
         "dependencies": {
           "Bicep.Core": "1.0.0",
           "OmniSharp.Extensions.LanguageServer": "0.19.2"
+        }
+      },
+      "rad-bicep": {
+        "type": "Project",
+        "dependencies": {
+          "Bicep.Core": "1.0.0",
+          "Bicep.Decompiler": "1.0.0",
+          "Microsoft.Extensions.Logging": "6.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
         }
       }
     },
