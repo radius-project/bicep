@@ -89,6 +89,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 MakeWebApp(),
                 MakeDaprComponent(),
                 MakeDaprStateStore(),
+                MakeServiceBusQueue(),
             };
 
             var type = new DiscriminatedObjectType(
@@ -326,6 +327,56 @@ namespace Bicep.Core.TypeSystem.Radius
 
             return new NamedObjectType(
                 name: "dapr.io/StateStore@v1alpha1",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    CommonProperties.Type,
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    CommonProperties.Application,
+                    kindProperty,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+        }
+
+        public static NamedObjectType MakeServiceBusQueue()
+        {
+            var configType = new NamedObjectType(
+                "config",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.Required),
+                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.Required),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var configProperty = new TypeProperty("config", configType);
+
+            var propertiesType = new NamedObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    configProperty,
+                    CommonProperties.ComponentDependsOn,
+                    CommonProperties.Provides,
+                    CommonProperties.Traits,
+                    CommonProperties.Scopes,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/ServiceBusQueue@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
+
+            return new NamedObjectType(
+                name: "azure.com/ServiceBusQueue@v1alpha1",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
