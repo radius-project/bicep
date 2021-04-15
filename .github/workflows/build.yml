@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches: [ radius-compiler ]
+    tags:
+    - v*
 
 jobs:
   build:
@@ -16,6 +18,8 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
         submodules: true
+    - name: Parse release version and set environment variables
+      run: python ./.github/scripts/get_release_version.py
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -46,6 +50,13 @@ jobs:
     needs: ['build']
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        submodules: true
+    - name: Parse release version and set environment variables
+      run: python ./.github/scripts/get_release_version.py
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
@@ -60,7 +71,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/linux-x64/
-        extra_args: '--destination-path ./bicep/edge/linux-x64/ --pattern rad-bicep'
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       name: Upload rad-bicep (MacOS)
@@ -68,7 +79,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/macos-x64/
-        extra_args: '--destination-path ./bicep/edge/macos-x64/ --pattern rad-bicep'
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       name: Upload rad-bicep (Windows)
@@ -76,7 +87,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/windows-x64/
-        extra_args: '--destination-path ./bicep/edge/windows-x64/ --pattern rad-bicep.exe'
+        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       name: Upload rad-bicep (Linux)
@@ -84,5 +95,5 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/vscode/
-        extra_args: '--destination-path ./vscode/edge/'
+        extra_args: '--destination-path ./vscode/${{ env.REL_CHANNEL }}/'
         sync: true
