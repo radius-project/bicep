@@ -308,11 +308,14 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public static NamedObjectType MakeDaprStateStore()
         {
+            var configKindType = new StringLiteralType("state.azure.tablestorage");
+
             var configType = new NamedObjectType(
                 "config",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
+                    new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
                     new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.Required),
                 },
                 additionalPropertiesType: null,
