@@ -90,10 +90,44 @@ jobs:
         extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
-      name: Upload rad-bicep (Linux)
+      name: Upload VS Code (channel)
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/vscode/
         extra_args: '--destination-path ./vscode/${{ env.REL_CHANNEL }}/'
+        sync: true
+
+    # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
+    # release and see if it's newer. This prevents a patch release of an older vintage from overwriting
+    # a newer release
+    - name: Download version marker file
+      run: |
+        curl https://radiuspublic.blob.core.windows.net/version/stable.txt -o current-stable.txt
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+    - name: Get version
+      id: setcurrentversion
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      run: echo ::set-output name=version::$(cat current-stable.txt)
+    - name: Compare versions
+      uses: madhead/semver-utils@latest
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      id: compare
+      with:
+        version: ${{ env.REL_CHANNEL }}.0
+        compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
+    - name: Print info (for sanity)
+      if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+      run: |
+        echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
+        echo "this build channel: ${{ env.REL_CHANNEL }}"
+        echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      name: Upload VS Code (channel)
+      if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
+      with:
+        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+        source_dir: ./artifacts/vscode/
+        extra_args: '--destination-path ./vscode/stable/'
         sync: true
