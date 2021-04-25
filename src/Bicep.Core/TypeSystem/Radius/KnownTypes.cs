@@ -308,7 +308,7 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public static NamedObjectType MakeDaprStateStore()
         {
-            var configKindType = new StringLiteralType("state.azure.tablestorage");
+            var configKindType = UnionType.Create(new StringLiteralType("state.azure.tablestorage"), new StringLiteralType("any"));
 
             var configType = new NamedObjectType(
                 "config",
