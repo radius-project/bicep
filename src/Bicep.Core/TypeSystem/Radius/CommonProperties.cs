@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Bicep.Core.TypeSystem.Radius
 {
     internal static class CommonProperties
@@ -23,23 +25,53 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public static readonly TypeProperty Run = new TypeProperty("run", LanguageConstants.Any);
 
-        public static readonly TypeProperty ComponentDependsOn = new TypeProperty("dependsOn", LanguageConstants.Array);
+        public static readonly NamedObjectType UsesSecretsKeysType = new NamedObjectType(
+            "keys",
+            validationFlags: TypeSymbolValidationFlags.Default,
+            properties: Array.Empty<TypeProperty>(),
+            additionalPropertiesType: new ExpressionType("secret expression", LanguageConstants.LooseString),
+            additionalPropertiesFlags: TypePropertyFlags.None);
 
-        private static readonly NamedObjectType ComponentProvidesObjectType = new NamedObjectType(
-                "provides",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.Required),
-                    new TypeProperty("kind", LanguageConstants.String, TypePropertyFlags.Required),
-                    new TypeProperty("containerPort", LanguageConstants.Int, TypePropertyFlags.None),
-                },
-                additionalPropertiesType: LanguageConstants.Any,
-                additionalPropertiesFlags: TypePropertyFlags.None);
+        public static readonly NamedObjectType UsesSecretsType = new NamedObjectType(
+            "secrets",
+            validationFlags: TypeSymbolValidationFlags.Default,
+            properties: new []
+            {
+                new TypeProperty("store", new ExpressionType("binding expression", CommonBindings.BindingType), TypePropertyFlags.Required),
+                new TypeProperty("keys", UsesSecretsKeysType, TypePropertyFlags.Required),
+            },
+            additionalPropertiesType: null,
+            additionalPropertiesFlags: TypePropertyFlags.None);
 
-        public static readonly TypedArrayType ComponentProvidesArrayType = new TypedArrayType(ComponentProvidesObjectType, TypeSymbolValidationFlags.WarnOnTypeMismatch);
+        public static readonly NamedObjectType UsesEnvType = new NamedObjectType(
+            "env",
+            validationFlags: TypeSymbolValidationFlags.Default,
+            properties: Array.Empty<TypeProperty>(),
+            additionalPropertiesType: new ExpressionType("environment variable expression", LanguageConstants.LooseString),
+            additionalPropertiesFlags: TypePropertyFlags.None);
 
-        public static readonly TypeProperty Provides = new TypeProperty("provides", ComponentProvidesArrayType);
+        public static readonly NamedObjectType ComponentUsesType = new NamedObjectType(
+            "uses",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new []
+            {
+                new TypeProperty("binding", new ExpressionType("binding expression", CommonBindings.BindingType), TypePropertyFlags.None),
+                new TypeProperty("env", UsesEnvType, TypePropertyFlags.None),
+                new TypeProperty("secrets", UsesSecretsType, TypePropertyFlags.None)
+            },
+            additionalPropertiesType: null,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
+        public static readonly TypeProperty ComponentUses = new TypeProperty("uses", new TypedArrayType(ComponentUsesType, TypeSymbolValidationFlags.WarnOnTypeMismatch));
+
+        public static readonly NamedObjectType ComponentBindingsType = new NamedObjectType(
+            "bindings",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: Array.Empty<TypeProperty>(),
+            additionalPropertiesType: CommonBindings.BindingType,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
+        public static readonly TypeProperty Bindings = new TypeProperty("bindings", ComponentBindingsType);
 
         public static readonly TypeProperty Traits = new TypeProperty("traits", CommonTraits.TraitArrayType);
 

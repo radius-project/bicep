@@ -23,6 +23,7 @@ namespace Bicep.Core.Emit
         {
             var rewriter = new ResourceRewriter(semanticModel, resourceDependencies);
             var items = rewriter.TransformResources(semanticModel.Root.GetAllResourceDeclarations().ToArray());
+
             return items.ToImmutableArray();
         }
 

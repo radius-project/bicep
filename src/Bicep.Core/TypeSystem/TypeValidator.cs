@@ -50,6 +50,12 @@ namespace Bicep.Core.TypeSystem
                 return true;
             }
 
+            if (targetType is ExpressionType expressionType)
+            {
+                // "T" is assignable to "Expression<T>"
+                return AreTypesAssignable(sourceType, expressionType.ReturnType.Type);
+            }
+
             switch (targetType)
             {
                 case AnyType _:
@@ -110,7 +116,7 @@ namespace Bicep.Core.TypeSystem
 
                 case TypeSymbol _ when sourceType is UnionType sourceUnion:
                     // union types are guaranteed to be flat
-                    
+
                     // TODO: Replace with some sort of set intersection
                     // are all source type members assignable to the target type?
                     return sourceUnion.Members.All(sourceMember => AreTypesAssignable(sourceMember.Type, targetType) == true);
@@ -176,7 +182,7 @@ namespace Bicep.Core.TypeSystem
             if (AreTypesAssignable(expressionType, targetType) == false)
             {
                 // fundamentally different types - cannot assign
-                diagnosticWriter.Write(typeMismatchErrorFactory(targetType, expressionType, expression));
+             diagnosticWriter.Write(typeMismatchErrorFactory(targetType, expressionType, expression));
                 return targetType;
             }
 
@@ -387,7 +393,7 @@ namespace Bicep.Core.TypeSystem
                         GetPropertyMismatchErrorFactory(ShouldWarn(targetType), declaredProperty.Name),
                         skipConstantCheckForProperty,
                         skipTypeErrors: true);
-                        
+
                     narrowedProperties.Add(new TypeProperty(declaredProperty.Name, narrowedType, declaredProperty.Flags));
                 }
                 else
@@ -429,7 +435,7 @@ namespace Bicep.Core.TypeSystem
                     }
                     else
                     {
-                        error = validUnspecifiedProperties.Any() ? 
+                        error = validUnspecifiedProperties.Any() ?
                             builder.DisallowedInterpolatedKeyPropertyWithPermissibleProperties(shouldWarn, targetType, validUnspecifiedProperties) :
                             builder.DisallowedInterpolatedKeyProperty(shouldWarn, targetType);
                     }
@@ -483,7 +489,7 @@ namespace Bicep.Core.TypeSystem
         private static (IPositionable positionable, string blockName) GetMissingPropertyContext(ITypeManager typeManager, SyntaxBase expression)
         {
             var parent = typeManager.GetParent(expression);
-            
+
             // determine where to place the missing property error
             return parent switch
             {
@@ -492,7 +498,7 @@ namespace Bicep.Core.TypeSystem
 
                 // for declaration bodies, put it on the declaration identifier
                 ITopLevelNamedDeclarationSyntax declarationParent => (declarationParent.Name, declarationParent.Keyword.Text),
-                
+
                 // for conditionals, put it on the parent declaration identifier
                 // (the parent of a conditional can only be a resource or module declaration)
                 IfConditionSyntax ifCondition => GetMissingPropertyContext(typeManager, ifCondition),

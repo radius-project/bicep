@@ -23,6 +23,11 @@ namespace Bicep.Core.UnitTests.Assertions
             return new JTokenAssertions(instance);
         }
 
+        public static JTokenAssertions Should(this JObject? instance)
+        {
+            return new JTokenAssertions(instance);
+        }
+
         public static AndConstraint<JTokenAssertions> EqualWithJsonDiffOutput(this JTokenAssertions instance, TestContext testContext, JToken expected, string expectedLocation, string actualLocation, string because = "", params object[] becauseArgs)
         {
             const int truncate = 100;

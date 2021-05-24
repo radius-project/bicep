@@ -29,7 +29,7 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 new TypeProperty("kind", InboundRouteTraitKindType, TypePropertyFlags.Required),
                 new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.None),
-                new TypeProperty("service", LanguageConstants.String, TypePropertyFlags.Required),
+                new TypeProperty("binding", LanguageConstants.String, TypePropertyFlags.Required),
             },
             additionalPropertiesType: LanguageConstants.Any,
             additionalPropertiesFlags: TypePropertyFlags.None);

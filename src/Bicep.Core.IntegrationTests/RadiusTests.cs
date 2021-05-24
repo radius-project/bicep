@@ -235,6 +235,134 @@ resource app 'radius.dev/Applications@v1alpha1' = {
                 });
         }
 
+        [TestMethod]
+        public void Application_with_bindings_can_be_compiled()
+        {
+            var text = @"
+resource app 'radius.dev/Applications@v1alpha1' = {
+  name: 'app'
+
+  resource frontend 'Components' = {
+    name: 'frontend'
+    kind: 'radius.dev/Container@v1alpha1'
+    properties: {
+      run: {
+        container: {
+          image: 'rynowak/frontend:latest'
+        }
+      }
+      uses: [
+        {
+          binding: backend.properties.bindings.web
+          env: {
+            SERVICE__BACKEND__HOST: backend.properties.bindings.web.host
+            SERVICE__BACKEND__PORT: backend.properties.bindings.web.port
+          }
+        }
+      ]
+    }
+  }
+
+  resource backend 'Components' = {
+    name: 'backend'
+    kind: 'radius.dev/Container@v1alpha1'
+    properties: {
+      run: {
+        container: {
+          image: 'rynowak/backend:latest'
+        }
+      }
+      bindings: {
+        web: {
+          kind: 'http'
+          port: 3000
+        }
+      }
+    }
+  }
+}
+";
+
+            var compilation = new Compilation(new RadiusTypeProvider(), SyntaxTreeGroupingFactory.CreateFromText(text));
+            var model = compilation.GetEntrypointSemanticModel();
+            model.GetAllDiagnostics().Should().BeEmpty();
+
+            var applicationSymbol = model.Root.GetAllResourceDeclarations().Should().ContainSingle(r => r.Name == "app").Subject;
+            var applicationType = applicationSymbol.TryGetResourceTypeReference();
+            applicationType.Should().NotBeNull();
+            applicationType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Applications@v1alpha1"));
+
+            var frontendSymbol = model.Root.GetAllResourceDeclarations().Should().ContainSingle(r => r.Name == "frontend").Subject;
+            var frontendType = frontendSymbol.TryGetResourceTypeReference();
+            frontendType.Should().NotBeNull();
+            frontendType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Applications/Components@v1alpha1"));
+
+            var backendSymbol = model.Root.GetAllResourceDeclarations().Should().ContainSingle(r => r.Name == "backend").Subject;
+            var backendType = backendSymbol.TryGetResourceTypeReference();
+            backendType.Should().NotBeNull();
+            backendType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Applications/Components@v1alpha1"));
+
+            var (result, template) = Emit(compilation);
+            result.Diagnostics.Should().BeEmpty();
+
+            var resources = GetResources(template!);
+            resources.Should().HaveCount(4);
+
+            var application = resources.Where(r => r.IsApplicationType()).Should().ContainSingle().Subject;
+            application.Name.Value<string>().Should().BeEquivalentTo("[format('{0}/{1}', 'radius', 'app')]");
+            application.DependsOn!.Should().BeNull();
+
+            var frontend = resources.Where(r => r.IsComponentType() && r.NameContainsSegment("frontend")).Should().ContainSingle().Subject;
+            frontend.Name.Value<string>().Should().BeEquivalentTo("[format('{0}/{1}/{2}', 'radius', 'app', 'frontend')]");
+            frontend.DependsOn.Should().SatisfyRespectively(token =>
+            {
+                token.Value<string>().Should().BeEquivalentTo("[resourceId('Microsoft.CustomProviders/resourceProviders/Applications', 'radius', 'app')]");
+            });
+
+            frontend.Properties.Should().HaveValueAtPath("$.uses.[0].binding", new JValue("[[reference(resourceId('Microsoft.CustomProviders/resourceProviders/Applications/Components', 'radius', 'app', 'backend')).bindings.web]"));
+            frontend.Properties.Should().HaveValueAtPath("$.uses.[0].env.SERVICE__BACKEND__HOST", new JValue("[[reference(resourceId('Microsoft.CustomProviders/resourceProviders/Applications/Components', 'radius', 'app', 'backend')).bindings.web.host]"));
+            frontend.Properties.Should().HaveValueAtPath("$.uses.[0].env.SERVICE__BACKEND__PORT", new JValue("[[reference(resourceId('Microsoft.CustomProviders/resourceProviders/Applications/Components', 'radius', 'app', 'backend')).bindings.web.port]"));
+
+            var backend = resources.Where(r => r.IsComponentType() && r.NameContainsSegment("backend")).Should().ContainSingle().Subject;
+            backend.Name.Value<string>().Should().BeEquivalentTo("[format('{0}/{1}/{2}', 'radius', 'app', 'backend')]");
+            backend.DependsOn.Should().SatisfyRespectively(token =>
+            {
+                token.Value<string>().Should().BeEquivalentTo("[resourceId('Microsoft.CustomProviders/resourceProviders/Applications', 'radius', 'app')]");
+            });
+
+            var deployment = resources.Where(r => r.IsDeploymentType()).Should().ContainSingle().Subject;
+            deployment.Name.Value<string>().Should().BeEquivalentTo("[format('{0}/{1}/{2}', 'radius', 'app', 'default')]");
+            deployment.DependsOn.Should().SatisfyRespectively(
+                token =>
+                {
+                    token.Value<string>().Should().BeEquivalentTo("[resourceId('Microsoft.CustomProviders/resourceProviders/Applications', 'radius', 'app')]");
+                },
+                token =>
+                {
+                    token.Value<string>().Should().BeEquivalentTo("[resourceId('Microsoft.CustomProviders/resourceProviders/Applications/Components', 'radius', 'app', 'backend')]");
+                },
+                token =>
+                {
+                    token.Value<string>().Should().BeEquivalentTo("[resourceId('Microsoft.CustomProviders/resourceProviders/Applications/Components', 'radius', 'app', 'frontend')]");
+                });
+
+            var components = deployment.Node
+                .Property("properties")!.Should().BeOfType<JProperty>().Subject.Value.As<JObject>()
+                .Property("components")!.Should().BeOfType<JProperty>().Subject.Value.As<JArray>();
+            components.Should().SatisfyRespectively(
+                token =>
+                {
+                    var value = token.Should().BeOfType<JObject>().Subject.Property("componentName")!.Should().BeOfType<JProperty>().Subject.Value;
+                    value.Value<string>().Should().BeEquivalentTo("backend");
+                },
+                token =>
+                {
+                    var value = token.Should().BeOfType<JObject>().Subject.Property("componentName")!.Should().BeOfType<JProperty>().Subject.Value;
+                    value.Value<string>().Should().BeEquivalentTo("frontend");
+                });
+        }
+
+
         private (EmitResult result, JObject? template) Emit(Compilation compilation)
         {
             using var stream = new MemoryStream();
@@ -284,6 +412,8 @@ resource app 'radius.dev/Applications@v1alpha1' = {
             public JValue apiVersion => Node.Property("apiVersion")!.Should().BeOfType<JProperty>().Subject.Value.Should().BeOfType<JValue>().Subject;
 
             public JArray? DependsOn => Node.Property("dependsOn")?.Should().BeOfType<JProperty>().Subject.Value.Should().BeOfType<JArray>().Subject;
+
+            public JObject? Properties => Node.Property("properties").Should().BeOfType<JProperty>().Subject.Value.Should().BeOfType<JObject>().Subject;
 
             public bool IsApplicationType()
             {

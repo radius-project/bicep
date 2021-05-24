@@ -10,7 +10,7 @@ namespace Bicep.Core.TypeSystem
         Error,
 
         /// <summary>
-        /// Empty union of types. 
+        /// Empty union of types.
         /// </summary>
         Never,
 
@@ -63,5 +63,10 @@ namespace Bicep.Core.TypeSystem
         /// Module type
         /// </summary>
         Module,
+
+        /// <summary>
+        /// Expression type
+        /// </summary>
+        Expression,
     }
 }

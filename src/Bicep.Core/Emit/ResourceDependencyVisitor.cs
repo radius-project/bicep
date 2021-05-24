@@ -8,6 +8,7 @@ using Bicep.Core.DataFlow;
 using Bicep.Core.Extensions;
 using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
+using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Emit
 {
@@ -16,6 +17,7 @@ namespace Bicep.Core.Emit
         private readonly SemanticModel model;
         private readonly IDictionary<DeclaredSymbol, HashSet<ResourceDependency>> resourceDependencies;
         private DeclaredSymbol? currentDeclaration;
+        private bool isInsideExpressionContext;
 
         public static ImmutableDictionary<DeclaredSymbol, ImmutableHashSet<ResourceDependency>> GetResourceDependencies(SemanticModel model)
         {
@@ -105,9 +107,30 @@ namespace Bicep.Core.Emit
             this.currentDeclaration = prevDeclaration;
         }
 
+        public override void VisitObjectPropertySyntax(ObjectPropertySyntax syntax)
+        {
+            var type = model.GetDeclaredType(syntax);
+            if (type is ExpressionType)
+            {
+                isInsideExpressionContext = true;
+            }
+
+            base.VisitObjectPropertySyntax(syntax);
+
+            if (type is ExpressionType)
+            {
+                isInsideExpressionContext = false;
+            }
+        }
+
         public override void VisitVariableAccessSyntax(VariableAccessSyntax syntax)
         {
             if (currentDeclaration is null)
+            {
+                return;
+            }
+
+            if (isInsideExpressionContext)
             {
                 return;
             }
@@ -159,7 +182,7 @@ namespace Bicep.Core.Emit
             }
         }
 
-            
+
         private SyntaxBase? GetIndexExpression(SyntaxBase syntax, bool isCollection)
         {
             SyntaxBase? candidateIndexExpression = isCollection && this.model.Binder.GetParent(syntax) is ArrayAccessSyntax arrayAccess && ReferenceEquals(arrayAccess.BaseExpression, syntax)
@@ -186,7 +209,7 @@ namespace Bicep.Core.Emit
                 VariableSymbol variableSymbol => variableSymbol.DeclaringVariable.Value,
                 _ => throw new NotImplementedException($"Unexpected current declaration type '{this.currentDeclaration?.GetType().Name}'.")
             };
-            
+
             // using the resource/module body as the context to allow indexed depdnencies relying on the resource/module loop index to work as expected
             var inaccessibleLocals = dfa.GetInaccessibleLocalsAfterSyntaxMove(candidateIndexExpression, context);
             if(inaccessibleLocals.Any())
