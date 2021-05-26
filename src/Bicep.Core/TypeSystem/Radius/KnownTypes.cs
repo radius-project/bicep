@@ -85,12 +85,10 @@ namespace Bicep.Core.TypeSystem.Radius
             var members = new ITypeReference[]
             {
                 MakeContainer(),
-                MakeFunction(),
-                MakeWebApp(),
-                MakeDaprComponent(),
                 MakeDaprStateStore(),
                 MakeServiceBusQueue(),
-                MakeCosmosDocumentDb(),
+                MakeCosmosDBMongo(),
+                MakeCosmosDBSQL(),
                 MakeKeyVault(),
             };
 
@@ -158,147 +156,6 @@ namespace Bicep.Core.TypeSystem.Radius
                     CommonProperties.ApiVersion,
                     CommonProperties.DependsOn,
                     CommonProperties.Tags,
-                    kindProperty,
-                    propertiesProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-        }
-
-        public static NamedObjectType MakeFunction()
-        {
-            var codeProperty = new TypeProperty("code", LanguageConstants.Object);
-
-            var runType = new NamedObjectType(
-                "run",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    codeProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-            var runProperty = new TypeProperty("run", runType);
-            var propertiesType = new NamedObjectType(
-                "properties",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    runProperty,
-                    CommonProperties.ComponentDependsOn,
-                    CommonProperties.Provides,
-                    CommonProperties.Traits,
-                    CommonProperties.Scopes,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
-
-            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/Function@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
-
-            return new NamedObjectType(
-                name: "azure.com/Function@v1alpha1",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    CommonProperties.Id,
-                    CommonProperties.Name,
-                    CommonProperties.Type,
-                    CommonProperties.ApiVersion,
-                    CommonProperties.DependsOn,
-                    CommonProperties.Tags,
-                    CommonProperties.Application,
-                    kindProperty,
-                    propertiesProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-        }
-
-        public static NamedObjectType MakeWebApp()
-        {
-            var codeProperty = new TypeProperty("code", LanguageConstants.Object);
-
-            var runType = new NamedObjectType(
-                "run",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    codeProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-            var runProperty = new TypeProperty("run", runType);
-
-            var propertiesType = new NamedObjectType(
-                "properties",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    runProperty,
-                    CommonProperties.ComponentDependsOn,
-                    CommonProperties.Provides,
-                    CommonProperties.Traits,
-                    CommonProperties.Scopes,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
-
-            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/WebApp@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
-
-            return new NamedObjectType(
-                name: "azure.com/WebApp@v1alpha1",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    CommonProperties.Id,
-                    CommonProperties.Name,
-                    CommonProperties.Type,
-                    CommonProperties.ApiVersion,
-                    CommonProperties.DependsOn,
-                    CommonProperties.Tags,
-                    CommonProperties.Application,
-                    kindProperty,
-                    propertiesProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-        }
-
-        public static NamedObjectType MakeDaprComponent()
-        {
-            var configProperty = new TypeProperty("config", LanguageConstants.Object);
-
-            var propertiesType = new NamedObjectType(
-                "properties",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    configProperty,
-                    CommonProperties.ComponentDependsOn,
-                    CommonProperties.Provides,
-                    CommonProperties.Traits,
-                    CommonProperties.Scopes,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
-
-            var kindProperty = new TypeProperty("kind", new StringLiteralType("dapr.io/Component@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
-
-            return new NamedObjectType(
-                name: "dapr.io/Component@v1alpha1",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    CommonProperties.Id,
-                    CommonProperties.Name,
-                    CommonProperties.Type,
-                    CommonProperties.ApiVersion,
-                    CommonProperties.DependsOn,
-                    CommonProperties.Tags,
-                    CommonProperties.Application,
                     kindProperty,
                     propertiesProperty,
                 },
@@ -408,7 +265,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 additionalPropertiesFlags: TypePropertyFlags.None);
         }
 
-        public static NamedObjectType MakeCosmosDocumentDb()
+        public static NamedObjectType MakeCosmosDBMongo()
         {
             var configType = new NamedObjectType(
                 "config",
@@ -436,10 +293,59 @@ namespace Bicep.Core.TypeSystem.Radius
                 additionalPropertiesFlags: TypePropertyFlags.None);
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
-            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/CosmosDocumentDb@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
+            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/CosmosDBMongo@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
 
             return new NamedObjectType(
-                name: "azure.com/CosmosDocumentDb@v1alpha1",
+                name: "azure.com/CosmosDBMongo@v1alpha1",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    CommonProperties.Type,
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    CommonProperties.Application,
+                    kindProperty,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+        }
+
+        public static NamedObjectType MakeCosmosDBSQL()
+        {
+            var configType = new NamedObjectType(
+                "config",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.Required),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var configProperty = new TypeProperty("config", configType, TypePropertyFlags.Required);
+
+            var propertiesType = new NamedObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    configProperty,
+                    CommonProperties.ComponentDependsOn,
+                    CommonProperties.Provides,
+                    CommonProperties.Traits,
+                    CommonProperties.Scopes,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var kindProperty = new TypeProperty("kind", new StringLiteralType("azure.com/CosmosDBSQL@v1alpha1"), TypePropertyFlags.Required | TypePropertyFlags.Constant);
+
+            return new NamedObjectType(
+                name: "azure.com/CosmosDBSQL@v1alpha1",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
