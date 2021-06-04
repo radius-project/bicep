@@ -263,7 +263,7 @@ namespace Bicep.LanguageServer.Completions
             var dirs = Enumerable.Empty<Uri>();
 
 
-            // technically bicep files do not have to follow the bicep extension, so 
+            // technically bicep files do not have to follow the bicep extension, so
             // we are not enforcing *.bicep get files command
             if (FileResolver.TryDirExists(query))
             {
@@ -479,6 +479,11 @@ namespace Bicep.LanguageServer.Completions
 
                 return GetAccessibleDecoratorFunctions(namespaceType, enclosingDeclarationSymbol)
                     .Select(symbol => CreateSymbolCompletion(symbol, context.ReplacementRange));
+            }
+
+            if (declaredType is ObjectType objectType && objectType.AdditionalPropertiesType != null)
+            {
+                declaredType = compilation.GetEntrypointSemanticModel().GetTypeInfo(context.PropertyAccess.BaseExpression);
             }
 
             return GetProperties(declaredType)

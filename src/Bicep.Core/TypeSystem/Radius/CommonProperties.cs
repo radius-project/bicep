@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Immutable;
 
 namespace Bicep.Core.TypeSystem.Radius
 {
@@ -25,11 +26,15 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public static readonly TypeProperty Run = new TypeProperty("run", LanguageConstants.Any);
 
+        public static readonly TypeSymbol EnvVarType = UnionType.Create(LanguageConstants.LooseString, LanguageConstants.Bool, LanguageConstants.Int, LanguageConstants.Null);
+
+        public static readonly TypeSymbol SecretType = UnionType.Create(LanguageConstants.LooseString, LanguageConstants.Bool, LanguageConstants.Int, LanguageConstants.Null);
+
         public static readonly NamedObjectType UsesSecretsKeysType = new NamedObjectType(
             "keys",
             validationFlags: TypeSymbolValidationFlags.Default,
             properties: Array.Empty<TypeProperty>(),
-            additionalPropertiesType: new ExpressionType("secret expression", LanguageConstants.LooseString),
+            additionalPropertiesType: new ExpressionType("secret expression", SecretType),
             additionalPropertiesFlags: TypePropertyFlags.None);
 
         public static readonly NamedObjectType UsesSecretsType = new NamedObjectType(
@@ -47,7 +52,7 @@ namespace Bicep.Core.TypeSystem.Radius
             "env",
             validationFlags: TypeSymbolValidationFlags.Default,
             properties: Array.Empty<TypeProperty>(),
-            additionalPropertiesType: new ExpressionType("environment variable expression", LanguageConstants.LooseString),
+            additionalPropertiesType: new ExpressionType("environment variable expression", EnvVarType),
             additionalPropertiesFlags: TypePropertyFlags.None);
 
         public static readonly NamedObjectType ComponentUsesType = new NamedObjectType(

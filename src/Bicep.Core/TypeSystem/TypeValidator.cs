@@ -470,7 +470,7 @@ namespace Bicep.Core.TypeSystem
                         typeMismatchErrorFactory = (expectedType, actualType, errorExpression) => DiagnosticBuilder.ForPosition(errorExpression).ExpectedValueTypeMismatch(ShouldWarn(targetType), expectedType, actualType);
                     }
 
-                    var narrowedProperty = NarrowTypeInternal(
+                    var narrowedType = NarrowTypeInternal(
                         typeManager,
                         extraProperty.Value,
                         targetType.AdditionalPropertiesType.Type,
@@ -478,6 +478,12 @@ namespace Bicep.Core.TypeSystem
                         typeMismatchErrorFactory,
                         skipConstantCheckForProperty,
                         skipTypeErrors: true);
+
+                    if (extraProperty.TryGetKeyText() is string name)
+                    {
+                         var narrowedProperty = new TypeProperty(name, narrowedType, targetType.AdditionalPropertiesFlags);
+                        narrowedProperties.Add(narrowedProperty);
+                    }
 
                     // TODO should we try and narrow the additional properties type? May be difficult
                 }
