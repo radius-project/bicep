@@ -65,7 +65,7 @@ jobs:
     - name: Display artifacts
       run: ls -R
       working-directory: ./artifacts
-    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload rad-bicep (Linux)
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -73,7 +73,7 @@ jobs:
         source_dir: ./artifacts/bicep/linux-x64/
         extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep'
         sync: true
-    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload rad-bicep (MacOS)
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -81,7 +81,7 @@ jobs:
         source_dir: ./artifacts/bicep/macos-x64/
         extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep'
         sync: true
-    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload rad-bicep (Windows)
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -89,7 +89,7 @@ jobs:
         source_dir: ./artifacts/bicep/windows-x64/
         extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe'
         sync: true
-    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload VS Code (channel)
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -122,7 +122,7 @@ jobs:
         echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
         echo "this build channel: ${{ env.REL_CHANNEL }}"
         echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
-    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload VS Code (channel)
       if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
       with:
