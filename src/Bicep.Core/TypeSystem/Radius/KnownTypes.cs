@@ -318,7 +318,8 @@ namespace Bicep.Core.TypeSystem.Radius
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.Required),
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None);
