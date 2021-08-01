@@ -108,13 +108,23 @@ namespace Bicep.Core.TypeSystem.Radius
         {
             var kind = "radius.dev/Container@v1alpha1";
 
+            var envType = new NamedObjectType(
+                name: "env",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.String,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var envProperty = new TypeProperty("env", envType, TypePropertyFlags.None);
+
             var imageProperty = new TypeProperty("image", LanguageConstants.String, TypePropertyFlags.Required);
             var containerType = new NamedObjectType(
                 "container",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
-                    imageProperty
+                    imageProperty,
+                    envProperty,
                 },
                 additionalPropertiesType: LanguageConstants.Any,
                 additionalPropertiesFlags: TypePropertyFlags.None);
