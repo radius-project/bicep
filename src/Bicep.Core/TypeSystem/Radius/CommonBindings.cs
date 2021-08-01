@@ -57,6 +57,17 @@ namespace Bicep.Core.TypeSystem.Radius
             additionalPropertiesType: null,
             additionalPropertiesFlags: TypePropertyFlags.None);
 
+        public static NamedObjectType BindingRedis = new NamedObjectType(
+            "binding: redislabs.com/Redis",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new []
+            {
+                new TypeProperty("kind", new StringLiteralType("redislabs.com/Redis"), TypePropertyFlags.Required),
+                new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.None),
+            },
+            additionalPropertiesType: null,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
         public static NamedObjectType BindingMongo = new NamedObjectType(
             "binding: mongo.com/MongoDB",
             validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -139,6 +150,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 BindingCosmosDBMongo,
                 BindingSQL,
                 BindingCosmosDBSQL,
+                BindingRedis,
             });
 
         public static TypeProperty MakeBindingsProperty(Dictionary<string, ITypeReference>? builtIn)

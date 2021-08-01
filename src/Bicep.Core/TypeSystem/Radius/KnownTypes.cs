@@ -92,6 +92,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 MakeCosmosDBSQL(),
                 MakeKeyVault(),
                 MakeServiceBusQueue(),
+                MakeRedis(),
             };
 
             var type = new DiscriminatedObjectType(
@@ -204,6 +205,27 @@ namespace Bicep.Core.TypeSystem.Radius
             var bindings = new Dictionary<string, ITypeReference>()
             {
                 { "default", CommonBindings.BindingServiceBusQueue }
+            };
+
+            return MakeComponentType(kind, config: configType, bindings: bindings);
+        }
+
+        public static NamedObjectType MakeRedis()
+        {
+            var kind = "redislabs.com/Redis@v1alpha1";
+            var configType = new NamedObjectType(
+                "config",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+
+            var bindings = new Dictionary<string, ITypeReference>()
+            {
+                { "default", CommonBindings.BindingRedis },
             };
 
             return MakeComponentType(kind, config: configType, bindings: bindings);
