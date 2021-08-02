@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bicep.Core.TypeSystem.Radius
+namespace Bicep.Core.TypeSystem.Radius.V1
 {
     public static class CommonBindings
     {

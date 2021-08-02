@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace Bicep.Core.TypeSystem.Radius
+namespace Bicep.Core.TypeSystem.Radius.V1
 {
     public static class RadiusResources
     {

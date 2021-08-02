@@ -15,17 +15,16 @@ namespace Bicep.Core.TypeSystem
 {
     public class FunctionResolver
     {
-        private readonly ImmutableArray<FunctionOverload> functionOverloads;
         private readonly ImmutableArray<BannedFunction> bannedFunctions;
 
         public FunctionResolver(IEnumerable<FunctionOverload>? functionOverloads = null, IEnumerable<BannedFunction>? bannedFunctions = null)
         {
-            this.functionOverloads = functionOverloads?.ToImmutableArray() ?? ImmutableArray<FunctionOverload>.Empty;
+            this.FunctionOverloads = functionOverloads?.ToImmutableArray() ?? ImmutableArray<FunctionOverload>.Empty;
             this.bannedFunctions = bannedFunctions?.ToImmutableArray() ?? ImmutableArray<BannedFunction>.Empty;
-            
+
             // prepopulate cache with all known (non-wildcard) symbols
             // TODO: make cache building logic lazy
-            this.FunctionCache = this.functionOverloads
+            this.FunctionCache = this.FunctionOverloads
                 .Where(fo => fo is not FunctionWildcardOverload)
                 .GroupBy(fo => fo.Name, (name, overloads) => new FunctionSymbol(name, overloads), LanguageConstants.IdentifierComparer)
                 .ToDictionary<FunctionSymbol, string, FunctionSymbol?>(s => s.Name, s => s, LanguageConstants.IdentifierComparer);
@@ -33,10 +32,12 @@ namespace Bicep.Core.TypeSystem
             this.BannedFunctions = this.bannedFunctions.ToImmutableDictionary(bf => bf.Name, LanguageConstants.IdentifierComparer);
 
             // don't pre-build symbols for wildcard functions, because we don't want to equate two differently-named symbols with each other
-            this.FunctionWildcardOverloads = this.functionOverloads
+            this.FunctionWildcardOverloads = this.FunctionOverloads
                 .OfType<FunctionWildcardOverload>()
                 .ToImmutableArray();
         }
+
+        public ImmutableArray<FunctionOverload> FunctionOverloads { get; }
 
         private IDictionary<string, FunctionSymbol?> FunctionCache { get; }
 

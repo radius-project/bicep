@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Bicep.Core.Resources;
 
-namespace Bicep.Core.TypeSystem.Radius
+namespace Bicep.Core.TypeSystem.Radius.V1
 {
     internal static class KnownTypes
     {

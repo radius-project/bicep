@@ -2,9 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Immutable;
 
-namespace Bicep.Core.TypeSystem.Radius
+namespace Bicep.Core.TypeSystem.Radius.V1
 {
     internal static class CommonProperties
     {
@@ -19,12 +18,6 @@ namespace Bicep.Core.TypeSystem.Radius
         public static readonly TypeProperty DependsOn = new TypeProperty("dependsOn", new TypedArrayType(LanguageConstants.ResourceRef, TypeSymbolValidationFlags.Default), TypePropertyFlags.WriteOnly);
 
         public static readonly TypeProperty Tags = new TypeProperty("tags", LanguageConstants.Tags);
-
-        public static readonly TypeProperty Application = new TypeProperty("application", LanguageConstants.String);
-
-        public static readonly TypeProperty Config = new TypeProperty("config", LanguageConstants.Any);
-
-        public static readonly TypeProperty Run = new TypeProperty("run", LanguageConstants.Any);
 
         public static readonly TypeSymbol EnvVarType = UnionType.Create(LanguageConstants.LooseString, LanguageConstants.Bool, LanguageConstants.Int, LanguageConstants.Null);
 

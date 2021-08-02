@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 namespace Bicep.Core.IntegrationTests
 {
     [TestClass]
-    public class RadiusTests
+    public class RadiusTestsV1
     {
         [TestMethod]
         public void Application_with_components_can_be_compiled()
@@ -361,7 +361,6 @@ resource app 'radius.dev/Applications@v1alpha1' = {
                     value.Value<string>().Should().BeEquivalentTo("frontend");
                 });
         }
-
 
         private (EmitResult result, JObject? template) Emit(Compilation compilation)
         {
