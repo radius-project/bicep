@@ -11,7 +11,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Metadata;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
-using Bicep.Core.TypeSystem.Radius;
+using RadiusV1 = Bicep.Core.TypeSystem.Radius.V1;
 
 namespace Bicep.Core.Emit
 {
@@ -117,7 +117,7 @@ namespace Bicep.Core.Emit
 
             return new ResourceMetadata(
                 type: application.Type.Provider!.GetType(ResourceTypeReference.Parse("radius.dev/Applications/Deployments@v1alpha1"), ResourceTypeGenerationFlags.None),
-                typeReference: ResourceTypeReference.Parse($"{RadiusResources.DeploymentCRPType}@{RadiusResources.CRPApiVersion}"),
+                typeReference: ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.DeploymentCRPType}@{RadiusV1.RadiusResources.CRPApiVersion}"),
                 declaringSyntax: declaration,
                 nameSyntax: body.SafeGetPropertyByName("name")!.Value,
                 symbol: null!,
