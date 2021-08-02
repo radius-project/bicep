@@ -312,7 +312,7 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public static NamedObjectType MakeMongoDB()
         {
-            var kind = "mongodb.com/MongoDB@v1alpha1";
+            var kind = "mongodb.com/Mongo@v1alpha1";
             var configType = new NamedObjectType(
                 "config",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
