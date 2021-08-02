@@ -7,6 +7,10 @@ using System.Linq;
 using Bicep.Core.Resources;
 using Bicep.Core.Semantics.Metadata;
 
+using KnownTypesV1 = Bicep.Core.TypeSystem.Radius.KnownTypes;
+using KnownTypesv1alpha3u = Bicep.Core.TypeSystem.Radiusv1alpha3u.KnownTypes;
+using KnownTypesv1alpha3a = Bicep.Core.TypeSystem.Radiusv1alpha3a.KnownTypes;
+
 namespace Bicep.Core.TypeSystem.Radius
 {
     public class RadiusTypeProvider : ResourceTypeProvider
@@ -81,9 +85,21 @@ namespace Bicep.Core.TypeSystem.Radius
             public Loader(IResourceTypeProvider provider)
             {
                 var types = ImmutableDictionary.CreateBuilder<ResourceTypeReference, ResourceType>(ResourceTypeReferenceComparer.Instance);
-                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypes.MakeApplication(provider));
-                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ComponentResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypes.MakeComponent(provider));
-                types.Add(ResourceTypeReference.Parse($"{RadiusResources.DeploymentResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypes.MakeDeployment(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypesV1.MakeApplication(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ComponentResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypesV1.MakeComponent(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.DeploymentResourceType}@{RadiusResources.ResourceApiVersion}"), KnownTypesV1.MakeDeployment(provider));
+
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeApplication(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.BindingResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeTopLevelBinding(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ComponentResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeComponent(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ScopeResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeScope(provider));
+                types.Add(ResourceTypeReference.Parse($"{RadiusResources.ScopeBindingResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeScopeBinding(provider));
+
+                foreach (var type in KnownTypesv1alpha3a.MakeResourceTypes(provider))
+                {
+                    types.Add(type.TypeReference, type);
+                }
+
                 this.types = types.ToImmutable();
             }
 

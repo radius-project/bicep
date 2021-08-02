@@ -19,8 +19,16 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public const string ApplicationResourceType = "radius.dev/Applications";
 
+
+        public const string BindingResourceType = "radius.dev/Applications/Bindings";
+
         public const string ComponentResourceType = "radius.dev/Applications/Components";
 
         public const string DeploymentResourceType = "radius.dev/Applications/Deployments";
+
+        public const string ScopeResourceType = "radius.dev/Applications/Scopes";
+
+
+        public const string ScopeBindingResourceType = "radius.dev/Applications/Scopes/Bindings";
     }
 }

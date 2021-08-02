@@ -13,11 +13,11 @@ namespace Bicep.Core.Resources
     public class ResourceTypeReference
     {
         private static readonly RegexOptions PatternRegexOptions = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant;
-        private static readonly Regex ResourceTypePattern = new Regex(@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-]+))+@(?<version>[a-z0-9\-])*?", PatternRegexOptions);
+        private static readonly Regex ResourceTypePattern = new Regex(@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-\.]+))+@(?<version>[a-z0-9\-])*?", PatternRegexOptions);
 
-        private static readonly Regex VersionedResourceTypePattern = new Regex($@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-]+))+@({VersionPattern})$", PatternRegexOptions);
+        private static readonly Regex VersionedResourceTypePattern = new Regex($@"^(?<namespace>[a-z0-9][a-z0-9\.]*)(/(?<type>[a-z0-9\-\.]+))+@({VersionPattern})$", PatternRegexOptions);
 
-        private static readonly Regex SingleTypePattern = new Regex($@"^(?<type>[a-z0-9\-]+)(@{VersionPattern})?$", PatternRegexOptions);
+        private static readonly Regex SingleTypePattern = new Regex($@"^(?<type>[a-z0-9\-\.]+)(@{VersionPattern})?$", PatternRegexOptions);
 
 
         private const string VersionPattern = @"(?<version>(((\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?)|(v[0-9][a-z0-9]+)))";
