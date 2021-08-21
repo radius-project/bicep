@@ -20,7 +20,7 @@ namespace Bicep.Core.IntegrationTests
 
         private CompilationHelper.CompilationHelperContext GetCompilationContext()
         {
-            var features = BicepTestConstants.CreateFeaturesProvider(TestContext, importsEnabled: true);
+            var features = BicepTestConstants.CreateFeaturesProvider(TestContext, importsEnabled: true, symbolicNameCodegenEnabled: true);
             var resourceTypeLoader = BicepTestConstants.AzResourceTypeLoader;
             var namespaceProvider = new ExtensibilityNamespaceProvider(resourceTypeLoader, features);
 

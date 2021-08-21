@@ -109,7 +109,7 @@ namespace Bicep.Core.Emit
         {
             // Template is used for calcualting template hash, template jtoken is used for writing to file.
             var (template, templateJToken) = GenerateTemplateWithoutHash();
-            var templateHash = TemplateHelpers.ComputeTemplateHash(template.ToJToken());
+            var templateHash = TemplateHelpers.ComputeTemplateHash(template?.ToJToken() ?? templateJToken);
             if (templateJToken.SelectToken(GeneratorMetadataPath) is not JObject generatorObject)
             {
                 throw new InvalidOperationException($"generated template doesn't contain a generator object at the path {GeneratorMetadataPath}");
@@ -118,7 +118,7 @@ namespace Bicep.Core.Emit
             templateJToken.WriteTo(writer);
         }
 
-        private (Template, JToken) GenerateTemplateWithoutHash()
+        private (Template?, JToken) GenerateTemplateWithoutHash()
         {
             // TODO: since we merely return a JToken, refactor the emitter logic to add properties to a JObject
             // instead of writing to a JsonWriter and converting it to JToken at the end
@@ -152,7 +152,9 @@ namespace Bicep.Core.Emit
             jsonWriter.WriteEndObject();
 
             var content = stringWriter.ToString();
-            return (Template.FromJson<Template>(content), content.FromJson<JToken>());
+
+            Template.TryFromJson<Template>(content, out var template);
+            return (template, content.FromJson<JToken>());
         }
 
         private void EmitParametersIfPresent(JsonTextWriter jsonWriter, ExpressionEmitter emitter)
@@ -486,7 +488,21 @@ namespace Bicep.Core.Emit
 
             if (importSymbol is not null)
             {
-                emitter.EmitProperty("import", importSymbol.Name);
+                // TODO-RADIUS: right now we nest the import with a 'provider' property. This doesn't match what the official build does.
+                //emitter.EmitProperty("import", importSymbol.Name);
+                if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+                {
+                    emitter.EmitProperty("import", () =>
+                    {
+                        jsonWriter.WriteStartObject();
+                        emitter.EmitProperty("provider", importSymbol.Name);
+                        jsonWriter.WriteEnd();
+                    });
+                }
+                else
+                {
+                    emitter.EmitProperty("import", importSymbol.Name);
+                }
             }
 
             if (resource.IsAzResource)
@@ -515,6 +531,13 @@ namespace Bicep.Core.Emit
             }
             else
             {
+                // TODO-RADIUS: right now we rely on a name property, since we haven't adapted symbolic name support
+                if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+                {
+                    emitter.EmitProperty(AzResourceTypeProvider.ResourceNamePropertyName, emitter.GetFullyQualifiedResourceName(resource));
+                }
+
+
                 jsonWriter.WritePropertyName("properties");
                 jsonWriter.WriteStartObject();
 

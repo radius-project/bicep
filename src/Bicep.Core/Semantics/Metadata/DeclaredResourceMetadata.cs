@@ -23,7 +23,20 @@ namespace Bicep.Core.Semantics.Metadata
         public SyntaxBase NameSyntax => TryGetNameSyntax() ??
             throw new InvalidOperationException($"Failed to find a 'name' property for resource '{Symbol.Name}'");
 
-        public SyntaxBase? TryGetNameSyntax() => UniqueIdentifiers.TryGetValue(AzResourceTypeProvider.ResourceNamePropertyName);
+        public SyntaxBase? TryGetNameSyntax()
+        {
+            if (this.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+            {
+                // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
+                // nameValueSyntax = resource.Symbol.DeclaringResource
+                //     .TryGetBody()
+                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
+                return this.Symbol.NameSyntax;
+            }
+
+            return UniqueIdentifiers.TryGetValue(AzResourceTypeProvider.ResourceNamePropertyName);
+        }
 
         public SyntaxBase? TryGetScopeSyntax() => UniqueIdentifiers.TryGetValue(LanguageConstants.ResourceScopePropertyName);
 

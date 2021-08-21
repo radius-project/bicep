@@ -27,6 +27,9 @@
 		<PackageReference Include="System.IO.Abstractions" Version="13.2.47" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\Bicep.Types.Kubernetes\Bicep.Types.Kubernetes.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		<Compile Update="CoreResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>

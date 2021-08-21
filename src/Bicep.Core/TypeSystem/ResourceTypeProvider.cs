@@ -68,9 +68,15 @@ namespace Bicep.Core.TypeSystem
             return cache.GetOrAdd(flags, reference, () =>
             {
                 var components = this.loader!.LoadType(reference);
-                components = Az.AzResourceTypeProvider.SetBicepResourceProperties(components, flags, isExtensibility: true);
+
+                components = this.RewriteType(components, flags);
                 return new ResourceType(declaringNamespace, components.TypeReference, components.ValidParentScopes, components.Body, ImmutableHashSet.Create<string>("name"));
             });
+        }
+
+        protected virtual ResourceTypeComponents RewriteType(ResourceTypeComponents resourceType, ResourceTypeGenerationFlags flags)
+        {
+            return Az.AzResourceTypeProvider.SetBicepResourceProperties(resourceType, flags, isExtensibility: true);
         }
 
         public bool HasDefinedType(ResourceTypeReference typeReference)

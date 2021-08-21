@@ -2297,6 +2297,7 @@
           "Azure.Deployments.Templates": "1.0.253",
           "Azure.Identity": "1.5.0",
           "Azure.ResourceManager.Resources": "1.0.0-beta.3",
+          "Bicep.Types.Kubernetes": "1.0.0",
           "Microsoft.Extensions.Configuration": "6.0.0",
           "Microsoft.Extensions.Configuration.Binder": "6.0.0",
           "Microsoft.Extensions.Configuration.Json": "6.0.0",
@@ -2348,6 +2349,12 @@
         "dependencies": {
           "Bicep.Core": "1.0.0",
           "OmniSharp.Extensions.LanguageServer": "0.19.2"
+        }
+      },
+      "bicep.types.kubernetes": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.245"
         }
       },
       "rad-bicep": {

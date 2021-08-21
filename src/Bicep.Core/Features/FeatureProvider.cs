@@ -17,7 +17,7 @@ namespace Bicep.Core.Features
         private Lazy<bool> symbolicNameCodegenEnabledLazy = new(() => ReadBooleanEnvVar("BICEP_SYMBOLIC_NAME_CODEGEN_EXPERIMENTAL", defaultValue: false), LazyThreadSafetyMode.PublicationOnly);
         public bool SymbolicNameCodegenEnabled => symbolicNameCodegenEnabledLazy.Value;
 
-        private Lazy<bool> importsEnabledLazy = new(() => ReadBooleanEnvVar("BICEP_IMPORTS_ENABLED_EXPERIMENTAL", defaultValue: false), LazyThreadSafetyMode.PublicationOnly);
+        private Lazy<bool> importsEnabledLazy = new(() => ReadBooleanEnvVar("BICEP_IMPORTS_ENABLED_EXPERIMENTAL", defaultValue: true), LazyThreadSafetyMode.PublicationOnly);
         public bool ImportsEnabled => importsEnabledLazy.Value;
 
         public string AssemblyVersion => ThisAssembly.AssemblyFileVersion;

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azure.Deployments.Core.Extensions;
 using Azure.Deployments.Expression.Expressions;
@@ -60,6 +59,9 @@ namespace Bicep.Core.Emit
                     // using the throwing method to get semantic value of the string because
                     // error checking should have caught any errors by now
                     return ConvertString(stringSyntax);
+
+                case IdentifierSyntax identifierSyntax:
+                    return new JTokenExpression(identifierSyntax.IdentifierName);
 
                 case NullLiteralSyntax _:
                     return CreateFunction("null");
@@ -501,7 +503,22 @@ namespace Bicep.Core.Emit
             // TODO move this into az extension
             var typeReference = resource.TypeReference;
             var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
-            var nameExpression = ConvertExpression(resource.NameSyntax);
+            SyntaxBase nameValueSyntax;
+            if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+            {
+                // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
+                // nameValueSyntax = resource.Symbol.DeclaringResource
+                //     .TryGetBody()
+                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
+                nameValueSyntax = resource.Symbol.NameSyntax;
+            }
+            else
+            {
+                nameValueSyntax = resource.NameSyntax;
+            }
+
+            var nameExpression = ConvertExpression(nameValueSyntax);
 
             var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
 
@@ -560,7 +577,20 @@ namespace Bicep.Core.Emit
 
         public LanguageExpression GetFullyQualifiedResourceName(DeclaredResourceMetadata resource)
         {
-            var nameValueSyntax = resource.NameSyntax;
+            SyntaxBase nameValueSyntax;
+            if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+            {
+                // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
+                // nameValueSyntax = resource.Symbol.DeclaringResource
+                //     .TryGetBody()
+                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
+                nameValueSyntax = resource.Symbol.NameSyntax;
+            }
+            else
+            {
+                nameValueSyntax = resource.NameSyntax;
+            }
 
             var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
 

@@ -130,7 +130,22 @@ namespace Bicep.Core.Emit
 
         public void EmitResourceIdReference(DeclaredResourceMetadata resource, SyntaxBase? indexExpression, SyntaxBase newContext)
         {
-            var converterForContext = this.converter.CreateConverterForIndexReplacement(resource.NameSyntax, indexExpression, newContext);
+            SyntaxBase movedSyntax;
+            if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+            {
+                // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
+                // nameValueSyntax = resource.Symbol.DeclaringResource
+                //     .TryGetBody()
+                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
+                movedSyntax = resource.Symbol.NameSyntax;
+            }
+            else
+            {
+                movedSyntax = context.Settings.EnableSymbolicNames ? resource.Symbol.NameSyntax : resource.NameSyntax;
+            }
+
+            var converterForContext = this.converter.CreateConverterForIndexReplacement(movedSyntax, indexExpression, newContext);
 
             var resourceIdExpression = converterForContext.GetFullyQualifiedResourceId(resource);
             var serialized = ExpressionSerializer.SerializeExpression(resourceIdExpression);
