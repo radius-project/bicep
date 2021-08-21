@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bicep.Core.Utils;
 using Bicep.Core.TypeSystem.Radius;
+using Bicep.Core.TypeSystem;
 
 namespace Bicep.LanguageServer
 {

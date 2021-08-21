@@ -64,7 +64,7 @@ namespace Bicep.Core.Semantics.Metadata
             // Skip analysis for ErrorSymbol and similar cases, these are invalid cases, and won't be emitted.
             if (!resourceSymbols.Value.TryGetValue(resourceDeclarationSyntax, out var symbol) ||
                 symbol.TryGetResourceType() is not { } resourceType ||
-                symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceNamePropertyName) is not { } nameSyntax)
+                symbol.SafeGetBodyPropertyValue(TypeSystem.TypePropertyFlags.Identifier) is not { } nameSyntax)
             {
                 return null;
             }

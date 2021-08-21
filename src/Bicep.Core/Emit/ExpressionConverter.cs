@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azure.Deployments.Core.Extensions;
 using Azure.Deployments.Expression.Expressions;
@@ -58,6 +57,9 @@ namespace Bicep.Core.Emit
                     // using the throwing method to get semantic value of the string because
                     // error checking should have caught any errors by now
                     return ConvertString(stringSyntax);
+
+                case IdentifierSyntax identifierSyntax:
+                    return new JTokenExpression(identifierSyntax.IdentifierName);
 
                 case NullLiteralSyntax _:
                     return CreateFunction("null");
@@ -230,36 +232,48 @@ namespace Bicep.Core.Emit
             // special cases for certain resource property access. if we recurse normally, we'll end up
             // generating statements like reference(resourceId(...)).id which are not accepted by ARM
 
-            switch ((propertyName, context.Settings.EnableSymbolicNames))
+            if (resource.IsExtensionResource)
             {
-                case ("id", true):
-                case ("name", true):
-                case ("type", true):
-                case ("apiVersion", true):
-                    var symbolExpression = GenerateSymbolicReference(resource.Symbol.Name, indexExpression);
+                // For any property 'foo' of an extensibility resource we need to generate an expression like:
+                // [reference(resourceId(...), '...', 'full').properties.foo]
+                //
+                // All of the actual properties of the extensibility resource have an extra 'properties' node.
+                var reference = this.GetReferenceExpression(resource, indexExpression, full: true);
+                return AppendProperties(reference, new JTokenExpression("properties"), new JTokenExpression(propertyName));
+            }
+            else
+            {
+                switch ((propertyName, context.Settings.EnableSymbolicNames))
+                {
+                    case ("id", true):
+                    case ("name", true):
+                    case ("type", true):
+                    case ("apiVersion", true):
+                        var symbolExpression = GenerateSymbolicReference(resource.Symbol.Name, indexExpression);
 
-                    return AppendProperties(
-                        CreateFunction("resourceInfo", symbolExpression),
-                        new JTokenExpression(propertyName));
-                case ("id", false):
-                    // the ID is dependent on the name expression which could involve locals in case of a resource collection
-                    return GetFullyQualifiedResourceId(resource);
-                case ("name", false):
-                    // the name is dependent on the name expression which could involve locals in case of a resource collection
+                        return AppendProperties(
+                            CreateFunction("resourceInfo", symbolExpression),
+                            new JTokenExpression(propertyName));
+                    case ("id", false):
+                        // the ID is dependent on the name expression which could involve locals in case of a resource collection
+                        return GetFullyQualifiedResourceId(resource);
+                    case ("name", false):
+                        // the name is dependent on the name expression which could involve locals in case of a resource collection
 
-                    // Note that we don't want to return the fully-qualified resource name in the case of name property access.
-                    // we should return whatever the user has set as the value of the 'name' property for a predictable user experience.
-                    return ConvertExpression(resource.NameSyntax);
-                case ("type", false):
-                    return new JTokenExpression(resource.TypeReference.FullyQualifiedType);
-                case ("apiVersion", false):
-                    return new JTokenExpression(resource.TypeReference.ApiVersion);
-                case ("properties", _):
-                    // use the reference() overload without "full" to generate a shorter expression
-                    // this is dependent on the name expression which could involve locals in case of a resource collection
-                    return GetReferenceExpression(resource, indexExpression, false);
-                default:
-                    return null;
+                        // Note that we don't want to return the fully-qualified resource name in the case of name property access.
+                        // we should return whatever the user has set as the value of the 'name' property for a predictable user experience.
+                        return ConvertExpression(resource.NameSyntax);
+                    case ("type", false):
+                        return new JTokenExpression(resource.TypeReference.FullyQualifiedType);
+                    case ("apiVersion", false):
+                        return new JTokenExpression(resource.TypeReference.ApiVersion);
+                    case ("properties", _):
+                        // use the reference() overload without "full" to generate a shorter expression
+                        // this is dependent on the name expression which could involve locals in case of a resource collection
+                        return GetReferenceExpression(resource, indexExpression, false);
+                    default:
+                        return null;
+                }
             }
         }
 
@@ -375,7 +389,9 @@ namespace Bicep.Core.Emit
         public IEnumerable<LanguageExpression> GetResourceNameSegments(ResourceMetadata resource)
         {
             var typeReference = resource.TypeReference;
-            var nameSyntax = resource.NameSyntax;
+
+            // For an extension resource the symbolic name plays the role the resource name.
+            var nameSyntax = resource.IsExtensionResource ? resource.DeclaringSyntax.Name : resource.NameSyntax;
 
             if (resource.Parent is null)
             {
@@ -405,8 +421,10 @@ namespace Bicep.Core.Emit
                 }
                 else
                 {
-                    nameExpression = CreateConverterForIndexReplacement(current.Metadata!.NameSyntax, current.IndexExpression, current.Metadata!.Symbol.NameSyntax)
-                        .ConvertExpression(current.Metadata!.NameSyntax);
+                    // For an extension resource the symbolic name plays the role the resource name.
+                    var currentNameSyntax = current.Metadata!.IsExtensionResource ? current.Metadata!.DeclaringSyntax.Name : current.Metadata!.NameSyntax;
+                    nameExpression = CreateConverterForIndexReplacement(currentNameSyntax, current.IndexExpression, current.Metadata!.Symbol.NameSyntax)
+                        .ConvertExpression(currentNameSyntax);
                 }
 
                 var remaining = resource.TypeReference.Types.Length - segments.Count;
@@ -432,7 +450,8 @@ namespace Bicep.Core.Emit
 
         public LanguageExpression GetFullyQualifiedResourceName(ResourceMetadata resource)
         {
-            var nameValueSyntax = resource.NameSyntax;
+            // For an extension resource the symbolic name plays the role the resource name.
+            var nameValueSyntax = resource.IsExtensionResource ? resource.DeclaringSyntax.Name : resource.NameSyntax;
 
             // For a nested resource we need to compute the name
             if (resource.Parent is null)

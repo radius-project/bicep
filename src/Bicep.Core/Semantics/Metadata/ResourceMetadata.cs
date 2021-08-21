@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bicep.Core.Emit;
 using Bicep.Core.Resources;
+using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.Syntax;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Radius;
 
 namespace Bicep.Core.Semantics.Metadata
 {
@@ -52,5 +53,7 @@ namespace Bicep.Core.Semantics.Metadata
         public SyntaxBase? ScopeSyntax { get; }
 
         public bool IsExistingResource { get; }
+
+        public bool IsExtensionResource => Type.DeclaringNamespace.ProviderName != AzNamespaceType.BuiltInName && Type.DeclaringNamespace.ProviderName != RadiusArmNamespace.BuiltInName;
     }
 }

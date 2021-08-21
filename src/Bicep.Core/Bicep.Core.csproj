@@ -32,6 +32,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Bicep.Core.RegistryClient\Bicep.Core.RegistryClient.csproj" />
+	  <ProjectReference Include="..\Bicep.Types.Kubernetes\Bicep.Types.Kubernetes.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="CoreResources.Designer.cs">

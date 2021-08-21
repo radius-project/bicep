@@ -62,6 +62,21 @@ namespace Bicep.Core.TypeSystem
         /// <summary>
         /// Property that is not defined in Swagger, but still might be valid. We will show warning instead error.
         /// </summary>
-        FallbackProperty = 1 << 9
+        FallbackProperty = 1 << 9,
+
+        /// <summary>
+        /// Property that serves as a unique identifier for the resource.
+        /// </summary>
+        Identifier = 1 << 10,
+
+        /// <summary>
+        /// Property that identifies the scope of the resource.
+        /// </summary>
+        Scope = 1 << 11,
+
+        /// <summary>
+        /// Property that identifies a parent-child relationship.
+        /// </summary>
+        Parent = 1 << 12,
     }
 }

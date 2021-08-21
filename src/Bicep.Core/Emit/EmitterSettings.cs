@@ -9,7 +9,7 @@ namespace Bicep.Core.Emit
         public EmitterSettings(IFeatureProvider features)
         {
             AssemblyFileVersion = features.AssemblyVersion;
-            EnableSymbolicNames = features.SymbolicNameCodegenEnabled || features.ImportsEnabled;
+            EnableSymbolicNames = features.SymbolicNameCodegenEnabled;
         }
 
         /// <summary>

@@ -109,8 +109,8 @@ namespace Bicep.Core.Emit
         public void Write(JsonTextWriter writer)
         {
             // Template is used for calcualting template hash, template jtoken is used for writing to file.
-            var (template, templateJToken) = GenerateTemplateWithoutHash();
-            var templateHash = TemplateHelpers.ComputeTemplateHash(template.ToJToken());
+            var (_, templateJToken) = GenerateTemplateWithoutHash();
+            var templateHash = TemplateHelpers.ComputeTemplateHash(templateJToken);
             if (templateJToken.SelectToken(GeneratorMetadataPath) is not JObject generatorObject)
             {
                 throw new InvalidOperationException($"generated template doesn't contain a generator object at the path {GeneratorMetadataPath}");
@@ -119,7 +119,7 @@ namespace Bicep.Core.Emit
             templateJToken.WriteTo(writer);
         }
 
-        private (Template, JToken) GenerateTemplateWithoutHash()
+        private (Template?, JToken) GenerateTemplateWithoutHash()
         {
             // TODO: since we merely return a JToken, refactor the emitter logic to add properties to a JObject
             // instead of writing to a JsonWriter and converting it to JToken at the end
@@ -157,7 +157,7 @@ namespace Bicep.Core.Emit
             jsonWriter.WriteEndObject();
 
             var content = stringWriter.ToString();
-            return (Template.FromJson<Template>(content), content.FromJson<JToken>());
+            return (null, content.FromJson<JToken>());
         }
 
         private void EmitParametersIfPresent(JsonTextWriter jsonWriter, ExpressionEmitter emitter)
@@ -466,11 +466,24 @@ namespace Bicep.Core.Emit
                 throw new InvalidOperationException("nested loops are not supported");
             }
 
-            emitter.EmitProperty("type", resource.TypeReference.FullyQualifiedType);
-            emitter.EmitProperty("apiVersion", resource.TypeReference.ApiVersion);
-            if (context.SemanticModel.EmitLimitationInfo.ResourceScopeData.TryGetValue(resource, out var scopeData))
+            if (resource.IsExtensionResource)
             {
-                ScopeHelper.EmitResourceScopeProperties(context.SemanticModel, scopeData, emitter, body);
+                emitter.EmitProperty("type", $"{resource.TypeReference.FullyQualifiedType}@{resource.TypeReference.ApiVersion}");
+                emitter.EmitProperty("import", () =>
+                {
+                    jsonWriter.WriteStartObject();
+                    emitter.EmitProperty("provider", resource.Type.DeclaringNamespace.ProviderName);
+                    jsonWriter.WriteEndObject();
+                });
+            }
+            else
+            {
+                emitter.EmitProperty("type", resource.TypeReference.FullyQualifiedType);
+                emitter.EmitProperty("apiVersion", resource.TypeReference.ApiVersion);
+                if (context.SemanticModel.EmitLimitationInfo.ResourceScopeData.TryGetValue(resource, out var scopeData))
+                {
+                    ScopeHelper.EmitResourceScopeProperties(context.SemanticModel, scopeData, emitter, body);
+                }
             }
 
             emitter.EmitProperty("name", emitter.GetFullyQualifiedResourceName(resource));
@@ -486,7 +499,20 @@ namespace Bicep.Core.Emit
                 body = AddDecoratorsToBody(resource.Symbol.DeclaringResource, (ObjectSyntax)body, resource.Type);
             }
 
-            emitter.EmitObjectProperties((ObjectSyntax)body, ResourcePropertiesToOmit);
+            if (resource.IsExtensionResource)
+            {
+                // For extensions, the body is wrapped in an extra layer of 'properties'
+                emitter.EmitProperty("properties", () =>
+                {
+                    jsonWriter.WriteStartObject();
+                    emitter.EmitObjectProperties((ObjectSyntax)body, ResourcePropertiesToOmit);
+                    jsonWriter.WriteEndObject();
+                });
+            }
+            else
+            {
+                emitter.EmitObjectProperties((ObjectSyntax)body, ResourcePropertiesToOmit);
+            }
 
             this.EmitDependsOn(jsonWriter, resource, emitter, body);
 
