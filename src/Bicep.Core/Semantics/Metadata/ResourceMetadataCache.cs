@@ -61,7 +61,7 @@ namespace Bicep.Core.Semantics.Metadata
             // Skip analysis for ErrorSymbol and similar cases, these are invalid cases, and won't be emitted.
             if (!resourceSymbols.Value.TryGetValue(resourceDeclarationSyntax, out var symbol) ||
                 symbol.TryGetResourceType() is not { } resourceType ||
-                symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceNamePropertyName) is not { } nameSyntax)
+                symbol.SafeGetBodyPropertyValue(TypeSystem.TypePropertyFlags.Identifier) is not { } nameSyntax)
             {
                 return null;
             }
@@ -83,7 +83,8 @@ namespace Bicep.Core.Semantics.Metadata
                         new(parentMetadata, null, true),
                         dependencies.Select(d => new ResourceDependencyMetadata(d.Resource, d.IndexExpression)),
                         symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceScopePropertyName),
-                        symbol.DeclaringResource.IsExistingResource());
+                        symbol.DeclaringResource.IsExistingResource(),
+                        provider: null);
                 }
             }
             else if (symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceParentPropertyName) is { } referenceParentSyntax)
@@ -107,7 +108,8 @@ namespace Bicep.Core.Semantics.Metadata
                         new(parentMetadata, indexExpression, false),
                         dependencies.Select(d => new ResourceDependencyMetadata(d.Resource, d.IndexExpression)),
                         symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceScopePropertyName),
-                        symbol.DeclaringResource.IsExistingResource());
+                        symbol.DeclaringResource.IsExistingResource(),
+                        provider: null);
                 }
             }
             else
@@ -121,7 +123,8 @@ namespace Bicep.Core.Semantics.Metadata
                     null,
                     dependencies.Select(d => new ResourceDependencyMetadata(d.Resource, d.IndexExpression)),
                     symbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceScopePropertyName),
-                    symbol.DeclaringResource.IsExistingResource());
+                    symbol.DeclaringResource.IsExistingResource(),
+                    provider: null);
             }
 
             return null;

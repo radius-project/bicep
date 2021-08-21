@@ -8,9 +8,18 @@ using Bicep.Core.Semantics.Metadata;
 
 namespace Bicep.Core.TypeSystem
 {
-
     public abstract class ResourceTypeProvider : IResourceTypeProvider
     {
+        public static IResourceTypeProvider CreateDefault()
+        {
+            return new CompositeResourceTypeProvider(new []
+            {
+                new Radius.RadiusTypeProvider(),
+                new Kubernetes.KubernetesTypeProvider(),
+                Az.AzResourceTypeProvider.CreateWithAzTypes(),
+            });
+        }
+
         private class ResourceTypeCache
         {
             private class KeyComparer : IEqualityComparer<(ResourceTypeGenerationFlags flags, ResourceTypeReference type)>
@@ -60,21 +69,21 @@ namespace Bicep.Core.TypeSystem
                 return this.loader!.LoadType(typeReference);
             }
 
-            throw new InvalidOperationException($"type {typeReference} is not supported");
+            throw new InvalidOperationException($"type {typeReference.FullyQualifiedType} is not supported");
         }
 
         public ResourceType GetType(ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
         {
             if (!HasType(typeReference))
             {
-                return null!; // YOLO!
+                return OnFailedTypeLookup(typeReference, flags);
             }
 
             // It's important to cache this result because GenerateResourceType is an expensive operation
             return cache.GetOrAdd(flags, typeReference, () =>
             {
                 var resourceType = GenerateResourceType(typeReference);
-                return Az.AzResourceTypeProvider.SetBicepResourceProperties(resourceType, flags, isExtensibility: true);
+                return Az.AzResourceTypeProvider.SetBicepResourceProperties(resourceType, flags, isARMResource: false);
             });
         }
 
@@ -87,6 +96,11 @@ namespace Bicep.Core.TypeSystem
         public virtual ResourceMetadata CreateMetadata(ResourceMetadata input)
         {
             return input;
+        }
+
+        protected virtual ResourceType OnFailedTypeLookup(ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
+        {
+            return null!; // YOLO!
         }
     }
 }

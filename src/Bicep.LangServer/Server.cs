@@ -99,7 +99,7 @@ namespace Bicep.LanguageServer
             var fileResolver = creationOptions.FileResolver ?? new FileResolver();
             // using type based registration so dependencies can be injected automatically
             // without manually constructing up the graph
-            services.AddSingleton<IResourceTypeProvider>(services => creationOptions.ResourceTypeProvider ?? RadiusTypeProvider.MakeComposite(AzResourceTypeProvider.CreateWithAzTypes()));
+            services.AddSingleton<IResourceTypeProvider>(services => creationOptions.ResourceTypeProvider ?? ResourceTypeProvider.CreateDefault());
             services.AddSingleton<ISnippetsProvider>(services => creationOptions.SnippetsProvider ?? new SnippetsProvider(fileResolver));
             services.AddSingleton<IFileResolver>(services => fileResolver);
             services.AddSingleton<IFeatureProvider>(services => creationOptions.Features ?? new FeatureProvider());

@@ -120,7 +120,7 @@ resource app 'radius.dev/Application@v1alpha3' = {
 resource app 'radius.dev/Application@v1alpha3' = {
   name: 'app'
 
-  resource db 'mongodb.com.MongoComponent' = {
+  resource db 'mongodb.com.MongoDBComponent' = {
     name: 'db'
     properties: {
       managed: true
@@ -163,14 +163,14 @@ output connectionString string = app::db.connectionString()
                         ["image"] = new JValue("rynowak/backend:latest"),
                         ["env"] = new JObject()
                         {
-                            ["CONNECTION_STRING"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
+                            ["CONNECTION_STRING"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
                         }
                     }
                 },
                 ["dependsOn"] = new JArray()
                 {
                     new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application', 'radiusv3', 'app')]"),
-                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db')]"),
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db')]"),
                 },
             });
 
@@ -184,7 +184,7 @@ output connectionString string = app::db.connectionString()
             template.Should().HaveValueAtPath("$.outputs.connectionString", new JObject()
             {
                 ["type"] = new JValue("string"),
-                ["value"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
+                ["value"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
             });
         }
     }

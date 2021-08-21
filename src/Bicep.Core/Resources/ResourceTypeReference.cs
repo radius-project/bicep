@@ -20,7 +20,7 @@ namespace Bicep.Core.Resources
         private static readonly Regex SingleTypePattern = new Regex($@"^(?<type>[a-z0-9\-\.]+)(@{VersionPattern})?$", PatternRegexOptions);
 
 
-        private const string VersionPattern = @"(?<version>(((\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?)|(v[0-9][a-z0-9]+)))";
+        private const string VersionPattern = @"(?<version>(((\d{4}-\d{2}-\d{2})(-(preview|alpha|beta|rc|privatepreview))?)|(v[0-9][a-z0-9]*)))";
 
         public ResourceTypeReference(string @namespace, IEnumerable<string> types, string apiVersion)
         {

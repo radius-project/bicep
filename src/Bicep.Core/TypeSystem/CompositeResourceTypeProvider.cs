@@ -7,7 +7,7 @@ using System.Linq;
 using Bicep.Core.Resources;
 using Bicep.Core.Semantics.Metadata;
 
-namespace Bicep.Core.TypeSystem.Radius
+namespace Bicep.Core.TypeSystem
 {
     public class CompositeResourceTypeProvider : IResourceTypeProvider
     {

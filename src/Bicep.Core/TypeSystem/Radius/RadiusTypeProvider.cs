@@ -21,6 +21,11 @@ namespace Bicep.Core.TypeSystem.Radius
             Initialize(new Loader(this));
         }
 
+        protected override ResourceType OnFailedTypeLookup(ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
+        {
+            return null!;
+        }
+
         public override ResourceMetadata CreateMetadata(ResourceMetadata input)
         {
             if (input.TypeReference.ApiVersion == "v1alpha3")
@@ -39,7 +44,8 @@ namespace Bicep.Core.TypeSystem.Radius
                         parent,
                         input.Dependencies,
                         input.ScopeSyntax,
-                        input.IsExistingResource);
+                        input.IsExistingResource,
+                        input.Provider);
                 }
                 else
                 {
@@ -52,7 +58,8 @@ namespace Bicep.Core.TypeSystem.Radius
                         input.Parent,
                         input.Dependencies,
                         input.ScopeSyntax,
-                        input.IsExistingResource);
+                        input.IsExistingResource,
+                        input.Provider);
                 }
             }
 

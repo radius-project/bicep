@@ -55,7 +55,7 @@ namespace Bicep.Core.Emit
             // Skip analysis for ErrorSymbol and similar cases, these are invalid cases, and won't be emitted.
             if (model.GetSymbolInfo(syntax) is not ResourceSymbol resourceSymbol ||
                 resourceSymbol.TryGetResourceType() is not { } resourceType ||
-                resourceSymbol.SafeGetBodyPropertyValue(LanguageConstants.ResourceNamePropertyName) is not { } nameSyntax)
+                resourceSymbol.SafeGetBodyPropertyValue(TypePropertyFlags.Identifier) is not { } nameSyntax)
             {
                 // When invoked by BicepDeploymentGraphHandler, it's possible that the declaration is unbound.
                 return;

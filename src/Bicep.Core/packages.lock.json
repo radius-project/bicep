@@ -1460,6 +1460,12 @@
         "dependencies": {
           "Azure.Core": "1.14.0"
         }
+      },
+      "bicep.types.kubernetes": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.245"
+        }
       }
     },
     ".NETStandard,Version=v2.1/linux-musl-x64": {

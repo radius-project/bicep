@@ -20,7 +20,8 @@ namespace Bicep.Core.Semantics.Metadata
             ResourceMetadataParent? parent,
             IEnumerable<ResourceDependencyMetadata> dependencies,
             SyntaxBase? scopeSyntax,
-            bool isExistingResource)
+            bool isExistingResource,
+            string? provider)
         {
             // TODO: turn this into a record when the target framework supports it
             Type = type;
@@ -32,6 +33,7 @@ namespace Bicep.Core.Semantics.Metadata
             Dependencies = dependencies.ToImmutableArray();
             ScopeSyntax = scopeSyntax;
             IsExistingResource = isExistingResource;
+            Provider = provider;
         }
 
         public ResourceSymbol Symbol { get; }
@@ -42,7 +44,6 @@ namespace Bicep.Core.Semantics.Metadata
 
         public ResourceMetadataParent? Parent { get; }
 
-
         public ImmutableArray<ResourceDependencyMetadata> Dependencies { get; }
 
         public ResourceDeclarationSyntax DeclaringSyntax { get; }
@@ -52,6 +53,10 @@ namespace Bicep.Core.Semantics.Metadata
         public SyntaxBase? ScopeSyntax { get; }
 
         public bool IsExistingResource { get; }
+
+        public string? Provider { get; }
+
+        public bool IsExtensionResource => Provider is not null;
     }
 
     public class ResourceDependencyMetadata

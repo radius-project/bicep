@@ -96,7 +96,7 @@ namespace Bicep.Core.TypeSystem.Az
                 CreateGenericResourceBody(typeReference, p => true));
         }
 
-        internal static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags, bool isExtensibility = false)
+        internal static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags, bool isARMResource)
         {
             var bodyType = resourceType.Body.Type;
 
@@ -118,11 +118,11 @@ namespace Bicep.Core.TypeSystem.Az
                             bodyObjectType.AdditionalPropertiesFlags,
                             bodyObjectType.MethodResolver);
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isARMResource);
                         break;
                     }
 
-                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
+                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isARMResource);
                     break;
                 case DiscriminatedObjectType bodyDiscriminatedType:
                     if (bodyDiscriminatedType.TryGetDiscriminatorProperty(LanguageConstants.ResourceNamePropertyName) is not null &&
@@ -133,12 +133,12 @@ namespace Bicep.Core.TypeSystem.Az
                         // Keep it simple for now - we eventually plan to phase out the 'top-level child' syntax.
                         var bodyObjectType = CreateGenericResourceBody(resourceType.TypeReference, p => bodyDiscriminatedType.UnionMembersByKey.Values.Any(x => x.Properties.ContainsKey(p)));
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isARMResource);
                         break;
                     }
 
                     var bodyTypes = bodyDiscriminatedType.UnionMembersByKey.Values
-                        .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility));
+                        .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isARMResource));
                     bodyType = new DiscriminatedObjectType(
                         bodyDiscriminatedType.Name,
                         bodyDiscriminatedType.ValidationFlags,
@@ -154,7 +154,7 @@ namespace Bicep.Core.TypeSystem.Az
             return new ResourceType(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType, resourceType.Provider);
         }
 
-        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags, bool isExtensibility)
+        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags, bool isARMResource)
         {
             // Local function.
             static TypeProperty UpdateFlags(TypeProperty typeProperty, TypePropertyFlags flags) =>
@@ -163,60 +163,64 @@ namespace Bicep.Core.TypeSystem.Az
             var properties = objectType.Properties;
             var isExistingResource = flags.HasFlag(ResourceTypeGenerationFlags.ExistingResource);
 
-            var scopePropertyFlags = TypePropertyFlags.WriteOnly | TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.DisallowAny | TypePropertyFlags.LoopVariant;
+            var scopePropertyFlags = TypePropertyFlags.WriteOnly | TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.DisallowAny | TypePropertyFlags.LoopVariant | TypePropertyFlags.Scope;
             if (validParentScopes == ResourceScope.Resource)
             {
                 // resource can only be deployed as an extension resource - scope should be required
                 scopePropertyFlags |= TypePropertyFlags.Required;
             }
 
-            if (isExistingResource)
+            if (isARMResource)
             {
-                // we can refer to a resource at any scope if it is an existing resource not being deployed by this file
-                properties = properties.SetItem(LanguageConstants.ResourceScopePropertyName, ScopeHelper.CreateExistingResourceScopeProperty(validParentScopes, scopePropertyFlags));
-            }
-            else
-            {
-                // TODO: remove 'dependsOn' from the type library
-                properties = properties.SetItem(LanguageConstants.ResourceDependsOnPropertyName, new TypeProperty(LanguageConstants.ResourceDependsOnPropertyName, LanguageConstants.ResourceOrResourceCollectionRefArray, TypePropertyFlags.WriteOnly | TypePropertyFlags.DisallowAny));
 
-                if (ScopeHelper.TryCreateNonExistingResourceScopeProperty(validParentScopes, scopePropertyFlags) is { } scopeProperty)
+                if (isExistingResource)
                 {
-                    properties = properties.SetItem(LanguageConstants.ResourceScopePropertyName, scopeProperty);
+                    // we can refer to a resource at any scope if it is an existing resource not being deployed by this file
+                    properties = properties.SetItem(LanguageConstants.ResourceScopePropertyName, ScopeHelper.CreateExistingResourceScopeProperty(validParentScopes, scopePropertyFlags));
+                }
+                else
+                {
+                    // TODO: remove 'dependsOn' from the type library
+                    properties = properties.SetItem(LanguageConstants.ResourceDependsOnPropertyName, new TypeProperty(LanguageConstants.ResourceDependsOnPropertyName, LanguageConstants.ResourceOrResourceCollectionRefArray, TypePropertyFlags.WriteOnly | TypePropertyFlags.DisallowAny));
+
+                    if (ScopeHelper.TryCreateNonExistingResourceScopeProperty(validParentScopes, scopePropertyFlags) is { } scopeProperty)
+                    {
+                        properties = properties.SetItem(LanguageConstants.ResourceScopePropertyName, scopeProperty);
+                    }
+
+                    // TODO: move this to the type library.
+                    foreach (var propertyName in LanguageConstants.WriteOnlyDeployTimeConstantPropertyNames)
+                    {
+                        if (properties.TryGetValue(propertyName, out var typeProperty))
+                        {
+                            // Update tags for deploy-time constant properties that are not readable at deploy-time.
+                            properties = properties.SetItem(propertyName, UpdateFlags(typeProperty, typeProperty.Flags | TypePropertyFlags.DeployTimeConstant));
+                        }
+                    }
                 }
 
                 // TODO: move this to the type library.
-                foreach (var propertyName in LanguageConstants.WriteOnlyDeployTimeConstantPropertyNames)
+                foreach (var propertyName in LanguageConstants.ReadWriteDeployTimeConstantPropertyNames)
                 {
                     if (properties.TryGetValue(propertyName, out var typeProperty))
                     {
-                        // Update tags for deploy-time constant properties that are not readable at deploy-time.
-                        properties = properties.SetItem(propertyName, UpdateFlags(typeProperty, typeProperty.Flags | TypePropertyFlags.DeployTimeConstant));
+                        // Update tags for standardized resource properties that are always readable at deploy-time.
+                        properties = properties.SetItem(propertyName, UpdateFlags(typeProperty, typeProperty.Flags | TypePropertyFlags.ReadableAtDeployTime));
                     }
                 }
             }
 
-            // TODO: move this to the type library.
-            foreach (var propertyName in LanguageConstants.ReadWriteDeployTimeConstantPropertyNames)
-            {
-                if (properties.TryGetValue(propertyName, out var typeProperty))
-                {
-                    // Update tags for standardized resource properties that are always readable at deploy-time.
-                    properties = properties.SetItem(propertyName, UpdateFlags(typeProperty, typeProperty.Flags | TypePropertyFlags.ReadableAtDeployTime));
-                }
-            }
-
             // add the loop variant flag to the name property (if it exists)
-            if(properties.TryGetValue(LanguageConstants.ResourceNamePropertyName, out var nameProperty))
+            if (properties.TryGetValue(LanguageConstants.ResourceNamePropertyName, out var nameProperty))
             {
-                properties = properties.SetItem(LanguageConstants.ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
+                properties = properties.SetItem(LanguageConstants.ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant | TypePropertyFlags.Identifier));
             }
 
             // add the 'parent' property for child resource types that are not nested inside a parent resource
             if (!typeReference.IsRootType && !flags.HasFlag(ResourceTypeGenerationFlags.NestedResource))
             {
                 var parentType = LanguageConstants.CreateResourceScopeReference(ResourceScope.Resource);
-                var parentFlags = TypePropertyFlags.WriteOnly | TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.DisallowAny | TypePropertyFlags.LoopVariant;
+                var parentFlags = TypePropertyFlags.WriteOnly | TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.DisallowAny | TypePropertyFlags.LoopVariant | TypePropertyFlags.Parent;
 
                 properties = properties.SetItem(LanguageConstants.ResourceParentPropertyName, new TypeProperty(LanguageConstants.ResourceParentPropertyName, parentType, parentFlags));
             }
@@ -228,9 +232,8 @@ namespace Bicep.Core.TypeSystem.Az
                 properties = properties.SetItem("subscriptionId", new TypeProperty("subscriptionId", LanguageConstants.String, TypePropertyFlags.DeployTimeConstant));
             }
 
-            var functions = isExtensibility ? objectType.MethodResolver.FunctionOverloads : GetBicepMethods(typeReference);
-
-            if (!isExtensibility)
+            var functions = isARMResource ?  GetBicepMethods(typeReference) : objectType.MethodResolver.FunctionOverloads;
+            if (isARMResource)
             {
                 foreach (var item in LanguageConstants.KnownTopLevelResourceProperties())
                 {
@@ -247,7 +250,7 @@ namespace Bicep.Core.TypeSystem.Az
                 isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
                 isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
-                functions);
+                functions: functions);
         }
 
         private static IEnumerable<FunctionOverload> GetBicepMethods(ResourceTypeReference resourceType)
@@ -279,7 +282,9 @@ namespace Bicep.Core.TypeSystem.Az
             foreach (var property in properties)
             {
                 // "name", "scope" & "parent" can be set for existing resources - everything else should be read-only
-                if (WritableExistingResourceProperties.Contains(property.Name))
+                if (property.Flags.HasFlag(TypePropertyFlags.Identifier) ||
+                    property.Flags.HasFlag(TypePropertyFlags.Scope) ||
+                    property.Flags.HasFlag(TypePropertyFlags.Parent))
                 {
                     yield return property;
                 }
@@ -300,7 +305,7 @@ namespace Bicep.Core.TypeSystem.Az
             {
                 var resourceType = GenerateResourceType(typeReference);
 
-                return SetBicepResourceProperties(resourceType, flags);
+                return SetBicepResourceProperties(resourceType, flags, isARMResource: true);
             });
         }
 

@@ -297,6 +297,7 @@
           "Azure.Deployments.Templates": "1.0.207",
           "Azure.Identity": "1.4.0",
           "Bicep.Core.RegistryClient": "1.0.0",
+          "Bicep.Types.Kubernetes": "1.0.0",
           "Microsoft.Extensions.Configuration": "5.0.0",
           "Microsoft.Extensions.Configuration.Binder": "5.0.0",
           "Microsoft.Extensions.Configuration.Json": "5.0.0",
@@ -317,6 +318,12 @@
           "Bicep.Core": "1.0.0",
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "5.0.0"
+        }
+      },
+      "bicep.types.kubernetes": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.245"
         }
       }
     },

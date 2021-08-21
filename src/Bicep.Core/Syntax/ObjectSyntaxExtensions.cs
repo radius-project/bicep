@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bicep.Core.Extensions;
+using Bicep.Core.TypeSystem;
 
 namespace Bicep.Core.Syntax
 {
