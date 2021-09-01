@@ -96,7 +96,7 @@ namespace Bicep.Core.TypeSystem.Az
                 CreateGenericResourceBody(typeReference, p => true));
         }
 
-        internal static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags)
+        internal static ResourceType SetBicepResourceProperties(ResourceType resourceType, ResourceTypeGenerationFlags flags, bool isExtensibility = false)
         {
             var bodyType = resourceType.Body.Type;
 
@@ -118,11 +118,11 @@ namespace Bicep.Core.TypeSystem.Az
                             bodyObjectType.AdditionalPropertiesFlags,
                             bodyObjectType.MethodResolver);
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                         break;
                     }
 
-                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                    bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                     break;
                 case DiscriminatedObjectType bodyDiscriminatedType:
                     if (bodyDiscriminatedType.TryGetDiscriminatorProperty(LanguageConstants.ResourceNamePropertyName) is not null &&
@@ -133,12 +133,12 @@ namespace Bicep.Core.TypeSystem.Az
                         // Keep it simple for now - we eventually plan to phase out the 'top-level child' syntax.
                         var bodyObjectType = CreateGenericResourceBody(resourceType.TypeReference, p => bodyDiscriminatedType.UnionMembersByKey.Values.Any(x => x.Properties.ContainsKey(p)));
 
-                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags);
+                        bodyType = SetBicepResourceProperties(bodyObjectType, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility);
                         break;
                     }
 
                     var bodyTypes = bodyDiscriminatedType.UnionMembersByKey.Values
-                        .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags));
+                        .Select(x => SetBicepResourceProperties(x, resourceType.ValidParentScopes, resourceType.TypeReference, flags, isExtensibility));
                     bodyType = new DiscriminatedObjectType(
                         bodyDiscriminatedType.Name,
                         bodyDiscriminatedType.ValidationFlags,
@@ -154,7 +154,7 @@ namespace Bicep.Core.TypeSystem.Az
             return new ResourceType(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType, resourceType.Provider);
         }
 
-        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
+        private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags, bool isExtensibility)
         {
             // Local function.
             static TypeProperty UpdateFlags(TypeProperty typeProperty, TypePropertyFlags flags) =>
@@ -228,13 +228,16 @@ namespace Bicep.Core.TypeSystem.Az
                 properties = properties.SetItem("subscriptionId", new TypeProperty("subscriptionId", LanguageConstants.String, TypePropertyFlags.DeployTimeConstant));
             }
 
-            var functions = GetBicepMethods(typeReference);
+            var functions = isExtensibility ? objectType.MethodResolver.FunctionOverloads : GetBicepMethods(typeReference);
 
-            foreach (var item in LanguageConstants.KnownTopLevelResourceProperties())
+            if (!isExtensibility)
             {
-                if (!properties.ContainsKey(item.Name))
+                foreach (var item in LanguageConstants.KnownTopLevelResourceProperties())
                 {
-                    properties = properties.Add(item.Name, new TypeProperty(item.Name, item.TypeReference, item.Flags | TypePropertyFlags.FallbackProperty));
+                    if (!properties.ContainsKey(item.Name))
+                    {
+                        properties = properties.Add(item.Name, new TypeProperty(item.Name, item.TypeReference, item.Flags | TypePropertyFlags.FallbackProperty));
+                    }
                 }
             }
 

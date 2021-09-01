@@ -10,6 +10,7 @@ using Bicep.Core.Semantics.Metadata;
 using KnownTypesV1 = Bicep.Core.TypeSystem.Radius.KnownTypes;
 using KnownTypesv1alpha3u = Bicep.Core.TypeSystem.Radiusv1alpha3u.KnownTypes;
 using KnownTypesv1alpha3a = Bicep.Core.TypeSystem.Radiusv1alpha3a.KnownTypes;
+using KnownTypesv1alpha3f = Bicep.Core.TypeSystem.Radiusv1alpha3f.KnownTypes;
 
 namespace Bicep.Core.TypeSystem.Radius
 {
@@ -96,6 +97,11 @@ namespace Bicep.Core.TypeSystem.Radius
                 types.Add(ResourceTypeReference.Parse($"{RadiusResources.ScopeBindingResourceType}@v1alpha3u"), KnownTypesv1alpha3u.MakeScopeBinding(provider));
 
                 foreach (var type in KnownTypesv1alpha3a.MakeResourceTypes(provider))
+                {
+                    types.Add(type.TypeReference, type);
+                }
+
+                foreach (var type in KnownTypesv1alpha3f.MakeResourceTypes(provider))
                 {
                     types.Add(type.TypeReference, type);
                 }

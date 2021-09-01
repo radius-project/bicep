@@ -15,6 +15,7 @@ using Bicep.Core.Semantics.Metadata;
 using Bicep.Core.Syntax;
 using Bicep.Core.Syntax.Visitors;
 using Bicep.Core.TypeSystem;
+using Bicep.Core.TypeSystem.Radius.Analyzer;
 using Bicep.Core.Workspaces;
 
 namespace Bicep.Core.Semantics
@@ -25,6 +26,7 @@ namespace Bicep.Core.Semantics
         private readonly Lazy<SymbolHierarchy> symbolHierarchyLazy;
         private readonly Lazy<ResourceAncestorGraph> resourceAncestorsLazy;
         private readonly Lazy<LinterAnalyzer> linterAnalyzerLazy;
+        private readonly Lazy<RadiusAnalyzer> radiusAnalyzerLazy;
         private readonly Lazy<ImmutableArray<TypeProperty>> parameterTypePropertiesLazy;
         private readonly Lazy<ImmutableArray<TypeProperty>> outputTypePropertiesLazy;
 
@@ -66,6 +68,7 @@ namespace Bicep.Core.Semantics
             // lazy loading the linter will delay linter rule loading
             // and configuration loading until the linter is actually needed
             this.linterAnalyzerLazy = new Lazy<LinterAnalyzer>(() => new LinterAnalyzer());
+            this.radiusAnalyzerLazy = new Lazy<RadiusAnalyzer>(() => new RadiusAnalyzer());
 
             this.allResourcesLazy = new Lazy<ImmutableArray<ResourceMetadata>>(() => GetAllResourceMetadata());
 
@@ -166,6 +169,7 @@ namespace Bicep.Core.Semantics
         public IReadOnlyList<IDiagnostic> GetAnalyzerDiagnostics(ConfigHelper? overrideConfig = default)
         {
             var diagnostics = LinterAnalyzer.Analyze(this, overrideConfig);
+            diagnostics = diagnostics.Concat(this.radiusAnalyzerLazy.Value.Analyze(this));
 
             var diagnosticWriter = ToListDiagnosticWriter.Create();
             diagnosticWriter.WriteMultiple(diagnostics);

@@ -74,7 +74,7 @@ namespace Bicep.Core.TypeSystem
             return cache.GetOrAdd(flags, typeReference, () =>
             {
                 var resourceType = GenerateResourceType(typeReference);
-                return Az.AzResourceTypeProvider.SetBicepResourceProperties(resourceType, flags);
+                return Az.AzResourceTypeProvider.SetBicepResourceProperties(resourceType, flags, isExtensibility: true);
             });
         }
 

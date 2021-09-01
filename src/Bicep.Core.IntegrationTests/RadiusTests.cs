@@ -362,6 +362,55 @@ resource app 'radius.dev/Applications@v1alpha1' = {
                 });
         }
 
+        [TestMethod]
+        public void Application_with_components_can_be_analyzed()
+        {
+            var text = @"
+resource app 'radius.dev/Application@v1alpha3f' = {
+  name: 'app'
+
+  resource frontend 'ContainerComponent' = {
+    name: 'frontend'
+    properties: {
+      run: {
+        container: {
+          image: 'rynowak/frontend:latest'
+          env: {
+            BACKEND_URL: backendHttp.url()
+          }
+        }
+      }
+    }
+  }
+
+  resource backendHttp 'HttpRoute' = {
+    name: 'backend-http'
+  }
+
+  resource backend 'ContainerComponent' = {
+    name: 'backend'
+    properties: {
+      run: {
+        container: {
+          image: 'rynowak/backend:latest'
+          ports: {
+            web: {
+              containerPort: 80
+              provides: backendHttp.id
+            }
+          }
+        }
+      }
+    }
+  }
+}
+";
+
+            var compilation = new Compilation(new RadiusTypeProvider(), SourceFileGroupingFactory.CreateFromText(text, BicepTestConstants.FileResolver));
+            var model = compilation.GetEntrypointSemanticModel();
+            model.GetAllDiagnostics().Should().BeEmpty();
+        }
+
 
         private (EmitResult result, JObject? template) Emit(Compilation compilation)
         {
