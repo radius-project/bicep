@@ -49,19 +49,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 functions: null);
             var connectionsProperty = new TypeProperty("connections", connectionsType, TypePropertyFlags.None, "Specify named connections for the component");
 
-            var bindingValueType = new ObjectType(
-                name: "binding value",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new []
-                {
-                    new TypeProperty("id", LanguageConstants.String, TypePropertyFlags.Required, "The id of the binding"),
-                    new TypeProperty("valueName", LanguageConstants.String, TypePropertyFlags.Required, "The name of the value to bind"),
-                    new TypeProperty("format", LanguageConstants.String, TypePropertyFlags.None, "An optional format"),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-            var envItemType = UnionType.Create(LanguageConstants.String, bindingValueType);
+            var envItemType = LanguageConstants.LooseString;
 
             var envType = new ObjectType(
                 name: "env",
