@@ -9,6 +9,18 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 {
     public static class CommonBindings
     {
+        private static TypeProperty GatewayProperty = new TypeProperty("gateway", new ObjectType(
+            "gateway",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new[]
+            {
+                new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.Required, description: "Specifies the hostname to match. Use '*' to match all hostnames."),
+            },
+            additionalPropertiesType: null,
+            additionalPropertiesFlags: TypePropertyFlags.None),
+            TypePropertyFlags.None,
+            description: "Specifies a gateway for public access to the route from outside the network.");
+
         public static readonly BindingData BindingDataHttp = new BindingData()
         {
             Type = new ThreePartType(null, "Http", RadiusResources.CategoryRoute),
@@ -18,6 +30,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                GatewayProperty,
             },
             Values =
             {
@@ -37,6 +50,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                GatewayProperty,
             },
             Values =
             {

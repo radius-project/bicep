@@ -21,6 +21,19 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             additionalPropertiesType: LanguageConstants.Any,
             additionalPropertiesFlags: TypePropertyFlags.None);
 
+        public static readonly StringLiteralType ManualScalingTraitKindType = new StringLiteralType("radius.dev/ManualScaling@v1alpha1");
+
+        public static readonly ObjectType ManualScalingTraitType = new ObjectType(
+            "radius.dev/ManualScaling@v1alpha",
+            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+            properties: new[]
+            {
+                new TypeProperty("kind", ManualScalingTraitKindType, TypePropertyFlags.Required),
+                new TypeProperty("replicas", LanguageConstants.Int, TypePropertyFlags.None),
+            },
+            additionalPropertiesType: LanguageConstants.Any,
+            additionalPropertiesFlags: TypePropertyFlags.None);
+
         public static readonly StringLiteralType InboundRouteTraitKindType = new StringLiteralType("radius.dev/InboundRoute@v1alpha1");
 
         public static readonly ObjectType InboundRouteTraitType = new ObjectType(
@@ -39,6 +52,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         {
             DaprTraitType,
             InboundRouteTraitType,
+            ManualScalingTraitType,
         });
 
         public static readonly TypedArrayType TraitArrayType = new TypedArrayType(TraitType, TypeSymbolValidationFlags.Default);
