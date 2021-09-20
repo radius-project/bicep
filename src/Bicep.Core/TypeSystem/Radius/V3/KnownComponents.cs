@@ -118,6 +118,93 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             };
         }
 
+        public static ComponentData MakeExecutable()
+        {
+            var members = new List<ObjectType>();
+
+            var connectionType = new DiscriminatedObjectType(
+                name: "connection",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: CommonBindings.AllBindingData.Select(b =>
+                {
+                    return new ObjectType(
+                        name: $"connection {b.Type.FormatKind()}",
+                        validationFlags: TypeSymbolValidationFlags.Default,
+                        properties: new []
+                        {
+                            new TypeProperty("kind", new StringLiteralType(b.Type.FormatKind()), TypePropertyFlags.Required, "The kind of connection"),
+                            new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the connection"),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None,
+                        functions: null);
+                }));
+
+            var connectionsType = new ObjectType(
+                name: "connections",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: connectionType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var connectionsProperty = new TypeProperty("connections", connectionsType, TypePropertyFlags.None, "Specify named connections for the component");
+
+            var envType = new ObjectType(
+                name: "env",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.LooseString,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var envProperty = new TypeProperty("env", envType, TypePropertyFlags.None);
+
+            var portType = new ObjectType(
+                name: "port",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("containerPort", LanguageConstants.Int, TypePropertyFlags.Required),
+                    new TypeProperty("protocol", UnionType.Create(new StringLiteralType("TCP"), new StringLiteralType("UDP")), TypePropertyFlags.None),
+                    new TypeProperty("provides", LanguageConstants.String, TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsType = new ObjectType(
+                name: "ports",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: portType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsProperty = new TypeProperty("ports", portsType, TypePropertyFlags.None);
+
+            var imageProperty = new TypeProperty("image", LanguageConstants.String, TypePropertyFlags.Required);
+            var containerType = new ObjectType(
+                "container",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    imageProperty,
+                    envProperty,
+                    portsProperty,
+                },
+                additionalPropertiesType: LanguageConstants.Any,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var containerProperty = new TypeProperty("container", containerType, TypePropertyFlags.Required);
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType(null, "Executable", RadiusResources.CategoryComponent),
+                Properties =
+                {
+                    connectionsProperty,
+                    containerProperty
+                },
+            };
+        }
+
         public static ComponentData MakeDaprStateStore()
         {
             var configKindType = UnionType.Create(
