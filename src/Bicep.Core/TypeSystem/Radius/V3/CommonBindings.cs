@@ -142,6 +142,10 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         public static readonly BindingData BindingDataKeyVault = new BindingData()
         {
             Type = new ThreePartType("azure.com", "KeyVault", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty("uri", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+            },
             Values =
             {
                 new BindingValue("uri"),
