@@ -99,9 +99,12 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             };
 
             properties.AddRange(component.Properties);
+
+            var functions = new List<FunctionOverload>();
             if (component.Binding is {})
             {
                 properties.AddRange(component.Binding.Properties.Where(p => !properties.Any(pp => p.Name == pp.Name)));
+                functions.AddRange(component.Binding.Values.Where(v => v.Secret).Select(v => MakeSecretAccessorFunction(v)));
             }
 
             var propertiesType = new ObjectType(
@@ -128,7 +131,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: Array.Empty<FunctionOverload>());
+                functions: functions);
 
             return new ResourceType(
                 typeReference: ResourceTypeReference.Parse(component.Type.FormatTypeAndVersion(RadiusResources.ApplicationResourceType, Version)),
@@ -216,90 +219,51 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 provider: provider);
         }
 
-        private static TypeProperty MakeBindingsProperty(Dictionary<string, CommonBindings.BindingData> builtIn)
+        private static FunctionOverload MakeSecretAccessorFunction(CommonBindings.BindingValue value)
         {
-            var properties = builtIn?.Select(kvp =>
-            {
-                var functions = new List<FunctionOverload>();
-
-#if RADIUS_LATE_BINDING
-                functions.AddRange(kvp.Value.Values.Select(v => MakeFunction(kvp.Value, v.Name)));
-#endif
-
-                // Every binding needs to have an ID property so we can reference it.
-                var properties = new List<TypeProperty>()
-                {
-                    new TypeProperty("id", LanguageConstants.String, TypePropertyFlags.ReadOnly),
-                };
-                // Computed values are accessible via readonly properties if they are not secrets.
-                properties.AddRange(kvp.Value.Properties);
-
-                var bindingType = new ObjectType(
-                    name: $"binding properties: {kvp.Value.Type.FormatKind()}",
-                    validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                    properties: properties,
-                    additionalPropertiesType: null,
-                    additionalPropertiesFlags: TypePropertyFlags.None,
-                    functions: functions);
-
-                return new TypeProperty(kvp.Key, bindingType, TypePropertyFlags.None);
-            }).ToArray() ?? Array.Empty<TypeProperty>();
-
-            var bindingsType = new ObjectType(
-                "bindings",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: properties,
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None);
-
-            return new TypeProperty("bindings", bindingsType, TypePropertyFlags.ReadOnly);
-        }
-
-#if RADIUS_LATE_BINDING
-        private static ObjectType BindingValue = new ObjectType(
-            name: "binding value",
-            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-            properties: new []
-            {
-                new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the binding"),
-                new TypeProperty("kind", LanguageConstants.String, TypePropertyFlags.Required, "The kind of binding"),
-                new TypeProperty("valueName", LanguageConstants.String, TypePropertyFlags.Required, "The name of the value to bind"),
-            },
-            additionalPropertiesType: null,
-            additionalPropertiesFlags: TypePropertyFlags.None,
-            functions: Array.Empty<FunctionOverload>());
-
-        private static FunctionOverload MakeFunction(CommonBindings.BindingData binding, string value)
-        {
-            return new FunctionOverloadBuilder("bind" + value[0].ToString().ToUpper() + value.Substring(1))
-                .WithDescription($"Creates a binding to the {value} value")
-                .WithEvaluator((function, symbol, type) => EvaluateBinding(binding, value, function, symbol, type))
+            return new FunctionOverloadBuilder(value.Name)
+                .WithDescription($"Provides access to the {value.Name} value.")
+                .WithEvaluator((function, symbol, type) => EvaluateSecret(value, function, symbol, type))
                 .WithFlags(FunctionFlags.RequiresInlining)
-                .WithReturnType(BindingValue)
+                .WithReturnType(value.Type.Type)
                 .Build();
         }
 
-        private static SyntaxBase EvaluateBinding(CommonBindings.BindingData binding, string value, FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol)
+        private static SyntaxBase EvaluateSecret(CommonBindings.BindingValue value, FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol)
         {
-            // A function like foo.bindUrl() is replaced with code like:
+            // POST /subus...../resurceProviders/radiusV3/listSecrets
             // {
-            //   source: foo.id
-            //   kind: 'Http'
-            //   valueName: 'url'
+            //    targetId: ....
             // }
+            //
+            // A function like foo.connectionString() is replaced with code like:
+            // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) }).connectionString
+            //
+            // - The former resourceId is the ID of the CustomRP - this is a limitation we have to live with
+            // - The latter resourceId is the ID of the Radius resource being accessed.
 
-            if (functionCall is InstanceFunctionCallSyntax instance)
+            var instance = (InstanceFunctionCallSyntax)functionCall;
+
+            var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
+                "resourceId",
+                SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPType),
+                SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPName));
+
+
+            var targetResourceIdExpression = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+            var customActionDataArgumentExpression = SyntaxFactory.CreateObject(new[]
             {
-                return SyntaxFactory.CreateObject(new []
-                {
-                    SyntaxFactory.CreateObjectProperty("source",  SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id")),
-                    SyntaxFactory.CreateObjectProperty("kind", SyntaxFactory.CreateStringLiteral(binding.Type.FormatKind())),
-                    SyntaxFactory.CreateObjectProperty("valueName", SyntaxFactory.CreateStringLiteral(value))
-                });
-            }
+                SyntaxFactory.CreateObjectProperty("targetId", targetResourceIdExpression),
+            });
 
-            throw new InvalidOperationException("this should not be found for a static function");
+            var functionCallExpression = SyntaxFactory.CreateFunctionCall(
+                "listSecrets",
+                customProviderResourceIdArgumentExpression,
+                SyntaxFactory.CreateStringLiteral(RadiusResources.CRPApiVersion),
+                customActionDataArgumentExpression);
+
+
+            return SyntaxFactory.CreatePropertyAccess(functionCallExpression, value.Name);
         }
-#endif
     }
 }

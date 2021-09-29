@@ -108,6 +108,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             Values =
             {
                 new BindingValue("connectionString", secret: true),
+                new BindingValue("primaryKey", secret: true),
+                new BindingValue("secondaryKey", secret: true),
             },
         };
 
@@ -200,15 +202,18 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public class BindingValue
         {
-            public BindingValue(string name, bool secret = false)
+            public BindingValue(string name, ITypeReference? type = null, bool secret = false)
             {
                 this.Name = name;
                 this.Secret = secret;
+                this.Type = type ?? LanguageConstants.String;
             }
 
             public string Name { get; }
 
             public bool Secret { get; }
+
+            public ITypeReference Type { get; }
         }
     }
 }
