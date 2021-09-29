@@ -111,5 +111,81 @@ resource app 'radius.dev/Application@v1alpha3' = {
                 ["name"] = new JValue("[format('{0}/{1}', 'radiusv3', 'app')]"),
             });
         }
+
+        [TestMethod]
+        public void Programmatic_secrets_work()
+        {
+            var context = new CompilationHelperContext(new RadiusTypeProvider(), BicepTestConstants.Features);
+            var (template, diagnostics, compilation) = Compile(context, @"
+resource app 'radius.dev/Application@v1alpha3' = {
+  name: 'app'
+
+  resource db 'mongodb.com.MongoComponent' = {
+    name: 'db'
+    properties: {
+      managed: true
+    }
+  }
+
+  resource backend 'ContainerComponent' = {
+    name: 'backend'
+    properties: {
+      container: {
+        image: 'rynowak/backend:latest'
+        env: {
+          CONNECTION_STRING: db.connectionString()
+        }
+      }
+    }
+  }
+}
+
+output connectionString string = app::db.connectionString()
+");
+
+            var model = compilation.GetEntrypointSemanticModel();
+            model.GetAllDiagnostics().Should().BeEmpty();
+
+            var applicationSymbol = model.AllResources.Should().ContainSingle(r => r.Symbol.Name == "app").Subject.Symbol;
+            var applicationType = applicationSymbol.TryGetResourceTypeReference();
+            applicationType.Should().NotBeNull();
+            applicationType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application@v1alpha3"));
+
+            template.Should().HaveValueAtPath("$.resources[1]", new JObject()
+            {
+                ["type"] = new JValue("Microsoft.CustomProviders/resourceProviders/Application/ContainerComponent"),
+                ["apiVersion"] = new JValue("2018-09-01-preview"),
+                ["name"] = new JValue("[format('{0}/{1}/{2}', 'radiusv3', 'app', 'backend')]"),
+                ["properties"] = new JObject()
+                {
+                    ["container"] = new JObject()
+                    {
+                        ["image"] = new JValue("rynowak/backend:latest"),
+                        ["env"] = new JObject()
+                        {
+                            ["CONNECTION_STRING"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
+                        }
+                    }
+                },
+                ["dependsOn"] = new JArray()
+                {
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application', 'radiusv3', 'app')]"),
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db')]"),
+                },
+            });
+
+            template.Should().HaveValueAtPath("$.resources[2]", new JObject()
+            {
+                ["type"] = new JValue("Microsoft.CustomProviders/resourceProviders/Application"),
+                ["apiVersion"] = new JValue("2018-09-01-preview"),
+                ["name"] = new JValue("[format('{0}/{1}', 'radiusv3', 'app')]"),
+            });
+
+            template.Should().HaveValueAtPath("$.outputs.connectionString", new JObject()
+            {
+                ["type"] = new JValue("string"),
+                ["value"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
+            });
+        }
     }
 }

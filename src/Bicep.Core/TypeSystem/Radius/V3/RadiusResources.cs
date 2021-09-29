@@ -9,6 +9,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public const string ProviderCRPType = "Microsoft.CustomProviders/resourceProviders";
 
+        public const string ProviderCRPName = "radiusv3";
+
         public const string ApplicationCRPType = "Microsoft.CustomProviders/resourceProviders/Application";
 
         public const string ApplicationChildCRPTypeFormat = "Microsoft.CustomProviders/resourceProviders/Application/{0}";

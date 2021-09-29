@@ -78,7 +78,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 if (input.TypeReference.FullyQualifiedType == RadiusV3.RadiusResources.ApplicationResourceType)
                 {
                     // We need to synthesize a 'parent' to represent the custom provider
-                    var parent = new ResourceMetadataParent("radiusv3");
+                    var parent = new ResourceMetadataParent(RadiusV3.RadiusResources.ProviderCRPName);
 
                     return new ResourceMetadata(
                         input.Type,
