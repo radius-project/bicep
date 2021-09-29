@@ -73,6 +73,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeKeyVault(),
                 KnownComponents.MakeServiceBusQueue(),
                 KnownComponents.MakeRedis(),
+                KnownComponents.MakeVolume(),
             };
 
             return components.Select(s => MakeComponentType(provider, s));

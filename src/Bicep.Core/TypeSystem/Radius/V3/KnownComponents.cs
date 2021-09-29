@@ -81,6 +81,39 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 functions: null);
             var portsProperty = new TypeProperty("ports", portsType, TypePropertyFlags.None);
 
+            var ephemeralVolume = new ObjectType(
+                name: "ephemeral",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("kind", new StringLiteralType("ephemeral"), TypePropertyFlags.Required),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required),
+                    new TypeProperty("managedStore", UnionType.Create(new StringLiteralType("memory"), new StringLiteralType("disk")), TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var persistentVolume = new ObjectType(
+                name: "persistent",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("kind", new StringLiteralType("persistent"), TypePropertyFlags.Required),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required),
+                    new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required),
+                    new TypeProperty("rbac", UnionType.Create(new StringLiteralType("read"), new StringLiteralType("write")), TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var volumesType = new DiscriminatedObjectType(
+                name: "volumes",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: new ITypeReference[]{ephemeralVolume, persistentVolume}
+                );
+            var volumesProperty = new TypeProperty("volumes", volumesType, TypePropertyFlags.None);
+
             var imageProperty = new TypeProperty("image", LanguageConstants.String, TypePropertyFlags.Required);
             var containerType = new ObjectType(
                 "container",
@@ -90,6 +123,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                     imageProperty,
                     envProperty,
                     portsProperty,
+                    volumesProperty,
                 },
                 additionalPropertiesType: LanguageConstants.Any,
                 additionalPropertiesFlags: TypePropertyFlags.None);
@@ -237,6 +271,23 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 Binding = CommonBindings.BindingDataMongo,
                 Properties =
                 {
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                },
+            };
+        }
+
+        public static ComponentData MakeVolume()
+        {
+            var configKindType = UnionType.Create(
+                new StringLiteralType("azure.com.fileshare"));
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType(null, "Volume", RadiusResources.CategoryComponent),
+                Properties =
+                {
+                    new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
                     new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
