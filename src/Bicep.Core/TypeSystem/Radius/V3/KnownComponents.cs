@@ -85,9 +85,9 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 name: "ephemeral",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[] {
-                    new TypeProperty("kind", new StringLiteralType("ephemeral"), TypePropertyFlags.Required),
-                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required),
-                    new TypeProperty("managedStore", UnionType.Create(new StringLiteralType("memory"), new StringLiteralType("disk")), TypePropertyFlags.None),
+                    new TypeProperty("kind", new StringLiteralType("ephemeral"), TypePropertyFlags.Required, "Volume Kind"),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required, "The path where the volume is mounted"),
+                    new TypeProperty("managedStore", UnionType.Create(new StringLiteralType("memory"), new StringLiteralType("disk")), TypePropertyFlags.Required, "Backing store for the ephemeral volume"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
@@ -97,21 +97,29 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 name: "persistent",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[] {
-                    new TypeProperty("kind", new StringLiteralType("persistent"), TypePropertyFlags.Required),
-                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required),
-                    new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required),
-                    new TypeProperty("rbac", UnionType.Create(new StringLiteralType("read"), new StringLiteralType("write")), TypePropertyFlags.None),
+                    new TypeProperty("kind", new StringLiteralType("persistent"), TypePropertyFlags.Required, "Volume kind"),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required, "The path where the volume is mounted"),
+                    new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the volume"),
+                    new TypeProperty("rbac", UnionType.Create(new StringLiteralType("read"), new StringLiteralType("write")), TypePropertyFlags.None, "Container read/write access to the volume"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
 
-            var volumesType = new DiscriminatedObjectType(
-                name: "volumes",
+            var volumeItemType = new DiscriminatedObjectType(
+                name: "volume",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 discriminatorKey: "kind",
                 unionMembers: new ITypeReference[]{ephemeralVolume, persistentVolume}
                 );
+
+            var volumesType = new ObjectType(
+                name: "volumes",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: volumeItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
             var volumesProperty = new TypeProperty("volumes", volumesType, TypePropertyFlags.None);
 
             var imageProperty = new TypeProperty("image", LanguageConstants.String, TypePropertyFlags.Required);
