@@ -292,7 +292,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Volume", RadiusResources.CategoryComponent),
+                Type = new ThreePartType(null, "Volume", ""),
                 Properties =
                 {
                     new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
