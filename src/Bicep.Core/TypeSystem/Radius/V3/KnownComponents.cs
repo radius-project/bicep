@@ -47,7 +47,29 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 additionalPropertiesType: connectionType,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
-            var connectionsProperty = new TypeProperty("connections", connectionsType, TypePropertyFlags.None, "Specify named connections for the component");
+            var connectionsProperty = new TypeProperty(
+                "connections",
+                connectionsType,
+                TypePropertyFlags.None,
+                @"Specify named connections to databases, routes, and other resources for the component.
+
+The connections can be used to grant access to resources as well as to inject configuration value into the container.
+Injected configuration values use environment variables by default and follow the naming pattern: `CONNECTION_<name>_<configuration-value>`.
+
+For example the following connection:
+
+```bicep
+connections: {
+  db: {
+    kind: 'mongodb.com/MongoDB'
+    source: db.id
+  }
+}
+```
+
+Defines the environment variable `CONNECTION_DB_CONNECTIONSTRING` containing the database's connection string. The set of configuration values
+available varies depending on the kind of connection. See the documentation for examples.
+");
 
             var envItemType = LanguageConstants.LooseString;
 
@@ -58,7 +80,24 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 additionalPropertiesType: envItemType,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
-            var envProperty = new TypeProperty("env", envType, TypePropertyFlags.None);
+            var envProperty = new TypeProperty(
+                "env",
+                envType,
+                TypePropertyFlags.None,
+                description: @"Specify environment variables for the container. Environment variables may contain static values as well as references to parameters, variables and other resources.
+
+Environment variables use the format `NAME: 'VALUE'`
+
+For example, the following code defines the environment variables `A_STATIC_VALUE`, `A_STRING_INTERPOLATED_VALUE`, and `A_SECRET_VALUE`:
+
+```bicep
+env: {
+  A_STATIC_VALUE: 'This is a hardcoded value'
+  A_STRING_INTERPOLATED_VALUE: 'This value text and a ${other.value} value'
+  A_SECRET_VALUE: db.connectionString()
+}
+```
+");
 
             var portType = new ObjectType(
                 name: "port",
@@ -79,7 +118,25 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 additionalPropertiesType: portType,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
-            var portsProperty = new TypeProperty("ports", portsType, TypePropertyFlags.None);
+            var portsProperty = new TypeProperty(
+                "ports",
+                portsType,
+                TypePropertyFlags.None,
+                description: @"Specify listening ports for the container. Ports may be used to connect the container to route types like `HttpRoute` for service discovery, or may just serve as documentation.
+
+Ports use the format: `name: { ... }'`. The name is provided for documentation purposes
+
+For example, the following code defines a listening port named `web` which is used to connect an `HttpRoute` to the container:
+
+```bicep
+web: {
+  containerPort: 3000
+  provides: myRoute.id
+}
+
+In this example the `web` port documents that the container is listening on port `3000`. The variable `myRoute` refers to an `HttpRoute` resource (definition not shownn here).
+```
+");
 
             var ephemeralVolume = new ObjectType(
                 name: "ephemeral",
@@ -179,7 +236,11 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             var readinessProperty = new TypeProperty("readinessProbe", healthProbeType, TypePropertyFlags.None, "Readiness health probe");
             var livessProperty = new TypeProperty("livenessProbe", healthProbeType, TypePropertyFlags.None, "Liveness health probe");
 
-            var imageProperty = new TypeProperty("image", LanguageConstants.String, TypePropertyFlags.Required);
+            var imageProperty = new TypeProperty(
+                "image",
+                LanguageConstants.String,
+                TypePropertyFlags.Required,
+                description: "Specifies the container image to run.");
             var containerType = new ObjectType(
                 "container",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -194,7 +255,11 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 },
                 additionalPropertiesType: LanguageConstants.Any,
                 additionalPropertiesFlags: TypePropertyFlags.None);
-            var containerProperty = new TypeProperty("container", containerType, TypePropertyFlags.Required);
+            var containerProperty = new TypeProperty(
+                "container",
+                containerType,
+                TypePropertyFlags.Required,
+                description: "Specifies configuration for running the container.");
 
             return new ComponentData()
             {
@@ -338,8 +403,26 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 Binding = CommonBindings.BindingDataMongo,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty(
+                        "managed",
+                        LanguageConstants.Bool,
+                        TypePropertyFlags.None,
+                        description: @"Specifies whether the lifecycle of the resource is controlled by Radius. The default value is `false`.
+
+When using `managed: true`, Radius will create the backing resources (databases, message queues, etc) when creating this component.
+The backing resources will also be deleted when this component is deleted.
+
+When using `managed: false` (default) the developer must specify the backing resources to use by providing a value for the `resource` property.
+Resources provided by the developer will not be modified or deleted by Radius. Use `managed: false` to attach resources created with Bicep or any other mechanism."),
+                    new TypeProperty(
+                        "resource",
+                        LanguageConstants.String,
+                        TypePropertyFlags.None,
+                        description: @"Specifies the backing resource of this component. This is required when using `managed: false` (default).
+
+For Azure, this property will accept a resource ID of a `Microsoft.DocumentDB/accounts/mongoDatabases` resource (CosmosDB MongoDB API).
+
+Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
                 },
             };
         }
