@@ -334,7 +334,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("mongodb.com", "Mongo", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("mongodb.com", "MongoDB", RadiusResources.CategoryComponent),
                 Binding = CommonBindings.BindingDataMongo,
                 Properties =
                 {
