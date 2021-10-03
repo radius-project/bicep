@@ -28,8 +28,10 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             properties: new[]
             {
                 new TypeProperty("kind", DaprSidecarTraitKindType, TypePropertyFlags.Required),
-                new TypeProperty("appId", LanguageConstants.String, TypePropertyFlags.Required),
+                new TypeProperty("appId", LanguageConstants.String, TypePropertyFlags.None),
                 new TypeProperty("appPort", LanguageConstants.Int, TypePropertyFlags.None),
+                new TypeProperty("config", LanguageConstants.String, TypePropertyFlags.None),
+                new TypeProperty("protocol", UnionType.Create(new[]{ new StringLiteralType("grpc"), new StringLiteralType("http"), }), TypePropertyFlags.None),
                 new TypeProperty("provides", LanguageConstants.String, TypePropertyFlags.None),
             },
             additionalPropertiesType: LanguageConstants.Any,
