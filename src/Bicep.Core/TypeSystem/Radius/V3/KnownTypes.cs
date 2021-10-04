@@ -72,6 +72,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeCosmosDBSQL(),
                 KnownComponents.MakeKeyVault(),
                 KnownComponents.MakeServiceBusQueue(),
+                KnownComponents.MakeRabbitMQ(),
                 KnownComponents.MakeRedis(),
                 KnownComponents.MakeVolume(),
             };
