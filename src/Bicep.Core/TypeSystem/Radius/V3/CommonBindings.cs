@@ -185,7 +185,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
             Values =
             {
-                new BindingValue("connectionString", secret: true),
+                new BindingValue("namespaceConnectionString", secret: true),
+                new BindingValue("queueConnectionString", secret: true),
                 new BindingValue("namespace"),
                 new BindingValue("queue"),
             },
