@@ -70,6 +70,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeMongoDB(),
                 KnownComponents.MakeCosmosDBMongo(),
                 KnownComponents.MakeCosmosDBSQL(),
+                KnownComponents.MakeMicrosoftSQL(),
                 KnownComponents.MakeKeyVault(),
                 KnownComponents.MakeServiceBusQueue(),
                 KnownComponents.MakeRabbitMQ(),

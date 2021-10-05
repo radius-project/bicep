@@ -381,6 +381,20 @@ In this example the `web` port documents that the container is listening on port
             };
         }
 
+        public static ComponentData MakeMicrosoftSQL()
+        {
+            return new ComponentData()
+            {
+                Type = new ThreePartType("microsoft.com", "SQLDatabase", RadiusResources.CategoryComponent),
+                Binding = CommonBindings.BindingDataSQL,
+                Properties =
+                {
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                },
+            };
+        }
+
         public static ComponentData MakeKeyVault()
         {
             return new ComponentData()
