@@ -385,7 +385,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("microsoft.com", "SQLDatabase", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("microsoft.com", "SQL", RadiusResources.CategoryComponent),
                 Binding = CommonBindings.BindingDataSQL,
                 Properties =
                 {
