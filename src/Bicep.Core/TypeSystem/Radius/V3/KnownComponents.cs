@@ -277,6 +277,7 @@ In this example the `web` port documents that the container is listening on port
             var configKindType = UnionType.Create(
                 new StringLiteralType("state.azure.tablestorage"),
                 new StringLiteralType("state.sqlserver"),
+                new StringLiteralType("state.redis"),
                 new StringLiteralType("any"));
 
             return new ComponentData()
