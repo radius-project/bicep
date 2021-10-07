@@ -154,9 +154,14 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
         };
 
-        public static readonly BindingData BindingDataSQL= new BindingData()
+        public static readonly BindingData BindingDataSQL = new BindingData()
         {
             Type = new ThreePartType("microsoft.com", "SQL", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+            },
             Values =
             {
                 new BindingValue("database"),
