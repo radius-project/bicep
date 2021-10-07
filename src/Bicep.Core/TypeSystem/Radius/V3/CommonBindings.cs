@@ -15,6 +15,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             properties: new[]
             {
                 new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.Required, description: "Specifies the hostname to match. Use '*' to match all hostnames."),
+                new TypeProperty("path", LanguageConstants.String, TypePropertyFlags.None, description: "Specifies the path to match on the incoming request.")
             },
             additionalPropertiesType: null,
             additionalPropertiesFlags: TypePropertyFlags.None),
