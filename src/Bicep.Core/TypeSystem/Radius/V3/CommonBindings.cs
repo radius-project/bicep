@@ -127,11 +127,18 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         public static readonly BindingData BindingDataRedis = new BindingData()
         {
             Type = new ThreePartType("redislabs.com", "Redis", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+            },
             Values =
             {
-                new BindingValue("connectionString", secret: true),
-                new BindingValue("primaryKey", secret: true),
-                new BindingValue("secondaryKey", secret: true),
+                new BindingValue("host"),
+                new BindingValue("port"),
+                new BindingValue("username"),
+                new BindingValue("password", secret: true),
             },
         };
 
