@@ -159,6 +159,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             Type = new ThreePartType("microsoft.com", "SQL", RadiusResources.CategoryBinding),
             Values =
             {
+                new BindingValue("database"),
+                new BindingValue("server"),
                 new BindingValue("connectionString", secret: true),
             },
         };
