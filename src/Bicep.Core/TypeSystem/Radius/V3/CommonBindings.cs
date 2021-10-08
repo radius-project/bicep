@@ -197,11 +197,13 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             {
                 new TypeProperty("namespace", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("namespaceConnectionString", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("queueConnectionString", LanguageConstants.String, TypePropertyFlags.ReadOnly),
             },
             Values =
             {
-                new BindingValue("namespaceConnectionString", secret: true),
-                new BindingValue("queueConnectionString", secret: true),
+                new BindingValue("namespaceConnectionString"),
+                new BindingValue("queueConnectionString"),
                 new BindingValue("namespace"),
                 new BindingValue("queue"),
             },
