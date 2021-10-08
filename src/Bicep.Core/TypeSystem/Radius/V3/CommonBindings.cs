@@ -173,7 +173,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             {
                 new BindingValue("database"),
                 new BindingValue("server"),
-                new BindingValue("connectionString", secret: true),
             },
         };
 
