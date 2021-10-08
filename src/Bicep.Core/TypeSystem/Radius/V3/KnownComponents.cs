@@ -267,7 +267,8 @@ In this example the `web` port documents that the container is listening on port
                 Properties =
                 {
                     connectionsProperty,
-                    containerProperty
+                    containerProperty,
+                    CommonProperties.Traits,
                 },
             };
         }
@@ -350,34 +351,6 @@ In this example the `web` port documents that the container is listening on port
                 {
                     new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
-                },
-            };
-        }
-
-        public static ComponentData MakeCosmosDBMongo()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "CosmosDBMongo", RadiusResources.CategoryComponent),
-                Binding = CommonBindings.BindingDataMongo,
-                Properties =
-                {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-            };
-        }
-
-        public static ComponentData MakeCosmosDBSQL()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "CosmosDBSQL", RadiusResources.CategoryComponent),
-                Binding = CommonBindings.BindingDataSQL,
-                Properties =
-                {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }

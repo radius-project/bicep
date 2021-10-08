@@ -62,23 +62,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
         };
 
-        public static readonly BindingData BindingDataDaprInvoke = new BindingData()
-        {
-            Type = new ThreePartType("dapr.io", "InvokeRoute", RadiusResources.CategoryRoute),
-            Properties =
-            {
-                new TypeProperty(
-                    "appId",
-                     LanguageConstants.String,
-                     TypePropertyFlags.None,
-                     description: "The Dapr appId to use for the route. Will default to the route name if not specified. If the component providing this route also specifies an appId then the values must match."),
-            },
-            Values =
-            {
-                new BindingValue("appId"),
-            },
-        };
-
         public static readonly BindingData BindingDataDaprHttp = new BindingData()
         {
             Type = new ThreePartType("dapr.io", "DaprHttp", RadiusResources.CategoryRoute),
@@ -210,11 +193,10 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public static readonly BindingData[] AllBindingData = new BindingData[]
         {
-            BindingDataDaprInvoke,
             BindingDataDaprHttp,
             BindingDataDaprPubSubTopic,
             BindingDataDaprStateStore,
-            BindingDataGrpc,
+            // Intentionally Hidden: BindingDataGrpc,
             BindingDataHttp,
             BindingDataKeyVault,
             BindingDataMongo,

@@ -265,9 +265,7 @@ namespace Bicep.Core.Emit
             jsonWriter.WritePropertyName("resources");
             jsonWriter.WriteStartArray();
 
-            var extra = ResourceRewriter.Transform(this.context.SemanticModel, this.context.ResourceDependencies);
-
-            foreach (var resource in this.context.SemanticModel.AllResources.Concat(extra))
+            foreach (var resource in this.context.SemanticModel.AllResources)
             {
                 if (resource.IsExistingResource)
                 {

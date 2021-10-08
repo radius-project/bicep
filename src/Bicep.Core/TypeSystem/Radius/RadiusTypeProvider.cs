@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using Bicep.Core.Resources;
 using Bicep.Core.Semantics.Metadata;
 
-using RadiusV1 = Bicep.Core.TypeSystem.Radius.V1;
 using RadiusV3 = Bicep.Core.TypeSystem.Radius.V3;
 
 namespace Bicep.Core.TypeSystem.Radius
@@ -24,56 +23,7 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public override ResourceMetadata CreateMetadata(ResourceMetadata input)
         {
-            if (input.TypeReference.ApiVersion == "v1alpha1")
-            {
-                switch (input.TypeReference.FullyQualifiedType)
-                {
-                    case RadiusV1.RadiusResources.ApplicationResourceType:
-                        {
-                            // We need to synthesize a 'parent' to represent the custom provider
-                            var parent = new ResourceMetadataParent("radius");
-
-                            return new ResourceMetadata(
-                                input.Type,
-                                ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.ApplicationCRPType}@{RadiusV1.RadiusResources.CRPApiVersion}"),
-                                input.DeclaringSyntax,
-                                input.NameSyntax,
-                                input.Symbol,
-                                parent,
-                                input.Dependencies,
-                                input.ScopeSyntax,
-                                input.IsExistingResource);
-                        }
-
-                    case RadiusV1.RadiusResources.ComponentResourceType:
-                        {
-                            return new ResourceMetadata(
-                                input.Type,
-                                ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.ComponentCRPType}@{RadiusV1.RadiusResources.CRPApiVersion}"),
-                                input.DeclaringSyntax,
-                                input.NameSyntax,
-                                input.Symbol,
-                                input.Parent,
-                                input.Dependencies,
-                                input.ScopeSyntax,
-                                input.IsExistingResource);
-                        }
-
-                    case RadiusV1.RadiusResources.DeploymentResourceType:
-                        {
-                            return new ResourceMetadata(
-                                input.Type,
-                                ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.DeploymentCRPType}@{RadiusV1.RadiusResources.CRPApiVersion}"),
-                                input.DeclaringSyntax,
-                                input.NameSyntax,
-                                input.Symbol,
-                                input.Parent,
-                                input.Dependencies,
-                                input.ScopeSyntax,
-                                input.IsExistingResource);
-                        }
-                }
-            } else if (input.TypeReference.ApiVersion == "v1alpha3")
+            if (input.TypeReference.ApiVersion == "v1alpha3")
             {
                 if (input.TypeReference.FullyQualifiedType == RadiusV3.RadiusResources.ApplicationResourceType)
                 {
@@ -116,11 +66,6 @@ namespace Bicep.Core.TypeSystem.Radius
             public Loader(IResourceTypeProvider provider)
             {
                 var types = ImmutableDictionary.CreateBuilder<ResourceTypeReference, ResourceType>(ResourceTypeReferenceComparer.Instance);
-
-                // AppModel v1/v2 types
-                types.Add(ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.ApplicationResourceType}@{RadiusV1.RadiusResources.ResourceApiVersion}"), RadiusV1.KnownTypes.MakeApplication(provider));
-                types.Add(ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.ComponentResourceType}@{RadiusV1.RadiusResources.ResourceApiVersion}"), RadiusV1.KnownTypes.MakeComponent(provider));
-                types.Add(ResourceTypeReference.Parse($"{RadiusV1.RadiusResources.DeploymentResourceType}@{RadiusV1.RadiusResources.ResourceApiVersion}"), RadiusV1.KnownTypes.MakeDeployment(provider));
 
                 // AppModel v3 types
                 foreach (var type in RadiusV3.KnownTypes.MakeResourceTypes(provider))

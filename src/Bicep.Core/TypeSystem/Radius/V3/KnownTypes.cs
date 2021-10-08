@@ -68,8 +68,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeDaprStateStore(),
                 KnownComponents.MakeDaprPubSubTopic(),
                 KnownComponents.MakeMongoDB(),
-                KnownComponents.MakeCosmosDBMongo(),
-                KnownComponents.MakeCosmosDBSQL(),
                 KnownComponents.MakeMicrosoftSQL(),
                 KnownComponents.MakeKeyVault(),
                 KnownComponents.MakeServiceBusQueue(),
@@ -85,8 +83,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         {
             var scopes = new KnownScopes.ScopeData[]
             {
-                KnownScopes.MakeDaprScope(),
-                KnownScopes.MakeNetworkScope(),
+                // Intentionally Hidden: KnownScopes.MakeDaprScope(),
+                // Intentionally Hidden: KnownScopes.MakeNetworkScope(),
             };
 
             return scopes.Select(s => MakeScopeType(provider, s));
@@ -94,12 +92,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         private static ResourceType MakeComponentType(IResourceTypeProvider provider, KnownComponents.ComponentData component)
         {
-            var properties = new List<TypeProperty>()
-            {
-                // All components support traits
-                CommonProperties.Traits,
-            };
-
+            var properties = new List<TypeProperty>();
             properties.AddRange(component.Properties);
 
             var functions = new List<FunctionOverload>();
