@@ -114,16 +114,17 @@ jobs:
       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
       id: compare
       with:
-        version: ${{ env.REL_CHANNEL }}.0
+        version: ${{ env.REL_VERSION }}
         compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
     - name: Print info (for sanity)
       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
       run: |
         echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
         echo "this build channel: ${{ env.REL_CHANNEL }}"
+        echo "this build version: ${{ env.REL_VERSION }}"
         echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-      name: Upload VS Code (channel)
+      name: Upload VS Code (stable)
       if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
       with:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
