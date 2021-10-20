@@ -507,11 +507,10 @@ namespace Bicep.Core.Emit
             if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
             {
                 // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
-                // nameValueSyntax = resource.Symbol.DeclaringResource
-                //     .TryGetBody()
-                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
-                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
-                nameValueSyntax = resource.Symbol.NameSyntax;
+                nameValueSyntax = resource.Symbol.DeclaringResource
+                    .TryGetBody()
+                    ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                    ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
             }
             else
             {
@@ -529,7 +528,6 @@ namespace Bicep.Core.Emit
             if (ancestors.Length > 0)
             {
                 var firstAncestorNameLength = typesAfterProvider.Length - ancestors.Length;
-
                 var parentNames = ancestors.SelectMany((x, i) =>
                 {
                     var nameExpression = CreateConverterForIndexReplacement(x.Resource.NameSyntax, x.IndexExpression, resource.Symbol.NameSyntax)
@@ -581,11 +579,10 @@ namespace Bicep.Core.Emit
             if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
             {
                 // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
-                // nameValueSyntax = resource.Symbol.DeclaringResource
-                //     .TryGetBody()
-                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
-                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
-                nameValueSyntax = resource.Symbol.NameSyntax;
+                nameValueSyntax = resource.Symbol.DeclaringResource
+                    .TryGetBody()
+                    ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                    ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
             }
             else
             {
@@ -1150,4 +1147,3 @@ namespace Bicep.Core.Emit
         }
     }
 }
-

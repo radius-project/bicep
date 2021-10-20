@@ -148,12 +148,12 @@ resource secret 'kubernetes.core/Secret@v1' = {
                     ["type"] = new JValue("Opaque"),
                     ["stringData"] = new JObject()
                     {
-                        ["key"] = new JValue("[reference(resourceId('kubernetes.core/ConfigMap', 'map')).data.key]")
+                        ["key"] = new JValue("[reference(resourceId('kubernetes.core/ConfigMap', 'test-map')).data.key]")
                     }
                 },
                 ["dependsOn"] = new JArray()
                 {
-                    new JValue("[resourceId('kubernetes.core/ConfigMap', 'map')]"),
+                    new JValue("[resourceId('kubernetes.core/ConfigMap', 'test-map')]"),
                 },
             });
         }
@@ -211,7 +211,7 @@ resource secret 'kubernetes.core/Secret@v1' = {
                     ["type"] = new JValue("Opaque"),
                     ["stringData"] = new JObject()
                     {
-                        ["key"] = new JValue("[reference(resourceId('kubernetes.core/ConfigMap', 'map')).data.key]")
+                        ["key"] = new JValue("[reference(resourceId('kubernetes.core/ConfigMap', 'test-map')).data.key]")
                     }
                 },
             });

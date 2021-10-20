@@ -534,9 +534,8 @@ namespace Bicep.Core.Emit
                 // TODO-RADIUS: right now we rely on a name property, since we haven't adapted symbolic name support
                 if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
                 {
-                    emitter.EmitProperty(AzResourceTypeProvider.ResourceNamePropertyName, emitter.GetFullyQualifiedResourceName(resource));
+                    emitter.EmitProperty(AzResourceTypeProvider.ResourceNamePropertyName, new JTokenExpression(resource.Symbol.NameSyntax.IdentifierName));
                 }
-
 
                 jsonWriter.WritePropertyName("properties");
                 jsonWriter.WriteStartObject();

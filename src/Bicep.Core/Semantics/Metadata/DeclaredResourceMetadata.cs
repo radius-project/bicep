@@ -28,11 +28,10 @@ namespace Bicep.Core.Semantics.Metadata
             if (this.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
             {
                 // TODO-RADIUS: right now we use the symbolic name as 'name' but we should be using the resource name.
-                // nameValueSyntax = resource.Symbol.DeclaringResource
-                //     .TryGetBody()
-                //     ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
-                //     ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
-                return this.Symbol.NameSyntax;
+                return this.Symbol.DeclaringResource
+                    .TryGetBody()
+                    ?.TryGetPropertyByNameRecursive(new []{ "metadata", "name", })
+                    ?.Value ?? throw new ArgumentException("Could not find metadata.name for Kubernetes resource.");
             }
 
             return UniqueIdentifiers.TryGetValue(AzResourceTypeProvider.ResourceNamePropertyName);
