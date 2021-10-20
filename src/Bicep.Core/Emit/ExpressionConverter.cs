@@ -391,7 +391,11 @@ namespace Bicep.Core.Emit
             var typeReference = resource.TypeReference;
 
             // For an extension resource the symbolic name plays the role the resource name.
-            var nameSyntax = resource.IsExtensionResource ? resource.DeclaringSyntax.Name : resource.NameSyntax;
+            // However, we are hacking this for rad-bicep to use resourceId until the flag
+            // `EnableSymbolicNames` is turned on.
+            //
+            // TODO: Fix this when `EnableSymbolicNames` is turned on.
+            var nameSyntax = resource.NameSyntax;
 
             if (resource.Parent is null)
             {
@@ -422,7 +426,12 @@ namespace Bicep.Core.Emit
                 else
                 {
                     // For an extension resource the symbolic name plays the role the resource name.
-                    var currentNameSyntax = current.Metadata!.IsExtensionResource ? current.Metadata!.DeclaringSyntax.Name : current.Metadata!.NameSyntax;
+                    //
+                    // However, we are hacking this for rad-bicep to use resourceId until the flag
+                    // `EnableSymbolicNames` is turned on.
+                    //
+                    // TODO: Fix this when `EnableSymbolicNames` is turned on.
+                    var currentNameSyntax = current.Metadata!.NameSyntax;
                     nameExpression = CreateConverterForIndexReplacement(currentNameSyntax, current.IndexExpression, current.Metadata!.Symbol.NameSyntax)
                         .ConvertExpression(currentNameSyntax);
                 }
@@ -930,4 +939,3 @@ namespace Bicep.Core.Emit
         }
     }
 }
-
