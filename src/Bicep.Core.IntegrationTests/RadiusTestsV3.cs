@@ -298,5 +298,62 @@ output connectionString string = app::db.connectionString()
                 ["value"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db'))).connectionString]"),
             });
         }
+
+        [TestMethod]
+        public void Application_with_executable_can_be_compiled()
+        {
+            var context = new CompilationHelperContext();
+            var (template, diagnostics, compilation) = Compile(context, @"
+resource app 'radius.dev/Application@v1alpha3' = {
+  name: 'radapp1'
+
+  resource service 'ExecutableComponent' = {
+    name: 'frontend'
+
+    properties: {
+        executable: 'npx'
+        args: [
+          'ts-node'
+          'index.ts'
+        ]
+        workingDirectory: '/path/to/app'
+    }
+  }
+}
+");
+            var model = compilation.GetEntrypointSemanticModel();
+            model.GetAllDiagnostics().Should().BeEmpty();
+
+            var applicationSymbol = model.AllResources.Should().ContainSingle(r => r.Symbol.Name == "app").Subject.Symbol;
+            var applicationType = applicationSymbol.TryGetResourceTypeReference();
+            applicationType.Should().NotBeNull();
+            applicationType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application@v1alpha3"));
+
+            var frontendSymbol = model.AllResources.Should().ContainSingle(r => r.Symbol.Name == "service").Subject.Symbol;
+            var frontendType = frontendSymbol.TryGetResourceTypeReference();
+            frontendType.Should().NotBeNull();
+            frontendType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application/ExecutableComponent@v1alpha3"));
+
+            template.Should().HaveValueAtPath("$.resources[0]", new JObject()
+            {
+                ["type"] = new JValue("Microsoft.CustomProviders/resourceProviders/Application/ExecutableComponent"),
+                ["apiVersion"] = new JValue("2018-09-01-preview"),
+                ["name"] = new JValue("[format('{0}/{1}/{2}', 'radiusv3', 'radapp1', 'frontend')]"),
+                ["properties"] = new JObject()
+                {
+                    ["executable"] = new JValue("npx"),
+                    ["args"] = new JArray()
+                    {
+                        new JValue("ts-node"),
+                        new JValue("index.ts")
+                    },
+                    ["workingDirectory"] = new JValue("/path/to/app")
+                },
+                ["dependsOn"] = new JArray()
+                {
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application', 'radiusv3', 'radapp1')]")
+                }
+            });
+        }
     }
 }

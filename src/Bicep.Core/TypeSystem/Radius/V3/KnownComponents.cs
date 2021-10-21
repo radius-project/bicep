@@ -18,6 +18,44 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             public List<TypeProperty> Properties { get; } = new List<TypeProperty>();
         }
 
+        public static ComponentData MakeExecutable()
+        {
+            var members = new List<ObjectType>();
+
+            var executableProperty = new TypeProperty("executable", LanguageConstants.LooseString, TypePropertyFlags.Required);
+
+            var workingDirectoryProperty = new TypeProperty("workingDirectory", LanguageConstants.LooseString, TypePropertyFlags.None);
+
+            var argsType = new TypedArrayType(
+                itemReference: LanguageConstants.LooseString,
+                validationFlags: TypeSymbolValidationFlags.Default);
+            var argsProperty = new TypeProperty("args", argsType, TypePropertyFlags.None);
+
+            var envType = new ObjectType(
+                name: "env",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.LooseString,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var envProperty = new TypeProperty("env", envType, TypePropertyFlags.None);
+
+            var replicasProperty = new TypeProperty("replicas", LanguageConstants.LooseString, TypePropertyFlags.None);
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType(null, "Executable", RadiusResources.CategoryComponent),
+                Properties =
+                {
+                    executableProperty,
+                    workingDirectoryProperty,
+                    argsProperty,
+                    envProperty,
+                    replicasProperty
+                },
+            };
+        }
+
         public static ComponentData MakeContainer()
         {
             var members = new List<ObjectType>();
