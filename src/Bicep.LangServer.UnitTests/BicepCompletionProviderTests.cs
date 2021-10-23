@@ -112,7 +112,7 @@ namespace Bicep.LangServer.UnitTests
         {
             var grouping = SourceFileGroupingFactory.CreateFromText(@"
 param p string
-var v = 
+var v =
 resource r 'Microsoft.Foo/foos@2020-09-01' = {
   name: 'foo'
 }
@@ -188,7 +188,7 @@ var resourceGroup = true
 resource base64 'Microsoft.Foo/foos@2020-09-01' = {
   name: 'foo'
 }
-output length int = 
+output length int =
 ", BicepTestConstants.FileResolver);
             var offset = grouping.EntryPoint.ProgramSyntax.Declarations.OfType<OutputDeclarationSyntax>().Single().Value.Span.Position;
 
@@ -408,6 +408,15 @@ output length int =
                 c =>
                 {
                     const string expected = "string";
+                    c.Label.Should().Be(expected);
+                    c.Kind.Should().Be(CompletionItemKind.Class);
+                    c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);
+                    c.TextEdit!.TextEdit!.NewText.Should().Be(expected);
+                    c.Detail.Should().Be(expected);
+                },
+                c =>
+                {
+                    const string expected = "resource";
                     c.Label.Should().Be(expected);
                     c.Kind.Should().Be(CompletionItemKind.Class);
                     c.InsertTextFormat.Should().Be(InsertTextFormat.PlainText);

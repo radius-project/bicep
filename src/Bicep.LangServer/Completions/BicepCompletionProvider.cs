@@ -181,12 +181,12 @@ namespace Bicep.LanguageServer.Completions
 
             if (context.Kind.HasFlag(BicepCompletionContextKind.ParameterType))
             {
-                return GetPrimitiveTypeCompletions().Concat(GetParameterTypeSnippets(compilation, context));
+                return GetPrimitiveTypeCompletions().Concat(GetParameterTypeSnippets(compilation, context)).Concat(CreateResourceTypeKeywordCompletion(context.ReplacementRange));
             }
 
             if (context.Kind.HasFlag(BicepCompletionContextKind.OutputType))
             {
-                return GetPrimitiveTypeCompletions();
+                return GetPrimitiveTypeCompletions().Concat(CreateResourceTypeKeywordCompletion(context.ReplacementRange));
             }
 
             return Enumerable.Empty<CompletionItem>();
@@ -230,17 +230,35 @@ namespace Bicep.LanguageServer.Completions
                 return items;
             }
 
+            static string? TryGetFullyQualifiedType(StringSyntax? stringSyntax)
+            {
+                if (stringSyntax?.TryGetLiteralValue() is string entered && ResourceTypeReference.HasResourceTypePrefix(entered))
+                {
+                    return entered;
+                }
+
+                return null;
+            }
+
+            static string? TryGetFullyQualfiedResourceType(SyntaxBase? enclosingDeclaration)
+            {
+                return enclosingDeclaration switch
+                {
+                    ResourceDeclarationSyntax resourceSyntax => TryGetFullyQualifiedType(resourceSyntax.TypeString),
+                    ParameterDeclarationSyntax parameterSyntax when parameterSyntax.Type is ResourceTypeSyntax resourceType => TryGetFullyQualifiedType(resourceType.TypeString),
+                    OutputDeclarationSyntax outputSyntax when outputSyntax.Type is ResourceTypeSyntax resourceType => TryGetFullyQualifiedType(resourceType.TypeString),
+                    _ => null,
+                };
+            }
+
             // ResourceType completions are divided into 2 parts.
             // If the current value passes the namespace and type notation ("<Namespace>/<type>") format, we return the fully qualified resource types
-            if (context.EnclosingDeclaration is ResourceDeclarationSyntax declarationSyntax
-                && declarationSyntax.Type is StringSyntax stringSyntax
-                && stringSyntax.TryGetLiteralValue() is string entered
-                && ResourceTypeReference.HasResourceTypePrefix(entered))
+            if (TryGetFullyQualfiedResourceType(context.EnclosingDeclaration) is string qualified)
             {
                 // newest api versions should be shown first
                 // strict filtering on type so that we show api versions for only the selected type
                 return model.Binder.NamespaceResolver.GetAvailableResourceTypes()
-                    .Where(rt => StringComparer.OrdinalIgnoreCase.Equals(entered.Split('@')[0], rt.FormatType()))
+                    .Where(rt => StringComparer.OrdinalIgnoreCase.Equals(qualified.Split('@')[0], rt.FormatType()))
                     .OrderBy(rt => rt.FormatType(), StringComparer.OrdinalIgnoreCase)
                     .ThenByDescending(rt => rt.ApiVersion, ApiVersionComparer.Instance)
                     .Select((reference, index) => CreateResourceTypeCompletion(reference, index, context.ReplacementRange, showApiVersion: true))
@@ -1085,6 +1103,13 @@ namespace Bicep.LanguageServer.Completions
                 .WithPlainTextEdit(replacementRange, type.Name)
                 .WithDetail(type.Name)
                 .WithSortText(GetSortText(type.Name, priority))
+                .Build();
+
+        private static CompletionItem CreateResourceTypeKeywordCompletion(Range replacementRange, CompletionPriority priority= CompletionPriority.Medium) =>
+            CompletionItemBuilder.Create(CompletionItemKind.Class, LanguageConstants.ResourceKeyword)
+                .WithPlainTextEdit(replacementRange, LanguageConstants.ResourceKeyword)
+                .WithDetail(LanguageConstants.ResourceKeyword)
+                .WithSortText(GetSortText(LanguageConstants.ResourceKeyword, priority))
                 .Build();
 
         private static CompletionItem CreateOperatorCompletion(string op, Range replacementRange, bool preselect = false, CompletionPriority priority = CompletionPriority.Medium) =>

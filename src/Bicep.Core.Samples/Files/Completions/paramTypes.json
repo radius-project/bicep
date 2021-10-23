@@ -56,6 +56,20 @@
     }
   },
   {
+    "label": "resource",
+    "kind": "class",
+    "detail": "resource",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_resource",
+    "insertTextFormat": "plainText",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "resource"
+    }
+  },
+  {
     "label": "secureObject",
     "kind": "snippet",
     "detail": "Secure object",

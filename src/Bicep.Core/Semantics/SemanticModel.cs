@@ -27,8 +27,8 @@ namespace Bicep.Core.Semantics
         private readonly Lazy<SymbolHierarchy> symbolHierarchyLazy;
         private readonly Lazy<ResourceAncestorGraph> resourceAncestorsLazy;
         private readonly Lazy<LinterAnalyzer> linterAnalyzerLazy;
-        private readonly Lazy<ImmutableArray<TypeProperty>> parameterTypePropertiesLazy;
-        private readonly Lazy<ImmutableArray<TypeProperty>> outputTypePropertiesLazy;
+        private readonly Lazy<ImmutableArray<ParameterMetadata>> parametersLazy;
+        private readonly Lazy<ImmutableArray<OutputMetadata>> outputsLazy;
 
         private readonly Lazy<ImmutableArray<ResourceMetadata>> allResourcesLazy;
         private readonly Lazy<IEnumerable<IDiagnostic>> allDiagnostics;
@@ -75,37 +75,51 @@ namespace Bicep.Core.Semantics
             // lazy load single use diagnostic set
             this.allDiagnostics = new Lazy<IEnumerable<IDiagnostic>>(() => AssembleDiagnostics());
 
-            this.parameterTypePropertiesLazy = new Lazy<ImmutableArray<TypeProperty>>(() =>
+            this.parametersLazy = new Lazy<ImmutableArray<ParameterMetadata>>(() =>
             {
-                var paramTypeProperties = new List<TypeProperty>();
+                var parameters = new List<ParameterMetadata>();
 
                 foreach (var param in this.Root.ParameterDeclarations.DistinctBy(p => p.Name))
                 {
-                    var typePropertyFlags = TypePropertyFlags.WriteOnly;
-                    if (SyntaxHelper.TryGetDefaultValue(param.DeclaringParameter) == null)
-                    {
-                        // if there's no default value, it must be specified
-                        typePropertyFlags |= TypePropertyFlags.Required;
-                    }
-
                     var description = SemanticModelHelper.TryGetDescription(this, param.DeclaringParameter);
-                    paramTypeProperties.Add(new TypeProperty(param.Name, param.Type, typePropertyFlags, description));
+                    var isRequired =  SyntaxHelper.TryGetDefaultValue(param.DeclaringParameter) == null;
+                    if (param.Type is ResourceType resourceType)
+                    {
+                        // Resource type parameters are a special case, we need to convert to a dedicated
+                        // type so we can compare differently for assignment.
+                        var type = new UnboundResourceType(resourceType.TypeReference);
+                        parameters.Add(new ParameterMetadata(param.Name, type, isRequired, description));
+                    }
+                    else
+                    {
+                        parameters.Add(new ParameterMetadata(param.Name, param.Type, isRequired, description));
+                    }
                 }
 
-                return paramTypeProperties.ToImmutableArray();
+                return parameters.ToImmutableArray();
             });
 
-            this.outputTypePropertiesLazy = new Lazy<ImmutableArray<TypeProperty>>(() =>
+            this.outputsLazy = new Lazy<ImmutableArray<OutputMetadata>>(() =>
             {
-                var outputTypeProperties = new List<TypeProperty>();
+                var outputs = new List<OutputMetadata>();
 
                 foreach (var output in this.Root.OutputDeclarations.DistinctBy(o => o.Name))
                 {
                     var description = SemanticModelHelper.TryGetDescription(this, output.DeclaringOutput);
-                    outputTypeProperties.Add(new TypeProperty(output.Name, output.Type, TypePropertyFlags.ReadOnly, description));
+                    if (output.Type is ResourceType resourceType)
+                    {
+                        // Resource type parameters are a special case, we need to convert to a dedicated
+                        // type so we can compare differently for assignment and code generation.
+                        var type = new UnboundResourceType(resourceType.TypeReference);
+                        outputs.Add(new OutputMetadata(output.Name, type, description));
+                    }
+                    else
+                    {
+                        outputs.Add(new OutputMetadata(output.Name, output.Type, description));
+                    }
                 }
 
-                return outputTypeProperties.ToImmutableArray();
+                return outputs.ToImmutableArray();
             });
         }
 
@@ -131,9 +145,9 @@ namespace Bicep.Core.Semantics
 
         private LinterAnalyzer LinterAnalyzer => linterAnalyzerLazy.Value;
 
-        public ImmutableArray<TypeProperty> ParameterTypeProperties => this.parameterTypePropertiesLazy.Value;
+        public ImmutableArray<ParameterMetadata> Parameters => this.parametersLazy.Value;
 
-        public ImmutableArray<TypeProperty> OutputTypeProperties => this.outputTypePropertiesLazy.Value;
+        public ImmutableArray<OutputMetadata> Outputs => this.outputsLazy.Value;
 
         public ImmutableArray<ResourceMetadata> AllResources => allResourcesLazy.Value;
 
@@ -267,6 +281,25 @@ namespace Bicep.Core.Semantics
                 if (this.ResourceMetadata.TryLookup(resourceSymbol.DeclaringSyntax) is { } resource)
                 {
                     resources.Add(resource);
+                }
+            }
+
+            foreach (var parameterSymbol in Root.ParameterDeclarations)
+            {
+                if (this.ResourceMetadata.TryLookup(parameterSymbol.DeclaringSyntax) is { } resource)
+                {
+                    resources.Add(resource);
+                }
+            }
+
+            foreach (var moduleSymbol in Root.ModuleDeclarations)
+            {
+                if (moduleSymbol.TryGetSemanticModel(out var model, out _))
+                {
+                    foreach (var output in model.Outputs)
+                    {
+                        this.ResourceMetadata.TryAdd(moduleSymbol, output.Name);
+                    }
                 }
             }
 

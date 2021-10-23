@@ -47,7 +47,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
         {
             List<IDiagnostic> diagnostics = new List<IDiagnostic>();
 
-            foreach (ResourceMetadata resource in semanticModel.AllResources.Where(r => r.IsAzResource))
+            foreach (var resource in semanticModel.AllResources.OfType<DeclaredResourceMetadata>().Where(r => r.IsAzResource))
             {
                 // We're looking for this pattern:
                 //

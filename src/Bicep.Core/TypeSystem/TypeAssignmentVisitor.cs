@@ -284,6 +284,38 @@ namespace Bicep.Core.TypeSystem
                     return singleDeclaredType;
                 }
 
+                // We need to validate all of the parameters and outputs to make sure they are valid types.
+                // This is where we surface errors for 'unknown' resource types.
+                if (singleDeclaredType is ModuleType moduleType &&
+                    moduleType.Body is ObjectType objectType)
+                {
+                    if (objectType.Properties.TryGetValue(LanguageConstants.ModuleParamsPropertyName, out var paramsProperty)
+                        && paramsProperty.TypeReference.Type is ObjectType paramsType)
+                    {
+                        foreach (var property in paramsType.Properties.Values)
+                        {
+                            if (property.TypeReference.Type is ResourceParameterType resourceType &&
+                                !resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                            {
+                                diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Path).ModuleParamOrOutputResourceTypeUnavailable(resourceType.TypeReference));
+                            }
+                        }
+                    }
+
+                    if (objectType.Properties.TryGetValue(LanguageConstants.ModuleOutputsPropertyName, out var outputsProperty)
+                        && outputsProperty.TypeReference.Type is ObjectType outputsType)
+                    {
+                        foreach (var property in outputsType.Properties.Values)
+                        {
+                            if (property.TypeReference.Type is ResourceType resourceType &&
+                                !resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                            {
+                                diagnostics.Write(DiagnosticBuilder.ForPosition(syntax.Path).ModuleParamOrOutputResourceTypeUnavailable(resourceType.TypeReference));
+                            }
+                        }
+                    }
+                }
+
                 if (this.binder.GetSymbolInfo(syntax) is ModuleSymbol moduleSymbol &&
                     moduleSymbol.TryGetSemanticModel(out var moduleSemanticModel, out var _) &&
                     moduleSemanticModel.HasErrors())
@@ -293,13 +325,33 @@ namespace Bicep.Core.TypeSystem
                         : DiagnosticBuilder.ForPosition(syntax.Path).ReferencedModuleHasErrors());
                 }
 
+
                 return TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, binder, diagnostics, syntax.Value, declaredType);
             });
 
         public override void VisitParameterDeclarationSyntax(ParameterDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics =>
             {
-                var declaredType = syntax.GetDeclaredType();
+                var declaredType = typeManager.GetDeclaredType(syntax);
+                if (declaredType is null)
+                {
+                    return ErrorType.Empty();
+                }
+
+                if (declaredType is ResourceType resourceType)
+                {
+                    if (IsExtensibilityType(resourceType))
+                    {
+                        declaredType = ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.Type).UnsupportedResourceTypeParameterType(declaredType.Name));
+                    }
+
+                    if (syntax.Type is ResourceTypeSyntax resourceTypeSyntax &&
+                        resourceTypeSyntax.Type is {} &&
+                        !resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                    {
+                        diagnostics.Write(DiagnosticBuilder.ForPosition(resourceTypeSyntax.Type!).ResourceTypesUnavailable(resourceType.TypeReference));
+                    }
+                }
 
                 this.ValidateDecorators(syntax.Decorators, declaredType, diagnostics);
 
@@ -470,13 +522,14 @@ namespace Bicep.Core.TypeSystem
         public override void VisitOutputDeclarationSyntax(OutputDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics =>
             {
-                var declaredType = syntax.GetDeclaredType();
+                var declaredType = this.typeManager.GetDeclaredType(syntax);
+                if (declaredType is null)
+                {
+                    return ErrorType.Empty();
+                }
 
                 this.ValidateDecorators(syntax.Decorators, declaredType, diagnostics);
-
-                var currentDiagnostics = GetOutputDeclarationDiagnostics(declaredType, syntax);
-
-                diagnostics.WriteMultiple(currentDiagnostics);
+                diagnostics.WriteMultiple(GetOutputDeclarationDiagnostics(declaredType, syntax));
 
                 return declaredType;
             });
@@ -1365,17 +1418,34 @@ namespace Bicep.Core.TypeSystem
             var valueType = typeManager.GetTypeInfo(syntax.Value);
 
             // this type is not a property in a symbol so the semantic error visitor won't collect the errors automatically
-            if (valueType is ErrorType)
+            var diagnostics = new List<IDiagnostic>();
+            diagnostics.AddRange(valueType.GetDiagnostics());
+
+            if (assignedType is ResourceType resourceType &&
+                syntax.Type is ResourceTypeSyntax resourceTypeSyntax)
             {
-                return valueType.GetDiagnostics();
+                if (IsExtensibilityType(resourceType))
+                {
+                    diagnostics.Add(DiagnosticBuilder.ForPosition(resourceTypeSyntax).UnsupportedResourceTypeOutputType(assignedType.Name));
+                }
+
+                // As a special case of outputs, we don't want to double-up diagnostics on inferred resource types.
+                // The inference is based on another declaration in the file, and so the user should fix that instead.
+                if (resourceTypeSyntax.Type is {}
+                    && !resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                {
+                    diagnostics.Add(DiagnosticBuilder.ForPosition(resourceTypeSyntax.Type!).ResourceTypesUnavailable(resourceType.TypeReference));
+                }
             }
 
-            if (TypeValidator.AreTypesAssignable(valueType, assignedType) == false)
+            // Avoid reporting an additional error if we failed to bind the output type.
+            if (TypeValidator.AreTypesAssignable(valueType, assignedType) == false &&
+                valueType is not ErrorType)
             {
                 return DiagnosticBuilder.ForPosition(syntax.Value).OutputTypeMismatch(assignedType, valueType).AsEnumerable();
             }
 
-            return Enumerable.Empty<IDiagnostic>();
+            return diagnostics;
         }
 
         private IEnumerable<IDiagnostic> ValidateDefaultValue(ParameterDefaultValueSyntax defaultValueSyntax, TypeSymbol assignedType)
@@ -1464,6 +1534,11 @@ namespace Bicep.Core.TypeSystem
 
                 _ => baseType
             };
+
+        private bool IsExtensibilityType(ResourceType resourceType)
+        {
+            return resourceType.DeclaringNamespace.ProviderName != AzNamespaceType.BuiltInName;
+        }
 
         private DecoratorSyntax? GetNamedDecorator(StatementSyntax syntax, string decoratorName)
         {
