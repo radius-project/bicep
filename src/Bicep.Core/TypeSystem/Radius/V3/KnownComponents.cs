@@ -18,6 +18,174 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             public List<TypeProperty> Properties { get; } = new List<TypeProperty>();
         }
 
+        public static ComponentData MakeWebsite()
+        {
+            var connectionType = new DiscriminatedObjectType(
+                name: "connection",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: CommonBindings.AllBindingData.Select(b =>
+                {
+                    return new ObjectType(
+                        name: $"connection {b.Type.FormatKind()}",
+                        validationFlags: TypeSymbolValidationFlags.Default,
+                        properties: new[]
+                        {
+                            new TypeProperty("kind", new StringLiteralType(b.Type.FormatKind()), TypePropertyFlags.Required, "The kind of connection"),
+                            new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the connection"),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None,
+                        functions: null);
+                }));
+
+            var connectionsType = new ObjectType(
+                name: "connections",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: connectionType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var connectionsProperty = new TypeProperty(
+                "connections",
+                connectionsType,
+                TypePropertyFlags.None,
+                @"Specify named connections to databases, routes, and other resources for the component.
+
+The connections can be used to grant access to resources as well as to inject configuration value into the container.
+Injected configuration values use environment variables by default and follow the naming pattern: `CONNECTION_<name>_<configuration-value>`.
+
+For example the following connection:
+
+```bicep
+connections: {
+  db: {
+    kind: 'mongodb.com/MongoDB'
+    source: db.id
+  }
+}
+```
+
+Defines the environment variable `CONNECTION_DB_CONNECTIONSTRING` containing the database's connection string. The set of configuration values
+available varies depending on the kind of connection. See the documentation for examples.
+");
+
+            var nameProperty = new TypeProperty("name", LanguageConstants.LooseString, TypePropertyFlags.Required);
+            var workingDirectoryProperty = new TypeProperty("workingDirectory", LanguageConstants.LooseString, TypePropertyFlags.None);
+
+            var argsType = new TypedArrayType(
+                itemReference: LanguageConstants.LooseString,
+                validationFlags: TypeSymbolValidationFlags.Default);
+            var argsProperty = new TypeProperty("args", argsType, TypePropertyFlags.None);
+
+            var executableType = new ObjectType(
+                name: "executable",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new []
+                {
+                    nameProperty,
+                    workingDirectoryProperty,
+                    argsProperty,
+                },
+                additionalPropertiesType: LanguageConstants.LooseString,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var executableProperty = new TypeProperty(
+                "executable",
+                executableType,
+                TypePropertyFlags.None,
+                description: "Specifies configuration for running as an executable.");
+
+            var imageProperty = new TypeProperty(
+                "image",
+                LanguageConstants.String,
+                TypePropertyFlags.Required,
+                description: "Specifies the container image to run.");
+            var containerType = new ObjectType(
+                "container",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    imageProperty,
+                },
+                additionalPropertiesType: LanguageConstants.Any,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var containerProperty = new TypeProperty(
+                "container",
+                containerType,
+                TypePropertyFlags.None,
+                description: "Specifies configuration for running as a container.");
+
+            var envType = new ObjectType(
+                name: "env",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.LooseString,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var envProperty = new TypeProperty("env", envType, TypePropertyFlags.None);
+
+            var portType = new ObjectType(
+                name: "port",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                    new TypeProperty("dynamic", LanguageConstants.Bool, TypePropertyFlags.None),
+                    new TypeProperty("env", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty(
+                        "protocol",
+                        new UnionType("protocol", ImmutableArray.Create<ITypeReference>(new StringLiteralType("TCP"), new StringLiteralType("UDP"))),
+                        TypePropertyFlags.None),
+                    new TypeProperty("provides", LanguageConstants.String, TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsType = new ObjectType(
+                name: "ports",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: portType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsProperty = new TypeProperty(
+                "ports",
+                portsType,
+                TypePropertyFlags.None,
+                description: @"Specify listening ports for the container. Ports may be used to connect the container to route types like `HttpRoute` for service discovery, or may just serve as documentation.
+
+Ports use the format: `name: { ... }'`. The name is provided for documentation purposes
+
+For example, the following code defines a listening port named `web` which is used to connect an `HttpRoute` to the container:
+
+```bicep
+web: {
+  containerPort: 3000
+  provides: myRoute.id
+}
+
+In this example the `web` port documents that the container is listening on port `3000`. The variable `myRoute` refers to an `HttpRoute` resource (definition not shownn here).
+```
+");
+
+            var replicasProperty = new TypeProperty("replicas", LanguageConstants.LooseString, TypePropertyFlags.None);
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType(null, "Website", ""),
+                Properties =
+                {
+                    connectionsProperty,
+                    executableProperty,
+                    containerProperty,
+                    envProperty,
+                    portsProperty,
+                    replicasProperty
+                },
+            };
+        }
+
         public static ComponentData MakeExecutable()
         {
             var members = new List<ObjectType>();
