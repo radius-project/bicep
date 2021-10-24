@@ -64,6 +64,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             var components = new KnownComponents.ComponentData[]
             {
                 KnownComponents.MakeContainer(),
+                KnownComponents.MakeWebsite(),
                 KnownComponents.MakeExecutable(),
                 KnownComponents.MakeDaprStateStore(),
                 KnownComponents.MakeDaprPubSubTopic(),
