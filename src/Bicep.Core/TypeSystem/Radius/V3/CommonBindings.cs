@@ -51,7 +51,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             properties: new[]
             {
                 new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.None, description: "Specifies the hostname to match. Use '*' to match all hostnames."),
-                new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The gateway which this HttpRoute belongs to."),
+                new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.None, "The gateway which this HttpRoute belongs to."),
                 new TypeProperty("rules", RulesType, TypePropertyFlags.None, description: "Specifies the path to match on the incoming request.")
             },
             additionalPropertiesType: RulesType,
