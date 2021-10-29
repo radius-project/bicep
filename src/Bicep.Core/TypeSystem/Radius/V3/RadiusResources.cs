@@ -26,5 +26,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         public const string CategoryRoute = "Route";
 
         public const string CategoryScope = "Scope";
+
+        public const string CategoryGateway = "Gateway";
     }
 }

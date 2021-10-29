@@ -21,6 +21,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             var types = new List<ResourceTypeComponents>();
             types.Add(MakeApplication());
             types.AddRange(MakeComponents());
+            types.AddRange(MakeGateways());
             types.AddRange(MakeRoutes());
             types.AddRange(MakeScopes());
 
@@ -80,6 +81,15 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             return components.Select(s => MakeComponentType(s));
         }
 
+        public static IEnumerable<ResourceTypeComponents> MakeGateways()
+        {
+            var components = new KnownGateways.GatewayData[]
+            {
+                KnownGateways.MakeGateway(),
+            };
+            return components.Select(s => MakeGatewayType(s));
+        }
+
         public static IEnumerable<ResourceTypeComponents> MakeScopes()
         {
             var scopes = new KnownScopes.ScopeData[]
@@ -131,6 +141,39 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
             return new ResourceTypeComponents(
                 ResourceTypeReference.Parse(component.Type.FormatTypeAndVersion(RadiusResources.ApplicationResourceType, Version)),
+                ResourceScope.ResourceGroup,
+                bodyType);
+        }
+
+        private static ResourceTypeComponents MakeGatewayType(KnownGateways.GatewayData gateway)
+        {
+            var propertiesType = new ObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: gateway.Properties,
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var bodyType = new ObjectType(
+                name: gateway.Type.FormatTypeAndVersion(RadiusResources.ApplicationResourceType, Version),
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    // Top level properties are predefined
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    new TypeProperty("type", new StringLiteralType(gateway.Type.FormatType(RadiusResources.ApplicationResourceType)), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+
+            return new ResourceTypeComponents(
+                ResourceTypeReference.Parse(gateway.Type.FormatTypeAndVersion(RadiusResources.ApplicationResourceType, Version)),
                 ResourceScope.ResourceGroup,
                 bodyType);
         }
