@@ -18,7 +18,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             public List<TypeProperty> Properties { get; } = new List<TypeProperty>();
         }
 
-        public static ComponentData MakeWebsite()
+        public static ComponentData MakeService()
         {
             var connectionType = new DiscriminatedObjectType(
                 name: "connection",
@@ -83,6 +83,7 @@ available varies depending on the kind of connection. See the documentation for 
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new []
                 {
+                    new TypeProperty("kind", new StringLiteralType("executable"), TypePropertyFlags.Required),
                     nameProperty,
                     workingDirectoryProperty,
                     argsProperty,
@@ -90,11 +91,6 @@ available varies depending on the kind of connection. See the documentation for 
                 additionalPropertiesType: LanguageConstants.LooseString,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
-            var executableProperty = new TypeProperty(
-                "executable",
-                executableType,
-                TypePropertyFlags.None,
-                description: "Specifies configuration for running as an executable.");
 
             var imageProperty = new TypeProperty(
                 "image",
@@ -106,15 +102,26 @@ available varies depending on the kind of connection. See the documentation for 
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
+                    new TypeProperty("kind", new StringLiteralType("container"), TypePropertyFlags.Required),
                     imageProperty,
                 },
                 additionalPropertiesType: LanguageConstants.Any,
                 additionalPropertiesFlags: TypePropertyFlags.None);
-            var containerProperty = new TypeProperty(
-                "container",
-                containerType,
+
+            var runnableType = new DiscriminatedObjectType(
+                "run config",
+                TypeSymbolValidationFlags.Default,
+                "kind",
+                new ITypeReference[]
+                {
+                    containerType,
+                    executableType,
+                });
+            var runProperty = new TypeProperty(
+                "run",
+                runnableType,
                 TypePropertyFlags.None,
-                description: "Specifies configuration for running as a container.");
+                description: "Specifies configuration for running the service.");
 
             var envType = new ObjectType(
                 name: "env",
@@ -173,12 +180,11 @@ In this example the `web` port documents that the container is listening on port
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Website", ""),
+                Type = new ThreePartType(null, "Service", ""),
                 Properties =
                 {
                     connectionsProperty,
-                    executableProperty,
-                    containerProperty,
+                    runProperty,
                     envProperty,
                     portsProperty,
                     replicasProperty
