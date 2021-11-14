@@ -30,6 +30,21 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public static ResourceTypeComponents MakeApplication()
         {
+            var hostingEntryType = new ObjectType(
+                "hosting entry",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.Any,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+
+            var hostingType = new ObjectType(
+                "hosting",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: hostingEntryType,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var hostingProperty = new TypeProperty("hosting", propertiesType, TypePropertyFlags.None);
+
             var propertiesType = new ObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
