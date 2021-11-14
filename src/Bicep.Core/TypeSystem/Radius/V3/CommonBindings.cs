@@ -149,15 +149,38 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             Type = new ThreePartType("redislabs.com", "Redis", RadiusResources.CategoryBinding),
             Properties =
             {
-                new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.None),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.None),
+                // The secrets section allows usage of binding expression to specify
+                // custom secrets.
+                //
+                // TODO: It is slightly confusing to set `redis.secrets.connectionString`, and read
+                //       from `redis.connectionString`. However, it is backward compatible with the
+                //       existing model. This will be a point we need to discuss when
+                //       check-pointing the end-to-end for RedisComponent.
+                new TypeProperty("secrets", new ObjectType(
+                                     "secrets",
+                                     validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                                     properties: new []
+                                     {
+                                         // TODO: it is unclear that we will need both `connectionString` and `password`.
+                                         //       For now we will go ahead having both, but it is good to raise this point
+                                         //       during our discussion.
+                                         new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                                         new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                                     },
+                                     additionalPropertiesType: null,
+                                     additionalPropertiesFlags: TypePropertyFlags.None
+                                     ),
+                                 TypePropertyFlags.None),
             },
             Values =
             {
                 new BindingValue("host"),
                 new BindingValue("port"),
                 new BindingValue("username"),
+                new BindingValue("connectionString", secret: true),
                 new BindingValue("password", secret: true),
             },
         };
