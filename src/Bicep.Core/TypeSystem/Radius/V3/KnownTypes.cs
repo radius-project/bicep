@@ -43,12 +43,15 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 properties: Array.Empty<TypeProperty>(),
                 additionalPropertiesType: hostingEntryType,
                 additionalPropertiesFlags: TypePropertyFlags.None);
-            var hostingProperty = new TypeProperty("hosting", propertiesType, TypePropertyFlags.None);
+            var hostingProperty = new TypeProperty("hosting", hostingType, TypePropertyFlags.None);
 
             var propertiesType = new ObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: Array.Empty<TypeProperty>(),
+                properties: new []
+                {
+                    hostingProperty,
+                },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None);
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.None);
