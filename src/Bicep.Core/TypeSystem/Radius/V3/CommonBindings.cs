@@ -159,21 +159,22 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 //       from `redis.connectionString`. However, it is backward compatible with the
                 //       existing model. This will be a point we need to discuss when
                 //       check-pointing the end-to-end for RedisComponent.
-                new TypeProperty("secrets", new ObjectType(
-                                     "secrets",
-                                     validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                                     properties: new []
-                                     {
-                                         // TODO: it is unclear that we will need both `connectionString` and `password`.
-                                         //       For now we will go ahead having both, but it is good to raise this point
-                                         //       during our discussion.
-                                         new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
-                                         new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
-                                     },
-                                     additionalPropertiesType: null,
-                                     additionalPropertiesFlags: TypePropertyFlags.None
-                                     ),
-                                 TypePropertyFlags.None),
+                new TypeProperty(
+                    "secrets",
+                    new ObjectType(
+                        "secrets",
+                        validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                        properties: new []
+                        {
+                            // TODO: it is unclear that we will need both `connectionString` and `password`.
+                            //       For now we will go ahead having both, but it is good to raise this point
+                            //       during our discussion.
+                            new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                            new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None),
+                TypePropertyFlags.None),
             },
             Values =
             {
@@ -198,6 +199,21 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         public static readonly BindingData BindingDataMongo = new BindingData()
         {
             Type = new ThreePartType("mongo.com", "MongoDB", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty(
+                    "secrets",
+                    new ObjectType(
+                        "secrets",
+                        validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                        properties: new []
+                        {
+                            new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None),
+                TypePropertyFlags.None),
+            },
             Values =
             {
                 new BindingValue("connectionString", secret: true),
