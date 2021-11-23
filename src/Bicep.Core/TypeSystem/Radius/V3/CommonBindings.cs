@@ -209,6 +209,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                         properties: new []
                         {
                             new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                            new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                            new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
                         },
                         additionalPropertiesType: null,
                         additionalPropertiesFlags: TypePropertyFlags.None),
@@ -216,7 +218,11 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
             Values =
             {
+                new BindingValue("host"),
+                new BindingValue("port"),
+                new BindingValue("username", secret: true),
                 new BindingValue("connectionString", secret: true),
+                new BindingValue("password", secret: true),
             },
         };
 
