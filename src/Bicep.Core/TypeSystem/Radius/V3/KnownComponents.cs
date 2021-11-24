@@ -653,19 +653,92 @@ Resources provided by the developer will not be modified or deleted by Radius. U
 
         public static ComponentData MakeVolume()
         {
-            var configKindType = new UnionType(
-                "volume kind",
-                ImmutableArray.Create<ITypeReference>(new StringLiteralType("azure.com.fileshare")));
+            var encodingType = new UnionType("encoding", ImmutableArray.Create<ITypeReference>(new StringLiteralType("utf-8"), new StringLiteralType("hex"), new StringLiteralType("base64")));
+            var formatType = new UnionType("format", ImmutableArray.Create<ITypeReference>(new StringLiteralType("pfx")));
+            var valueType = new UnionType("value", ImmutableArray.Create<ITypeReference>(new StringLiteralType("certificate"), new StringLiteralType("publickey"), new StringLiteralType("privatekey")));
+
+            var secretItemType = new ObjectType(
+                name: "secret",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.Required, "Name of the Azure KeyVault secret"),
+                    new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.None, "Version of the secret. Latest by default"),
+                    new TypeProperty("encoding", encodingType, TypePropertyFlags.None, "Encoding format of the secret"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var secrets = new ObjectType(
+                name: "secrets",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: secretItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var keysItemType = new ObjectType(
+                name: "key",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.Required, "Name of the Azure KeyVault key"),
+                    new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.None, "Version of the key. Latest by default"),
+                    },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var keys = new ObjectType(
+                name: "keys",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: keysItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var certificatesItemType = new ObjectType(
+                name: "certificates",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.Required, "Name of the Azure KeyVault certificate"),
+                    new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.None, "Version of the certificate. Latest by default"),
+                    new TypeProperty("encoding", encodingType, TypePropertyFlags.None, "Encoding format of the certificate"),
+                    new TypeProperty("format", formatType, TypePropertyFlags.None, "Format of the certificate"),
+                    new TypeProperty("value", valueType, TypePropertyFlags.Required,"Value to be downloaded from the Azure KeyVault"),
+                    },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var certificates = new ObjectType(
+                name: "certificates",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: certificatesItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+
+            var persistentVolumeKindType = new UnionType(
+                "persistent volume kind",
+                ImmutableArray.Create<ITypeReference>(
+                    new StringLiteralType("azure.com.fileshare"),
+                    new StringLiteralType("azure.com.keyvault")
+                )
+            );
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Volume", ""),
+                Type = new ThreePartType(null, "Volume", RadiusResources.CategoryComponent),
                 Properties =
                 {
-                    new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Managed by Radius"),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "Resource ID for user managed resource"),
+                    new TypeProperty("kind", persistentVolumeKindType, TypePropertyFlags.Required, "Persistent volume kind"),
+                    new TypeProperty("secrets", secrets, TypePropertyFlags.None, "Secrets from the Azure KeyVault to be mounted"),
+                    new TypeProperty("keys", keys, TypePropertyFlags.None, "Keys from the Azure KeyVault to be mounted"),
+                    new TypeProperty("certificates", certificates, TypePropertyFlags.None, "Certificates from the Azure KeyVault to be mounted")
+                }
             };
         }
     }
