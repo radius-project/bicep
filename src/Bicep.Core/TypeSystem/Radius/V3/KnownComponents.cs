@@ -654,7 +654,7 @@ Resources provided by the developer will not be modified or deleted by Radius. U
         public static ComponentData MakeVolume()
         {
             var encodingType = new UnionType("encoding", ImmutableArray.Create<ITypeReference>(new StringLiteralType("utf-8"), new StringLiteralType("hex"), new StringLiteralType("base64")));
-            var formatType = new UnionType("format", ImmutableArray.Create<ITypeReference>(new StringLiteralType("pfx")));
+            var formatType = new UnionType("format", ImmutableArray.Create<ITypeReference>(new StringLiteralType("pfx"), new StringLiteralType("pem")));
             var valueType = new UnionType("value", ImmutableArray.Create<ITypeReference>(new StringLiteralType("certificate"), new StringLiteralType("publickey"), new StringLiteralType("privatekey")));
 
             var secretItemType = new ObjectType(
@@ -729,7 +729,7 @@ Resources provided by the developer will not be modified or deleted by Radius. U
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Volume", RadiusResources.CategoryComponent),
+                Type = new ThreePartType(null, "Volume", ""),
                 Properties =
                 {
                     new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Managed by Radius"),
