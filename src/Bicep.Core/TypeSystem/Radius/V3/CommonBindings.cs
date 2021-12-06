@@ -189,6 +189,21 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         public static readonly BindingData BindingDataRabbitMQ = new BindingData()
         {
             Type = new ThreePartType("rabbitmq.com", "MessageQueue", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty(
+                    "secrets",
+                    new ObjectType(
+                        "secrets",
+                        validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                        properties: new []
+                        {
+                            new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None),
+                TypePropertyFlags.None),
+            },
             Values =
             {
                 new BindingValue("queue"),
