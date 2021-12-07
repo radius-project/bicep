@@ -233,6 +233,14 @@ namespace Bicep.Core.Emit
 
         private LanguageExpression ConvertResourcePropertyAccess(ResourceMetadata resource, SyntaxBase? indexExpression, string propertyName)
         {
+            // For Kubernetes, always append '.properties'
+            if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
+            {
+                return AppendProperties(AppendProperties(
+                                            GetReferenceExpression(resource, indexExpression, true),
+                                            new JTokenExpression("properties")),
+                                        new JTokenExpression(propertyName));
+            }
             if (!resource.IsAzResource)
             {
                 // For an extensible resource, always generate a 'reference' statement.
@@ -724,6 +732,15 @@ namespace Bicep.Core.Emit
             };
 
             var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
+            // For Kubernetes, always use full reference.
+            if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName) {
+                var apiVersion = typeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {typeReference.FormatName()} to contain version");
+                return CreateFunction(
+                    "reference",
+                    referenceExpression,
+                    new JTokenExpression(apiVersion),
+                    new JTokenExpression("full"));
+            }
             if (!resource.IsAzResource)
             {
                 // For an extensible resource, always generate a 'reference' statement.
