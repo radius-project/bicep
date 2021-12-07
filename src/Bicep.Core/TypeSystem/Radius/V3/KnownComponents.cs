@@ -9,9 +9,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 {
     public static class KnownComponents
     {
-        var roleType = new TypedArrayType(
-                itemReference: LanguageConstants.String,
-                validationFlags: TypeSymbolValidationFlags.Default);
         public class ComponentData
         {
             public ThreePartType Type { get; set; } = default!;
@@ -23,6 +20,10 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public static ComponentData MakeService()
         {
+            var roleType = new TypedArrayType(
+                itemReference: LanguageConstants.String,
+                validationFlags: TypeSymbolValidationFlags.Default);
+
             var connectionType = new DiscriminatedObjectType(
                 name: "connection",
                 validationFlags: TypeSymbolValidationFlags.Default,
@@ -237,6 +238,10 @@ In this example the `web` port documents that the container is listening on port
         public static ComponentData MakeContainer()
         {
             var members = new List<ObjectType>();
+
+            var roleType = new TypedArrayType(
+                itemReference: LanguageConstants.String,
+                validationFlags: TypeSymbolValidationFlags.Default);
 
             var connectionType = new DiscriminatedObjectType(
                 name: "connection",
