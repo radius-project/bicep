@@ -301,6 +301,62 @@ output connectionString string = app::db.connectionString()
         }
 
         [TestMethod]
+        public void Programmatic_secrets_work_with_parameter()
+        {
+            var context = new CompilationHelperContext();
+            var (template, diagnostics, compilation) = Compile(context, @"
+param db resource 'radius.dev/Application/mongodb.com.MongoDBComponent@v1alpha3'
+
+resource app 'radius.dev/Application@v1alpha3' existing = {
+  name: 'app'
+
+  resource backend 'ContainerComponent' = {
+    name: 'backend'
+    properties: {
+      container: {
+        image: 'rynowak/backend:latest'
+        env: {
+          CONNECTION_STRING: db.connectionString()
+        }
+      }
+    }
+  }
+}
+");
+
+            var model = compilation.GetEntrypointSemanticModel();
+            model.GetAllDiagnostics().Should().BeEmpty();
+
+            var applicationSymbol = model.AllResources.OfType<DeclaredResourceMetadata>().Should().ContainSingle(r => r.Symbol.Name == "app").Subject.Symbol;
+            var applicationType = applicationSymbol.TryGetResourceTypeReference();
+            applicationType.Should().NotBeNull();
+            applicationType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application@v1alpha3"));
+
+            template.Should().HaveValueAtPath("$.resources[0]", new JObject()
+            {
+                ["type"] = new JValue("Microsoft.CustomProviders/resourceProviders/Application/ContainerComponent"),
+                ["apiVersion"] = new JValue("2018-09-01-preview"),
+                ["name"] = new JValue("[format('{0}/{1}/{2}', 'radiusv3', 'app', 'backend')]"),
+                ["properties"] = new JObject()
+                {
+                    ["container"] = new JObject()
+                    {
+                        ["image"] = new JValue("rynowak/backend:latest"),
+                        ["env"] = new JObject()
+                        {
+                            ["CONNECTION_STRING"] = new JValue("[listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', parameters('db'))).connectionString]"),
+                        }
+                    }
+                },
+                ["dependsOn"] = new JArray()
+                {
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application', 'radiusv3', 'app')]"),
+                    new JValue("[resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db')]"),
+                },
+            });
+        }
+
+        [TestMethod]
         public void Application_with_executable_can_be_compiled()
         {
             var context = new CompilationHelperContext();
@@ -325,12 +381,12 @@ resource app 'radius.dev/Application@v1alpha3' = {
             var model = compilation.GetEntrypointSemanticModel();
             model.GetAllDiagnostics().Should().BeEmpty();
 
-            var applicationSymbol = model.AllResources.Should().ContainSingle(r => r.Symbol.Name == "app").Subject.Symbol;
+            var applicationSymbol = model.AllResources.OfType<DeclaredResourceMetadata>().Should().ContainSingle(r => r.Symbol.Name == "app").Subject.Symbol;
             var applicationType = applicationSymbol.TryGetResourceTypeReference();
             applicationType.Should().NotBeNull();
             applicationType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application@v1alpha3"));
 
-            var frontendSymbol = model.AllResources.Should().ContainSingle(r => r.Symbol.Name == "service").Subject.Symbol;
+            var frontendSymbol = model.AllResources.OfType<DeclaredResourceMetadata>().Should().ContainSingle(r => r.Symbol.Name == "service").Subject.Symbol;
             var frontendType = frontendSymbol.TryGetResourceTypeReference();
             frontendType.Should().NotBeNull();
             frontendType.Should().BeEquivalentTo(ResourceTypeReference.Parse("radius.dev/Application/ExecutableComponent@v1alpha3"));

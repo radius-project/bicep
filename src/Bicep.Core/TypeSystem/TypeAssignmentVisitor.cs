@@ -1537,7 +1537,9 @@ namespace Bicep.Core.TypeSystem
 
         private bool IsExtensibilityType(ResourceType resourceType)
         {
-            return resourceType.DeclaringNamespace.ProviderName != AzNamespaceType.BuiltInName;
+            return
+                resourceType.DeclaringNamespace.ProviderName != AzNamespaceType.BuiltInName &&
+                resourceType.DeclaringNamespace.ProviderName != Radius.RadiusArmNamespace.BuiltInName;
         }
 
         private DecoratorSyntax? GetNamedDecorator(StatementSyntax syntax, string decoratorName)
