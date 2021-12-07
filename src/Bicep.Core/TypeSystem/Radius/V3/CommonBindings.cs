@@ -288,6 +288,11 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
         };
 
+        public static readonly BindingData BindingDataKindAzure = new BindingData()
+        {
+            Type = new ThreePartType(null, "azure", String.Empty),
+        };
+
         public static readonly BindingData[] AllBindingData = new BindingData[]
         {
             BindingDataDaprHttp,
@@ -301,6 +306,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             BindingDataRabbitMQ,
             BindingDataServiceBusQueue,
             BindingDataSQL,
+            BindingDataKindAzure,
         };
 
         public static readonly IEnumerable<BindingData> RouteBindingData = AllBindingData.Where(b => b.IsRoute);

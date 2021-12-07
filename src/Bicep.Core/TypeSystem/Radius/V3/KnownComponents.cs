@@ -9,6 +9,9 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 {
     public static class KnownComponents
     {
+        var roleType = new TypedArrayType(
+                itemReference: LanguageConstants.String,
+                validationFlags: TypeSymbolValidationFlags.Default);
         public class ComponentData
         {
             public ThreePartType Type { get; set; } = default!;
@@ -33,6 +36,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                         {
                             new TypeProperty("kind", new StringLiteralType(b.Type.FormatKind()), TypePropertyFlags.Required, "The kind of connection"),
                             new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the connection"),
+                            new TypeProperty("role", roleType, TypePropertyFlags.None, "RBAC configuration to be applied on the connection"),
                         },
                         additionalPropertiesType: null,
                         additionalPropertiesFlags: TypePropertyFlags.None,
@@ -247,6 +251,7 @@ In this example the `web` port documents that the container is listening on port
                         {
                             new TypeProperty("kind", new StringLiteralType(b.Type.FormatKind()), TypePropertyFlags.Required, "The kind of connection"),
                             new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the connection"),
+                            new TypeProperty("role", roleType, TypePropertyFlags.None, "RBAC configuration to be applied on the connection"),
                         },
                         additionalPropertiesType: null,
                         additionalPropertiesFlags: TypePropertyFlags.None,
