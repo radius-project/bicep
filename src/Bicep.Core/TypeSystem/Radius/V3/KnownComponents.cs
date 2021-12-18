@@ -605,7 +605,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("microsoft.com", "SQLDatabases", ""),
+                Type = new ThreePartType("microsoft.com", "SQLDatabase", ""),
                 Binding = CommonBindings.BindingDataSQL,
                 Properties =
                 {
