@@ -101,7 +101,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public static readonly BindingData BindingDataDaprHttp = new BindingData()
         {
-            Type = new ThreePartType("dapr.io", "DaprHttp", RadiusResources.CategoryRoute),
+            Type = new ThreePartType("dapr.io", "InvokeHttp", RadiusResources.CategoryRoute),
             Properties =
             {
                 new TypeProperty(

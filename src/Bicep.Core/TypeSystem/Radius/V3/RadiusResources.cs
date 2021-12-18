@@ -19,8 +19,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public const string ApplicationResourceType = "radius.dev/Application";
 
-        public const string CategoryComponent = "Component";
-
         public const string CategoryBinding = "Binding";
 
         public const string CategoryRoute = "Route";
