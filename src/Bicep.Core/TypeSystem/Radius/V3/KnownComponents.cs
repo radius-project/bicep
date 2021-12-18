@@ -223,7 +223,7 @@ In this example the `web` port documents that the container is listening on port
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Executable", RadiusResources.CategoryComponent),
+                Type = new ThreePartType(null, "Executable", ""),
                 Properties =
                 {
                     executableProperty,
@@ -503,7 +503,7 @@ In this example the `web` port documents that the container is listening on port
 
             return new ComponentData()
             {
-                Type = new ThreePartType(null, "Container", RadiusResources.CategoryComponent),
+                Type = new ThreePartType(null, "Container", ""),
                 Properties =
                 {
                     connectionsProperty,
@@ -525,7 +525,7 @@ In this example the `web` port documents that the container is listening on port
 
             return new ComponentData()
             {
-                Type = new ThreePartType("dapr.io", "StateStore", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("dapr.io", "StateStore", ""),
                 Binding = CommonBindings.BindingDataDaprStateStore,
                 Properties =
                 {
@@ -546,7 +546,7 @@ In this example the `web` port documents that the container is listening on port
 
             return new ComponentData()
             {
-                Type = new ThreePartType("dapr.io", "PubSubTopic", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("dapr.io", "PubSubTopic", ""),
                 Binding = CommonBindings.BindingDataDaprPubSubTopic,
                 Properties =
                 {
@@ -562,7 +562,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("azure.com", "ServiceBusQueue", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("azure.com", "ServiceBusQueue", ""),
                 Binding = CommonBindings.BindingDataServiceBusQueue,
                 Properties =
                 {
@@ -577,7 +577,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("redislabs.com", "Redis", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("redislabs.com", "RedisCache", ""),
                 Binding = CommonBindings.BindingDataRedis,
                 Properties =
                 {
@@ -591,7 +591,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("rabbitmq.com", "MessageQueue", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("rabbitmq.com", "MessageQueue", ""),
                 Binding = CommonBindings.BindingDataRabbitMQ,
                 Properties =
                 {
@@ -605,7 +605,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("microsoft.com", "SQL", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("microsoft.com", "SQLDatabases", ""),
                 Binding = CommonBindings.BindingDataSQL,
                 Properties =
                 {
@@ -619,7 +619,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("azure.com", "KeyVault", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("azure.com", "KeyVault", ""),
                 Binding = CommonBindings.BindingDataKeyVault,
                 Properties =
                 {
@@ -633,7 +633,7 @@ In this example the `web` port documents that the container is listening on port
         {
             return new ComponentData()
             {
-                Type = new ThreePartType("mongodb.com", "MongoDB", RadiusResources.CategoryComponent),
+                Type = new ThreePartType("mongo.com", "MongoDatabase", ""),
                 Binding = CommonBindings.BindingDataMongo,
                 Properties =
                 {
