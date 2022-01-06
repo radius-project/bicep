@@ -22,6 +22,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                     "type",
                     new UnionType("type", ImmutableArray.Create<ITypeReference>(new StringLiteralType("prefix"), new StringLiteralType("exact"))),
                     TypePropertyFlags.None, description: "Specifies the type of matching to match the path on. Supported values: 'prefix', 'exact'"),
+                new TypeProperty("trimMatch", LanguageConstants.Bool, TypePropertyFlags.None, description: "Specifies whether to removed the matched path on the incoming request."),
             },
             additionalPropertiesType: null,
             additionalPropertiesFlags: TypePropertyFlags.None);
