@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bicep.Core.TypeSystem;
+using Bicep.Core.Resources;
 
 namespace Bicep.Core.TypeSystem.Radius.V3
 {
@@ -536,26 +538,82 @@ In this example the `web` port documents that the container is listening on port
             };
         }
 
-        public static ComponentData MakeDaprPubSubTopic()
+        public static ResourceTypeComponents MakeDaprPubSubTopic()
         {
-            var configKindType = new UnionType(
-                "pubsub kind",
-                ImmutableArray.Create<ITypeReference>(
-                    new StringLiteralType("pubsub.azure.servicebus"),
-                    new StringLiteralType("any")));
-
-            return new ComponentData()
-            {
-                Type = new ThreePartType("dapr.io", "PubSubTopic", ""),
-                Binding = CommonBindings.BindingDataDaprPubSubTopic,
-                Properties =
+            var azureServiceBusPubSubType = new ObjectType(
+                name: "azure servicebus",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
                 {
-                    new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("kind", new StringLiteralType("azure servicebus"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind. These strings match the format used by Dapr Kubernetes configuration format"),
+                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "PubSub resource, for unmanaged"),
+                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
                 },
-            };
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var anyPubSubType = new ObjectType(
+                name: "any",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("kind", new StringLiteralType("any"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
+                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var genericPubSubType = new ObjectType(
+                name: "generic",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
+                    new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Pub/Sub type. These strings match the format used by Dapr Kubernetes configuration format"),
+                    new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
+                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.Required, "Metadata for the Pub/Sub resource. This should match the Dapr component spec"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var daprPubSubKindType = new DiscriminatedObjectType(
+                name: "dapr pubsub kind",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, anyPubSubType, genericPubSubType });
+
+            var propertiesType = new DiscriminatedObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, anyPubSubType, genericPubSubType });
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}";
+            var bodyType = new ObjectType(
+                name: typeName,
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    // Top level properties are predefined
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    new TypeProperty("type", new StringLiteralType(typeName), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            return new ResourceTypeComponents(
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}"),
+                ResourceScope.ResourceGroup,
+                bodyType);
         }
 
         public static ComponentData MakeServiceBusQueue()

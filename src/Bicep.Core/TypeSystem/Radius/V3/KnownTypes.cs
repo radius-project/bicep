@@ -86,7 +86,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeContainer(),
                 KnownComponents.MakeExecutable(),
                 KnownComponents.MakeDaprStateStore(),
-                KnownComponents.MakeDaprPubSubTopic(),
                 KnownComponents.MakeMongoDB(),
                 KnownComponents.MakeMicrosoftSQL(),
                 KnownComponents.MakeKeyVault(),
@@ -96,7 +95,10 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeVolume(),
             };
 
-            return components.Select(s => MakeComponentType(s));
+            var items = components.Select(s => MakeComponentType(s)).ToList();
+            // Dapr PubSub is defined manually.
+            items.Add(KnownComponents.MakeDaprPubSubTopic());
+            return items;
         }
 
         public static IEnumerable<ResourceTypeComponents> MakeGateways()
