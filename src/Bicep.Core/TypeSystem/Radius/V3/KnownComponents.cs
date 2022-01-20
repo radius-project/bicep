@@ -572,7 +572,7 @@ In this example the `web` port documents that the container is listening on port
                     new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
                     new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Pub/Sub type. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
-                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.Required, "Metadata for the Pub/Sub resource. This should match the Dapr component spec"),
+                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the Pub/Sub resource. This should match the Dapr component spec"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
