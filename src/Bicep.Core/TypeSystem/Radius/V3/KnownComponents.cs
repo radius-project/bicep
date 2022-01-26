@@ -671,7 +671,16 @@ In this example the `web` port documents that the container is listening on port
                 Properties =
                 {
                     new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, description:
+                    @"Specifies the backing resource of this component. This or `server/database` must be set when using `managed: false` (default).
+
+For Azure, this property will accept a resource ID of a `Microsoft.Sql/servers/databases` resource.
+
+Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
+                    new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.None, description:
+                    "The name of the SQL database."),
+                    new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
+                    "The fully qualified domain name of the SQL database."),
                 },
             };
         }
