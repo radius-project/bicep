@@ -545,6 +545,7 @@ In this example the `web` port documents that the container is listening on port
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[]
                 {
+                    new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
                     new TypeProperty("kind", new StringLiteralType("pubsub.azure.servicebus"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "PubSub resource, for unmanaged"),
@@ -558,6 +559,7 @@ In this example the `web` port documents that the container is listening on port
                 name: "any",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[] {
+                    new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
                     new TypeProperty("kind", new StringLiteralType("any"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
                     new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
                 },
@@ -569,6 +571,7 @@ In this example the `web` port documents that the container is listening on port
                 name: "generic",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[] {
+                    new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
                     new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
                     new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Pub/Sub type. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
