@@ -85,7 +85,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeService(),
                 KnownComponents.MakeContainer(),
                 KnownComponents.MakeExecutable(),
-                KnownComponents.MakeDaprStateStore(),
                 KnownComponents.MakeMongoDB(),
                 KnownComponents.MakeMicrosoftSQL(),
                 KnownComponents.MakeKeyVault(),
@@ -98,6 +97,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             var items = components.Select(s => MakeComponentType(s)).ToList();
             // Dapr PubSub is defined manually.
             items.Add(KnownComponents.MakeDaprPubSubTopic());
+            items.Add(KnownComponents.MakeDaprStateStore());
             return items;
         }
 
