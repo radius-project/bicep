@@ -25,9 +25,10 @@ namespace Bicep.Core.Registry
             options.Diagnostics.ApplySharedContainerRegistrySettings();
             options.Audience = new ContainerRegistryAudience(configuration.Cloud.ResourceManagerAudience);
 
-            var credential = this.credentialFactory.CreateChain(configuration.Cloud.CredentialPrecedence, configuration.Cloud.ActiveDirectoryAuthorityUri);
-
-            return new(registryUri, credential, repository, options);
+            return new DynamicCredentialRegistryClient(registryUri, repository, options, () =>
+            {
+                return this.credentialFactory.CreateChain(configuration.Cloud.CredentialPrecedence, configuration.Cloud.ActiveDirectoryAuthorityUri);
+            });
         }
     }
 }
