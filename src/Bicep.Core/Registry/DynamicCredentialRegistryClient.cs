@@ -18,10 +18,18 @@ namespace Bicep.Core.Registry
         private bool credentialsInitialized;
         private object? @lock;
 
+        private readonly Func<ContainerRegistryBlobClient> createCredentialsClient;
+
         public DynamicCredentialRegistryClient(Uri endpoint, string repository, ContainerRegistryClientOptions options, Func<TokenCredential> createCredential)
         {
             // Try anonymous access first
             this.current = new ContainerRegistryBlobClient(endpoint, repository, options);
+
+            this.createCredentialsClient = () =>
+            {
+                 var credentials = createCredential();
+                return new ContainerRegistryBlobClient(endpoint, credentials, repository, options);
+            };
         }
 
         public override Uri Endpoint => current.Endpoint;
@@ -44,7 +52,7 @@ namespace Bicep.Core.Registry
                 }
             }
 
-            client = LazyInitializer.EnsureInitialized<ContainerRegistryBlobClient>(ref current, ref credentialsInitialized, ref @lock);
+            client = LazyInitializer.EnsureInitialized<ContainerRegistryBlobClient>(ref current, ref credentialsInitialized, ref @lock, createCredentialsClient);
             return func(client);
         }
 
@@ -64,7 +72,7 @@ namespace Bicep.Core.Registry
                 }
             }
 
-            client = LazyInitializer.EnsureInitialized<ContainerRegistryBlobClient>(ref current, ref credentialsInitialized, ref @lock);
+            client = LazyInitializer.EnsureInitialized<ContainerRegistryBlobClient>(ref current, ref credentialsInitialized, ref @lock, createCredentialsClient);
             return await func(client);
         }
 
