@@ -671,7 +671,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
         }
         
         public static ResourceTypeComponents MakeDaprPubSubTopic()
-        {xx
+        {
             var azureServiceBusPubSubType = new ObjectType(
                 name: "pubsub.azure.servicebus",
                 validationFlags: TypeSymbolValidationFlags.Default,
@@ -999,19 +999,5 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 }
             };
         }
-    }
-
-    public static ComponentData MakeGeneric()
-    {
-        return new ComponentData()
-        {
-            Type = new ThreePartType("redislabs.com", "RedisCache", ""),
-            Binding = CommonBindings.BindingDataRedis,
-            Properties =
-            {
-                new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-            },
-        };
     }
 }
