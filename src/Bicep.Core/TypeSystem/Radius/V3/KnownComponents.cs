@@ -621,7 +621,7 @@ In this example the `web` port documents that the container is listening on port
         }
 
         public static ResourceTypeComponents MakeDaprPubSubTopic()
-        {
+        {xx
             var azureServiceBusPubSubType = new ObjectType(
                 name: "pubsub.azure.servicebus",
                 validationFlags: TypeSymbolValidationFlags.Default,
@@ -697,6 +697,53 @@ In this example the `web` port documents that the container is listening on port
 
             return new ResourceTypeComponents(
                 ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}"),
+                ResourceScope.ResourceGroup,
+                bodyType);
+        }
+
+        public static ResourceTypeComponents MakeGeneric()
+        {
+            var propertiesType = new ObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    new TypeProperty(
+                        "secrets",
+                        new ObjectType(
+                            "secrets",
+                            validationFlags: TypeSymbolValidationFlags.None,
+                            properties: new[]{},
+                            additionalPropertiesType: LanguageConstants.String),
+                        TypePropertyFlags.WriteOnly),
+                        additionalPropertiesType: LanguageConstants.String,
+                },
+                additionalPropertiesType: LanguageConstants.Any);
+
+
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var typeName = $"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}";
+            var bodyType = new ObjectType(
+                name: typeName,
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    // Top level properties are predefined
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    new TypeProperty("type", new StringLiteralType(typeName), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            return new ResourceTypeComponents(
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
         }
@@ -903,5 +950,19 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 }
             };
         }
+    }
+
+    public static ComponentData MakeGeneric()
+    {
+        return new ComponentData()
+        {
+            Type = new ThreePartType("redislabs.com", "RedisCache", ""),
+            Binding = CommonBindings.BindingDataRedis,
+            Properties =
+            {
+                new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
+                new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+            },
+        };
     }
 }
