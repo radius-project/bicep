@@ -92,6 +92,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeRabbitMQ(),
                 KnownComponents.MakeRedis(),
                 KnownComponents.MakeVolume(),
+                KnownComponents.MakeGeneric(),
             };
 
             var items = components.Select(s => MakeComponentType(s)).ToList();
