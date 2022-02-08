@@ -367,7 +367,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 SyntaxFactory.CreateStringLiteral(RadiusResources.CRPApiVersion),
                 customActionDataArgumentExpression);
 
-            return SyntaxFactory.CreateArrayIndex(functionCallExpression, instance.Arguments[0]);
+            return SyntaxFactory.CreateArrayIndex(functionCallExpression, instance.Arguments[0].Expression);
         }
     }
 }
