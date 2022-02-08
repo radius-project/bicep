@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.Resources;
+using Bicep.Core.Semantics;
 
 namespace Bicep.Core.TypeSystem.Radius.V3
 {
@@ -701,7 +702,7 @@ In this example the `web` port documents that the container is listening on port
                 bodyType);
         }
 
-        public static ResourceTypeComponents MakeGeneric()
+        public static ResourceTypeComponents MakeGeneric(IEnumerable<FunctionOverload> resourceFunctions)
         {
             var propertiesType = new ObjectType(
                 "properties",
@@ -739,7 +740,7 @@ In this example the `web` port documents that the container is listening on port
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
+                functions: resourceFunctions);
 
             return new ResourceTypeComponents(
                 ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}"),

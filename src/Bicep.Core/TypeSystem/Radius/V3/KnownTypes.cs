@@ -98,7 +98,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             // Dapr PubSub is defined manually.
             items.Add(KnownComponents.MakeDaprPubSubTopic());
             items.Add(KnownComponents.MakeDaprStateStore());
-            items.Add(KnownComponents.MakeGeneric());
+            items.Add(KnownComponents.MakeGeneric(new List<FunctionOverload>{MakeSecretAccessorFunctionWithName()}));
             return items;
         }
 
@@ -325,7 +325,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         private static FunctionOverload MakeSecretAccessorFunctionWithName()
         {
-            return new FunctionOverloadBuilder("getSecret")
+            return new FunctionOverloadBuilder("secrets")
                 .WithDescription($"Provides access to the specified secret value.")
                 .WithEvaluator((function, symbol, type) => EvaluateSecretWithName(function, symbol, type))
                 .WithFlags(FunctionFlags.RequiresInlining)
@@ -341,7 +341,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             //    targetId: ....
             // }
             //
-            // A function like foo.getSecret('connectionString') is replaced with code like:
+            // A function like foo.secrets('connectionString') is replaced with code like:
             // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) })['connectionString']
             //
             // - The former resourceId is the ID of the CustomRP - this is a limitation we have to live with
