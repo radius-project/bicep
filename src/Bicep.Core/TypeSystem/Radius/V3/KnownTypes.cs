@@ -92,13 +92,13 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeRabbitMQ(),
                 KnownComponents.MakeRedis(),
                 KnownComponents.MakeVolume(),
-                KnownComponents.MakeGeneric(),
             };
 
             var items = components.Select(s => MakeComponentType(s)).ToList();
             // Dapr PubSub is defined manually.
             items.Add(KnownComponents.MakeDaprPubSubTopic());
             items.Add(KnownComponents.MakeDaprStateStore());
+            items.Add(KnownComponents.MakeGeneric());
             return items;
         }
 
@@ -367,8 +367,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 SyntaxFactory.CreateStringLiteral(RadiusResources.CRPApiVersion),
                 customActionDataArgumentExpression);
 
-
-            return SyntaxFactory.CreatePropertyAccess(functionCallExpression, value.Name);
+            return SyntaxFactory.CreateArrayIndex(functionCallExpression, instance.Arguments[0]);
         }
     }
 }

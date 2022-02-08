@@ -621,7 +621,7 @@ In this example the `web` port documents that the container is listening on port
         }
 
         public static ResourceTypeComponents MakeDaprPubSubTopic()
-        {xx
+        {
             var azureServiceBusPubSubType = new ObjectType(
                 name: "pubsub.azure.servicebus",
                 validationFlags: TypeSymbolValidationFlags.Default,
@@ -712,11 +712,10 @@ In this example the `web` port documents that the container is listening on port
                         "secrets",
                         new ObjectType(
                             "secrets",
-                            validationFlags: TypeSymbolValidationFlags.None,
-                            properties: new[]{},
+                            validationFlags: TypeSymbolValidationFlags.Default,
+                            properties: Array.Empty<TypeProperty>(),
                             additionalPropertiesType: LanguageConstants.String),
                         TypePropertyFlags.WriteOnly),
-                        additionalPropertiesType: LanguageConstants.String,
                 },
                 additionalPropertiesType: LanguageConstants.Any);
 
@@ -950,19 +949,5 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 }
             };
         }
-    }
-
-    public static ComponentData MakeGeneric()
-    {
-        return new ComponentData()
-        {
-            Type = new ThreePartType("redislabs.com", "RedisCache", ""),
-            Binding = CommonBindings.BindingDataRedis,
-            Properties =
-            {
-                new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-            },
-        };
     }
 }

@@ -185,42 +185,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new BindingValue("password", secret: true),
             },
         };
-
-        public static readonly BindingData BindingDataGeneric = new BindingData()
-        {
-            Type = new ThreePartType("redislabs.com", "Redis", RadiusResources.CategoryBinding),
-            Properties =
-            {
-                new TypeProperty("properties", LanguageConstants.Object, TypePropertyFlags.WriteOnly, "Properties for the generic component"),
-                // The secrets section allows usage of binding expression to specify
-                // custom secrets.
-                //
-                // TODO: It is slightly confusing to set `redis.secrets.connectionString`, and read
-                //       from `redis.connectionString`. However, it is backward compatible with the
-                //       existing model. This will be a point we need to discuss when
-                //       check-pointing the end-to-end for RedisComponent.
-                new TypeProperty(
-                    "secrets",
-                    new ObjectType(
-                        "secrets",
-                        validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                        properties: new []
-                        {
-                        },
-                        additionalPropertiesType: LanguageConstants.Any,
-                        additionalPropertiesFlags: TypePropertyFlags.None),
-                TypePropertyFlags.None),
-            },
-            Values =
-            {
-                new BindingValue("host"),
-                new BindingValue("port"),
-                new BindingValue("username"),
-                new BindingValue("connectionString", secret: true),
-                new BindingValue("password", secret: true),
-            },
-        };
-
         public static readonly BindingData BindingDataRabbitMQ = new BindingData()
         {
             Type = new ThreePartType("rabbitmq.com", "MessageQueue", RadiusResources.CategoryBinding),
