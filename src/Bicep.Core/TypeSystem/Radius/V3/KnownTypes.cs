@@ -92,13 +92,15 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 KnownComponents.MakeRabbitMQ(),
                 KnownComponents.MakeRedis(),
                 KnownComponents.MakeVolume(),
+                KnownComponents.MakeDaprStateStore()
+               
             };
 
             var items = components.Select(s => MakeComponentType(s)).ToList();
             // Dapr PubSub is defined manually.
             items.Add(KnownComponents.MakeDaprPubSubTopic());
-            items.Add(KnownComponents.MakeDaprStateStore());
-            items.Add(KnownComponents.MakeGeneric(new List<FunctionOverload>{MakeSecretAccessorFunctionWithName()}));
+            items.Add(KnownComponents.MakeDaprSecretStore());
+        
             return items;
         }
 

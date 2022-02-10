@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.Resources;
-using Bicep.Core.Semantics;
 
 namespace Bicep.Core.TypeSystem.Radius.V3
 {
@@ -516,87 +515,55 @@ In this example the `web` port documents that the container is listening on port
             };
         }
 
-        public static ResourceTypeComponents MakeDaprStateStore()
+        public static ComponentData MakeDaprStateStore()
         {
-            var azureTableStorageStateStoreType = new ObjectType(
-                name: "state.azure.tablestorage",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[]
+            var configKindType = new UnionType(
+                "state store kind",
+                ImmutableArray.Create<ITypeReference>(
+                    new StringLiteralType("state.azure.tablestorage"),
+                    new StringLiteralType("state.sqlserver"),
+                    new StringLiteralType("state.redis"),
+                    new StringLiteralType("any")));
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType("dapr.io", "StateStore", ""),
+                Binding = CommonBindings.BindingDataDaprStateStore,
+                Properties =
                 {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("state.azure.tablestorage"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
+                    new TypeProperty("kind", configKindType, TypePropertyFlags.Required),
+                    //new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
+            };
+        }
 
-            var sqlServerStateStoreType = new ObjectType(
-                name: "state.sqlserver",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("state.sqlserver"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
+        
 
-            var redisStateStoreType = new ObjectType(
-                name: "state.redis",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("state.redis"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var anyStateStoreType = new ObjectType(
-                name: "any",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("any"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var genericPubSubType = new ObjectType(
+        public static ResourceTypeComponents MakeDaprSecretStore()
+        {
+            var genericSecretStoreType = new ObjectType(
                 name: "generic",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The Dapr State Store kind"),
-                    new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr State Store type. These strings match the format used by Dapr Kubernetes configuration format"),
+                    new TypeProperty("secretstoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Secret store name"),
+                    new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The secret store kind"),
+                    new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Secret Store type. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
-                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the State Store resource. This should match the Dapr component spec"),
+                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the Pub/Sub resource. This should match the Dapr component spec"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
 
-            var daprStateStoreKindType = new DiscriminatedObjectType(
-                name: "dapr state store kind",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, redisStateStoreType, genericPubSubType, anyStateStoreType });
-
             var propertiesType = new DiscriminatedObjectType(
-                "properties",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, redisStateStoreType, genericPubSubType, anyStateStoreType });
+                    "properties",
+                    validationFlags: TypeSymbolValidationFlags.Default,
+                    discriminatorKey: "kind",
+                    unionMembers: new ITypeReference[] { genericSecretStoreType });
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
-            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.StateStore@{RadiusResources.ResourceApiVersion}";
+            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStoreComponent@{RadiusResources.ResourceApiVersion}";
             var bodyType = new ObjectType(
                 name: typeName,
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -616,10 +583,12 @@ In this example the `web` port documents that the container is listening on port
                 functions: null);
 
             return new ResourceTypeComponents(
-                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.StateStore@{RadiusResources.ResourceApiVersion}"),
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStoreComponent@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
+            
         }
+
 
         public static ResourceTypeComponents MakeDaprPubSubTopic()
         {
@@ -698,52 +667,6 @@ In this example the `web` port documents that the container is listening on port
 
             return new ResourceTypeComponents(
                 ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}"),
-                ResourceScope.ResourceGroup,
-                bodyType);
-        }
-
-        public static ResourceTypeComponents MakeGeneric(IEnumerable<FunctionOverload> resourceFunctions)
-        {
-            var propertiesType = new ObjectType(
-                "properties",
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    new TypeProperty(
-                        "secrets",
-                        new ObjectType(
-                            "secrets",
-                            validationFlags: TypeSymbolValidationFlags.Default,
-                            properties: Array.Empty<TypeProperty>(),
-                            additionalPropertiesType: LanguageConstants.String),
-                        TypePropertyFlags.WriteOnly),
-                },
-                additionalPropertiesType: LanguageConstants.Any);
-
-
-            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
-
-            var typeName = $"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}";
-            var bodyType = new ObjectType(
-                name: typeName,
-                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                properties: new[]
-                {
-                    // Top level properties are predefined
-                    CommonProperties.Id,
-                    CommonProperties.Name,
-                    new TypeProperty("type", new StringLiteralType(typeName), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
-                    CommonProperties.ApiVersion,
-                    CommonProperties.DependsOn,
-                    CommonProperties.Tags,
-                    propertiesProperty,
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: resourceFunctions);
-
-            return new ResourceTypeComponents(
-                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
         }
