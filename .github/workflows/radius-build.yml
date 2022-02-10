@@ -19,7 +19,9 @@ jobs:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
         submodules: true
     - name: Parse release version and set environment variables
-      run: python ./.github/scripts/get_release_version.py
+      run: python ./.github/scripts/get_release_version.py\
+    - name: Setup Node
+      uses: actions/setup-node@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
