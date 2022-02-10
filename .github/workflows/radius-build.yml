@@ -22,6 +22,8 @@ jobs:
       run: python ./.github/scripts/get_release_version.py\
     - name: Setup Node
       uses: actions/setup-node@v2
+      with:
+        node-version: '14'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
