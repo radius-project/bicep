@@ -132,6 +132,15 @@ namespace Bicep.Core.Syntax
                 RightSquareToken);
         }
 
+        public static ArrayAccessSyntax CreateArrayIndex(SyntaxBase baseExpression, SyntaxBase indexExpression)
+        {
+            return new ArrayAccessSyntax(
+                baseExpression,
+                new Token(TokenType.LeftSquare, new TextSpan(0,0), "[", Array.Empty<SyntaxTrivia>(),Array.Empty<SyntaxTrivia>()),
+                indexExpression,
+                new Token(TokenType.RightSquare, new TextSpan(0,0), "]", Array.Empty<SyntaxTrivia>(),Array.Empty<SyntaxTrivia>()));
+        }
+
         public static SyntaxBase CreateObjectPropertyKey(string text)
         {
             if (Regex.IsMatch(text, "^[a-zA-Z][a-zA-Z0-9_]*$"))

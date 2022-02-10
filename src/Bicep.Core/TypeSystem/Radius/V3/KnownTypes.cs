@@ -98,6 +98,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             // Dapr PubSub is defined manually.
             items.Add(KnownComponents.MakeDaprPubSubTopic());
             items.Add(KnownComponents.MakeDaprStateStore());
+            items.Add(KnownComponents.MakeGeneric(new List<FunctionOverload>{MakeSecretAccessorFunctionWithName()}));
             return items;
         }
 
@@ -320,6 +321,53 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
 
             return SyntaxFactory.CreatePropertyAccess(functionCallExpression, value.Name);
+        }
+
+        private static FunctionOverload MakeSecretAccessorFunctionWithName()
+        {
+            return new FunctionOverloadBuilder("secrets")
+                .WithDescription($"Provides access to the specified secret value.")
+                .WithEvaluator((function, symbol, type) => EvaluateSecretWithName(function, symbol, type))
+                .WithFlags(FunctionFlags.RequiresInlining)
+                .WithReturnType(LanguageConstants.String)
+                .WithRequiredParameter("secretName", LanguageConstants.String, "name of the secret to retrieve")
+                .Build();
+        }
+
+        private static SyntaxBase EvaluateSecretWithName(FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol)
+        {
+            // POST /subus...../resurceProviders/radiusV3/listSecrets
+            // {
+            //    targetId: ....
+            // }
+            //
+            // A function like foo.secrets('connectionString') is replaced with code like:
+            // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) })['connectionString']
+            //
+            // - The former resourceId is the ID of the CustomRP - this is a limitation we have to live with
+            // - The latter resourceId is the ID of the Radius resource being accessed.
+
+            var instance = (InstanceFunctionCallSyntax)functionCall;
+
+            var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
+                "resourceId",
+                SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPType),
+                SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPName));
+
+
+            var targetResourceIdExpression = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+            var customActionDataArgumentExpression = SyntaxFactory.CreateObject(new[]
+            {
+                SyntaxFactory.CreateObjectProperty("targetId", targetResourceIdExpression),
+            });
+
+            var functionCallExpression = SyntaxFactory.CreateFunctionCall(
+                "listSecrets",
+                customProviderResourceIdArgumentExpression,
+                SyntaxFactory.CreateStringLiteral(RadiusResources.CRPApiVersion),
+                customActionDataArgumentExpression);
+
+            return SyntaxFactory.CreateArrayIndex(functionCallExpression, instance.Arguments[0].Expression);
         }
     }
 }

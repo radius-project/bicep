@@ -185,7 +185,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new BindingValue("password", secret: true),
             },
         };
-
         public static readonly BindingData BindingDataRabbitMQ = new BindingData()
         {
             Type = new ThreePartType("rabbitmq.com", "MessageQueue", RadiusResources.CategoryBinding),

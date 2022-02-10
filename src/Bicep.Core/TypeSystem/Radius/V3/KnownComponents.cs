@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bicep.Core.TypeSystem;
 using Bicep.Core.Resources;
+using Bicep.Core.Semantics;
 
 namespace Bicep.Core.TypeSystem.Radius.V3
 {
@@ -697,6 +698,52 @@ In this example the `web` port documents that the container is listening on port
 
             return new ResourceTypeComponents(
                 ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}"),
+                ResourceScope.ResourceGroup,
+                bodyType);
+        }
+
+        public static ResourceTypeComponents MakeGeneric(IEnumerable<FunctionOverload> resourceFunctions)
+        {
+            var propertiesType = new ObjectType(
+                "properties",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    new TypeProperty(
+                        "secrets",
+                        new ObjectType(
+                            "secrets",
+                            validationFlags: TypeSymbolValidationFlags.Default,
+                            properties: Array.Empty<TypeProperty>(),
+                            additionalPropertiesType: LanguageConstants.String),
+                        TypePropertyFlags.WriteOnly),
+                },
+                additionalPropertiesType: LanguageConstants.Any);
+
+
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var typeName = $"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}";
+            var bodyType = new ObjectType(
+                name: typeName,
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    // Top level properties are predefined
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    new TypeProperty("type", new StringLiteralType(typeName), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: resourceFunctions);
+
+            return new ResourceTypeComponents(
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
         }
