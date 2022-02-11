@@ -631,7 +631,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                     new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The secret store kind"),
                     new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Secret Store type. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
-                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the Pub/Sub resource. This should match the Dapr component spec"),
+                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the secret store resource. This should match the Dapr component spec"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
