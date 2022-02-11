@@ -563,7 +563,7 @@ In this example the `web` port documents that the container is listening on port
                     unionMembers: new ITypeReference[] { genericSecretStoreType });
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
-            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStoreComponent@{RadiusResources.ResourceApiVersion}";
+            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStore@{RadiusResources.ResourceApiVersion}";
             var bodyType = new ObjectType(
                 name: typeName,
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -583,7 +583,7 @@ In this example the `web` port documents that the container is listening on port
                 functions: null);
 
             return new ResourceTypeComponents(
-                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStoreComponent@{RadiusResources.ResourceApiVersion}"),
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStore@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
             
