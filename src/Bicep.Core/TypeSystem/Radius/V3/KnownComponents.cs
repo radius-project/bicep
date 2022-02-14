@@ -621,6 +621,55 @@ In this example the `web` port documents that the container is listening on port
                 bodyType);
         }
 
+public static ResourceTypeComponents MakeDaprSecretStore()
+        {
+            var genericSecretStoreType = new ObjectType(
+                name: "generic",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("secretstoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Secret store name"),
+                    new TypeProperty("kind", new StringLiteralType("generic"), TypePropertyFlags.Required, "The secret store kind"),
+                    new TypeProperty("type", LanguageConstants.String, TypePropertyFlags.Required, "The Dapr Secret Store type. These strings match the format used by Dapr Kubernetes configuration format"),
+                    new TypeProperty("version", LanguageConstants.String, TypePropertyFlags.Required, "Dapr component version"),
+                    new TypeProperty("metadata", LanguageConstants.Object, TypePropertyFlags.WriteOnly | TypePropertyFlags.Required, "Metadata for the secret store resource. This should match the Dapr component spec"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var propertiesType = new DiscriminatedObjectType(
+                    "properties",
+                    validationFlags: TypeSymbolValidationFlags.Default,
+                    discriminatorKey: "kind",
+                    unionMembers: new ITypeReference[] { genericSecretStoreType });
+            var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
+
+            var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStore@{RadiusResources.ResourceApiVersion}";
+            var bodyType = new ObjectType(
+                name: typeName,
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    // Top level properties are predefined
+                    CommonProperties.Id,
+                    CommonProperties.Name,
+                    new TypeProperty("type", new StringLiteralType(typeName), TypePropertyFlags.DeployTimeConstant | TypePropertyFlags.ReadOnly),
+                    CommonProperties.ApiVersion,
+                    CommonProperties.DependsOn,
+                    CommonProperties.Tags,
+                    propertiesProperty,
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            return new ResourceTypeComponents(
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/dapr.io.SecretStore@{RadiusResources.ResourceApiVersion}"),
+                ResourceScope.ResourceGroup,
+                bodyType);
+            
+        }
+        
         public static ResourceTypeComponents MakeDaprPubSubTopic()
         {
             var azureServiceBusPubSubType = new ObjectType(
