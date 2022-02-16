@@ -357,43 +357,6 @@ resource app 'radius.dev/Application@v1alpha3' existing = {
         }
 
         [TestMethod]
-        public void Module_with_specific_type_output_can_be_evaluated()
-        {
-            var context = new CompilationHelperContext();
-            var (template, diagnostics, compilation) = Compile(context,
-("main.bicep", @"
-module mod './module.bicep' = {
-    name: 'test'
-}
-
-output server string = mod.outputs.sqlDB.properties.server
-
-"),
-("module.bicep", @"
-resource app 'radius.dev/Application@v1alpha3' existing = {
-  name: 'test'
-
-  resource sqlDb 'microsoft.com.SQLDatabase' existing = {
-    name: 'db'
-  }
-
-}
-
-output sqlDB resource 'radius.dev/Application/microsoft.com.SQLDatabase@v1alpha3' = app::sqlDb
-"));
-
-            template.Should().HaveValueAtPath("$.outputs.server", new JObject()
-            {
-                ["type"] = new JValue("string"),
-                ["value"] = new JValue("[reference(reference(resourceId('Microsoft.Resources/deployments', 'test'), '2020-10-01').outputs.sqlDB.value, '2018-09-01-preview').server]")
-            });
-
-            // When deployed to Azure, the following error occurs:
-            // resources.DeploymentsClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: Code="InvalidTemplate" Message="Deployment template validation failed: 'The template output 'test' at line '1' and column '273' is not valid: The template function 'reference' is not expected at this location. Please see https://aka.ms/arm-template-expressions for usage details.. Please see https://aka.ms/arm-template-expressions for usage details.'." AdditionalInfo=[{"info":{"lineNumber":1,"linePosition":273,"path":"properties.template.outputs.test"},"type":"TemplateViolation"}]
-            // 
-        }
-
-        [TestMethod]
         public void Application_with_executable_can_be_compiled()
         {
             var context = new CompilationHelperContext();
