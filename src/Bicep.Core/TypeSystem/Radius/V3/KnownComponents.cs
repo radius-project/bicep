@@ -525,7 +525,6 @@ In this example the `web` port documents that the container is listening on port
                 {
                     new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
                     new TypeProperty("kind", new StringLiteralType("state.azure.tablestorage"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
                 additionalPropertiesType: null,
@@ -538,32 +537,7 @@ In this example the `web` port documents that the container is listening on port
                 properties: new TypeProperty[] {
                     new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
                     new TypeProperty("kind", new StringLiteralType("state.sqlserver"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var redisStateStoreType = new ObjectType(
-                name: "state.redis",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("state.redis"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var anyStateStoreType = new ObjectType(
-                name: "any",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("stateStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "State store name"),
-                    new TypeProperty("kind", new StringLiteralType("any"), TypePropertyFlags.Required, "The Dapr State Store kind. These strings match the format used by Dapr Kubernetes configuration format"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
@@ -587,13 +561,13 @@ In this example the `web` port documents that the container is listening on port
                 name: "dapr state store kind",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, redisStateStoreType, genericPubSubType, anyStateStoreType });
+                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, genericPubSubType });
 
             var propertiesType = new DiscriminatedObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, redisStateStoreType, genericPubSubType, anyStateStoreType });
+                unionMembers: new ITypeReference[] { azureTableStorageStateStoreType, sqlServerStateStoreType, genericPubSubType });
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
             var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.StateStore@{RadiusResources.ResourceApiVersion}";
@@ -679,21 +653,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 {
                     new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
                     new TypeProperty("kind", new StringLiteralType("pubsub.azure.servicebus"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind. These strings match the format used by Dapr Kubernetes configuration format"),
-                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "PubSub resource, for unmanaged"),
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Indicates if the resource is Radius-managed. If false, a resource is required"),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var anyPubSubType = new ObjectType(
-                name: "any",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new TypeProperty[] {
-                    new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
-                    new TypeProperty("kind", new StringLiteralType("any"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind"),
-                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.None, "PubSub topic"),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "PubSub resource"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
@@ -717,13 +677,13 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 name: "dapr pubsub kind",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, anyPubSubType, genericPubSubType });
+                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, genericPubSubType });
 
             var propertiesType = new DiscriminatedObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 discriminatorKey: "kind",
-                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, anyPubSubType, genericPubSubType });
+                unionMembers: new ITypeReference[] { azureServiceBusPubSubType, genericPubSubType });
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
             var typeName = $"{RadiusResources.ApplicationResourceType}/dapr.io.PubSubTopic@{RadiusResources.ResourceApiVersion}";
@@ -805,9 +765,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 Binding = CommonBindings.BindingDataServiceBusQueue,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }
@@ -820,7 +778,6 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 Binding = CommonBindings.BindingDataRedis,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
@@ -834,8 +791,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 Binding = CommonBindings.BindingDataRabbitMQ,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
-                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }
@@ -848,17 +804,12 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 Binding = CommonBindings.BindingDataSQL,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, description:
-                    @"Specifies the backing resource of this component. This or `server/database` must be set when using `managed: false` (default).
+                    @"Specifies the backing resource of this component.
 
 For Azure, this property will accept a resource ID of a `Microsoft.Sql/servers/databases` resource.
 
-Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
-                    new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.None, description:
-                    "The name of the SQL database."),
-                    new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
-                    "The fully qualified domain name of the SQL database."),
+Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism.")
                 },
             };
         }
@@ -871,7 +822,6 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 Binding = CommonBindings.BindingDataKeyVault,
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
@@ -886,21 +836,10 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 Properties =
                 {
                     new TypeProperty(
-                        "managed",
-                        LanguageConstants.Bool,
-                        TypePropertyFlags.None,
-                        description: @"Specifies whether the lifecycle of the resource is controlled by Radius. The default value is `false`.
-
-When using `managed: true`, Radius will create the backing resources (databases, message queues, etc) when creating this component.
-The backing resources will also be deleted when this component is deleted.
-
-When using `managed: false` (default) the developer must specify the backing resources to use by providing a value for the `resource` property.
-Resources provided by the developer will not be modified or deleted by Radius. Use `managed: false` to attach resources created with Bicep or any other mechanism."),
-                    new TypeProperty(
                         "resource",
                         LanguageConstants.String,
                         TypePropertyFlags.None,
-                        description: @"Specifies the backing resource of this component. This is required when using `managed: false` (default).
+                        description: @"Specifies the backing resource of this component.
 
 For Azure, this property will accept a resource ID of a `Microsoft.DocumentDB/accounts/mongoDatabases` resource (CosmosDB MongoDB API).
 
@@ -990,8 +929,7 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                 Type = new ThreePartType(null, "Volume", ""),
                 Properties =
                 {
-                    new TypeProperty("managed", LanguageConstants.Bool, TypePropertyFlags.None, "Managed by Radius"),
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "Resource ID for user managed resource"),
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "Resource ID"),
                     new TypeProperty("kind", persistentVolumeKindType, TypePropertyFlags.Required, "Persistent volume kind"),
                     new TypeProperty("secrets", secrets, TypePropertyFlags.None, "Secrets from the Azure KeyVault to be mounted"),
                     new TypeProperty("keys", keys, TypePropertyFlags.None, "Keys from the Azure KeyVault to be mounted"),
