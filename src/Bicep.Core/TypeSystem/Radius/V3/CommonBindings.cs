@@ -148,11 +148,11 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             Type = new ThreePartType("dapr.io", "SecretStore", RadiusResources.CategoryBinding),
             Properties =
             {
-                new TypeProperty("secretStoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("secretstoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly),
             },
             Values =
             {
-                new BindingValue("secretStoreName"),
+                new BindingValue("secretstoreName"),
             },
         };
 
