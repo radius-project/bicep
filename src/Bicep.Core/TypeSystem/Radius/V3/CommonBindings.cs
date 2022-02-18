@@ -143,6 +143,19 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new BindingValue("stateStoreName"),
             },
         };
+        public static readonly BindingData BindingDataDaprSecretStore = new BindingData()
+        {
+            Type = new ThreePartType("dapr.io", "SecretStore", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty("secretstoreName", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+            },
+            Values =
+            {
+                new BindingValue("secretstoreName"),
+            },
+        };
+
 
         public static readonly BindingData BindingDataRedis = new BindingData()
         {
@@ -297,6 +310,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             BindingDataDaprHttp,
             BindingDataDaprPubSubTopic,
             BindingDataDaprStateStore,
+            BindingDataDaprSecretStore,
             // Intentionally Hidden: BindingDataGrpc,
             BindingDataHttp,
             BindingDataKeyVault,
