@@ -488,21 +488,7 @@ namespace Bicep.Core.Emit
 
             if (importSymbol is not null)
             {
-                // TODO-RADIUS: right now we nest the import with a 'provider' property. This doesn't match what the official build does.
-                //emitter.EmitProperty("import", importSymbol.Name);
-                if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
-                {
-                    emitter.EmitProperty("import", () =>
-                    {
-                        jsonWriter.WriteStartObject();
-                        emitter.EmitProperty("provider", importSymbol.Name);
-                        jsonWriter.WriteEnd();
-                    });
-                }
-                else
-                {
-                    emitter.EmitProperty("import", importSymbol.Name);
-                }
+                emitter.EmitProperty("import", importSymbol.Name);
             }
 
             if (resource.IsAzResource)
@@ -531,12 +517,6 @@ namespace Bicep.Core.Emit
             }
             else
             {
-                // TODO-RADIUS: right now we rely on a name property, since we haven't adapted symbolic name support
-                if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName)
-                {
-                    emitter.EmitProperty(AzResourceTypeProvider.ResourceNamePropertyName, new JTokenExpression(resource.Symbol.NameSyntax.IdentifierName));
-                }
-
                 jsonWriter.WritePropertyName("properties");
                 jsonWriter.WriteStartObject();
 
