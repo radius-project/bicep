@@ -791,7 +791,7 @@ public static ResourceTypeComponents MakeDaprSecretStore()
                 Binding = CommonBindings.BindingDataRabbitMQ,
                 Properties =
                 {
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }
