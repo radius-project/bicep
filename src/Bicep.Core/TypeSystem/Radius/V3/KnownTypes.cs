@@ -98,7 +98,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             items.Add(KnownComponents.MakeDaprPubSubTopic());
             items.Add(KnownComponents.MakeDaprStateStore());
             items.Add(KnownComponents.MakeDaprSecretStore());
-            items.Add(KnownComponents.MakeGeneric(new List<FunctionOverload>{MakeSecretAccessorFunctionWithName()}));
+            items.Add(KnownComponents.MakeExtender(new List<FunctionOverload>{MakeSecretAccessorFunctionWithName()}));
             return items;
         }
 

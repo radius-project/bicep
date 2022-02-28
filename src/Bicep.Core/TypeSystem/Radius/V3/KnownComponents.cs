@@ -811,13 +811,21 @@ In this example the `web` port documents that the container is listening on port
                 bodyType);
         }
 
-        public static ResourceTypeComponents MakeGeneric(IEnumerable<FunctionOverload> resourceFunctions)
+        public static ResourceTypeComponents MakeExtender(IEnumerable<FunctionOverload> resourceFunctions)
         {
             var propertiesType = new ObjectType(
                 "properties",
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
                 properties: new[]
                 {
+                    new TypeProperty(
+                        "properties",
+                        new ObjectType(
+                            "properties",
+                            validationFlags: TypeSymbolValidationFlags.Default,
+                            properties: Array.Empty<TypeProperty>(),
+                            additionalPropertiesType: LanguageConstants.String),
+                        TypePropertyFlags.None),
                     new TypeProperty(
                         "secrets",
                         new ObjectType(
@@ -827,12 +835,12 @@ In this example the `web` port documents that the container is listening on port
                             additionalPropertiesType: LanguageConstants.String),
                         TypePropertyFlags.WriteOnly),
                 },
-                additionalPropertiesType: LanguageConstants.Any);
+                additionalPropertiesType: LanguageConstants.String);
 
 
             var propertiesProperty = new TypeProperty("properties", propertiesType, TypePropertyFlags.Required);
 
-            var typeName = $"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}";
+            var typeName = $"{RadiusResources.ApplicationResourceType}/Extender@{RadiusResources.ResourceApiVersion}";
             var bodyType = new ObjectType(
                 name: typeName,
                 validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
@@ -852,7 +860,7 @@ In this example the `web` port documents that the container is listening on port
                 functions: resourceFunctions);
 
             return new ResourceTypeComponents(
-                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Generic@{RadiusResources.ResourceApiVersion}"),
+                ResourceTypeReference.Parse($"{RadiusResources.ApplicationResourceType}/Extender@{RadiusResources.ResourceApiVersion}"),
                 ResourceScope.ResourceGroup,
                 bodyType);
         }
