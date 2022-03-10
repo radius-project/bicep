@@ -140,11 +140,11 @@ namespace Bicep.Core.Emit
                             return CreateFunction(
                                 instanceFunctionCall.Name.IdentifierName,
                                 instanceFunctionCall.Arguments.Select(a => ConvertExpression(a.Expression)));
-                        case ResourceSymbol resourceSymbol when context.SemanticModel.ResourceMetadata.TryLookup(resourceSymbol.DeclaringSyntax) is DeclaredResourceMetadata resource:
+                        case DeclaredSymbol declaredSymbol when context.SemanticModel.ResourceMetadata.TryLookup(declaredSymbol.DeclaringSyntax) is ResourceMetadata resource:
                             if (instanceFunctionCall.Name.IdentifierName.StartsWithOrdinalInsensitively("list"))
                             {
                                 var converter = indexExpression is not null ?
-                                    CreateConverterForIndexReplacement(resource.NameSyntax, indexExpression, instanceFunctionCall) :
+                                    CreateConverterForIndexReplacement(((DeclaredResourceMetadata)resource).NameSyntax, indexExpression, instanceFunctionCall) :
                                     this;
 
                                 // Handle list<method_name>(...) method on resource symbol - e.g. stgAcc.listKeys()
