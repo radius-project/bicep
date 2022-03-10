@@ -83,7 +83,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             var components = new KnownComponents.ComponentData[]
             {
                 KnownComponents.MakeContainer(),
-                KnownComponents.MakeFunction(),
+                // Intentionally hidden right now which this is being prototyped
+                // KnownComponents.MakeFunction(),
                 KnownComponents.MakeMongoDB(),
                 KnownComponents.MakeMicrosoftSQL(),
                 KnownComponents.MakeKeyVault(),
