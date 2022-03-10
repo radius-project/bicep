@@ -122,6 +122,7 @@ output name string = p.name
 output type string = p.type
 output apiVersion string = p.apiVersion
 output accessTier string = p.properties.accessTier
+output keys object = p.listKeys()
 ");
             result.Should().NotHaveAnyDiagnostics();
 
@@ -149,6 +150,11 @@ output accessTier string = p.properties.accessTier
             {
                 ["type"] = new JValue("string"),
                 ["value"] = new JValue("[reference(parameters('p'), '2019-06-01').accessTier]"),
+            });
+            result.Template.Should().HaveValueAtPath("$.outputs.keys", new JObject()
+            {
+                ["type"] = new JValue("object"),
+                ["value"] = new JValue("[listKeys(parameters('p'), '2019-06-01')]"),
             });
         }
 
