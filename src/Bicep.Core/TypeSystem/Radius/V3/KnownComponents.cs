@@ -714,6 +714,7 @@ In this example the `web` port documents that the container is listening on port
                     new TypeProperty("pubSubName", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Pub/Sub name"),
                     new TypeProperty("kind", new StringLiteralType("pubsub.azure.servicebus"), TypePropertyFlags.Required, "The Dapr Pub/Sub kind. These strings match the format used by Dapr Kubernetes configuration format"),
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, "PubSub resource"),
+                    new TypeProperty("topic", LanguageConstants.String, TypePropertyFlags.ReadOnly, "PubSub topic"),
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
@@ -877,7 +878,11 @@ In this example the `web` port documents that the container is listening on port
 
 For Azure, this property will accept a resource ID of a `Microsoft.Sql/servers/databases` resource.
 
-Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism.")
+Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
+                    new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.None, description:
+                    "The name of the SQL database."),
+                    new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
+                    "The fully qualified domain name of the SQL database."),
                 },
             };
         }
