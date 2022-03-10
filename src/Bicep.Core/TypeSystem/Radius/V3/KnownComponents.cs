@@ -835,6 +835,7 @@ In this example the `web` port documents that the container is listening on port
                 Properties =
                 {
                     new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
+                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }
