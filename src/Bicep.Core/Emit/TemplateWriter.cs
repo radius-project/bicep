@@ -342,8 +342,6 @@ namespace Bicep.Core.Emit
             {
                 jsonWriter.WriteStartArray();
             }
-            var seenResources = new HashSet<string>();
-
             foreach (var resource in this.context.SemanticModel.AllResources.OfType<DeclaredResourceMetadata>())
             {
                 if (resource.IsExistingResource && !context.Settings.EnableSymbolicNames)
@@ -353,13 +351,6 @@ namespace Bicep.Core.Emit
 
                 if (context.Settings.EnableSymbolicNames)
                 {
-                    if (seenResources.Contains(resource.Symbol.Name))
-                    {
-                        // SEE https://github.com/Azure/bicep/issues/6044
-                        throw new InvalidOperationException("Cannot have duplicate symbolic names in resources");
-                    }
-
-                    seenResources.Add(resource.Symbol.Name);
                     jsonWriter.WritePropertyName(resource.Symbol.Name);
                 }
 

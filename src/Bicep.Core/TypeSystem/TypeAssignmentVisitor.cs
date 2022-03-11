@@ -225,6 +225,7 @@ namespace Bicep.Core.TypeSystem
                 return new TypedArrayType(bodyType, TypeSymbolValidationFlags.Default);
             });
 
+        public HashSet<string> seenResources = new HashSet<string>();
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics =>
             {
@@ -232,6 +233,16 @@ namespace Bicep.Core.TypeSystem
                 if (declaredType is null)
                 {
                     return ErrorType.Empty();
+                }
+
+                var name = syntax.Name;
+                if (seenResources.Contains(name.IdentifierName))
+                {
+                    diagnostics.Write(syntax.Name, x => x.ResourceSymbolicNamesDuplicated());
+                }
+                else
+                {
+                    seenResources.Add(name.IdentifierName);
                 }
 
                 var singleDeclaredType = declaredType.UnwrapArrayType();

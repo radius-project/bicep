@@ -1042,6 +1042,11 @@ namespace Bicep.Core.Diagnostics
                 $"Type validation is not available for resource types declared containing a \"/providers/\" segment. Please instead use the \"scope\" property.",
                 new Uri("https://aka.ms/BicepScopes"));
 
+            public ErrorDiagnostic ResourceSymbolicNamesDuplicated() => new(
+                TextSpan,
+                "BCP1761",
+                "The resource has duplicate symbolic names.");
+
             public ErrorDiagnostic AnyTypeIsNotAllowed() => new(
                 TextSpan,
                 "BCP176",
