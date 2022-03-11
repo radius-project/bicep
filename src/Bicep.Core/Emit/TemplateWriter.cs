@@ -342,7 +342,6 @@ namespace Bicep.Core.Emit
             {
                 jsonWriter.WriteStartArray();
             }
-
             foreach (var resource in this.context.SemanticModel.AllResources.OfType<DeclaredResourceMetadata>())
             {
                 if (resource.IsExistingResource && !context.Settings.EnableSymbolicNames)

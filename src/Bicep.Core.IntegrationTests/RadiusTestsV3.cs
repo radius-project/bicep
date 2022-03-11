@@ -412,5 +412,67 @@ resource app 'radius.dev/Application@v1alpha3' = {
                 }
             });
         }
+
+
+       [TestMethod]
+        public void DuplicateSymbolicNamesThrowsError()
+        {
+            var context = new CompilationHelperContext();
+            var (template, diagnostics, compilation) = Compile(context, @"
+var adminUsername = 'cooluser'
+var adminPassword = 'p@ssw0rd'
+
+resource server 'Microsoft.Sql/servers@2021-02-01-preview' = {
+  name: 'sql-${uniqueString(resourceGroup().id)}'
+  location: resourceGroup().location
+  properties: {
+    administratorLogin: adminUsername
+    administratorLoginPassword: adminPassword
+  }
+
+  resource db 'databases' = {
+    name: 'cool -database'
+    location: resourceGroup().location
+  }
+
+  resource firewall 'firewallRules' = {
+    name: 'allow'
+    properties: {
+      startIpAddress: '0.0.0.0'
+      endIpAddress: '0.0.0.0'
+    }
+  }
+}
+
+resource server2 'Microsoft.Sql/servers@2021-02-01-preview' = {
+  name: 'sql'
+  location: resourceGroup().location
+  properties: {
+    administratorLogin: adminUsername
+    administratorLoginPassword: adminPassword
+  }
+
+  resource db 'databases' = {
+    name: 'cool-database2'
+    location: resourceGroup().location
+  }
+
+  resource firewall 'firewallRules' = {
+    name: 'test'
+    properties: {
+      startIpAddress: '0.0.0.0'
+      endIpAddress: '0.0.0.0'
+    }
+  }
+}
+");
+
+            var model = compilation.GetEntrypointSemanticModel();
+            var errors = model.GetAllDiagnostics();
+            errors.Should().HaveCount(2);
+            foreach (var error in errors) {
+                error.Code.Should().Be("BCP231");
+            }
+        }
     }
 }

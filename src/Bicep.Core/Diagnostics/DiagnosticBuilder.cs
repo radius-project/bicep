@@ -1364,7 +1364,13 @@ namespace Bicep.Core.Diagnostics
                 DiagnosticLevel.Warning,
                 "BCP230",
                 $"The referenced module uses resource type \"{resourceTypeReference.FormatName()}\" which does not have types available.");
+
+            public ErrorDiagnostic ResourceSymbolicNamesDuplicated() => new(
+                TextSpan,
+                "BCP231",
+                "Duplicate symbolic resource names are not allowed here. Change the symbolic name to a unique value.");
         }
+        
 
         public static DiagnosticBuilderInternal ForPosition(TextSpan span)
             => new(span);
