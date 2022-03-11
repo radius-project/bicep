@@ -1042,11 +1042,6 @@ namespace Bicep.Core.Diagnostics
                 $"Type validation is not available for resource types declared containing a \"/providers/\" segment. Please instead use the \"scope\" property.",
                 new Uri("https://aka.ms/BicepScopes"));
 
-            public ErrorDiagnostic ResourceSymbolicNamesDuplicated() => new(
-                TextSpan,
-                "BCP1761",
-                "The resource has duplicate symbolic names.");
-
             public ErrorDiagnostic AnyTypeIsNotAllowed() => new(
                 TextSpan,
                 "BCP176",
@@ -1369,7 +1364,13 @@ namespace Bicep.Core.Diagnostics
                 DiagnosticLevel.Warning,
                 "BCP230",
                 $"The referenced module uses resource type \"{resourceTypeReference.FormatName()}\" which does not have types available.");
+
+            public ErrorDiagnostic ResourceSymbolicNamesDuplicated() => new(
+                TextSpan,
+                "BCP231",
+                "Duplicate symbolic resource names are not allowed here. Change the symbolic name to a unique value.");
         }
+        
 
         public static DiagnosticBuilderInternal ForPosition(TextSpan span)
             => new(span);
