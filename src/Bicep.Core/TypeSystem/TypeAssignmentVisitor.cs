@@ -225,7 +225,7 @@ namespace Bicep.Core.TypeSystem
                 return new TypedArrayType(bodyType, TypeSymbolValidationFlags.Default);
             });
 
-        public HashSet<string> seenResources = new HashSet<string>();
+        private HashSet<string> seenResources = new HashSet<string>();
         public override void VisitResourceDeclarationSyntax(ResourceDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics =>
             {

@@ -173,21 +173,6 @@ namespace Bicep.Core.Semantics
                 this.TypeManager.GetTypeInfo(missingDeclarationSyntax);
             }
 
-            // this.AllResources = new ImmutableArray<ResourceMetadata>()
-            // var seenResources = new HashSet<string>();
-            // foreach (var resource in this.AllResources) {
-            //     if (seenResources.Contains(resource.Type.Name))
-            //     {
-            //         var syntax = this.TypeManager.GetDeclaredType()
-            //         var diag = DiagnosticBuilder.ForPosition(resource.)
-            //         diagnosticWriter.Write(diag);
-            //     }
-            //     else
-            //     {
-            //         seenResources.Add(resource.Type.Name);
-            //     }
-            // }
-
             var typeValidationDiagnostics = TypeManager.GetAllDiagnostics();
             diagnosticWriter.WriteMultiple(typeValidationDiagnostics);
             diagnosticWriter.WriteMultiple(EmitLimitationInfo.Diagnostics);
