@@ -33,6 +33,18 @@ namespace Bicep.Core.IntegrationTests
                 NamespaceProvider: namespaceProvider);
         }
 
+        private CompilationHelper.CompilationHelperContext GetSymbolicNameExtensibilityCompilationContext()
+        {
+            var features = BicepTestConstants.CreateFeaturesProvider(TestContext, importsEnabled: true, symbolicNameCodegenEnabled: true);
+            var resourceTypeLoader = BicepTestConstants.AzResourceTypeLoader;
+            var namespaceProvider = new ExtensibilityNamespaceProvider(resourceTypeLoader, features);
+
+            return new(
+                AzResourceTypeLoader: resourceTypeLoader,
+                Features: features,
+                NamespaceProvider: namespaceProvider);
+        }
+
         [TestMethod]
         public void Parameter_can_have_resource_type()
         {
@@ -156,6 +168,33 @@ output keys object = p.listKeys()
                 ["type"] = new JValue("object"),
                 ["value"] = new JValue("[listKeys(parameters('p'), '2019-06-01')]"),
             });
+        }
+
+        [TestMethod]
+        public void Parameter_with_resource_type_can_have_properties_evaluated_in_resource()
+        {
+            var result = CompilationHelper.Compile(
+                GetSymbolicNameExtensibilityCompilationContext(), @"
+param p resource 'Microsoft.Storage/storageAccounts@2019-06-01'
+
+resource resource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'test'
+  location: 'eastus'
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties:{
+    accessTier: p.properties.accessTier
+  }
+}
+");
+            result.Should().NotHaveAnyDiagnostics();
+
+            result.Template.Should().HaveValueAtPath("$.resources.resource.properties.accessTier", new JValue("[reference(parameters('p'), '2019-06-01').accessTier]"));
         }
 
         [TestMethod]

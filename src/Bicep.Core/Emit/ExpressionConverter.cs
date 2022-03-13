@@ -716,7 +716,7 @@ namespace Bicep.Core.Emit
             {
                 ParameterResourceMetadata parameter => new FunctionExpression(
                     "parameters",
-                    new LanguageExpression[] { new JTokenExpression(parameter.Symbol.Name), },
+                    new LanguageExpression[] { new JTokenExpression(parameter.Symbol.Name) },
                     Array.Empty<LanguageExpression>()),
 
                 ModuleOutputResourceMetadata output => AppendProperties(
@@ -741,6 +741,7 @@ namespace Bicep.Core.Emit
                     new JTokenExpression(apiVersion),
                     new JTokenExpression("full"));
             }
+
             if (!resource.IsAzResource)
             {
                 // For an extensible resource, always generate a 'reference' statement.
@@ -773,9 +774,18 @@ namespace Bicep.Core.Emit
                     new JTokenExpression(apiVersion));
             }
 
+            // We can reference a resource declared in the same file without an API Version.
+            if (resource is DeclaredResourceMetadata)
+            {
+                return CreateFunction(
+                    "reference",
+                    referenceExpression);
+            }
+
             return CreateFunction(
-                "reference",
-                referenceExpression);
+                    "reference",
+                    referenceExpression,
+                    new JTokenExpression(resource.TypeReference.ApiVersion));
         }
 
         private LanguageExpression GetLocalVariableExpression(LocalVariableSymbol localVariableSymbol)

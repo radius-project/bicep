@@ -299,6 +299,284 @@ In this example the `web` port documents that the container is listening on port
             };
         }
 
+        public static ComponentData MakeContainerApp()
+        {
+            var members = new List<ObjectType>();
+
+            var rolesType = new TypedArrayType(
+                itemReference: LanguageConstants.String,
+                validationFlags: TypeSymbolValidationFlags.Default);
+
+            var connectionType = new DiscriminatedObjectType(
+                name: "connection",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: CommonBindings.AllBindingData.Select(b =>
+                {
+                    return new ObjectType(
+                        name: $"connection {b.Type.FormatKind()}",
+                        validationFlags: TypeSymbolValidationFlags.Default,
+                        properties: new[]
+                        {
+                            new TypeProperty("kind", new StringLiteralType(b.Type.FormatKind()), TypePropertyFlags.Required, "The kind of connection"),
+                            new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the connection"),
+                            new TypeProperty("roles", rolesType, TypePropertyFlags.None, "RBAC configuration to be applied on the connection"),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None,
+                        functions: null);
+                }));
+
+            var connectionsType = new ObjectType(
+                name: "connections",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: connectionType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var connectionsProperty = new TypeProperty(
+                "connections",
+                connectionsType,
+                TypePropertyFlags.None,
+                @"Specify named connections to databases, routes, and other resources for the component.
+
+The connections can be used to grant access to resources as well as to inject configuration value into the container.
+Injected configuration values use environment variables by default and follow the naming pattern: `CONNECTION_<name>_<configuration-value>`.
+
+For example the following connection:
+
+```bicep
+connections: {
+  db: {
+    kind: 'mongodb.com/MongoDB'
+    source: db.id
+  }
+}
+```
+
+Defines the environment variable `CONNECTION_DB_CONNECTIONSTRING` containing the database's connection string. The set of configuration values
+available varies depending on the kind of connection. See the documentation for examples.
+");
+
+            var envItemType = LanguageConstants.LooseString;
+
+            var envType = new ObjectType(
+                name: "env",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: envItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var envProperty = new TypeProperty(
+                "env",
+                envType,
+                TypePropertyFlags.None,
+                description: @"Specify environment variables for the container. Environment variables may contain static values as well as references to parameters, variables and other resources.
+
+Environment variables use the format `NAME: 'VALUE'`
+
+For example, the following code defines the environment variables `A_STATIC_VALUE`, `A_STRING_INTERPOLATED_VALUE`, and `A_SECRET_VALUE`:
+
+```bicep
+env: {
+  A_STATIC_VALUE: 'This is a hardcoded value'
+  A_STRING_INTERPOLATED_VALUE: 'This value text and a ${other.value} value'
+  A_SECRET_VALUE: db.connectionString()
+}
+```
+");
+
+            var portType = new ObjectType(
+                name: "port",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("containerPort", LanguageConstants.Int, TypePropertyFlags.Required),
+                    new TypeProperty(
+                        "protocol",
+                        new UnionType("protocol", ImmutableArray.Create<ITypeReference>(new StringLiteralType("TCP"), new StringLiteralType("UDP"))),
+                        TypePropertyFlags.None),
+                    new TypeProperty("provides", LanguageConstants.String, TypePropertyFlags.None),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsType = new ObjectType(
+                name: "ports",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: portType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var portsProperty = new TypeProperty(
+                "ports",
+                portsType,
+                TypePropertyFlags.None,
+                description: @"Specify listening ports for the container. Ports may be used to connect the container to route types like `HttpRoute` for service discovery, or may just serve as documentation.
+
+Ports use the format: `name: { ... }'`. The name is provided for documentation purposes
+
+For example, the following code defines a listening port named `web` which is used to connect an `HttpRoute` to the container:
+
+```bicep
+web: {
+  containerPort: 3000
+  provides: myRoute.id
+}
+
+In this example the `web` port documents that the container is listening on port `3000`. The variable `myRoute` refers to an `HttpRoute` resource (definition not shownn here).
+```
+");
+
+            var ephemeralVolume = new ObjectType(
+                name: "ephemeral",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("kind", new StringLiteralType("ephemeral"), TypePropertyFlags.Required, "Volume Kind"),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required, "The path where the volume is mounted"),
+                    new TypeProperty(
+                        "managedStore",
+                        new UnionType("managed store", ImmutableArray.Create<ITypeReference>(new StringLiteralType("memory"), new StringLiteralType("disk"))),
+                        TypePropertyFlags.Required,
+                        "Backing store for the ephemeral volume"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var persistentVolume = new ObjectType(
+                name: "persistent",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("kind", new StringLiteralType("persistent"), TypePropertyFlags.Required, "Volume kind"),
+                    new TypeProperty("mountPath", LanguageConstants.String, TypePropertyFlags.Required, "The path where the volume is mounted"),
+                    new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.Required, "The source of the volume"),
+                    new TypeProperty(
+                        "rbac",
+                        new UnionType("rbac", ImmutableArray.Create<ITypeReference>(new StringLiteralType("read"), new StringLiteralType("write"))),
+                        TypePropertyFlags.None, "Container read/write access to the volume"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var volumeItemType = new DiscriminatedObjectType(
+                name: "volume",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: new ITypeReference[] { ephemeralVolume, persistentVolume });
+
+            var volumesType = new ObjectType(
+                name: "volumes",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: volumeItemType,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+            var volumesProperty = new TypeProperty("volumes", volumesType, TypePropertyFlags.None);
+
+            var headersType = new ObjectType(
+                name: "headers",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: Array.Empty<TypeProperty>(),
+                additionalPropertiesType: LanguageConstants.String,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var httpGet = new ObjectType(
+                name: "httpGet",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("containerPort", LanguageConstants.Int, TypePropertyFlags.Required, "The listening port number"),
+                    new TypeProperty("path", LanguageConstants.String, TypePropertyFlags.Required, "The route to make the HTTP request on"),
+                    new TypeProperty("headers", headersType, TypePropertyFlags.None, "Custom HTTP headers to add to the get request"),
+                    new TypeProperty("kind", new StringLiteralType("httpGet"), TypePropertyFlags.Required, "Health probe kind"),
+                    new TypeProperty("initialDelaySeconds", LanguageConstants.Int, TypePropertyFlags.None, "Initial delay in seconds before probing for readiness/liveness"),
+                    new TypeProperty("failureThreshold", LanguageConstants.Int, TypePropertyFlags.None, "Threshold number of times the probe fails after which a failure would be reported"),
+                    new TypeProperty("periodSeconds", LanguageConstants.Int, TypePropertyFlags.None, "Interval for the readiness/liveness probe in seconds"),
+                },
+                additionalPropertiesType: null,
+                functions: null);
+
+            var tcp = new ObjectType(
+                name: "tcp",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[]
+                {
+                    new TypeProperty("containerPort", LanguageConstants.Int, TypePropertyFlags.Required, "The listening port number"),
+                    new TypeProperty("kind", new StringLiteralType("tcp"), TypePropertyFlags.Required, "Health probe kind"),
+                    new TypeProperty("initialDelaySeconds", LanguageConstants.Int, TypePropertyFlags.None, "Initial delay in seconds before probing for readiness/liveness"),
+                    new TypeProperty("failureThreshold", LanguageConstants.Int, TypePropertyFlags.None, "Threshold number of times the probe fails after which a failure would be reported"),
+                    new TypeProperty("periodSeconds", LanguageConstants.Int, TypePropertyFlags.None, "Interval for the readiness/liveness probe in seconds"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var exec = new ObjectType(
+                name: "exec",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                properties: new TypeProperty[] {
+                    new TypeProperty("command", LanguageConstants.String, TypePropertyFlags.Required, "Command to execute to probe readiness/liveness"),
+                    new TypeProperty("kind", new StringLiteralType("exec"), TypePropertyFlags.Required, "Health probe kind"),
+                    new TypeProperty("initialDelaySeconds", LanguageConstants.Int, TypePropertyFlags.None, "Initial delay in seconds before probing for readiness/liveness"),
+                    new TypeProperty("failureThreshold", LanguageConstants.Int, TypePropertyFlags.None, "Threshold number of times the probe fails after which a failure would be reported"),
+                    new TypeProperty("periodSeconds", LanguageConstants.Int, TypePropertyFlags.None, "Interval for the readiness/liveness probe in seconds"),
+                },
+                additionalPropertiesType: null,
+                additionalPropertiesFlags: TypePropertyFlags.None,
+                functions: null);
+
+            var healthProbeType = new DiscriminatedObjectType(
+                name: "healthProbe",
+                validationFlags: TypeSymbolValidationFlags.Default,
+                discriminatorKey: "kind",
+                unionMembers: new ITypeReference[] { httpGet, tcp, exec }
+                );
+
+            var readinessProperty = new TypeProperty("readinessProbe", healthProbeType, TypePropertyFlags.None, "Readiness health probe");
+            var livessProperty = new TypeProperty("livenessProbe", healthProbeType, TypePropertyFlags.None, "Liveness health probe");
+
+            var imageProperty = new TypeProperty(
+                "image",
+                LanguageConstants.String,
+                TypePropertyFlags.Required,
+                description: "Specifies the container image to run.");
+            var containerType = new ObjectType(
+                "container",
+                validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                properties: new[]
+                {
+                    imageProperty,
+                    envProperty,
+                    portsProperty,
+                    volumesProperty,
+                    readinessProperty,
+                    livessProperty,
+                },
+                additionalPropertiesType: LanguageConstants.Any,
+                additionalPropertiesFlags: TypePropertyFlags.None);
+            var containerProperty = new TypeProperty(
+                "container",
+                containerType,
+                TypePropertyFlags.Required,
+                description: "Specifies configuration for running the container.");
+
+            return new ComponentData()
+            {
+                Type = new ThreePartType("azure.com", "ContainerApp", ""),
+                Properties =
+                {
+                    connectionsProperty,
+                    containerProperty,
+                    CommonProperties.Traits,
+                },
+            };
+        }
+
         public static ComponentData MakeFunction()
         {
             var members = new List<ObjectType>();
@@ -564,6 +842,12 @@ In this example the `web` port documents that the container is listening on port
                 TypePropertyFlags.Required,
                 description: "Specifies configuration for running the container.");
 
+            var storageProperty = new TypeProperty(
+                "storage",
+                LanguageConstants.String,
+                TypePropertyFlags.None,
+                description: "Storage account to use for coordination.");
+
             return new ComponentData()
             {
                 Type = new ThreePartType("azure.com", "Function", ""),
@@ -571,6 +855,7 @@ In this example the `web` port documents that the container is listening on port
                 {
                     connectionsProperty,
                     containerProperty,
+                    storageProperty,
                     CommonProperties.Traits,
                 },
             };
@@ -884,6 +1169,29 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                     "The name of the SQL database."),
                     new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
                     "The fully qualified domain name of the SQL database."),
+                },
+            };
+        }
+
+        public static ComponentData MakeMySQL()
+        {
+            return new ComponentData()
+            {
+                Type = new ThreePartType("mysql.com", "MySQLDatabase", ""),
+                Binding = CommonBindings.BindingDataMySQL,
+                Properties =
+                {
+                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None, description:
+                    @"Specifies the backing resource of this component.
+
+For Azure, this property will accept a resource ID of a `Microsoft.MySql/flexibleServers/databases` resource.
+
+Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
+                    new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.None, description: "The fully qualified domain name of the MySQL database."),
+                    new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description: "The name of the MySQL database."),
+                    new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None, description: "The port of the MySQL database server."),
+                    new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.Required, description: "The username for login."),
+                    new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.Required, description: "The password for login."),
                 },
             };
         }

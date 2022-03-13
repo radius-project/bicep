@@ -269,6 +269,29 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             },
         };
 
+        public static readonly BindingData BindingDataMySQL = new BindingData()
+        {
+            Type = new ThreePartType("mysql.com", "MySQLDatabase", RadiusResources.CategoryBinding),
+            Properties =
+            {
+                new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.ReadOnly),
+                new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.ReadOnly),
+                new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+            },
+            Values =
+            {
+                new BindingValue("database"),
+                new BindingValue("server"),
+                new BindingValue("port", LanguageConstants.Int),
+                new BindingValue("username"),
+                new BindingValue("password", secret: true),
+                new BindingValue("connectionString", secret: true),
+            },
+        };
+
         public static readonly BindingData BindingDataKeyVault = new BindingData()
         {
             Type = new ThreePartType("azure.com", "KeyVault", RadiusResources.CategoryBinding),
@@ -320,6 +343,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             BindingDataRabbitMQ,
             BindingDataServiceBusQueue,
             BindingDataSQL,
+            BindingDataMySQL,
             BindingDataKindAzure,
         };
 
