@@ -881,9 +881,9 @@ For Azure, this property will accept a resource ID of a `Microsoft.Sql/servers/d
 
 Resources provided by the developer will not be modified or deleted by Radius. Use this property to attach resources created with Bicep or any other mechanism."),
                     new TypeProperty("server", LanguageConstants.String, TypePropertyFlags.None, description:
-                    "The name of the SQL database."),
+                    "Fully Qualified Domain Name of the SQL server."),
                     new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
-                    "The fully qualified domain name of the SQL database."),
+                    "name of the SQL database."),
                 },
             };
         }
