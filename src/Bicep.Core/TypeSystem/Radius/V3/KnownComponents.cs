@@ -826,20 +826,6 @@ In this example the `web` port documents that the container is listening on port
                 bodyType);
         }
 
-        public static ComponentData MakeServiceBusQueue()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "ServiceBusQueue", ""),
-                Binding = CommonBindings.BindingDataServiceBusQueue,
-                Properties =
-                {
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
-                },
-            };
-        }
-
         public static ComponentData MakeRedis()
         {
             return new ComponentData()
