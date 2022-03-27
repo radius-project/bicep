@@ -874,19 +874,6 @@ Resources provided by the developer will not be modified or deleted by Radius. U
             };
         }
 
-        public static ComponentData MakeKeyVault()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "KeyVault", ""),
-                Binding = CommonBindings.BindingDataKeyVault,
-                Properties =
-                {
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                },
-            };
-        }
-
         public static ComponentData MakeMongoDB()
         {
             return new ComponentData()

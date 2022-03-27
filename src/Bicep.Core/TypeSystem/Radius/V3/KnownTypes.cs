@@ -87,7 +87,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 // KnownComponents.MakeFunction(),
                 KnownComponents.MakeMongoDB(),
                 KnownComponents.MakeMicrosoftSQL(),
-                KnownComponents.MakeKeyVault(),
                 KnownComponents.MakeRabbitMQ(),
                 KnownComponents.MakeRedis(),
                 KnownComponents.MakeVolume(),

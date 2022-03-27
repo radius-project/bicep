@@ -28160,26 +28160,6 @@
     }
   },
   {
-    "label": "'radius.dev/Application/azure.com.KeyVaultComponent'",
-    "kind": "class",
-    "documentation": {
-      "kind": "markdown",
-      "value": "Type: `radius.dev/Application/azure.com.KeyVaultComponent`  \n`"
-    },
-    "deprecated": false,
-    "preselect": false,
-    "sortText": "0000057d",
-    "insertTextFormat": "snippet",
-    "insertTextMode": "adjustIndentation",
-    "textEdit": {
-      "range": {},
-      "newText": "'radius.dev/Application/azure.com.KeyVaultComponent@$0'"
-    },
-    "command": {
-      "command": "editor.action.triggerSuggest"
-    }
-  },
-  {
     "label": "'radius.dev/Application/dapr.io.DaprHttpRoute'",
     "kind": "class",
     "documentation": {
