@@ -20,7 +20,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
 		<PackageReference Include="Azure.Deployments.Core" Version="1.0.253" />
-		<PackageReference Include="Azure.Deployments.Templates" Version="1.0.253" />
+		<PackageReference Include="Azure.Deployments.Templates" Version="1.0.594" />
 		<PackageReference Include="Azure.Deployments.Expression" Version="1.0.253" />
 		<PackageReference Include="Azure.Bicep.Types" Version="0.1.330" />
 		<PackageReference Include="Azure.Bicep.Types.Az" Version="0.1.330" />
