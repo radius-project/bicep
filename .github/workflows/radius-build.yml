@@ -21,7 +21,7 @@ jobs:
     - name: Parse release version and set environment variables
       run: python ./.github/scripts/get_release_version.py\
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3.1.0
       with:
         node-version: '14'
     - name: Setup .NET Core
