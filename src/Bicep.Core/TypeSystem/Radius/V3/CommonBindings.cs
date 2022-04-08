@@ -4,61 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Bicep.Core.TypeSystem.Radius.V3
 {
     public static class CommonBindings
     {
-
-        private static ObjectType PathProperty = new ObjectType(
-            "path",
-            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-            properties: new[]
-            {
-                new TypeProperty("value", LanguageConstants.String, TypePropertyFlags.Required, description: "Specifies the path to match the incoming request."),
-                new TypeProperty(
-                    "type",
-                    new UnionType("type", ImmutableArray.Create<ITypeReference>(new StringLiteralType("prefix"), new StringLiteralType("exact"))),
-                    TypePropertyFlags.None, description: "Specifies the type of matching to match the path on. Supported values: 'prefix', 'exact'"),
-            },
-            additionalPropertiesType: null,
-            additionalPropertiesFlags: TypePropertyFlags.None);
-
-        private static ObjectType RuleProperty = new ObjectType(
-            "rule",
-            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-            properties: new[]
-            {
-                new TypeProperty("method", LanguageConstants.String, TypePropertyFlags.None, description: "Specifies the method to match on the incoming request."),
-                // path needs to be an object
-                new TypeProperty("path", PathProperty, TypePropertyFlags.None, description: "Specifies the path to match on the incoming request."),
-            },
-            additionalPropertiesType: null,
-            additionalPropertiesFlags: TypePropertyFlags.None);
-
-        private static ObjectType RulesType = new ObjectType(
-                name: "rules",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: Array.Empty<TypeProperty>(),
-                additionalPropertiesType: RuleProperty,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-        private static TypeProperty GatewayProperty = new TypeProperty("gateway", new ObjectType(
-            "gateway",
-            validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-            properties: new[]
-            {
-                new TypeProperty("hostname", LanguageConstants.String, TypePropertyFlags.None, description: "Specifies the hostname to match. Use '*' to match all hostnames."),
-                new TypeProperty("source", LanguageConstants.String, TypePropertyFlags.None, "The gateway which this HttpRoute belongs to."),
-                new TypeProperty("rules", RulesType, TypePropertyFlags.None, description: "Specifies the path to match on the incoming request.")
-            },
-            additionalPropertiesType: RulesType,
-            additionalPropertiesFlags: TypePropertyFlags.None),
-            TypePropertyFlags.None,
-            description: "Specifies a gateway for public access to the route from outside the network.");
-
         public static readonly BindingData BindingDataHttp = new BindingData()
         {
             Type = new ThreePartType(null, "Http", RadiusResources.CategoryRoute),
@@ -68,7 +19,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                GatewayProperty,
             },
             Values =
             {
@@ -87,9 +37,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("url", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
-                new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                GatewayProperty,
-            },
+                new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),            },
             Values =
             {
                 new BindingValue("url"),
