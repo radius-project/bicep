@@ -67,13 +67,13 @@ Routes define the connections between services in the application.
 Routes can only be publicly accessible when declared in this array.
             
 ```bicep
-routes: {
+routes: [
   {
     path: '/servicea'
     destination: service_a_route.id
     replacePrefix: '/'
   }
-}
+]
 ```
 ");
 
