@@ -16,15 +16,15 @@ namespace Bicep.Core.TypeSystem.Radius.V3
         }
 
         public static GatewayData MakeGateway() {
-            var internalProperty = new TypeProperty("internal", LanguageConstants.Bool, TypePropertyFlags.None, "Set gateway to internal-only to use as a proxy. Defaults to false (expose to internet).");
+            var internalProperty = new TypeProperty("internal", LanguageConstants.Bool, TypePropertyFlags.None, "Sets gateway to not be exposed externally (no public IP address associated). Defaults to false (exposed to internet).");
 
             var hostnameType = new ObjectType(
                 name: "hostname",
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[]
                 {
-                    new TypeProperty("prefix", LanguageConstants.String, TypePropertyFlags.None, "Specify a prefix for the hostname: myhostname.myapp.<PUBLIC HOSTNAME or IP>.nip.io"),
-                    new TypeProperty("fullyQualifiedHostname", LanguageConstants.String, TypePropertyFlags.None, "Specify a fully-qualified domain name: myapp.mydomain.com. Mutually exclusive with 'prefix'.")
+                    new TypeProperty("prefix", LanguageConstants.String, TypePropertyFlags.None, "Specify a prefix for the hostname: myhostname.myapp.<PUBLIC HOSTNAME or IP>.nip.io."),
+                    new TypeProperty("fullyQualifiedHostname", LanguageConstants.String, TypePropertyFlags.None, "Specify a fully-qualified domain name: myapp.mydomain.com. Mutually exclusive with 'prefix' and will take priotity over if both are defined.")
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
