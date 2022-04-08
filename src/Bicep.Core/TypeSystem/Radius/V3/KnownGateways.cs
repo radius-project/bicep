@@ -28,7 +28,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null); ;
+                functions: null);
 
             var hostnameProperty = new TypeProperty("hostname", hostnameType, TypePropertyFlags.None, "Declare hostname information for the gateway. Leaving the hostname empty auto-assigns one: mygateway.myapp.<PUBLIC HOSTNAME or IP>.nip.io.");
 
@@ -39,7 +39,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 {
                     new TypeProperty("path", LanguageConstants.String, TypePropertyFlags.Required, "The path to the service, for example, /myservice."),
                     new TypeProperty("destination", LanguageConstants.String, TypePropertyFlags.Required, "The HttpRoute source, for example, myservice_route.id."),
-                    new TypeProperty("replacePrefix", LanguageConstants.String, TypePropertyFlags.None, "Optionally update the prefix when sending the request to the service."),
+                    new TypeProperty("replacePrefix", LanguageConstants.String, TypePropertyFlags.None, "Optionally update the prefix when sending the request to the service.")
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
@@ -68,43 +68,6 @@ routes: [
 ]
 ```
 ");
-
-            var listenerType = new ObjectType(
-                name: $"listener",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: new []
-                {
-                    new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.Required, "Specify listening ports for the gateway."),
-                    new TypeProperty("protocol", LanguageConstants.String, TypePropertyFlags.Required, "Specifies the protocol to listen on."),
-                },
-                additionalPropertiesType: null,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var listenersType = new ObjectType(name: "listeners",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: Array.Empty<TypeProperty>(),
-                additionalPropertiesType: listenerType,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
-
-            var listenersProperty = new TypeProperty("listeners", listenersType, TypePropertyFlags.None, @"Specify the listeners for the gateway.
-            
-            Listeners define the endpoints that are bound to this Gateway's address.
-            
-            For example, the following code defines the listener to bind to port 80 and 443.
-            
-            ```bicep
-            listeners: {
-                http: {
-                    port: 80
-                    protocol: http
-                }
-                https: {
-                    port: 443
-                    protocol: https
-                }
-            }");
 
             return new GatewayData() {
                 Type = new ThreePartType(null, "", RadiusResources.CategoryGateway),
