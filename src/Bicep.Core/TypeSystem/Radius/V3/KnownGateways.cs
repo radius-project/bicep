@@ -24,7 +24,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 properties: new TypeProperty[]
                 {
                     new TypeProperty("prefix", LanguageConstants.String, TypePropertyFlags.None, "Specify a prefix for the hostname: myhostname.myapp.<PUBLIC HOSTNAME or IP>.nip.io."),
-                    new TypeProperty("fullyQualifiedHostname", LanguageConstants.String, TypePropertyFlags.None, "Specify a fully-qualified domain name: myapp.mydomain.com. Mutually exclusive with 'prefix' and will take priotity over if both are defined.")
+                    new TypeProperty("fullyQualifiedHostname", LanguageConstants.String, TypePropertyFlags.None, "Specify a fully-qualified domain name: myapp.mydomain.com. Mutually exclusive with 'prefix' and will take priority over if both are defined.")
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
