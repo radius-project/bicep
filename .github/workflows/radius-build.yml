@@ -5,6 +5,8 @@ on:
     branches: [ radius-compiler ]
     tags:
     - v*
+  pull_request:
+    branches: [ radius-compiler ]
 
 jobs:
   build:

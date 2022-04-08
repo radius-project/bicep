@@ -23,14 +23,25 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 validationFlags: TypeSymbolValidationFlags.Default,
                 properties: new TypeProperty[]
                 {
-                    new TypeProperty("prefix", LanguageConstants.String, TypePropertyFlags.None, "Specify a prefix for the hostname: myhostname.myapp.<PUBLIC HOSTNAME or IP>.nip.io."),
+                    new TypeProperty("prefix", LanguageConstants.String, TypePropertyFlags.None, "Specify a prefix for the hostname: myhostname.myapp.PUBLIC_HOSTNAME_OR_IP.nip.io."),
                     new TypeProperty("fullyQualifiedHostname", LanguageConstants.String, TypePropertyFlags.None, "Specify a fully-qualified domain name: myapp.mydomain.com. Mutually exclusive with 'prefix' and will take priority over if both are defined.")
                 },
                 additionalPropertiesType: null,
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
 
-            var hostnameProperty = new TypeProperty("hostname", hostnameType, TypePropertyFlags.None, "Declare hostname information for the gateway. Leaving the hostname empty auto-assigns one: mygateway.myapp.<PUBLIC HOSTNAME or IP>.nip.io.");
+            var hostnameProperty = new TypeProperty("hostname", hostnameType, TypePropertyFlags.None, @"Declare hostname information for the gateway.
+
+Leaving the hostname empty auto-assigns one: mygateway.myapp.PUBLIC_HOSTNAME_OR_IP>.nip.io.
+
+```bicep
+hostname: {
+  prefix: 'myhostname' 
+  // OR
+  fullyQualifiedHostname: 'myapp.mydomain.com'
+}
+```
+");
 
             var routeType = new ObjectType(
                 name: "routes",
@@ -59,13 +70,13 @@ Routes define the connections between services in the application.
 Routes can only be publicly accessible when declared in this array.
             
 ```bicep
-routes: [
+routes: {
   {
     path: '/servicea'
     destination: service_a_route.id
     replacePrefix: '/'
   }
-]
+}
 ```
 ");
 
