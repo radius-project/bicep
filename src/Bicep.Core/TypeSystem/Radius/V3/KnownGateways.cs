@@ -32,7 +32,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
             var hostnameProperty = new TypeProperty("hostname", hostnameType, TypePropertyFlags.None, @"Declare hostname information for the gateway.
 
-Leaving the hostname empty auto-assigns one: mygateway.myapp.PUBLIC_HOSTNAME_OR_IP>.nip.io.
+Leaving the hostname empty auto-assigns one: mygateway.myapp.PUBLIC_HOSTNAME_OR_IP.nip.io.
 
 ```bicep
 hostname: {
@@ -56,12 +56,9 @@ hostname: {
                 additionalPropertiesFlags: TypePropertyFlags.None,
                 functions: null);
 
-            var routesType = new ObjectType(name: "routes",
-                validationFlags: TypeSymbolValidationFlags.Default,
-                properties: Array.Empty<TypeProperty>(),
-                additionalPropertiesType: routeType,
-                additionalPropertiesFlags: TypePropertyFlags.None,
-                functions: null);
+            var routesType = new TypedArrayType(
+                itemReference: routeType,
+                validationFlags: TypeSymbolValidationFlags.Default);
 
             var routesProperty = new TypeProperty("routes", routesType, TypePropertyFlags.Required, @"Specify the routes for the gateway.
             
