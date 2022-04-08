@@ -826,20 +826,6 @@ In this example the `web` port documents that the container is listening on port
                 bodyType);
         }
 
-        public static ComponentData MakeServiceBusQueue()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "ServiceBusQueue", ""),
-                Binding = CommonBindings.BindingDataServiceBusQueue,
-                Properties =
-                {
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
-                    new TypeProperty("queue", LanguageConstants.String, TypePropertyFlags.None),
-                },
-            };
-        }
-
         public static ComponentData MakeRedis()
         {
             return new ComponentData()
@@ -884,19 +870,6 @@ Resources provided by the developer will not be modified or deleted by Radius. U
                     "Fully Qualified Domain Name of the SQL server."),
                     new TypeProperty("database", LanguageConstants.String, TypePropertyFlags.None, description:
                     "name of the SQL database."),
-                },
-            };
-        }
-
-        public static ComponentData MakeKeyVault()
-        {
-            return new ComponentData()
-            {
-                Type = new ThreePartType("azure.com", "KeyVault", ""),
-                Binding = CommonBindings.BindingDataKeyVault,
-                Properties =
-                {
-                    new TypeProperty("resource", LanguageConstants.String, TypePropertyFlags.None),
                 },
             };
         }
