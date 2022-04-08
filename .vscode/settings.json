@@ -1,5 +1,2 @@
 {
-    "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": "file:///Users/willsmith/dev/bicep/.github/workflows/build.yml"
-    }
 }
