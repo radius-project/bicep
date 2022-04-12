@@ -17,7 +17,7 @@ namespace Bicep.Core.TypeSystem.Radius
         {
             this.typeLoader = new TypeLoader();
             this.resourceTypeFactory = new RadiusResourceTypeFactory();
-            this.availableTypes = typeLoader.GetIndexedTypes().Types.ToImmutableDictionary(
+            this.availableTypes = typeLoader.GetIndexedTypes().Resources.ToImmutableDictionary(
                 kvp => ResourceTypeReference.Parse(kvp.Key),
                 kvp => kvp.Value,
                 ResourceTypeReferenceComparer.Instance);
