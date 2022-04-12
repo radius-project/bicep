@@ -2127,6 +2127,7 @@
           "Azure.Bicep.Types": "0.1.486",
           "Azure.Bicep.Types.Az": "0.1.486",
           "Azure.Bicep.Types.K8s": "0.1.11",
+          "Azure.Bicep.Types.Radius": "1.0.0",
           "Azure.Containers.ContainerRegistry": "1.1.0-beta.4",
           "Azure.Deployments.Core": "1.0.594",
           "Azure.Deployments.Expression": "1.0.594",
@@ -2149,6 +2150,12 @@
           "Azure.Bicep.Core": "1.0.0",
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "6.0.0"
+        }
+      },
+      "Azure.Bicep.Types.Radius": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.449"
         }
       },
       "bicep": {
