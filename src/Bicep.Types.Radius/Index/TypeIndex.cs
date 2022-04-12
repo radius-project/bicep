@@ -6,11 +6,11 @@ namespace Azure.Bicep.Types.Radius.Index
 {
     public class TypeIndex
     {
-        public TypeIndex(IReadOnlyDictionary<string, TypeLocation> types)
+        public TypeIndex(IReadOnlyDictionary<string, TypeLocation> resources)
         {
-            Types = types;
+            Resources = resources;
         }
 
-        public IReadOnlyDictionary<string, TypeLocation> Types { get; }
+        public IReadOnlyDictionary<string, TypeLocation> Resources { get; }
     }
 }
