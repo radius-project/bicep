@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    ".NETCoreApp,Version=v6.0": {
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[3.1.2, )",
@@ -2140,6 +2140,7 @@
           "Azure.Bicep.Types": "0.1.449",
           "Azure.Bicep.Types.Az": "0.1.449",
           "Azure.Bicep.Types.K8s": "0.1.11",
+          "Azure.Bicep.Types.Radius": "1.0.0",
           "Azure.Containers.ContainerRegistry": "1.1.0-beta.4",
           "Azure.Deployments.Core": "1.0.594",
           "Azure.Deployments.Expression": "1.0.594",
@@ -2162,6 +2163,12 @@
           "Azure.Bicep.Core": "1.0.0",
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "6.0.0"
+        }
+      },
+      "Azure.Bicep.Types.Radius": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.449"
         }
       },
       "bicep": {
@@ -2223,7 +2230,7 @@
         }
       }
     },
-    "net6.0/linux-arm64": {
+    ".NETCoreApp,Version=v6.0/linux-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -3340,7 +3347,7 @@
         }
       }
     },
-    "net6.0/linux-musl-x64": {
+    ".NETCoreApp,Version=v6.0/linux-musl-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -4457,7 +4464,7 @@
         }
       }
     },
-    "net6.0/linux-x64": {
+    ".NETCoreApp,Version=v6.0/linux-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -5574,7 +5581,7 @@
         }
       }
     },
-    "net6.0/osx-arm64": {
+    ".NETCoreApp,Version=v6.0/osx-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -6691,7 +6698,7 @@
         }
       }
     },
-    "net6.0/osx-x64": {
+    ".NETCoreApp,Version=v6.0/osx-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -7808,7 +7815,7 @@
         }
       }
     },
-    "net6.0/win-arm64": {
+    ".NETCoreApp,Version=v6.0/win-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -8908,7 +8915,7 @@
         }
       }
     },
-    "net6.0/win-x64": {
+    ".NETCoreApp,Version=v6.0/win-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
