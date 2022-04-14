@@ -183,6 +183,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                             //       For now we will go ahead having both, but it is good to raise this point
                             //       during our discussion.
                             new TypeProperty("connectionString", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                            new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.WriteOnly),
                             new TypeProperty("password", LanguageConstants.String, TypePropertyFlags.WriteOnly),
                         },
                         additionalPropertiesType: null,
