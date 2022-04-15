@@ -164,7 +164,6 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             {
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.None),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                new TypeProperty("username", LanguageConstants.String, TypePropertyFlags.None),
                 // The secrets section allows usage of binding expression to specify
                 // custom secrets.
                 //
@@ -194,9 +193,9 @@ namespace Bicep.Core.TypeSystem.Radius.V3
             {
                 new BindingValue("host"),
                 new BindingValue("port"),
-                new BindingValue("username"),
                 new BindingValue("connectionString", secret: true),
                 new BindingValue("password", secret: true),
+                new BindingValue("username", secret: true),
             },
         };
 
