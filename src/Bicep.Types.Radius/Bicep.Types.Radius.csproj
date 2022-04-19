@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<TypeFiles Include="../../../radius/hack/bicep-types-radius/generated/**/*.json">
+		<TypeFiles Include="generated/**/*.json">
 			<CompressedFile>$(IntermediateOutputPath)/generated/%(RecursiveDir)%(Filename)%(Extension).deflated</CompressedFile>
 			<LogicalName>$([System.String]::new('%(RecursiveDir)%(Filename)%(Extension).deflated').Replace('\', '/').ToLowerInvariant())</LogicalName>
 		</TypeFiles>
