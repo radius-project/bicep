@@ -1871,7 +1871,7 @@
           "Azure.Bicep.Types": "0.1.449"
         }
       },
-      "bicep": {
+      "rad-bicep": {
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Core": "1.0.0",
