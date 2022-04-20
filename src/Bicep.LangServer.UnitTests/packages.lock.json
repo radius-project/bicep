@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v6.0": {
+    "net6.0": {
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[3.1.2, )",
@@ -2171,15 +2171,6 @@
           "Azure.Bicep.Types": "0.1.449"
         }
       },
-      "bicep": {
-        "type": "Project",
-        "dependencies": {
-          "Azure.Bicep.Core": "1.0.0",
-          "Azure.Bicep.Decompiler": "1.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
-        }
-      },
       "bicep.core.samples": {
         "type": "Project",
         "dependencies": {
@@ -2189,7 +2180,7 @@
           "MSTest.TestAdapter": "2.2.8",
           "MSTest.TestFramework": "2.2.8",
           "Microsoft.NET.Test.Sdk": "17.1.0",
-          "bicep": "1.0.0"
+          "rad-bicep": "1.0.0"
         }
       },
       "bicep.core.unittests": {
@@ -2228,9 +2219,18 @@
           "Moq": "4.17.2",
           "OmniSharp.Extensions.LanguageClient": "0.19.5"
         }
+      },
+      "rad-bicep": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Core": "1.0.0",
+          "Azure.Bicep.Decompiler": "1.0.0",
+          "Microsoft.Extensions.Logging": "6.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
+        }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-arm64": {
+    "net6.0/linux-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -3347,7 +3347,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-musl-x64": {
+    "net6.0/linux-musl-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -4464,7 +4464,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-x64": {
+    "net6.0/linux-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -5581,7 +5581,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-arm64": {
+    "net6.0/osx-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -6698,7 +6698,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-x64": {
+    "net6.0/osx-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -7815,7 +7815,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-arm64": {
+    "net6.0/win-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -8915,7 +8915,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-x64": {
+    "net6.0/win-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
