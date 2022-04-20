@@ -31,16 +31,16 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Publish Bicep (Linux)
+      - name: Dotnet Publish Bicep (Linux)
         run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'linux-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/linux-x64
-      - name: Publish Bicep (MacOS)
+      - name: Dotnet Publish Bicep (MacOS)
         run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'osx-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/macos-x64
-      - name: Publish Bicep (Windows)
+      - name: Dotnet Publish Bicep (Windows)
         run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'win-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/windows-x64
-      - name: Publish Language Server
+      - name: Dotnet Publish Language Server
         run: dotnet publish "./../Bicep.LangServer" -o "./bicepLanguageServer"
         working-directory: ./src/vscode-bicep
-      - name: Publish VSIX
+      - name: Dotnet Publish VSIX
         run: npm ci && npm run package
         working-directory: ./src/vscode-bicep
       - name: Copy VSIX
@@ -53,7 +53,7 @@ jobs:
 
   publish:
     if: ${{ github.event_name == 'push' }}
-    name: Publish
+    name: Publish to Azure Blob Storage
     needs: ["build"]
     runs-on: self-hosted
     steps:
