@@ -28,8 +28,8 @@ namespace Bicep.Core.Semantics.Namespaces
                     return SystemNamespaceType.Create(aliasName);
                 case AzNamespaceType.BuiltInName:
                     return AzNamespaceType.Create(aliasName, resourceScope, azResourceTypeProvider);
-                case RadiusArmNamespace.BuiltInName:
-                    return RadiusArmNamespace.Create(aliasName);
+                case RadiusNamespaceType.BuiltInName:
+                    return RadiusNamespaceType.Create(aliasName);
                 case KubernetesNamespace.BuiltInName:
                     return KubernetesNamespace.Create(aliasName);
             }

@@ -58,7 +58,7 @@ namespace Bicep.Core.Semantics.Namespaces
 
             TryAddBuiltInNamespace(SystemNamespaceType.BuiltInName);
             TryAddBuiltInNamespace(AzNamespaceType.BuiltInName);
-            TryAddBuiltInNamespace(RadiusArmNamespace.BuiltInName);
+            // TryAddBuiltInNamespace(RadiusArmNamespace.BuiltInName);
 
             return new(namespaceTypes, builtInNamespaceSymbols.ToImmutableDictionary(LanguageConstants.IdentifierComparer));
         }

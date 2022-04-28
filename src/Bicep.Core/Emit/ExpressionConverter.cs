@@ -527,8 +527,6 @@ namespace Bicep.Core.Emit
 
             var nameExpression = ConvertExpression(nameValueSyntax);
 
-            var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
-
             // We do this calculation based on the original type, since the Radius custom RP never appears in
             // code.
             var typesAfterProvider = typeReference.TypeSegments.Skip(1).ToImmutableArray();
@@ -552,20 +550,11 @@ namespace Bicep.Core.Emit
                     return nameExpression.AsEnumerable();
                 });
 
-                if (radiusType is {})
-                {
-                    parentNames = new JTokenExpression("radiusv3").AsEnumerable().Concat(parentNames);
-                }
                 return parentNames.Concat(nameExpression.AsEnumerable());
             }
 
             if (typesAfterProvider.Length == 1)
             {
-                if (radiusType is {})
-                {
-                    return new[] { new JTokenExpression("radiusv3"), nameExpression, };
-                }
-
                 return nameExpression.AsEnumerable();
             }
 
@@ -573,10 +562,6 @@ namespace Bicep.Core.Emit
                 (type, i) => AppendProperties(
                     CreateFunction("split", nameExpression, new JTokenExpression("/")),
                     new JTokenExpression(i)));
-            if (radiusType is {})
-            {
-                return new JTokenExpression("radiusv3").AsEnumerable<LanguageExpression>().Concat(rest);
-            }
 
             return rest;
         }
@@ -597,17 +582,11 @@ namespace Bicep.Core.Emit
                 nameValueSyntax = resource.NameSyntax;
             }
 
-            var radiusType = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource);
-
             // For a nested resource we need to compute the name
             var ancestors = this.context.SemanticModel.ResourceAncestors.GetAncestors(resource);
             if (ancestors.Length == 0)
             {
                 var nameExpression = ConvertExpression(nameValueSyntax);
-                if (radiusType is {})
-                {
-                    nameExpression = CreateFunction("format", new JTokenExpression("{0}/{1}"), new JTokenExpression("radiusv3"), nameExpression);
-                }
 
                 return nameExpression;
             }
@@ -640,7 +619,7 @@ namespace Bicep.Core.Emit
 
         public LanguageExpression GetUnqualifiedResourceId(DeclaredResourceMetadata resource)
         {
-            var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
+            var typeReference = resource.TypeReference;
             return ScopeHelper.FormatUnqualifiedResourceId(
                 context,
                 this,
@@ -667,7 +646,7 @@ namespace Bicep.Core.Emit
             }
             else if (resource is DeclaredResourceMetadata declared)
             {
-                var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(declared) ?? declared.TypeReference;
+                var typeReference = declared.TypeReference;
                 return ScopeHelper.FormatFullyQualifiedResourceId(
                     context,
                     this,
@@ -731,7 +710,7 @@ namespace Bicep.Core.Emit
                 _ => throw new InvalidOperationException($"Unexpected resource metadata type: {resource.GetType()}"),
             };
 
-            var typeReference = Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.TryConvertRadiusType(resource) ?? resource.TypeReference;
+            var typeReference = resource.TypeReference;
             // For Kubernetes, always use full reference.
             if (resource.Type.DeclaringNamespace.ProviderName == Bicep.Core.TypeSystem.Kubernetes.KubernetesNamespace.BuiltInName) {
                 var apiVersion = typeReference.ApiVersion ?? throw new InvalidOperationException($"Expected resource type {typeReference.FormatName()} to contain version");

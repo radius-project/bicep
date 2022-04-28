@@ -13,6 +13,6 @@ namespace Bicep.Core.Semantics.Metadata
     {
         public ResourceTypeReference TypeReference => Type.TypeReference;
 
-        public bool IsAzResource => Type.DeclaringNamespace.ProviderNameEquals(AzNamespaceType.BuiltInName) || Type.DeclaringNamespace.ProviderNameEquals(Bicep.Core.TypeSystem.Radius.RadiusArmNamespace.BuiltInName);
+        public bool IsAzResource => Type.DeclaringNamespace.ProviderNameEquals(AzNamespaceType.BuiltInName);
     }
 }

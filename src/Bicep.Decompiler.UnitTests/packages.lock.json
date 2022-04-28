@@ -2270,11 +2270,18 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "Azure.Bicep.Types.Radius": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.330"
+        }
+      },
       "bicep.core": {
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Types": "0.1.330",
           "Azure.Bicep.Types.Az": "0.1.330",
+          "Azure.Bicep.Types.Radius": "1.0.0",
           "Azure.Containers.ContainerRegistry": "1.1.0-beta.3",
           "Azure.Deployments.Core": "1.0.253",
           "Azure.Deployments.Expression": "1.0.253",

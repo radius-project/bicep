@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1160.59959",
+      "templateHash": "5367529268755092288"
+    }
+  },
+  "imports": {
+    "radius": {
+      "provider": "Radius",
+      "version": "1.0",
+      "config": {
+        "foo": "foo"
+      }
+    }
+  },
+  "resources": {
+    "foo": {
+      "existing": true,
+      "import": "radius",
+      "type": "Applications.Core/applications@2022-03-15-privatepreview",
+      "properties": {
+        "name": "foo"
+      }
+    }
+  }
+}
