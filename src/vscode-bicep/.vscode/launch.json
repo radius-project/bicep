@@ -13,14 +13,15 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/out/src/**/*.js"],
+      "outFiles": [
+        "${workspaceRoot}/out/src/**/*.js"
+      ],
       "preLaunchTask": "${defaultBuildTask}",
       "env": {
         "BICEP_TRACING_ENABLED": "true",
         "BICEP_LANGUAGE_SERVER_PATH": "${workspaceRoot}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll",
         "BICEP_SYMBOLIC_NAME_CODEGEN_EXPERIMENTAL": "true",
         "BICEP_IMPORTS_ENABLED_EXPERIMENTAL": "true",
-
         // Defaulting to "verbose" when debugging so that new telemetry IDs during development aren't accidentally sent and created before they're finalized
         "DEBUGTELEMETRY": "v", // "" or "0" or "false": send telemetry as normal; "1": debug mode (no telemetry sent); "verbose": telemetry in console, don't send (from microsoft/vscode-azext-utils)
       }
@@ -36,7 +37,9 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/out/src/**/*.js"],
+      "outFiles": [
+        "${workspaceRoot}/out/src/**/*.js"
+      ],
       "preLaunchTask": "build:prod",
       "env": {
         "BICEP_LANGUAGE_SERVER_PATH": "${workspaceRoot}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll"
@@ -53,7 +56,9 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/out/src/**/*.js"],
+      "outFiles": [
+        "${workspaceRoot}/out/src/**/*.js"
+      ],
       "preLaunchTask": "watch",
       "env": {
         "BICEP_LANGUAGE_SERVER_PATH": "${workspaceRoot}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll"
@@ -68,7 +73,9 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/e2e/index"
       ],
-      "outFiles": ["${workspaceRoot}/out/test/e2e/**/*.js"],
+      "outFiles": [
+        "${workspaceRoot}/out/test/e2e/**/*.js"
+      ],
       "preLaunchTask": "build:e2e",
       "env": {
         "BICEP_LANGUAGE_SERVER_PATH": "${workspaceRoot}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll",
@@ -84,7 +91,9 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/e2e/index"
       ],
-      "outFiles": ["${workspaceRoot}/out/test/e2e/**/*.js"],
+      "outFiles": [
+        "${workspaceRoot}/out/test/e2e/**/*.js"
+      ],
       "preLaunchTask": "build:e2e:dev",
       "env": {
         "BICEP_LANGUAGE_SERVER_PATH": "${workspaceRoot}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll",
