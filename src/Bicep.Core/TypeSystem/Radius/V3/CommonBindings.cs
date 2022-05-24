@@ -19,6 +19,17 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                new TypeProperty("routes", new ObjectType(
+                        name: "routes",
+                        validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
+                        properties: new[]
+                        {
+                            new TypeProperty("destination", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                            new TypeProperty("weight", LanguageConstants.Int, TypePropertyFlags.WriteOnly),
+                        },
+                        additionalPropertiesType: null,
+                        additionalPropertiesFlags: TypePropertyFlags.None),
+                        TypePropertyFlags.None),
             },
             Values =
             {
@@ -26,6 +37,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new BindingValue("scheme"),
                 new BindingValue("host"),
                 new BindingValue("port"),
+                new BindingValue("destination"),
+                new BindingValue("weight"),
             },
         };
 
