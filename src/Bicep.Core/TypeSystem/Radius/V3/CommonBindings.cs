@@ -19,22 +19,21 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                new TypeProperty("routes",LanguageConstants.Array, TypePropertyFlags.None),
-                // Is there a way to specify that each element in the array has two keys (and these two keys only):
-                //                                                                          destination and weight
-
-                // new TypeProperty("routes", new ObjectType(
-                //         name: "routes",
-                //         validationFlags: TypeSymbolValidationFlags.WarnOnTypeMismatch,
-                //         properties: new[]
-                //         {
-                //             new TypeProperty("destination", LanguageConstants.String, TypePropertyFlags.WriteOnly),
-                //             new TypeProperty("weight", LanguageConstants.Int, TypePropertyFlags.WriteOnly),
-                //         },
-                //         additionalPropertiesType: null,
-                //         additionalPropertiesFlags: TypePropertyFlags.None),
-                //         TypePropertyFlags.None),
-                //ERROR: the property "routes" expected a value of type "routes" but the provided value is of type "array".
+                new TypeProperty("routes",
+                    new TypedArrayType(
+                        itemReference : new ObjectType (
+                            name:"routes",
+                            validationFlags: TypeSymbolValidationFlags.Default,
+                            properties: new[]
+                            {
+                                new TypeProperty("destination", LanguageConstants.String, TypePropertyFlags.WriteOnly),
+                                new TypeProperty("weight", LanguageConstants.Int, TypePropertyFlags.WriteOnly),
+                            },
+                            additionalPropertiesType:null,
+                            additionalPropertiesFlags: TypePropertyFlags.None,
+                            functions:null),
+                        validationFlags: TypeSymbolValidationFlags.Default),
+                TypePropertyFlags.None),
             },
             Values =
             {
