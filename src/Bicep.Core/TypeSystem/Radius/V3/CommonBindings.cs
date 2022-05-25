@@ -20,7 +20,8 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
-                new TypeProperty("routes",
+                new TypeProperty(
+                    "routes",
                     new TypedArrayType(
                         itemReference: new ObjectType (
                             name: "routes",
