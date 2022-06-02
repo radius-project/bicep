@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using System.Collections.Generic;
 using Azure.Bicep.Types.Radius.Index;
 using Azure.Bicep.Types.Concrete;
 
