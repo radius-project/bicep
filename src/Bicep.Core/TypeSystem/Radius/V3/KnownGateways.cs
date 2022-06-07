@@ -17,6 +17,7 @@ namespace Bicep.Core.TypeSystem.Radius.V3
 
         public static GatewayData MakeGateway() {
             var internalProperty = new TypeProperty("internal", LanguageConstants.Bool, TypePropertyFlags.None, "Sets gateway to not be exposed externally (no public IP address associated). Defaults to false (exposed to internet).");
+            var urlProperty = new TypeProperty("url", LanguageConstants.String, TypePropertyFlags.ReadOnly, "Base URL for accessing this Gateway. Readonly.");
 
             var hostnameType = new ObjectType(
                 name: "hostname",
@@ -81,6 +82,7 @@ routes: [
                 Type = new ThreePartType(null, "", RadiusResources.CategoryGateway),
                 Properties = {
                     internalProperty,
+                    urlProperty,
                     hostnameProperty,
                     routesProperty
                 }
