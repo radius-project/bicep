@@ -3,9 +3,6 @@
 ### applications.connector/daprinvokehttproutes
 * [2022-03-15-privatepreview](applications/applications.connector/2022-03-15-privatepreview/types.md#resource-applicationsconnectordaprinvokehttproutes2022-03-15-privatepreview)
 
-### applications.connector/daprpubsubbrokers
-* [2022-03-15-privatepreview](applications/applications.connector/2022-03-15-privatepreview/types.md#resource-applicationsconnectordaprpubsubbrokers2022-03-15-privatepreview)
-
 ### applications.connector/daprsecretstores
 * [2022-03-15-privatepreview](applications/applications.connector/2022-03-15-privatepreview/types.md#resource-applicationsconnectordaprsecretstores2022-03-15-privatepreview)
 
@@ -27,6 +24,9 @@
 ## applications.core
 ### applications.core/applications
 * [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscoreapplications2022-03-15-privatepreview)
+
+### applications.core/containers
+* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscorecontainers2022-03-15-privatepreview)
 
 ### applications.core/environments
 * [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscoreenvironments2022-03-15-privatepreview)
