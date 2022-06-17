@@ -72,7 +72,7 @@ jobs:
       - name: Display artifacts
         run: ls -R
         working-directory: ./artifacts
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      - uses: bacongobbler/azure-blob-storage-upload@v2.0.0
         name: Upload rad-bicep (Linux)
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -80,7 +80,7 @@ jobs:
           source_dir: ./artifacts/bicep/linux-x64/
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep --overwrite true"
           sync: true
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      - uses: bacongobbler/azure-blob-storage-upload@v2.0.0
         name: Upload rad-bicep (MacOS)
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -88,7 +88,7 @@ jobs:
           source_dir: ./artifacts/bicep/macos-x64/
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep --overwrite true"
           sync: true
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      - uses: bacongobbler/azure-blob-storage-upload@v2.0.0
         name: Upload rad-bicep (Windows)
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -96,7 +96,7 @@ jobs:
           source_dir: ./artifacts/bicep/windows-x64/
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe --overwrite true"
           sync: true
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      - uses: bacongobbler/azure-blob-storage-upload@v2.0.0
         name: Upload VS Code (channel)
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
@@ -130,7 +130,7 @@ jobs:
           echo "this build channel: ${{ env.REL_CHANNEL }}"
           echo "this build version: ${{ env.REL_VERSION }}"
           echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+      - uses: bacongobbler/azure-blob-storage-upload@v2.0.0
         name: Upload VS Code (stable)
         if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
         with:
