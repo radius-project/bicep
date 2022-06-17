@@ -23,16 +23,30 @@ import radius as radius {
   foo: 'foo'
 }
 
-resource env 'Applications.Core/environments@2022-03-15-privatepreview' = {
-}
+// import az as az2
 
-resource foo 'Applications.Core/applications@2022-03-15-privatepreview' = {
-  name: 'foo'
+resource env 'Applications.Core/environments@2022-03-15-privatepreview' = {
+  name: 'prayingthiswor2'
   location: 'westus2'
   properties: {
-    environment: 'ucp:/planes/radius/local/resourceGroups/r1/providers/Applications.Core/environments/cool-env'
+    compute:{
+      kind: 'kubernetes'
+      resourceId: ''
+    }
   }
 }
+
+// resource foo 'Applications.Core/applications@2022-03-15-privatepreview' = {
+//   name: 'foo'
+//   location: 'westus2'
+//   properties: {
+//     environment: 'ucp:/planes/radius/local/resourceGroups/r1/providers/Applications.Core/environments/cool-env'
+//   }
+// }
+
+// resource bar 'Microsoft.AAD/domainServices@2021-05-01' existing = {
+//   name: 'foo'
+// }
 
 // resource account 'az:Microsoft.DocumentDB/databaseAccounts@2020-04-01' = {
 //   name: 'account-${guid(resourceGroup().name)}'
