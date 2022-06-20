@@ -6,11 +6,38 @@ using System.Linq;
 using Bicep.Core.Resources;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
+using Bicep.Core.Syntax;
+using Bicep.Core.Semantics;
 
 namespace Bicep.Core.TypeSystem.Radius
 {
     public class RadiusResourceTypeProvider : IResourceTypeProvider
     {
+        private static Dictionary<string, Func<string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
+        {
+            {
+                "Applications.Core/environments", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("doStuff")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+                }
+            },
+        };
+
+        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion)
+        {
+            return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable) =>
+            {
+                var functionSymbol = (FunctionSymbol)symbol;
+                return SyntaxFactory.CreateFunctionCall(
+                    "listSecrets",
+                    ((InstanceFunctionCallSyntax)functionCall).BaseExpression,
+                    SyntaxFactory.CreateStringLiteral(apiVersion));
+            };
+        }
+
         private class ResourceTypeCache
         {
             private class KeyComparer : IEqualityComparer<(ResourceTypeGenerationFlags flags, ResourceTypeReference type)>
@@ -121,13 +148,16 @@ namespace Bicep.Core.TypeSystem.Radius
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
             }
 
+            FunctionTable.TryGetValue(objectType.Name, out var functionBuilder);
+            var functions = functionBuilder?.Invoke(typeReference.ApiVersion!) ?? Array.Empty<Semantics.FunctionOverload>();
+
             return new ObjectType(
                 objectType.Name,
                 objectType.ValidationFlags,
                 isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
                 isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
-                functions: null);
+                functions: functions);
         }
 
         private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)

@@ -31,6 +31,30 @@ namespace Bicep.Core.IntegrationTests
         }
 
         [TestMethod]
+        public void Radius_function_call_is_allowed()
+        {
+            var result = CompilationHelper.Compile(GetCompilationContext(), @"
+import radius as radius
+
+resource env 'Applications.Core/environments@2022-03-15-privatepreview' = {
+  name: 'cool-env'
+  location: 'westus'
+  properties: {
+    compute: {
+      kind: 'kubernetes'
+      resourceId: '...'
+    }
+  }
+}
+
+output value string = env.doStuff()
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+
+        }
+
+        [TestMethod]
         public void Storage_import_bad_config_is_blocked()
         {
             var result = CompilationHelper.Compile(GetCompilationContext(), @"
@@ -352,7 +376,7 @@ Hello from Bicep!"));
             }
           },
           ""variables"": {
-            ""$fxv#0"": ""\nHello from Bicep!""            
+            ""$fxv#0"": ""\nHello from Bicep!""
           },
           ""imports"": {
             ""stg"": {
