@@ -240,17 +240,22 @@ resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview'
 }
 
 resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
-    name: 'mycontainer'
-    location: 'global'
-    properties: {
-      container: {
-            image: 'test'
-            env: {
-            DBCONNECTION: mongo.connectionString()
-            }
-        }
+  name: 'mycontainer'
+  location: 'global'
+  properties: {
+    application: 'myapp'
+    connections: {
+      redis: {
+        source: 'foo'
       }
     }
+    container: {
+      image: 'test'
+      env: {
+        DBCONNECTION: mongo.connectionString()
+      }
+    }
+  }
 }
 
 output connectionString string = mongo.connectionString()
