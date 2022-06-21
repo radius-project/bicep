@@ -160,6 +160,7 @@ namespace Bicep.Core.Emit
 
                                 return CreateFunction(instanceFunctionCall.Name.IdentifierName, listArgs);
                             }
+                            // if (instanceFunctionalCall.Name.IndentifierName.StartsWithOrdinalInsensitively("connectionString"))
 
                             break;
                     }

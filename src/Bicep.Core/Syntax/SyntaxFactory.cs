@@ -226,6 +226,11 @@ namespace Bicep.Core.Syntax
             };
         }
 
+        public static PropertyAccessSyntax CreatePropertyAccess(SyntaxBase baseExpression, string propertyName)
+        {
+            return new PropertyAccessSyntax(baseExpression, SyntaxFactory.DotToken, SyntaxFactory.CreateIdentifier(propertyName));
+        }
+
         public static FunctionCallSyntax CreateFunctionCall(string functionName, params SyntaxBase[] argumentExpressions)
         {
             var children = new List<SyntaxBase>();
