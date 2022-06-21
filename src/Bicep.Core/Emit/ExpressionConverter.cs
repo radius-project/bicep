@@ -984,7 +984,6 @@ namespace Bicep.Core.Emit
 
         private LanguageExpression GetImportNamespaceExpression(ImportedNamespaceSymbol importedNamespaceSymbol)
         {
-            importedNamespaceSymbol.Descendants
             throw new NotImplementedException();
         }
 

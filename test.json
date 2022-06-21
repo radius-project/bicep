@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+    "_generator": {
+      "name": "bicep",
+      "version": "0.6.77.5140",
+      "templateHash": "13260303281898944796"
+    }
+  },
+  "imports": {
+    "radius": {
+      "provider": "Radius",
+      "version": "1.0",
+      "config": {
+        "foo": "foo"
+      }
+    }
+  },
+  "resources": {
+    "env": {
+      "import": "radius",
+      "type": "Applications.Core/environments@2022-03-15-privatepreview",
+      "properties": {
+        "name": "prayingthiswor2",
+        "location": "westus2",
+        "properties": {
+          "compute": {
+            "kind": "kubernetes"
+          }
+        }
+      }
+    },
+    "foo": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "test",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "foo": {
+            "value": "bar"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.77.5140",
+              "templateHash": "1850780470543026242"
+            }
+          },
+          "parameters": {
+            "foo": {
+              "type": "string"
+            }
+          },
+          "imports": {
+            "radius": {
+              "provider": "Radius",
+              "version": "1.0",
+              "config": {
+                "foo": "foo"
+              }
+            }
+          },
+          "resources": {
+            "env": {
+              "import": "radius",
+              "type": "Applications.Core/environments@2022-03-15-privatepreview",
+              "properties": {
+                "name": "[parameters('foo')]",
+                "location": "westus2",
+                "properties": {
+                  "compute": {
+                    "kind": "kubernetes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
