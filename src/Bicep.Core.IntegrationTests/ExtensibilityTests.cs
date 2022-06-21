@@ -225,7 +225,7 @@ resource blob 'bar:blob' = {
          [TestMethod]
         public void Radius_function_call_is_allowed()
         {
-            var result = CompilationHelper.Compile(GetCompilationContext(), @"
+          var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
 resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
@@ -239,13 +239,26 @@ resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview'
   }
 }
 
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+    name: 'mycontainer'
+    location: 'global'
+    properties: {
+      container: {
+            image: 'test'
+            env: {
+            DBCONNECTION: mongo.connectionString()
+            }
+        }
+      }
+    }
+}
+
 output connectionString string = mongo.connectionString()
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath("$", "asdfasdf");
         }
-
 
         [TestMethod]
         public void Child_resource_with_parent_namespace_mismatch_returns_error()

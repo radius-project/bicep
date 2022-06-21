@@ -97,13 +97,18 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 var instance = (InstanceFunctionCallSyntax)functionCall;
                 var functionSymbol = (FunctionSymbol)symbol;
+                var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
 
                 var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
                     "resourceId",
                     SyntaxFactory.CreateStringLiteral(type),
-                    SyntaxFactory.CreateStringLiteral(name));
+                    SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
 
-                var targetResourceIdExpression = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+                var targetResourceIdExpression = SyntaxFactory.CreateFunctionCall(
+                    "resourceId",
+                    SyntaxFactory.CreateStringLiteral(type),
+                    SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
+                // SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
                 var customActionDataArgumentExpression = SyntaxFactory.CreateObject(new[]
                 {
                     SyntaxFactory.CreateObjectProperty("targetId", targetResourceIdExpression),
