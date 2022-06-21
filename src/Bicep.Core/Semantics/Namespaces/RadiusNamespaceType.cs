@@ -24,6 +24,7 @@ namespace Bicep.Core.Semantics.Namespaces
             return new ObjectType("configuration", TypeSymbolValidationFlags.Default, new TypeProperty[]
             {
                 new TypeProperty("foo", LanguageConstants.String, TypePropertyFlags.Required),
+                new TypeProperty("environment", LanguageConstants.String, TypePropertyFlags.None),
                 // new TypeProperty("kubeConfig", LanguageConstants.String, TypePropertyFlags.Required),
                 // new TypeProperty("context", LanguageConstants.String),
             }, null);
@@ -34,7 +35,13 @@ namespace Bicep.Core.Semantics.Namespaces
             return new NamespaceType(
                 aliasName,
                 Settings,
-                ImmutableArray<TypeProperty>.Empty,
+                new TypeProperty[]
+            {
+                new TypeProperty("foo", LanguageConstants.String, TypePropertyFlags.Required),
+                new TypeProperty("environment", LanguageConstants.String, TypePropertyFlags.None),
+                // new TypeProperty("kubeConfig", LanguageConstants.String, TypePropertyFlags.Required),
+                // new TypeProperty("context", LanguageConstants.String),
+            },
                 ImmutableArray<FunctionOverload>.Empty,
                 ImmutableArray<BannedFunction>.Empty,
                 ImmutableArray<Decorator>.Empty,

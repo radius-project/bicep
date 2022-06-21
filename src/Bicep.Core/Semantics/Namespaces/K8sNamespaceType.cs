@@ -34,7 +34,12 @@ namespace Bicep.Core.Semantics.Namespaces
             return new NamespaceType(
                 aliasName,
                 Settings,
-                ImmutableArray<TypeProperty>.Empty,
+                new[]
+                {
+                    new TypeProperty("namespace", LanguageConstants.String, TypePropertyFlags.Required),
+                    new TypeProperty("kubeConfig", LanguageConstants.String, TypePropertyFlags.Required),
+                    new TypeProperty("context", LanguageConstants.String),
+                },
                 ImmutableArray<FunctionOverload>.Empty,
                 ImmutableArray<BannedFunction>.Empty,
                 ImmutableArray<Decorator>.Empty,
