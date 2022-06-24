@@ -23,7 +23,7 @@ namespace Bicep.Core.Semantics.Namespaces
         {
             return new ObjectType("configuration", TypeSymbolValidationFlags.Default, new TypeProperty[]
             {
-                new TypeProperty("foo", LanguageConstants.String, TypePropertyFlags.Required),
+                // new TypeProperty("foo", LanguageConstants.String, TypePropertyFlags.Required),
                 // new TypeProperty("kubeConfig", LanguageConstants.String, TypePropertyFlags.Required),
                 // new TypeProperty("context", LanguageConstants.String),
             }, null);
