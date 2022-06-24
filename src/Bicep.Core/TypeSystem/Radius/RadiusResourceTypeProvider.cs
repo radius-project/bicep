@@ -99,32 +99,27 @@ namespace Bicep.Core.TypeSystem.Radius
                 var functionSymbol = (FunctionSymbol)symbol;
                 var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
 
-                var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
-                    "resourceId",
-                    SyntaxFactory.CreateStringLiteral(type),
-                    SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
+                // var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
+                //     "resourceId",
+                //     SyntaxFactory.CreateStringLiteral(type),
+                //     SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
 
-                var targetResourceIdExpression = SyntaxFactory.CreateFunctionCall(
-                    "resourceId",
-                    SyntaxFactory.CreateStringLiteral(type),
-                    SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
-                // SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
-                var customActionDataArgumentExpression = SyntaxFactory.CreateObject(new[]
-                {
-                    SyntaxFactory.CreateObjectProperty("targetId", targetResourceIdExpression),
-                });
+                var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
                 // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) }).connectionString
                 // "[listSecrets(reference('mongo'), '2022-03-15-privatepreview')]"
                 // listSecrets()
                 // (mongo.listSecrets('2022-03-15-privatepreview', {...}).connectionString
                 // return new PropertyAccessSyntax(baseExpression, SyntaxFactory.DotToken, SyntaxFactory.CreateIdentifier(propertyName));
+                if (variableAccess.Name == null) {
+                    throw new InvalidOperationException("Name required for function");
+                }
 
+                var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
                 // [listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db'))).connectionString]
                 var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
                     "listSecrets",
-                    customProviderResourceIdArgumentExpression,
-                    SyntaxFactory.CreateStringLiteral(apiVersion),
-                    customActionDataArgumentExpression);
+                    stringSyntax,
+                    SyntaxFactory.CreateStringLiteral(apiVersion));
 
                 return SyntaxFactory.CreatePropertyAccess(listSecretsFunc, "connectionString");
 
