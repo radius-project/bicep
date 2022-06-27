@@ -266,6 +266,76 @@ output connectionString string = mongo.connectionString()
         }
 
         [TestMethod]
+        public void Radius_azure_reference()
+        {
+          var result = CompilationHelper.Compile(GetCompilationContext(), @"
+import radius as radius
+
+resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
+  name: 'my-mongo'
+  location: 'global'
+  properties: {
+    environment: 'test'
+  }
+}
+
+resource account 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'coolaccount'
+  location: 'global'
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+    customDomain: {
+        name: mongo.connectionString()
+    }
+  }
+}
+
+output connectionString string = mongo.connectionString()
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$", "asdfasdf");
+        }
+
+        [TestMethod]
+        public void Kubernetes_Radius_Reference()
+        {
+          var result = CompilationHelper.Compile(GetCompilationContext(), @"
+import radius as radius
+
+resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
+  name: 'my-mongo'
+  location: 'global'
+  properties: {
+    environment: 'test'
+  }
+}
+
+resource secret 'kubernetes.core/Secret@v1' = {
+  metadata: {
+    name: 'redis-conn'
+    namespace: 'default'
+    labels: {
+      format: 'k8s-extension'
+    }
+  }
+
+stringData: {
+    connectionString: '${mongo.connectionString()}'
+  }
+}
+
+output connectionString string = mongo.connectionString()
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$", "asdfasdf");
+        }
+
+        [TestMethod]
         public void Child_resource_with_parent_namespace_mismatch_returns_error()
         {
             var result = CompilationHelper.Compile(GetCompilationContext(), @"
