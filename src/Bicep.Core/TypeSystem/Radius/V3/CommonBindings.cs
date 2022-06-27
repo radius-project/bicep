@@ -19,6 +19,44 @@ namespace Bicep.Core.TypeSystem.Radius.V3
                 new TypeProperty("scheme", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("host", LanguageConstants.String, TypePropertyFlags.ReadOnly),
                 new TypeProperty("port", LanguageConstants.Int, TypePropertyFlags.None),
+                new TypeProperty(
+                    "routes",
+                    new TypedArrayType(
+                        itemReference: new ObjectType (
+                            name: "routes",
+                            validationFlags: TypeSymbolValidationFlags.Default,
+                            properties: new[]
+                            {
+                                new TypeProperty("destination", LanguageConstants.String, TypePropertyFlags.Required),
+                                new TypeProperty("weight", LanguageConstants.Int, TypePropertyFlags.Required),
+                            },
+                            additionalPropertiesType:null,
+                            additionalPropertiesFlags: TypePropertyFlags.None,
+                            functions:null),
+                        validationFlags: TypeSymbolValidationFlags.Default),
+                    TypePropertyFlags.None,@"Configure the Traffic weights for Http Route(s).
+To enable traffic splitting between various containers, additional information on Http Route need to be added.
+Destination refers to a particular Http Route
+Weight refers to the traffic weight of this particular route. It only takes in an integer
+Example:
+``` bicep
+resource trafficsplit 'HttpRoute' = {
+    name: 'abtest'
+    properties: {
+        routes: [
+            {
+                destination: containerRouteV1.id
+                weight: 30
+            }
+            {
+                destination: containerRouteV2.id
+                weight: 70
+            }
+        ]
+    }
+}
+```
+                    "),
             },
             Values =
             {
