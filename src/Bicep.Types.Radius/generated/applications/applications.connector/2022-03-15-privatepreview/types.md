@@ -123,6 +123,11 @@
 * **ApiVersion**: 2022-03-15-privatepreview
 * **Output**: [RabbitMQSecrets](#rabbitmqsecrets)
 
+## Function listSecrets (Applications.Connector/extenders@2022-03-15-privatepreview)
+* **Resource**: Applications.Connector/extenders
+* **ApiVersion**: 2022-03-15-privatepreview
+* **Output**: [ExtenderSecrets](#extendersecrets)
+
 ## DaprInvokeHttpRouteProperties
 ### Properties
 * **appId**: string (Required): The Dapr appId used for the route
@@ -227,12 +232,12 @@
 * **application**: string (ReadOnly): Fully qualified resource ID for the application that the connector is consumed by
 * **environment**: string (Required): Fully qualified resource ID for the environment that the connector is linked to
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the connector at the time the operation was called
-* **secrets**: [ExtenderPropertiesSecrets](#extenderpropertiessecrets): Dictionary of <any>
+* **secrets**: [ExtenderSecrets](#extendersecrets) (WriteOnly): The secret values for the given Extender resource
 * **status**: [ResourceStatus](#resourcestatus): Status of a resource.
 ### Additional Properties
 * **Additional Properties Type**: any
 
-## ExtenderPropertiesSecrets
+## ExtenderSecrets
 ### Properties
 ### Additional Properties
 * **Additional Properties Type**: any
@@ -270,12 +275,12 @@
 * **environment**: string (Required): Fully qualified resource ID for the environment that the connector is linked to
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the connector at the time the operation was called
 * **queue**: string (Required): The name of the queue
-* **secrets**: [RabbitMQSecrets](#rabbitmqsecrets): The secret values for the given RabbitMQMessageQueue resource
+* **secrets**: [RabbitMQSecrets](#rabbitmqsecrets) (WriteOnly): The secret values for the given RabbitMQMessageQueue resource
 * **status**: [ResourceStatus](#resourcestatus): Status of a resource.
 
 ## RabbitMQSecrets
 ### Properties
-* **connectionString**: string: The connection string used to connect to this RabbitMQ instance
+* **connectionString**: string (WriteOnly): The connection string used to connect to this RabbitMQ instance
 
 ## TrackedResourceTags
 ### Properties
@@ -290,13 +295,13 @@
 * **port**: int: The port value of the target redis cache
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the connector at the time the operation was called
 * **resource**: string: Fully qualified resource ID of a supported resource with Redis API to use for this connector
-* **secrets**: [RedisCacheSecrets](#rediscachesecrets): The secret values for the given RedisCache resource
+* **secrets**: [RedisCacheSecrets](#rediscachesecrets) (WriteOnly): The secret values for the given RedisCache resource
 * **status**: [ResourceStatus](#resourcestatus): Status of a resource.
 
 ## RedisCacheSecrets
 ### Properties
-* **connectionString**: string: The connection string used to connect to the redis cache
-* **password**: string: The password for this Redis instance
+* **connectionString**: string (WriteOnly): The connection string used to connect to the redis cache
+* **password**: string (WriteOnly): The password for this Redis instance
 
 ## TrackedResourceTags
 ### Properties
@@ -326,10 +331,15 @@
 
 ## RedisCacheSecrets
 ### Properties
-* **connectionString**: string: The connection string used to connect to the redis cache
-* **password**: string: The password for this Redis instance
+* **connectionString**: string (WriteOnly): The connection string used to connect to the redis cache
+* **password**: string (WriteOnly): The password for this Redis instance
 
 ## RabbitMQSecrets
 ### Properties
-* **connectionString**: string: The connection string used to connect to this RabbitMQ instance
+* **connectionString**: string (WriteOnly): The connection string used to connect to this RabbitMQ instance
+
+## ExtenderSecrets
+### Properties
+### Additional Properties
+* **Additional Properties Type**: any
 
