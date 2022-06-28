@@ -304,7 +304,13 @@ output connectionString string = mongo.connectionString()
         public void Kubernetes_Radius_Reference()
         {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
+param kubeConfig string
+
 import radius as radius
+import kubernetes as kubernetes {
+  kubeConfig: kubeConfig
+  namespace: 'default'
+}
 
 resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
@@ -314,7 +320,7 @@ resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview'
   }
 }
 
-resource secret 'kubernetes.core/Secret@v1' = {
+resource secret 'core/Secret@v1' = {
   metadata: {
     name: 'redis-conn'
     namespace: 'default'
