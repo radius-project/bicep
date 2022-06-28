@@ -6,11 +6,18 @@ using System.Linq;
 using Bicep.Core.Resources;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
+using Bicep.Core.Syntax;
+using Bicep.Core.Semantics;
 
 namespace Bicep.Core.TypeSystem.Radius
 {
     public class RadiusResourceTypeProvider : IResourceTypeProvider
     {
+
+        private const string ConnectionString = "connectionString";
+        private const string Username = "username";
+        private const string Password = "password";
+
         private class ResourceTypeCache
         {
             private class KeyComparer : IEqualityComparer<(ResourceTypeGenerationFlags flags, ResourceTypeReference type)>
@@ -36,6 +43,109 @@ namespace Bicep.Core.TypeSystem.Radius
 
                 return cache.GetOrAdd(cacheKey, cacheKey => buildFunc());
             }
+        }
+
+        private static Dictionary<string, Func<string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
+        {
+
+            {
+                "Applications.Connector/mongoDatabases", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Username)
+                        .WithDescription($"Provides access to the username value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Username))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                }
+            },
+            {
+                "Applications.Connector/rabbitMQMessageQueues", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+
+                }
+            },
+            {
+                "Applications.Connector/redisCaches", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                }
+            },
+            {
+                "Applications.Connector/extenders", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("secrets")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithRequiredParameter("secretName", LanguageConstants.String, "name of the secret to retrieve")
+                        .WithEvaluator(EvalWithName(apiVersion))
+                        .Build(),
+                }
+            }
+        };
+
+        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion, string functionTypeString)
+        {
+            return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
+            {
+                var instance = (InstanceFunctionCallSyntax)functionCall;
+                var listSecretsFunc = CreateListSecretsFunc(apiVersion, symbol, instance);
+
+                return SyntaxFactory.CreatePropertyAccess(listSecretsFunc, functionTypeString);
+            };
+        }
+
+        private static Semantics.FunctionOverload.EvaluatorDelegate EvalWithName(string apiVersion)
+        {
+            return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
+            {
+                var instance = (InstanceFunctionCallSyntax)functionCall;
+                var listSecretsFunc = CreateListSecretsFunc(apiVersion, symbol, instance);
+
+                return SyntaxFactory.CreateArrayIndex(listSecretsFunc, instance.Arguments.First().Expression);
+            };
+        }
+
+        private static FunctionCallSyntax CreateListSecretsFunc(string apiVersion, Symbol symbol, InstanceFunctionCallSyntax instance)
+        {
+            var functionSymbol = (FunctionSymbol)symbol;
+            var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
+
+            var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+
+            if (variableAccess.Name == null)
+            {
+                throw new InvalidOperationException("Name required for function");
+            }
+
+            var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
+            var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
+                "listSecrets",
+                stringSyntax,
+                SyntaxFactory.CreateStringLiteral(apiVersion));
+            return listSecretsFunc;
         }
 
         public const string ResourceNamePropertyName = "name";
@@ -119,7 +229,20 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
+
+                FunctionTable.TryGetValue(objectType.Name, out var functionBuilder);
+                var functions = functionBuilder?.Invoke(typeReference.ApiVersion!) ?? Array.Empty<Semantics.FunctionOverload>();
+                return new ObjectType(
+                    objectType.Name,
+                    objectType.ValidationFlags,
+                    isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
+                    objectType.AdditionalPropertiesType,
+                    isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                    functions: functions);
             }
+
+            // Get the type here
+            // Applications.Connector/mongoDatabase
 
             return new ObjectType(
                 objectType.Name,

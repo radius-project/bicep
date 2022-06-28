@@ -83,6 +83,15 @@ namespace Bicep.Core.Syntax
         public static ArrayItemSyntax CreateArrayItem(SyntaxBase value)
             => new ArrayItemSyntax(value);
 
+        public static ArrayAccessSyntax CreateArrayIndex(SyntaxBase baseExpression, SyntaxBase indexExpression)
+        {
+            return new ArrayAccessSyntax(
+                baseExpression,
+                new Token(TokenType.LeftSquare, new TextSpan(0,0), "[", Array.Empty<SyntaxTrivia>(),Array.Empty<SyntaxTrivia>()),
+                indexExpression,
+                new Token(TokenType.RightSquare, new TextSpan(0,0), "]", Array.Empty<SyntaxTrivia>(),Array.Empty<SyntaxTrivia>()));
+        }
+
         public static ForSyntax CreateRangedForSyntax(string indexIdentifier, SyntaxBase count, SyntaxBase body)
         {
             // generates "range(0, <count>)"
@@ -224,6 +233,11 @@ namespace Bicep.Core.Syntax
                 (false, false) => CreateToken(TokenType.StringMiddlePiece, $"}}{EscapeBicepString(value)}${{"),
                 (false, true) => CreateToken(TokenType.StringRightPiece, $"}}{EscapeBicepString(value)}'"),
             };
+        }
+
+        public static PropertyAccessSyntax CreatePropertyAccess(SyntaxBase baseExpression, string propertyName)
+        {
+            return new PropertyAccessSyntax(baseExpression, SyntaxFactory.DotToken, SyntaxFactory.CreateIdentifier(propertyName));
         }
 
         public static FunctionCallSyntax CreateFunctionCall(string functionName, params SyntaxBase[] argumentExpressions)
