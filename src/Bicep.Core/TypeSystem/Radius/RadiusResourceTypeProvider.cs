@@ -230,7 +230,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
 
-                FunctionTable.TryGetValue( objectType.Name, out var functionBuilder);
+                FunctionTable.TryGetValue(objectType.Name, out var functionBuilder);
                 var functions = functionBuilder?.Invoke(typeReference.ApiVersion!) ?? Array.Empty<Semantics.FunctionOverload>();
                 return new ObjectType(
                     objectType.Name,
