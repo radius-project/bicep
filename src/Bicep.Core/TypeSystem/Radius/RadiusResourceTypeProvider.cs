@@ -40,58 +40,67 @@ namespace Bicep.Core.TypeSystem.Radius
             }
         }
 
-        private static Dictionary<string, Func<string, string, string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
+        private static Dictionary<string, Func<string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
         {
             {
-                "Applications.Connector", (string apiVersion, string type, string name) => new []
+                "Applications.Connector/mongoDatabases", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder("connectionString")
+                        .WithDescription($"Provides access to the connectionString value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, type, name))
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder("username")
+                        .WithDescription($"Provides access to the username value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder("password")
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
                         .Build(),
                 }
             },
+            {
+                "Applications.Connector/rabbitMQMessageQueues", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("connectionString")
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+
+                }
+            },
+            {
+                "Applications.Connector/redisCaches", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("connectionString")
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder("password")
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion))
+                        .Build(),
+                }
+            },
+            {
+                "Applications.Connector/extenders", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("secrets")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithRequiredParameter("secretName", LanguageConstants.String, "name of the secret to retrieve")
+                        .WithEvaluator(EvalWithName(apiVersion))
+                        .Build(),
+                }
+            }
         };
 
-
-        // private static SyntaxBase EvaluateSecret(CommonBindings.BindingValue value, FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol)
-        // {
-        //     // POST /subus...../resurceProviders/radiusV3/listSecrets
-        //     // {
-        //     //    targetId: ....
-        //     // }
-        //     //
-        //     // A function like foo.connectionString() is replaced with code like:
-        //     // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) }).connectionString
-        //     //
-        //     // - The former resourceId is the ID of the CustomRP - this is a limitation we have to live with
-        //     // - The latter resourceId is the ID of the Radius resource being accessed.
-
-        //     var instance = (InstanceFunctionCallSyntax)functionCall;
-
-        //     var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
-        //         "resourceId",
-        //         SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPType),
-        //         SyntaxFactory.CreateStringLiteral(RadiusResources.ProviderCRPName));
-
-
-        //     var targetResourceIdExpression = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
-        //     var customActionDataArgumentExpression = SyntaxFactory.CreateObject(new[]
-        //     {
-        //         SyntaxFactory.CreateObjectProperty("targetId", targetResourceIdExpression),
-        //     });
-
-        //     var functionCallExpression = SyntaxFactory.CreateFunctionCall(
-        //         "listSecrets",
-        //         customProviderResourceIdArgumentExpression,
-        //         SyntaxFactory.CreateStringLiteral(RadiusResources.CRPApiVersion),
-        //         customActionDataArgumentExpression);
-
-
-        //     return SyntaxFactory.CreatePropertyAccess(functionCallExpression, value.Name);
-        // }
-
-        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion, string type, string name)
+        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion)
         {
             return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
             {
@@ -99,39 +108,48 @@ namespace Bicep.Core.TypeSystem.Radius
                 var functionSymbol = (FunctionSymbol)symbol;
                 var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
 
-                // var customProviderResourceIdArgumentExpression = SyntaxFactory.CreateFunctionCall(
-                //     "resourceId",
-                //     SyntaxFactory.CreateStringLiteral(type),
-                //     SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName));
 
                 var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
-                // listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', { 'targetID': resourceId(...) }).connectionString
-                // "[listSecrets(reference('mongo'), '2022-03-15-privatepreview')]"
-                // listSecrets()
-                // (mongo.listSecrets('2022-03-15-privatepreview', {...}).connectionString
-                // return new PropertyAccessSyntax(baseExpression, SyntaxFactory.DotToken, SyntaxFactory.CreateIdentifier(propertyName));
+
                 if (variableAccess.Name == null) {
                     throw new InvalidOperationException("Name required for function");
                 }
 
                 var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
-                // [listSecrets(resourceId('Microsoft.CustomProviders/resourceProviders', 'radiusv3'), '2018-09-01-preview', createObject('targetId', resourceId('Microsoft.CustomProviders/resourceProviders/Application/mongodb.com.MongoDBComponent', 'radiusv3', 'app', 'db'))).connectionString]
                 var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
                     "listSecrets",
                     stringSyntax,
                     SyntaxFactory.CreateStringLiteral(apiVersion));
 
                 return SyntaxFactory.CreatePropertyAccess(listSecretsFunc, "connectionString");
-
-/*propertyacces
-    (instancefunctioncall(
-        'mongo'
-        'listSecrets'
-
-    ))
-*/
             };
         }
+
+        private static Semantics.FunctionOverload.EvaluatorDelegate EvalWithName(string apiVersion)
+        {
+            return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
+            {
+                var instance = (InstanceFunctionCallSyntax)functionCall;
+                var functionSymbol = (FunctionSymbol)symbol;
+                var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
+
+
+                var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+
+                if (variableAccess.Name == null) {
+                    throw new InvalidOperationException("Name required for function");
+                }
+
+                var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
+                var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
+                    "listSecrets",
+                    stringSyntax,
+                    SyntaxFactory.CreateStringLiteral(apiVersion));
+
+                return SyntaxFactory.CreateArrayIndex(listSecretsFunc, instance.Arguments.First().Expression);
+            };
+        }
+
 
         public const string ResourceNamePropertyName = "name";
 
@@ -209,15 +227,14 @@ namespace Bicep.Core.TypeSystem.Radius
                 properties = properties.SetItem(LanguageConstants.ResourceDependsOnPropertyName, new TypeProperty(LanguageConstants.ResourceDependsOnPropertyName, LanguageConstants.ResourceOrResourceCollectionRefArray, TypePropertyFlags.WriteOnly | TypePropertyFlags.DisallowAny));
             }
 
-            // add the loop variant flag to the name prope rty (if it exists)
+            // add the loop variant flag to the name property (if it exists)
             if (properties.TryGetValue(ResourceNamePropertyName, out var nameProperty))
             {
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
-                var type = objectType.Name.Split("/");
 
-                FunctionTable.TryGetValue(type[0], out var functionBuilder);
-                var functions = functionBuilder?.Invoke(typeReference.ApiVersion!, typeReference.FormatType(), nameProperty.Name) ?? Array.Empty<Semantics.FunctionOverload>();
+                FunctionTable.TryGetValue( objectType.Name, out var functionBuilder);
+                var functions = functionBuilder?.Invoke(typeReference.ApiVersion!) ?? Array.Empty<Semantics.FunctionOverload>();
                 return new ObjectType(
                     objectType.Name,
                     objectType.ValidationFlags,
