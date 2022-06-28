@@ -13,6 +13,11 @@ namespace Bicep.Core.TypeSystem.Radius
 {
     public class RadiusResourceTypeProvider : IResourceTypeProvider
     {
+
+        private const string ConnectionString = "connectionString";
+        private const string Username = "username";
+        private const string Password = "password";
+
         private class ResourceTypeCache
         {
             private class KeyComparer : IEqualityComparer<(ResourceTypeGenerationFlags flags, ResourceTypeReference type)>
@@ -42,33 +47,34 @@ namespace Bicep.Core.TypeSystem.Radius
 
         private static Dictionary<string, Func<string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
         {
+
             {
                 "Applications.Connector/mongoDatabases", (string apiVersion) => new []
                 {
-                    new Semantics.FunctionOverloadBuilder("connectionString")
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
                         .Build(),
-                    new Semantics.FunctionOverloadBuilder("username")
+                    new Semantics.FunctionOverloadBuilder(Username)
                         .WithDescription($"Provides access to the username value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, Username))
                         .Build(),
-                    new Semantics.FunctionOverloadBuilder("password")
+                    new Semantics.FunctionOverloadBuilder(Password)
                         .WithDescription($"Provides access to the password value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, Password))
                         .Build(),
                 }
             },
             {
                 "Applications.Connector/rabbitMQMessageQueues", (string apiVersion) => new []
                 {
-                    new Semantics.FunctionOverloadBuilder("connectionString")
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
                         .Build(),
 
                 }
@@ -76,15 +82,15 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 "Applications.Connector/redisCaches", (string apiVersion) => new []
                 {
-                    new Semantics.FunctionOverloadBuilder("connectionString")
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
                         .Build(),
-                    new Semantics.FunctionOverloadBuilder("password")
+                    new Semantics.FunctionOverloadBuilder(Password)
                         .WithDescription($"Provides access to the password value.")
                         .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion))
+                        .WithEvaluator(Eval(apiVersion, Password))
                         .Build(),
                 }
             },
@@ -100,28 +106,14 @@ namespace Bicep.Core.TypeSystem.Radius
             }
         };
 
-        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion)
+        private static Semantics.FunctionOverload.EvaluatorDelegate Eval(string apiVersion, string functionTypeString)
         {
             return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
             {
                 var instance = (InstanceFunctionCallSyntax)functionCall;
-                var functionSymbol = (FunctionSymbol)symbol;
-                var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
+                var listSecretsFunc = CreateListSecretsFunc(apiVersion, symbol, instance);
 
-
-                var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
-
-                if (variableAccess.Name == null) {
-                    throw new InvalidOperationException("Name required for function");
-                }
-
-                var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
-                var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
-                    "listSecrets",
-                    stringSyntax,
-                    SyntaxFactory.CreateStringLiteral(apiVersion));
-
-                return SyntaxFactory.CreatePropertyAccess(listSecretsFunc, "connectionString");
+                return SyntaxFactory.CreatePropertyAccess(listSecretsFunc, functionTypeString);
             };
         }
 
@@ -130,26 +122,31 @@ namespace Bicep.Core.TypeSystem.Radius
             return (FunctionCallSyntaxBase functionCall, Symbol symbol, TypeSymbol typeSymbol, FunctionVariable? functionVariable,  object? functionResultValue) =>
             {
                 var instance = (InstanceFunctionCallSyntax)functionCall;
-                var functionSymbol = (FunctionSymbol)symbol;
-                var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
-
-
-                var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
-
-                if (variableAccess.Name == null) {
-                    throw new InvalidOperationException("Name required for function");
-                }
-
-                var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
-                var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
-                    "listSecrets",
-                    stringSyntax,
-                    SyntaxFactory.CreateStringLiteral(apiVersion));
+                var listSecretsFunc = CreateListSecretsFunc(apiVersion, symbol, instance);
 
                 return SyntaxFactory.CreateArrayIndex(listSecretsFunc, instance.Arguments.First().Expression);
             };
         }
 
+        private static FunctionCallSyntax CreateListSecretsFunc(string apiVersion, Symbol symbol, InstanceFunctionCallSyntax instance)
+        {
+            var functionSymbol = (FunctionSymbol)symbol;
+            var variableAccess = (VariableAccessSyntax)instance.BaseExpression;
+
+            var propertyAccess = SyntaxFactory.CreatePropertyAccess(instance.BaseExpression, "id");
+
+            if (variableAccess.Name == null)
+            {
+                throw new InvalidOperationException("Name required for function");
+            }
+
+            var stringSyntax = SyntaxFactory.CreateStringLiteral(variableAccess.Name.IdentifierName);
+            var listSecretsFunc = SyntaxFactory.CreateFunctionCall(
+                "listSecrets",
+                stringSyntax,
+                SyntaxFactory.CreateStringLiteral(apiVersion));
+            return listSecretsFunc;
+        }
 
         public const string ResourceNamePropertyName = "name";
 
