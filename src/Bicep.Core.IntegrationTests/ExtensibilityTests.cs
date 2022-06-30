@@ -538,7 +538,6 @@ Hello from Bicep!"));
   ""languageVersion"": ""1.9-experimental"",
   ""contentVersion"": ""1.0.0.0"",
   ""metadata"": {
-    ""EXPERIMENTAL_WARNING"": ""Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!"",
     ""_generator"": {
       ""name"": ""bicep"",
       ""version"": ""dev"",
@@ -580,7 +579,6 @@ Hello from Bicep!"));
           ""languageVersion"": ""1.9-experimental"",
           ""contentVersion"": ""1.0.0.0"",
           ""metadata"": {
-            ""EXPERIMENTAL_WARNING"": ""Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!"",
             ""_generator"": {
               ""name"": ""bicep"",
               ""version"": ""dev"",
