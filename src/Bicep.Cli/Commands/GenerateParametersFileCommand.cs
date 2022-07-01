@@ -36,11 +36,6 @@ namespace Bicep.Cli.Commands
         {
             var inputPath = PathHelper.ResolvePath(args.InputFile);
 
-            if (invocationContext.EmitterSettings.EnableSymbolicNames)
-            {
-                logger.LogWarning(CliResources.SymbolicNamesDisclaimerMessage);
-            }
-
             if (invocationContext.Features.ResourceTypedParamsAndOutputsEnabled)
             {
                 logger.LogWarning(CliResources.ResourceTypesDisclaimerMessage);
