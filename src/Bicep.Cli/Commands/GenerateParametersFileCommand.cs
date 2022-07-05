@@ -36,10 +36,10 @@ namespace Bicep.Cli.Commands
         {
             var inputPath = PathHelper.ResolvePath(args.InputFile);
 
-            if (invocationContext.Features.ResourceTypedParamsAndOutputsEnabled)
-            {
-                logger.LogWarning(CliResources.ResourceTypesDisclaimerMessage);
-            }
+            // if (invocationContext.Features.ResourceTypedParamsAndOutputsEnabled)
+            // {
+            //     logger.LogWarning(CliResources.ResourceTypesDisclaimerMessage);
+            // }
 
             if (!IsBicepFile(inputPath))
             {
