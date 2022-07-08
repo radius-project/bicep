@@ -185,19 +185,19 @@
 * **Discriminator**: kind
 
 ### Base Properties
-### ManualScalingExtension
-#### Properties
-* **kind**: 'Applications.Core/ManualScaling@v1alpha1' (Required): Specifies the extensions of a resource.
-* **replicas**: int: Replica count.
-
 ### DaprSidecarExtension
 #### Properties
 * **appId**: string (Required): The Dapr appId. Specifies the identifier used by Dapr for service invocation.
 * **appPort**: int: The Dapr appPort. Specifies the internal listening port for the application to handle requests from the Dapr sidecar.
 * **config**: string: Specifies the Dapr configuration to use for the resource.
-* **kind**: 'dapr.io/Sidecar@v1alpha1' (Required): Specifies the extensions of a resource.
+* **kind**: 'daprSidecar' (Required): Specifies the extensions of a resource.
 * **protocol**: 'TCP' | 'UDP' | 'grpc' | 'http': Protocol in use by the port
 * **provides**: string: Specifies the resource id of a dapr.io.InvokeHttpRoute that can route traffic to this resource.
+
+### ManualScalingExtension
+#### Properties
+* **kind**: 'manualScaling' (Required): Specifies the extensions of a resource.
+* **replicas**: int: Replica count.
 
 
 ## ResourceStatus
@@ -215,9 +215,15 @@
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
 
 ## EnvironmentCompute
-### Properties
-* **kind**: 'kubernetes' (Required): Type of compute resource.
+* **Discriminator**: kind
+
+### Base Properties
 * **resourceId**: string: The resource id of the compute resource for application environment.
+### KubernetesCompute
+#### Properties
+* **kind**: 'kubernetes' (Required): Type of compute resource.
+* **namespace**: string (Required): The namespace to use for the environment.
+
 
 ## TrackedResourceTags
 ### Properties
