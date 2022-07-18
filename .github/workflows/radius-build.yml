@@ -2,7 +2,7 @@ name: Radius Build
 
 on:
   push:
-    branches: [ radius-compiler ]
+    branches: [ features/traffic-splitting ]
     tags:
     - v*
 
@@ -75,7 +75,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/linux-x64/
-        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep --overwrite true'
+        extra_args: '--destination-path ./bicep-traffic/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep --overwrite true'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload rad-bicep (MacOS)
@@ -83,7 +83,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/macos-x64/
-        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep --overwrite true'
+        extra_args: '--destination-path ./bicep-traffic/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep --overwrite true'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload rad-bicep (Windows)
@@ -91,7 +91,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/bicep/windows-x64/
-        extra_args: '--destination-path ./bicep/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe --overwrite true'
+        extra_args: '--destination-path ./bicep-traffic/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe --overwrite true'
         sync: true
     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       name: Upload VS Code (channel)
@@ -99,7 +99,7 @@ jobs:
         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
         source_dir: ./artifacts/vscode/
-        extra_args: '--destination-path ./vscode/${{ env.REL_CHANNEL }}/ --overwrite true'
+        extra_args: '--destination-path ./vscode-traffic/${{ env.REL_CHANNEL }}/ --overwrite true'
         sync: true
 
     # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
@@ -127,12 +127,3 @@ jobs:
         echo "this build channel: ${{ env.REL_CHANNEL }}"
         echo "this build version: ${{ env.REL_VERSION }}"
         echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
-    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-      name: Upload VS Code (stable)
-      if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
-      with:
-        container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-        connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-        source_dir: ./artifacts/vscode/
-        extra_args: '--destination-path ./vscode/stable/ --overwrite true'
-        sync: true
