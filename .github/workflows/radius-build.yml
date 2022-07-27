@@ -2,7 +2,7 @@ name: Radius Build
 
 on:
   push:
-    branches: [tommyniu/bicep-traffic-extensbility]
+    branches: [tommyniu/bicep-traffic-extensibility]
     tags:
       - v*
   pull_request:
