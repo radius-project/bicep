@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v6.0": {
+    "net6.0": {
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",
         "requested": "[3.3.3, )",
@@ -1690,6 +1690,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Types": "0.1.538",
+          "Azure.Bicep.Types.Aws": "1.0.0",
           "Azure.Bicep.Types.Az": "0.1.538",
           "Azure.Bicep.Types.K8s": "0.1.11",
           "Azure.Bicep.Types.Radius": "1.0.0",
@@ -1709,6 +1710,12 @@
           "System.IO.Abstractions": "17.0.18"
         }
       },
+      "Azure.Bicep.Types.Aws": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.538"
+        }
+      },
       "Azure.Bicep.Types.Radius": {
         "type": "Project",
         "dependencies": {
@@ -1716,7 +1723,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-arm64": {
+    "net6.0/linux-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -2817,7 +2824,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-musl-x64": {
+    "net6.0/linux-musl-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -3918,7 +3925,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-x64": {
+    "net6.0/linux-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -5019,7 +5026,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-arm64": {
+    "net6.0/osx-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -6120,7 +6127,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-x64": {
+    "net6.0/osx-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -7221,7 +7228,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-arm64": {
+    "net6.0/win-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -8305,7 +8312,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-x64": {
+    "net6.0/win-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",

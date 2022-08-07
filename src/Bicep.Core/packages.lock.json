@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v6.0": {
+    "net6.0": {
       "Azure.Bicep.Types": {
         "type": "Direct",
         "requested": "[0.1.538, )",
@@ -1707,6 +1707,12 @@
           "Newtonsoft.Json": "10.0.2"
         }
       },
+      "Azure.Bicep.Types.Aws": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.538"
+        }
+      },
       "Azure.Bicep.Types.Radius": {
         "type": "Project",
         "dependencies": {
@@ -1714,7 +1720,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-arm64": {
+    "net6.0/linux-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -2815,7 +2821,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-musl-x64": {
+    "net6.0/linux-musl-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -3916,7 +3922,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/linux-x64": {
+    "net6.0/linux-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -5017,7 +5023,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-arm64": {
+    "net6.0/osx-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -6118,7 +6124,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/osx-x64": {
+    "net6.0/osx-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -7219,7 +7225,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-arm64": {
+    "net6.0/win-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -8303,7 +8309,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/win-x64": {
+    "net6.0/win-x64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",

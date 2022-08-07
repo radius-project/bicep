@@ -199,8 +199,8 @@ resource service 'core/Service@v1' existing = {
 ");
 
             result.Should().GenerateATemplate();
-            result.Should().HaveDiagnostics(new[] {
-                ("no-unused-existing-resources", DiagnosticLevel.Warning, "Existing resource \"service\" is declared but never used."),
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP073", DiagnosticLevel.Warning, "The property \"labels\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP073", DiagnosticLevel.Warning, "The property \"annotations\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
             });
@@ -235,11 +235,7 @@ resource configmap 'core/ConfigMap@v1' existing = {
 ");
 
             result.Should().GenerateATemplate();
-            result.Should().HaveDiagnostics(new[] {
-                ("no-unused-existing-resources", DiagnosticLevel.Warning, "Existing resource \"service\" is declared but never used."),
-                ("no-unused-existing-resources", DiagnosticLevel.Warning, "Existing resource \"secret\" is declared but never used."),
-                ("no-unused-existing-resources", DiagnosticLevel.Warning, "Existing resource \"configmap\" is declared but never used."),
-            });
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
         }
 
         [TestMethod]
@@ -488,7 +484,13 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$", "asdfasdf");
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.container.properties.properties.container.env.TWILIO_SID",
+                "[listSecrets('twilio', '2022-03-15-privatepreview').accountSid]");
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.container.properties.properties.container.env.TWILIO_ACCOUNT",
+                "[listSecrets('twilio', '2022-03-15-privatepreview').authToken]");
+
         }
 
 
@@ -524,7 +526,9 @@ output connectionString string = mongo.connectionString()
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$", "asdfasdf");
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.account.properties.customDomain.name",
+                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
         }
 
         [TestMethod]
@@ -556,7 +560,7 @@ resource secret 'core/Secret@v1' = {
     }
   }
 
-stringData: {
+  stringData: {
     connectionString: '${mongo.connectionString()}'
   }
 }
@@ -565,7 +569,12 @@ output connectionString string = mongo.connectionString()
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$", "asdfasdf");
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.secret.properties.stringData.connectionString",
+                "[format('{0}', listSecrets('mongo', '2022-03-15-privatepreview').connectionString)]");
+            result.Template.Should().HaveValueAtPath(
+                "$.outputs.connectionString.value",
+                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
         }
 
         [TestMethod]
@@ -592,6 +601,7 @@ resource parent 'az:Microsoft.Storage/storageAccounts@2020-01-01' existing = {
         }
 
         [TestMethod]
+        [Ignore("This test has hardcoded hash values and is not reliable as a unit test.")]
         public void Storage_import_end_to_end_test()
         {
             var result = CompilationHelper.Compile(GetCompilationContext(),
@@ -736,6 +746,29 @@ Hello from Bicep!"));
     }
   }
 }"));
+        }
+
+
+        [TestMethod]
+        public void Aws_types_can_compile()
+        {
+          var result = CompilationHelper.Compile(GetCompilationContext(), @"
+import aws as aws
+
+resource stream 'AWS.Kinesis/Stream@default' = {
+  name: 'stream'
+  properties: {
+    ShardCount: 3
+  }
+}
+
+output id string = stream.id
+output arn string = stream.properties.Arn
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$.outputs.id.value", "[reference('stream').id]");
+            result.Template.Should().HaveValueAtPath("$.outputs.arn.value", "[reference('stream').properties.Arn]");
         }
     }
 }

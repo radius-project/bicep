@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v6.0": {
+    "net6.0": {
       "Microsoft.AspNetCore.Components.WebAssembly": {
         "type": "Direct",
         "requested": "[6.0.6, )",
@@ -1820,6 +1820,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Types": "0.1.538",
+          "Azure.Bicep.Types.Aws": "1.0.0",
           "Azure.Bicep.Types.Az": "0.1.538",
           "Azure.Bicep.Types.K8s": "0.1.11",
           "Azure.Bicep.Types.Radius": "1.0.0",
@@ -1847,6 +1848,12 @@
           "System.Collections.Immutable": "6.0.0"
         }
       },
+      "Azure.Bicep.Types.Aws": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.538"
+        }
+      },
       "Azure.Bicep.Types.Radius": {
         "type": "Project",
         "dependencies": {
@@ -1854,7 +1861,7 @@
         }
       }
     },
-    ".NETCoreApp,Version=v6.0/browser-wasm": {
+    "net6.0/browser-wasm": {
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "4.6.0",

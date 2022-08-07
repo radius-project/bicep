@@ -2012,6 +2012,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Types": "0.1.538",
+          "Azure.Bicep.Types.Aws": "1.0.0",
           "Azure.Bicep.Types.Az": "0.1.538",
           "Azure.Bicep.Types.K8s": "0.1.11",
           "Azure.Bicep.Types.Radius": "1.0.0",
@@ -2050,6 +2051,12 @@
           "System.CommandLine.NamingConventionBinder": "2.0.0-beta3.22114.1",
           "System.CommandLine.Rendering": "0.4.0-alpha.22114.1",
           "System.IO.Abstractions": "17.0.18"
+        }
+      },
+      "Azure.Bicep.Types.Aws": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "0.1.538"
         }
       },
       "Azure.Bicep.Types.Radius": {
