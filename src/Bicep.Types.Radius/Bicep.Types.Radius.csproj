@@ -48,11 +48,6 @@
 		</Task>
 	</UsingTask>
 
-	<ItemGroup>
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.4.255" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-	</ItemGroup>
-
 	<Target Name="CompressTypes" Inputs="@(TypeFiles)" Outputs="%(TypeFiles.CompressedFile)">
 		<CompressType SourceFile="%(TypeFiles.FullPath)" TargetFile="%(TypeFiles.CompressedFile)" />
 	</Target>
