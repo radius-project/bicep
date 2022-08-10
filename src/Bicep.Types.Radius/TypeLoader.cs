@@ -46,6 +46,7 @@ namespace Azure.Bicep.Types.Radius
 
         public TypeIndex GetIndexedTypes()
         {
+            // Test Comment
             var content = GetContentAtPath(TypeIndexResourceName);
 
             return TypeIndexer.DeserializeIndex(content);
