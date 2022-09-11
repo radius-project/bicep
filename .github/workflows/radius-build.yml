@@ -132,7 +132,7 @@ jobs:
           echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (stable)
-        if: ${{ success() && steps.compare.outputs.comparison-result == '>' }}
+        if: ${{ success() && (steps.compare.outputs.comparison-result == '>' || steps.compare.outputs.comparison-result == '=')}}
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
