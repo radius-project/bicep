@@ -213,6 +213,7 @@
 ### Properties
 * **compute**: [EnvironmentCompute](#environmentcompute) (Required): Compute resource used by application environment resource.
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
+* **recipes**: [EnvironmentPropertiesRecipes](#environmentpropertiesrecipes): Dictionary of <EnvironmentRecipeProperties>
 
 ## EnvironmentCompute
 * **Discriminator**: kind
@@ -225,6 +226,16 @@
 * **namespace**: string (Required): The namespace to use for the environment.
 
 
+## EnvironmentPropertiesRecipes
+### Properties
+### Additional Properties
+* **Additional Properties Type**: [EnvironmentRecipeProperties](#environmentrecipeproperties)
+
+## EnvironmentRecipeProperties
+### Properties
+* **connectorType**: string (Required): Type of the connector this recipe can be consumed by. For example: 'Applications.Connector/mongoDatabases'
+* **templatePath**: string (Required): Path to the template provided by the recipe. Currently only link to Azure Container Registry is supported.
+
 ## TrackedResourceTags
 ### Properties
 ### Additional Properties
@@ -235,7 +246,6 @@
 * **application**: string (Required): The resource id of the application linked to Gateway resource.
 * **hostname**: [GatewayPropertiesHostname](#gatewaypropertieshostname): Declare hostname information for the Gateway. Leaving the hostname empty auto-assigns one: mygateway.myapp.PUBLICHOSTNAMEORIP.nip.io.
 * **internal**: bool: Sets Gateway to not be exposed externally (no public IP address associated). Defaults to false (exposed to internet).
-* **port**: int: Sets the port for the Gateway to listen on.
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
 * **routes**: [GatewayRoute](#gatewayroute)[] (Required): Routes attached to this Gateway
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
