@@ -25,6 +25,8 @@ namespace Bicep.Core.Samples
 
         public static DataSet InvalidExpressions_LF => CreateDataSet();
 
+        public static DataSet InvalidMetadata_CRLF => CreateDataSet();
+
         public static DataSet InvalidOutputs_CRLF => CreateDataSet();
 
         public static DataSet InvalidParameters_LF => CreateDataSet();
@@ -42,6 +44,8 @@ namespace Bicep.Core.Samples
         public static DataSet LoopsIndexed_LF => CreateDataSet();
 
         public static DataSet Outputs_CRLF => CreateDataSet();
+
+        public static DataSet Metadata_CRLF => CreateDataSet();
 
         public static DataSet NestedResources_LF => CreateDataSet();
 
@@ -89,11 +93,15 @@ namespace Bicep.Core.Samples
 
         public static DataSet InvalidLoadFunctions_CRLF => CreateDataSet();
 
+        public static DataSet InvalidLambdas_LF => CreateDataSet();
+
         public static DataSet LoadFunctions_CRLF => CreateDataSet();
 
         public static DataSet NewlineSensitivity_LF => CreateDataSet();
 
         public static DataSet InvalidNewlineSensitivity_LF => CreateDataSet();
+
+        public static DataSet Lambdas_LF => CreateDataSet();
 
         public static IEnumerable<DataSet> AllDataSets =>
             typeof(DataSets)

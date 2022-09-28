@@ -44,6 +44,9 @@ namespace Bicep.Core.TypeSystem
             {
                 case ImportDeclarationSyntax import:
                     return GetImportType(import);
+                
+                case MetadataDeclarationSyntax metadata:
+                    return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(metadata.Value), metadata);
 
                 case ParameterDeclarationSyntax parameter:
                     return GetParameterType(parameter);
@@ -78,15 +81,14 @@ namespace Bicep.Core.TypeSystem
                 case ArrayAccessSyntax arrayAccess:
                     return GetArrayAccessType(arrayAccess);
 
-                case VariableDeclarationSyntax variable:
-                    return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(variable.Value), variable);
-
                 case LocalVariableSyntax localVariable:
                     return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(localVariable), localVariable);
 
-                case FunctionCallSyntax _:
-                case InstanceFunctionCallSyntax _:
-                    return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(syntax), declaringSyntax: null);
+                case FunctionCallSyntax functionCall:
+                    return GetFunctionType(functionCall);
+
+                case InstanceFunctionCallSyntax instanceFunctionCall:
+                    return GetFunctionType(instanceFunctionCall);
 
                 case ArraySyntax array:
                     return GetArrayType(array);
@@ -105,6 +107,9 @@ namespace Bicep.Core.TypeSystem
 
                 case FunctionArgumentSyntax functionArgument:
                     return GetFunctionArgumentType(functionArgument);
+
+                case ParenthesizedExpressionSyntax parenthesizedExpression:
+                    return GetTypeAssignment(parenthesizedExpression.Expression);
             }
 
             return null;
@@ -195,6 +200,10 @@ namespace Bicep.Core.TypeSystem
                     var innerModuleBody = moduleSymbol.DeclaringModule.Value;
                     return this.GetDeclaredTypeAssignment(innerModuleBody);
 
+                case VariableSymbol variableSymbol when IsCycleFree(variableSymbol):
+                    var variableType = this.typeManager.GetTypeInfo(variableSymbol.DeclaringVariable.Value);
+                    return new DeclaredTypeAssignment(variableType, variableSymbol.DeclaringVariable);
+
                 case DeclaredSymbol declaredSymbol when IsCycleFree(declaredSymbol):
                     // the syntax node is referencing a declared symbol
                     // use its declared type
@@ -212,6 +221,13 @@ namespace Bicep.Core.TypeSystem
         {
             if (!syntax.PropertyName.IsValid)
             {
+                return null;
+            }
+
+            if(syntax.BaseExpression is ForSyntax)
+            {
+                // in certain parser recovery scenarios, the parser can produce a PropertyAccessSyntax operating on a ForSyntax
+                // this leads to a stack overflow which we don't really want, so let's short circuit here.
                 return null;
             }
 
@@ -356,6 +372,11 @@ namespace Bicep.Core.TypeSystem
             }
         }
 
+        private DeclaredTypeAssignment? GetFunctionType(FunctionCallSyntaxBase syntax)
+        {
+            return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(syntax), declaringSyntax: null);
+        }
+
         private DeclaredTypeAssignment? GetFunctionArgumentType(FunctionArgumentSyntax syntax)
         {
             var parent = this.binder.GetParent(syntax);
@@ -367,7 +388,9 @@ namespace Bicep.Core.TypeSystem
 
             var arguments = parentFunction.Arguments.ToImmutableArray();
             var argIndex = arguments.IndexOf(syntax);
-            var declaredType = functionSymbol.GetDeclaredArgumentType(argIndex);
+            var declaredType = functionSymbol.GetDeclaredArgumentType(
+                argIndex,
+                getAssignedArgumentType: i => typeManager.GetTypeInfo(parentFunction.Arguments[i]));
 
             return new DeclaredTypeAssignment(declaredType, declaringSyntax: null);
         }
@@ -894,12 +917,12 @@ namespace Bicep.Core.TypeSystem
                     throw new InvalidOperationException($"qualifiedTypeReference is null");
                 }
 
-                if (binder.NamespaceResolver.TryGetResourceType(typeReference, typeGenerationFlags) is { } resourceType)
-                {
-                    return resourceType;
-                }
-
-                return ErrorType.Create(DiagnosticBuilder.ForPosition(span).InvalidResourceType());
+                var resourceTypes = binder.NamespaceResolver.GetMatchingResourceTypes(typeReference, typeGenerationFlags);
+                return resourceTypes.Length switch {
+                    0 => ErrorType.Create( DiagnosticBuilder.ForPosition(span).InvalidResourceType()),
+                    1 => resourceTypes[0],
+                    _ => ErrorType.Create(DiagnosticBuilder.ForPosition(span).AmbiguousResourceTypeBetweenImports(typeReference.FormatName(), resourceTypes.Select(x => x.DeclaringNamespace.Name))),
+                };
             }
         }
 

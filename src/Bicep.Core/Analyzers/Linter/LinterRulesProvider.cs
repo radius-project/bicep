@@ -4,13 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Bicep.Core.Analyzers.Interfaces;
+using Bicep.Core.Analyzers.Linter.Rules;
+using Bicep.RoslynAnalyzers;
 
 namespace Bicep.Core.Analyzers.Linter
 {
-    public class LinterRulesProvider : ILinterRulesProvider
+    public partial class LinterRulesProvider : ILinterRulesProvider
     {
         private readonly Lazy<ImmutableDictionary<string, string>> linterRulesLazy;
 
@@ -37,15 +40,8 @@ namespace Bicep.Core.Analyzers.Linter
             return rules;
         }
 
-        public IEnumerable<Type> GetRuleTypes()
-        {
-            return Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(t => typeof(IBicepAnalyzerRule).IsAssignableFrom(t)
-                            && t.IsClass
-                            && t.IsPublic
-                            && t.GetConstructor(Type.EmptyTypes) != null);
-        }
+        [LinterRuleTypesGenerator]
+        public partial IEnumerable<Type> GetRuleTypes();
 
         public ImmutableDictionary<string, string> GetLinterRules() => linterRulesLazy.Value;
     }

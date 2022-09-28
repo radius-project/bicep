@@ -1,5 +1,19 @@
 [
   {
+    "label": "metadata",
+    "kind": "keyword",
+    "detail": "Metadata keyword",
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_metadata",
+    "insertTextFormat": "plainText",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "metadata"
+    }
+  },
+  {
     "label": "module",
     "kind": "keyword",
     "detail": "Module keyword",
@@ -347,7 +361,7 @@
     "detail": "Application Insights for Web Apps",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource appInsightsComponents 'Microsoft.Insights/components@2020-02-02-preview' = {\n  name: 'name'\n  location: location\n  kind: 'web'\n  properties: {\n    Application_Type: 'web'\n  }\n}\n\n```"
+      "value": "```bicep\nresource appInsightsComponents 'Microsoft.Insights/components@2020-02-02' = {\n  name: 'name'\n  location: location\n  kind: 'web'\n  properties: {\n    Application_Type: 'web'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -356,7 +370,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:appInsightsComponents} 'Microsoft.Insights/components@2020-02-02-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  kind: 'web'\n  properties: {\n    Application_Type: '${4|web,other|}'\n  }\n}\n"
+      "newText": "resource ${1:appInsightsComponents} 'Microsoft.Insights/components@2020-02-02' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  kind: 'web'\n  properties: {\n    Application_Type: '${4|web,other|}'\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -617,7 +631,7 @@
     "detail": "Automation Module",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource automationAccount 'Microsoft.Automation/automationAccounts@2015-10-31' = {\n  name: 'name'\n}\n\nresource automationAccountVariable 'Microsoft.Automation/automationAccounts/modules@2015-10-31' = {\n  parent: automationAccount\n  name: 'name'\n  properties: {\n    contentLink: {\n      uri: 'https://content-url.nupkg'\n    }\n  }\n}\n```"
+      "value": "```bicep\nresource automationAccount 'Microsoft.Automation/automationAccounts@2019-06-01' = {\n  name: 'name'\n}\n\nresource automationAccountVariable 'Microsoft.Automation/automationAccounts/modules@2019-06-01' = {\n  parent: automationAccount\n  name: 'name'\n  properties: {\n    contentLink: {\n      uri: 'https://content-url.nupkg'\n    }\n  }\n}\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -626,7 +640,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource automationAccount 'Microsoft.Automation/automationAccounts@2015-10-31' = {\n  name: ${1:'name'}\n}\n\nresource ${2:automationAccountVariable} 'Microsoft.Automation/automationAccounts/modules@2015-10-31' = {\n  parent: automationAccount\n  name: ${3:'name'}\n  properties: {\n    contentLink: {\n      uri: ${4:'https://content-url.nupkg'}\n    }\n  }\n}"
+      "newText": "resource automationAccount 'Microsoft.Automation/automationAccounts@2019-06-01' = {\n  name: ${1:'name'}\n}\n\nresource ${2:automationAccountVariable} 'Microsoft.Automation/automationAccounts/modules@2019-06-01' = {\n  parent: automationAccount\n  name: ${3:'name'}\n  properties: {\n    contentLink: {\n      uri: ${4:'https://content-url.nupkg'}\n    }\n  }\n}"
     },
     "command": {
       "title": "top level snippet completion",
@@ -1127,7 +1141,7 @@
     "detail": "DNS Record",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {\n  name: 'name'\n  location: location\n}\n\nresource dnsRecord 'Microsoft.Network/dnsZones/A@2018-05-01' = {\n  parent: dnsZone\n  name: 'name'\n  properties: {\n    TTL: 3600\n    'ARecords': []\n  }\n}\n\n```"
+      "value": "```bicep\nresource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {\n  name: 'name'\n  location: location\n}\n\nresource dnsRecord 'Microsoft.Network/dnsZones/A@2018-05-01' = {\n  parent: dnsZone\n  name: 'name'\n  properties: {\n    TTL: 3600\n    ARecords: []\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -1136,7 +1150,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {\n  name: ${1:'name'}\n  location: ${2:location}\n}\n\nresource ${3:dnsRecord} 'Microsoft.Network/dnsZones/${4|A,AAAA,CNAME,MX,NS,PTR,SOA,SRV,TXT|}@2018-05-01' = {\n  parent: dnsZone\n  name: ${5:'name'}\n  properties: {\n    TTL: 3600\n    '${6|ARecords,AAAARecords,MXRecords,NSRecords,PTRRecords,SRVRecords,TXTRecords,CNAMERecord,SOARecord|}': []\n  }\n}\n"
+      "newText": "resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {\n  name: ${1:'name'}\n  location: ${2:location}\n}\n\nresource ${3:dnsRecord} 'Microsoft.Network/dnsZones/${4|A,AAAA,CNAME,MX,NS,PTR,SOA,SRV,TXT|}@2018-05-01' = {\n  parent: dnsZone\n  name: ${5:'name'}\n  properties: {\n    TTL: 3600\n    ${6|ARecords,AAAARecords,MXRecords,NSRecords,PTRRecords,SRVRecords,TXTRecords,CNAMERecord,SOARecord|}: []\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -1296,6 +1310,66 @@
           "EventName": "snippet/toplevel",
           "Properties": {
             "name": "res-firewall-policy-standard"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "res-firewall-standard",
+    "kind": "snippet",
+    "detail": "Azure Firewall Standard SKU",
+    "documentation": {
+      "kind": "markdown",
+      "value": "```bicep\nresource firewall 'Microsoft.Network/azureFirewalls@2021-05-01' = {\n  name: 'name'\n  location: location\n  properties: {\n    sku: {\n      name: 'AZFW_VNet'\n      tier: 'Standard'\n    }    \n    firewallPolicy: {\n      id: 'firewallPolicy.id'\n    }\n    ipConfigurations: [\n      {\n        name: 'name'\n        properties: {\n          subnet: {\n            id: 'subnet.id'\n          }\n          publicIPAddress: {\n            id: 'publicIPAddress.id'\n          }\n        }\n      }\n    ]\n  }\n}\n\n```"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_res-firewall-standard",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "resource ${1:firewall} 'Microsoft.Network/azureFirewalls@2021-05-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    sku: {\n      name: 'AZFW_VNet'\n      tier: 'Standard'\n    }    \n    firewallPolicy: {\n      id: ${4:'firewallPolicy.id'}\n    }\n    ipConfigurations: [\n      {\n        name: ${5:'name'}\n        properties: {\n          subnet: {\n            id: ${6:'subnet.id'}\n          }\n          publicIPAddress: {\n            id: ${7:'publicIPAddress.id'}\n          }\n        }\n      }\n    ]\n  }\n}\n"
+    },
+    "command": {
+      "title": "top level snippet completion",
+      "command": "bicep.Telemetry",
+      "arguments": [
+        {
+          "EventName": "snippet/toplevel",
+          "Properties": {
+            "name": "res-firewall-standard"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "res-firewall-standard-vwan",
+    "kind": "snippet",
+    "detail": "Azure Firewall Standard SKU for Virtual WAN Hub",
+    "documentation": {
+      "kind": "markdown",
+      "value": "```bicep\nresource firewall 'Microsoft.Network/azureFirewalls@2021-05-01' = {\n  name: 'name'\n  location: location\n  properties: {\n    sku: {\n      name: 'AZFW_Hub'\n      tier: 'Standard'\n    }    \n    firewallPolicy: {\n      id: 'firewallPolicy.id'\n    }\n    virtualHub: {\n      id: 'virtualHub.id'\n    }\n    hubIPAddresses: {\n       publicIPs: {\n         count: 2\n       }\n    }\n  }\n}\n\n```"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_res-firewall-standard-vwan",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "resource ${1:firewall} 'Microsoft.Network/azureFirewalls@2021-05-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    sku: {\n      name: 'AZFW_Hub'\n      tier: 'Standard'\n    }    \n    firewallPolicy: {\n      id: ${4:'firewallPolicy.id'}\n    }\n    virtualHub: {\n      id: ${5:'virtualHub.id'}\n    }\n    hubIPAddresses: {\n       publicIPs: {\n         count: ${6:2}\n       }\n    }\n  }\n}\n"
+    },
+    "command": {
+      "title": "top level snippet completion",
+      "command": "bicep.Telemetry",
+      "arguments": [
+        {
+          "EventName": "snippet/toplevel",
+          "Properties": {
+            "name": "res-firewall-standard-vwan"
           }
         }
       ]
@@ -1637,7 +1711,7 @@
     "detail": "Logic App Connector",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource logicAppConnector 'Microsoft.Web/connections@2015-08-01-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    name: 'name'\n    api: any({\n      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'logicAppConnectorApi')\n    })\n  }\n}\n\n```"
+      "value": "```bicep\nresource logicAppConnector 'Microsoft.Web/connections@2016-06-01' = {\n  name: 'name'\n  location: location\n  properties: {\n    api: any({\n      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'logicAppConnectorApi')\n    })\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -1646,7 +1720,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:logicAppConnector} 'Microsoft.Web/connections@2015-08-01-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    name: ${4:'name'}\n    api: any({\n      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', ${3:location}, ${5:'logicAppConnectorApi'})\n    })\n  }\n}\n"
+      "newText": "resource ${1:logicAppConnector} 'Microsoft.Web/connections@2016-06-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    api: any({\n      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', ${3:location}, ${4:'logicAppConnectorApi'})\n    })\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -1697,7 +1771,7 @@
     "detail": "Logic App Integration Account",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource logicAppIntegrationAccount 'Microsoft.Logic/integrationAccounts@2016-06-01' = {\n  name: 'name'\n  location: location\n}\n\n```"
+      "value": "```bicep\nresource logicAppIntegrationAccount 'Microsoft.Logic/integrationAccounts@2019-05-01' = {\n  name: 'name'\n  location: location\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -1706,7 +1780,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:logicAppIntegrationAccount} 'Microsoft.Logic/integrationAccounts@2016-06-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n}\n"
+      "newText": "resource ${1:logicAppIntegrationAccount} 'Microsoft.Logic/integrationAccounts@2019-05-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -2262,6 +2336,36 @@
     }
   },
   {
+    "label": "res-private-endpoint",
+    "kind": "snippet",
+    "detail": "",
+    "documentation": {
+      "kind": "markdown",
+      "value": "```bicep\nresource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {\n  name: name\n  location: location\n  properties: {\n    privateLinkServiceConnections: [\n      {\n        name: name\n        properties: {\n          privateLinkServiceId: privateLinkServiceId\n          groupIds: [\n            groupId\n          ]\n        }\n      }\n    ]\n    subnet: {\n      id: subnetId\n    }\n  }\n}\n\n```"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_res-private-endpoint",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "resource ${1:privateEndpoint} 'Microsoft.Network/privateEndpoints@2022-01-01' = {\n  name: ${2:name}\n  location: ${3:location}\n  properties: {\n    privateLinkServiceConnections: [\n      {\n        name: ${4:name}\n        properties: {\n          privateLinkServiceId: ${5:privateLinkServiceId}\n          groupIds: [\n            ${6:groupId}\n          ]\n        }\n      }\n    ]\n    subnet: {\n      id: ${7:subnetId}\n    }\n  }\n}\n"
+    },
+    "command": {
+      "title": "top level snippet completion",
+      "command": "bicep.Telemetry",
+      "arguments": [
+        {
+          "EventName": "snippet/toplevel",
+          "Properties": {
+            "name": "res-private-endpoint"
+          }
+        }
+      ]
+    }
+  },
+  {
     "label": "res-recovery-service-vault",
     "kind": "snippet",
     "detail": "Recovery Service Vault",
@@ -2502,6 +2606,36 @@
     }
   },
   {
+    "label": "res-service-bus",
+    "kind": "snippet",
+    "detail": "Service Bus Namespace",
+    "documentation": {
+      "kind": "markdown",
+      "value": "```bicep\nresource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-06-01-preview' = {\n  name: 'name'\n  location: location\n  sku: {\n    name: 'Basic'\n    capacity: 1\n    tier: 'Basic'\n  }\n}\n\n```"
+    },
+    "deprecated": false,
+    "preselect": false,
+    "sortText": "2_res-service-bus",
+    "insertTextFormat": "snippet",
+    "insertTextMode": "adjustIndentation",
+    "textEdit": {
+      "range": {},
+      "newText": "resource ${1:serviceBusNamespace} 'Microsoft.ServiceBus/namespaces@2021-06-01-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  sku: {\n    name: ${4|'Basic','Standard','Premium'|}\n    capacity: ${5:1}\n    tier: ${6|'Basic','Standard','Premium'|}\n  }\n}\n"
+    },
+    "command": {
+      "title": "top level snippet completion",
+      "command": "bicep.Telemetry",
+      "arguments": [
+        {
+          "EventName": "snippet/toplevel",
+          "Properties": {
+            "name": "res-service-bus"
+          }
+        }
+      ]
+    }
+  },
+  {
     "label": "res-shared-image-gallery",
     "kind": "snippet",
     "detail": "Create Image Gallery",
@@ -2597,7 +2731,7 @@
     "detail": "SQL Server Firewall Rules",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource sqlServer 'Microsoft.Sql/servers@2020-11-01-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    administratorLogin: 'administratorLogin'\n    administratorLoginPassword: 'administratorLoginPassword'\n  }\n}\n\nresource sqlServerFirewallRules 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {\n  parent: sqlServer\n  name: 'name'\n  properties: {\n    startIpAddress: 'startIpAddress'\n    endIpAddress: 'endIpAddress'\n  }\n}\n\n```"
+      "value": "```bicep\nresource sqlServer 'Microsoft.Sql/servers@2021-02-01-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    administratorLogin: 'administratorLogin'\n    administratorLoginPassword: 'administratorLoginPassword'\n  }\n}\n\nresource sqlServerFirewallRules 'Microsoft.Sql/servers/firewallRules@2021-02-01-preview' = {\n  parent: sqlServer\n  name: 'name'\n  properties: {\n    startIpAddress: 'startIpAddress'\n    endIpAddress: 'endIpAddress'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -2606,7 +2740,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource sqlServer 'Microsoft.Sql/servers@2020-11-01-preview' = {\n  name: ${1:'name'}\n  location: ${2:location}\n  properties: {\n    administratorLogin: ${3:'administratorLogin'}\n    administratorLoginPassword: ${4:'administratorLoginPassword'}\n  }\n}\n\nresource ${5:sqlServerFirewallRules} 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {\n  parent: sqlServer\n  name: ${6:'name'}\n  properties: {\n    startIpAddress: ${7:'startIpAddress'}\n    endIpAddress: ${8:'endIpAddress'}\n  }\n}\n"
+      "newText": "resource sqlServer 'Microsoft.Sql/servers@2021-02-01-preview' = {\n  name: ${1:'name'}\n  location: ${2:location}\n  properties: {\n    administratorLogin: ${3:'administratorLogin'}\n    administratorLoginPassword: ${4:'administratorLoginPassword'}\n  }\n}\n\nresource ${5:sqlServerFirewallRules} 'Microsoft.Sql/servers/firewallRules@2021-02-01-preview' = {\n  parent: sqlServer\n  name: ${6:'name'}\n  properties: {\n    startIpAddress: ${7:'startIpAddress'}\n    endIpAddress: ${8:'endIpAddress'}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -2657,7 +2791,7 @@
     "detail": "Template spec",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource templateSpec 'Microsoft.Resources/templateSpecs@2019-06-01-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    description: 'description'\n    displayName: 'displayName'\n  }\n}\n\n```"
+      "value": "```bicep\nresource templateSpec 'Microsoft.Resources/templateSpecs@2021-05-01' = {\n  name: 'name'\n  location: location\n  properties: {\n    description: 'description'\n    displayName: 'displayName'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -2666,7 +2800,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:templateSpec} 'Microsoft.Resources/templateSpecs@2019-06-01-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    description: ${4:'description'}\n    displayName: ${5:'displayName'}\n  }\n}\n"
+      "newText": "resource ${1:templateSpec} 'Microsoft.Resources/templateSpecs@2021-05-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    description: ${4:'description'}\n    displayName: ${5:'displayName'}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -2687,7 +2821,7 @@
     "detail": "Traffic Manager Profile",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource trafficManagerProfile 'Microsoft.Network/trafficManagerProfiles@2018-04-01' = {\n  name: 'name'\n  location: 'global'\n  properties: {\n    profileStatus: 'Enabled'\n    trafficRoutingMethod: 'Performance'\n    dnsConfig: {\n      relativeName: 'dnsConfigRelativeName'\n      ttl: 30\n    }\n    monitorConfig: {\n      protocol: 'HTTP'\n      port: 80\n      path: 'path'\n      intervalInSeconds: 30\n      timeoutInSeconds: 5\n      toleratedNumberOfFailures: 3\n    }\n    endpoints: [\n      {\n        properties: {\n          targetResourceId: 'targetResourceId'\n          endpointStatus: 'Enabled'\n          weight: 100\n          priority: 1\n        }\n      }\n    ]\n  }\n}\n\n```"
+      "value": "```bicep\nresource trafficManagerProfile 'Microsoft.Network/trafficManagerProfiles@2018-08-01' = {\n  name: 'name'\n  location: 'global'\n  properties: {\n    profileStatus: 'Enabled'\n    trafficRoutingMethod: 'Performance'\n    dnsConfig: {\n      relativeName: 'dnsConfigRelativeName'\n      ttl: 30\n    }\n    monitorConfig: {\n      protocol: 'HTTP'\n      port: 80\n      path: 'path'\n      intervalInSeconds: 30\n      timeoutInSeconds: 5\n      toleratedNumberOfFailures: 3\n    }\n    endpoints: [\n      {\n        properties: {\n          targetResourceId: 'targetResourceId'\n          endpointStatus: 'Enabled'\n          weight: 100\n          priority: 1\n        }\n      }\n    ]\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -2696,7 +2830,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:trafficManagerProfile} 'Microsoft.Network/trafficManagerProfiles@2018-04-01' = {\n  name: ${2:'name'}\n  location: 'global'\n  properties: {\n    profileStatus: 'Enabled'\n    trafficRoutingMethod: ${3|'Performance','Priority','Weighted','Geographic'|}\n    dnsConfig: {\n      relativeName: ${4:'dnsConfigRelativeName'}\n      ttl: 30\n    }\n    monitorConfig: {\n      protocol: ${5|'HTTP','HTTPS','TCP'|}\n      port: ${6:80}\n      path: ${7:'path'}\n      intervalInSeconds: ${8:30}\n      timeoutInSeconds: ${9:5}\n      toleratedNumberOfFailures: ${10:3}\n    }\n    endpoints: [\n      {\n        properties: {\n          targetResourceId: ${11:'targetResourceId'}\n          endpointStatus: ${12|'Enabled','Disabled'|}\n          weight: ${13:100}\n          priority: ${14:1}\n        }\n      }\n    ]\n  }\n}\n"
+      "newText": "resource ${1:trafficManagerProfile} 'Microsoft.Network/trafficManagerProfiles@2018-08-01' = {\n  name: ${2:'name'}\n  location: 'global'\n  properties: {\n    profileStatus: 'Enabled'\n    trafficRoutingMethod: ${3|'Performance','Priority','Weighted','Geographic'|}\n    dnsConfig: {\n      relativeName: ${4:'dnsConfigRelativeName'}\n      ttl: 30\n    }\n    monitorConfig: {\n      protocol: ${5|'HTTP','HTTPS','TCP'|}\n      port: ${6:80}\n      path: ${7:'path'}\n      intervalInSeconds: ${8:30}\n      timeoutInSeconds: ${9:5}\n      toleratedNumberOfFailures: ${10:3}\n    }\n    endpoints: [\n      {\n        properties: {\n          targetResourceId: ${11:'targetResourceId'}\n          endpointStatus: ${12|'Enabled','Disabled'|}\n          weight: ${13:100}\n          priority: ${14:1}\n        }\n      }\n    ]\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -3137,7 +3271,7 @@
     "detail": "Web Application",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource webApplication 'Microsoft.Web/sites@2018-11-01' = {\n  name: 'name'\n  location: location\n  tags: {\n    'hidden-related:${resourceGroup().id}/providers/Microsoft.Web/serverfarms/appServicePlan': 'Resource'\n  }\n  properties: {\n    serverFarmId: 'webServerFarms.id'\n  }\n}\n\n```"
+      "value": "```bicep\nresource webApplication 'Microsoft.Web/sites@2021-01-15' = {\n  name: 'name'\n  location: location\n  tags: {\n    'hidden-related:${resourceGroup().id}/providers/Microsoft.Web/serverfarms/appServicePlan': 'Resource'\n  }\n  properties: {\n    serverFarmId: 'webServerFarms.id'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -3146,7 +3280,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:webApplication} 'Microsoft.Web/sites@2018-11-01' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  tags: {\n    'hidden-related:${resourceGroup().id}/providers/Microsoft.Web/serverfarms/${4:appServicePlan}': 'Resource'\n  }\n  properties: {\n    serverFarmId: ${5:'webServerFarms.id'}\n  }\n}\n"
+      "newText": "resource ${1:webApplication} 'Microsoft.Web/sites@2021-01-15' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  tags: {\n    'hidden-related:${resourceGroup().id}/providers/Microsoft.Web/serverfarms/${4:appServicePlan}': 'Resource'\n  }\n  properties: {\n    serverFarmId: ${5:'webServerFarms.id'}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -3197,7 +3331,7 @@
     "detail": "WVD AppGroup",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource applicationGroup 'Microsoft.DesktopVirtualization/applicationgroups@2019-12-10-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'friendlyName'\n    applicationGroupType: 'Desktop'\n    hostPoolArmPath: 'desktopVirtualizationHostPools.id'\n  }\n}\n\n```"
+      "value": "```bicep\nresource applicationGroup 'Microsoft.DesktopVirtualization/applicationgroups@2021-07-12' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'friendlyName'\n    applicationGroupType: 'Desktop'\n    hostPoolArmPath: 'desktopVirtualizationHostPools.id'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -3206,7 +3340,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:applicationGroup} 'Microsoft.DesktopVirtualization/applicationgroups@2019-12-10-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'friendlyName'}\n    applicationGroupType: ${5|'Desktop','RemoteApp'|}\n    hostPoolArmPath: ${6:'desktopVirtualizationHostPools.id'}\n  }\n}\n"
+      "newText": "resource ${1:applicationGroup} 'Microsoft.DesktopVirtualization/applicationgroups@2021-07-12' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'friendlyName'}\n    applicationGroupType: ${5|'Desktop','RemoteApp'|}\n    hostPoolArmPath: ${6:'desktopVirtualizationHostPools.id'}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -3227,7 +3361,7 @@
     "detail": "WVD Host Pool",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource hostPool 'Microsoft.DesktopVirtualization/hostpools@2019-12-10-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'hostpoolFriendlyName'\n    hostPoolType: 'Personal'\n    loadBalancerType: 'BreadthFirst'\n    preferredAppGroupType: 'Desktop'\n  }\n}\n\n```"
+      "value": "```bicep\nresource hostPool 'Microsoft.DesktopVirtualization/hostpools@2021-07-12' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'hostpoolFriendlyName'\n    hostPoolType: 'Personal'\n    loadBalancerType: 'BreadthFirst'\n    preferredAppGroupType: 'Desktop'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -3236,7 +3370,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:hostPool} 'Microsoft.DesktopVirtualization/hostpools@2019-12-10-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'hostpoolFriendlyName'}\n    hostPoolType: ${5|'Personal','Pooled'|}\n    loadBalancerType: ${6|'BreadthFirst','DepthFirst','Persistent'|}\n    preferredAppGroupType: ${7|'Desktop','RailApplications','None'|}\n  }\n}\n"
+      "newText": "resource ${1:hostPool} 'Microsoft.DesktopVirtualization/hostpools@2021-07-12' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'hostpoolFriendlyName'}\n    hostPoolType: ${5|'Personal','Pooled'|}\n    loadBalancerType: ${6|'BreadthFirst','DepthFirst','Persistent'|}\n    preferredAppGroupType: ${7|'Desktop','RailApplications','None'|}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",
@@ -3257,7 +3391,7 @@
     "detail": "WVD Workspace",
     "documentation": {
       "kind": "markdown",
-      "value": "```bicep\nresource workSpace 'Microsoft.DesktopVirtualization/workspaces@2019-12-10-preview' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'friendlyName'\n  }\n}\n\n```"
+      "value": "```bicep\nresource workSpace 'Microsoft.DesktopVirtualization/workspaces@2021-07-12' = {\n  name: 'name'\n  location: location\n  properties: {\n    friendlyName: 'friendlyName'\n  }\n}\n\n```"
     },
     "deprecated": false,
     "preselect": false,
@@ -3266,7 +3400,7 @@
     "insertTextMode": "adjustIndentation",
     "textEdit": {
       "range": {},
-      "newText": "resource ${1:workSpace} 'Microsoft.DesktopVirtualization/workspaces@2019-12-10-preview' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'friendlyName'}\n  }\n}\n"
+      "newText": "resource ${1:workSpace} 'Microsoft.DesktopVirtualization/workspaces@2021-07-12' = {\n  name: ${2:'name'}\n  location: ${3:location}\n  properties: {\n    friendlyName: ${4:'friendlyName'}\n  }\n}\n"
     },
     "command": {
       "title": "top level snippet completion",

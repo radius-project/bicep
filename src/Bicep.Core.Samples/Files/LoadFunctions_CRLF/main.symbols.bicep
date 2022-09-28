@@ -37,7 +37,7 @@ var loadedBinaryInObject = {
 }
 
 var loadedTextArray = [
-//@[4:19) Variable loadedTextArray. Type: array. Declaration start char: 0, length: 108
+//@[4:19) Variable loadedTextArray. Type: ('Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n Donec laoreet sem tortor, ut dignissim ipsum ornare vel.\n  Duis ac ipsum turpis.\n\tMaecenas at condimentum dui.\n Suspendisse aliquet efficitur iaculis.\nIn hac habitasse platea dictumst.\nEtiam consectetur ut libero ac lobortis.\n\tNullam vitae auctor massa.\nFusce tincidunt urna purus, sit amet.\n' | Assets/binary)[]. Declaration start char: 0, length: 108
   loadTextContent('Assets/TextFile.LF.txt')
   loadFileAsBase64('Assets/binary')
 ]
@@ -132,4 +132,7 @@ var testJsonNestedString2_1 = testJsonObject2_1.nestedString
 //@[4:27) Variable testJsonNestedString2_1. Type: 'someVal'. Declaration start char: 0, length: 60
 var testJsonNestedString2_2 = loadJsonContent('./Assets/test.json.txt', '.object.nestedString')
 //@[4:27) Variable testJsonNestedString2_2. Type: 'someVal'. Declaration start char: 0, length: 95
+
+var testJsonTokensAsArray = loadJsonContent('./Assets/test2.json.txt', '.products[?(@.price > 3)].name')
+//@[4:25) Variable testJsonTokensAsArray. Type: ('pizza' | 'salad')[]. Declaration start char: 0, length: 104
 

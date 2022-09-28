@@ -31,7 +31,7 @@ export class CommandManager extends Disposable {
     // when the extension is disposed.
     azureextensionui.registerCommand(
       command.id,
-      async (context: azureextensionui.IActionContext, ...args: unknown[]) => {
+      async (context: azureextensionui.IActionContext, ...args: any[]) => {
         let documentUri: Uri | undefined = undefined;
         let isFromWalkthrough = false;
 
@@ -82,7 +82,7 @@ export class CommandManager extends Disposable {
     assert(!!activationEvents, "Missing activationEvents in package.json");
     const activationKey = `onCommand:${command.id}`;
     const activation: string | undefined = activationEvents.find(
-      (a) => a == activationKey
+      (a) => a === activationKey
     );
     assert(
       !!activation,

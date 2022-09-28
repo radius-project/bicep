@@ -28,7 +28,7 @@ namespace Bicep.LangServer.IntegrationTests
         public async Task GenerateParams_command_should_generate_paramsfile()
         {
             var diagnosticsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
-            var features = BicepTestConstants.CreateFeaturesProvider(
+            var features = BicepTestConstants.CreateFeatureProvider(
                 TestContext,
                 assemblyFileVersion: BicepTestConstants.DevAssemblyFileVersion);
 
@@ -42,8 +42,8 @@ namespace Bicep.LangServer.IntegrationTests
 
             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(
                 TestContext,
-                typeof(ExamplesTests).Assembly,
-                "Bicep.Core.Samples/Resources_CRLF");
+                typeof(DataSet).Assembly,
+                "Files/Resources_CRLF");
 
             var bicepFilePath = Path.Combine(outputDirectory, "main.bicep");
             var expectedJson = File.ReadAllText(Path.Combine(outputDirectory, "main.parameters.json"));
@@ -62,5 +62,5 @@ namespace Bicep.LangServer.IntegrationTests
             var commandOutput = File.ReadAllText(Path.ChangeExtension(bicepFilePath, ".parameters.json"));
             commandOutput.Should().BeEquivalentToIgnoringNewlines(expectedJson);
         }
-   }
+    }
 }

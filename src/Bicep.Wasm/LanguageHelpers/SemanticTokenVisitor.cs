@@ -103,7 +103,7 @@ namespace Bicep.Wasm.LanguageHelpers
             }
             else
             {
-                AddTokenType(syntax.Key, SemanticTokenType.Member);
+                AddTokenType(syntax.Key, SemanticTokenType.TypeParameter);
             }
             Visit(syntax.Colon);
             Visit(syntax.Value);
@@ -271,6 +271,13 @@ namespace Bicep.Wasm.LanguageHelpers
             base.VisitVariableAccessSyntax(syntax);
         }
 
+        public override void VisitMetadataDeclarationSyntax(MetadataDeclarationSyntax syntax)
+        {
+            AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);
+            AddTokenType(syntax.Name, SemanticTokenType.Variable);
+            base.VisitMetadataDeclarationSyntax(syntax);
+        }
+        
         public override void VisitVariableDeclarationSyntax(VariableDeclarationSyntax syntax)
         {
             AddTokenType(syntax.Keyword, SemanticTokenType.Keyword);

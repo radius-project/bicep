@@ -102,6 +102,16 @@ namespace Bicep.Core.Emit
                 case VariableAccessSyntax variableAccess:
                     return ConvertVariableAccess(variableAccess);
 
+                case LambdaSyntax lambda:
+                    var variables = lambda.GetLocalVariables();
+
+                    var variableNames = variables.Select(x => new JTokenExpression(x.Name.IdentifierName));
+                    var body = ConvertExpression(lambda.Body);
+
+                    return CreateFunction(
+                        "lambda",
+                        variableNames.Concat(body));
+
                 default:
                     throw new NotImplementedException($"Cannot emit unexpected expression of type {expression.GetType().Name}");
             }
@@ -139,7 +149,7 @@ namespace Bicep.Core.Emit
                                 instanceFunctionCall.Name.IdentifierName,
                                 instanceFunctionCall.Arguments.Select(a => ConvertExpression(a.Expression)));
                         case DeclaredSymbol declaredSymbol when context.SemanticModel.ResourceMetadata.TryLookup(declaredSymbol.DeclaringSyntax) is DeclaredResourceMetadata resource:
-                            if (instanceFunctionCall.Name.IdentifierName.StartsWithOrdinalInsensitively("list"))
+                            if (instanceFunctionCall.Name.IdentifierName.StartsWithOrdinalInsensitively(LanguageConstants.ListFunctionPrefix))
                             {
                                 var converter = indexExpression is not null ?
                                     CreateConverterForIndexReplacement(resource.NameSyntax, indexExpression, instanceFunctionCall) :
@@ -618,17 +628,12 @@ namespace Bicep.Core.Emit
 
                 switch (inaccessibleLocalLoops.Count)
                 {
-                    case 0 when i == startingAncestorIndex:
+                    case 0:
                         /*
-                         * There are no local vars to replace. It is impossible for a local var to be introduced at the next level
-                         * so we can just bail out with the result.
-                         *
-                         * This path is followed by non-loop resources.
-                         *
-                         * Case 0 is not possible for non-starting ancestor index because
-                         * once we have a local variable replacement, it will propagate to the next levels
+                         * Hardcoded index expression resulted in no more local vars to replace.
+                         * We can just bail out with the result.
                          */
-                        return ancestor.Resource.NameSyntax;
+                        return rewritten;
 
                     case 1 when ancestor.IndexExpression is not null:
                         if (LocalSymbolDependencyVisitor.GetLocalSymbolDependencies(this.context.SemanticModel, rewritten).SingleOrDefault(s => s.LocalKind == LocalKind.ForExpressionItemVariable) is { } loopItemSymbol)
@@ -849,8 +854,15 @@ namespace Bicep.Core.Emit
                 return replacement;
             }
 
-            var @for = GetEnclosingForExpression(localVariableSymbol);
-            return GetLoopVariableExpression(localVariableSymbol, @for, CreateCopyIndexFunction(@for));
+            var enclosingSyntax = GetEnclosingDeclaringSyntax(localVariableSymbol);
+            switch (enclosingSyntax) {
+                case ForSyntax @for:
+                    return GetLoopVariableExpression(localVariableSymbol, @for, CreateCopyIndexFunction(@for));
+                case LambdaSyntax lambda:
+                    return CreateFunction("lambdaVariables", new JTokenExpression(localVariableSymbol.Name));
+            }
+
+            throw new NotImplementedException($"{nameof(LocalVariableSymbol)} was declared by an unexpected syntax type '{enclosingSyntax?.GetType().Name}'.");
         }
 
         private LanguageExpression GetLoopVariableExpression(LocalVariableSymbol localVariableSymbol, ForSyntax @for, LanguageExpression indexExpression)
@@ -869,7 +881,7 @@ namespace Bicep.Core.Emit
             };
         }
 
-        private ForSyntax GetEnclosingForExpression(LocalVariableSymbol localVariable)
+        private SyntaxBase GetEnclosingDeclaringSyntax(LocalVariableSymbol localVariable)
         {
             // we're following the symbol hierarchy rather than syntax hierarchy because
             // this guarantees a single hop in all cases
@@ -879,12 +891,19 @@ namespace Bicep.Core.Emit
                 throw new NotImplementedException($"{nameof(LocalVariableSymbol)} has un unexpected parent of type '{symbolParent?.GetType().Name}'.");
             }
 
-            if (localScope.DeclaringSyntax is ForSyntax @for)
+            return localScope.DeclaringSyntax;
+        }
+
+        private ForSyntax GetEnclosingForExpression(LocalVariableSymbol localVariable)
+        {
+            var declaringSyntax = GetEnclosingDeclaringSyntax(localVariable);
+
+            if (declaringSyntax is ForSyntax @for)
             {
                 return @for;
             }
 
-            throw new NotImplementedException($"{nameof(LocalVariableSymbol)} was declared by an unexpected syntax type '{localScope.DeclaringSyntax?.GetType().Name}'.");
+            throw new NotImplementedException($"{nameof(LocalVariableSymbol)} was declared by an unexpected syntax type '{declaringSyntax?.GetType().Name}'.");
         }
 
         private string? GetCopyIndexName(ForSyntax @for)

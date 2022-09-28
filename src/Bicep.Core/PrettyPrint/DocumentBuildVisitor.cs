@@ -77,6 +77,29 @@ namespace Bicep.Core.PrettyPrint
                 this.Visit(syntax.Value);
             });
 
+        public override void VisitImportDeclarationSyntax(ImportDeclarationSyntax syntax) =>
+            this.BuildStatement(syntax, () =>
+            {
+                this.VisitNodes(syntax.LeadingNodes);
+                this.Visit(syntax.Keyword);
+                this.documentStack.Push(Nil);
+                this.Visit(syntax.ProviderName);
+                this.Visit(syntax.AsKeyword);
+                this.Visit(syntax.AliasName);
+                this.Visit(syntax.Config);
+            });
+
+        public override void VisitMetadataDeclarationSyntax(MetadataDeclarationSyntax syntax) =>
+            this.BuildStatement(syntax, () =>
+            {
+                this.VisitNodes(syntax.LeadingNodes);
+                this.Visit(syntax.Keyword);
+                this.documentStack.Push(Nil);
+                this.Visit(syntax.Name);
+                this.Visit(syntax.Assignment);
+                this.Visit(syntax.Value);
+            });
+
         public override void VisitParameterDeclarationSyntax(ParameterDeclarationSyntax syntax) =>
             this.BuildStatement(syntax, () =>
             {
@@ -136,6 +159,26 @@ namespace Bicep.Core.PrettyPrint
                 this.Visit(syntax.Value);
             });
 
+        public override void VisitParameterAssignmentSyntax(ParameterAssignmentSyntax syntax) =>
+            this.BuildStatement(syntax, () =>
+            {
+                this.VisitNodes(syntax.LeadingNodes);
+                this.Visit(syntax.Keyword);
+                this.documentStack.Push(Nil);
+                this.Visit(syntax.Name);
+                this.Visit(syntax.Assignment);
+                this.Visit(syntax.Value);
+            });
+
+        public override void VisitUsingDeclarationSyntax(UsingDeclarationSyntax syntax) =>
+            this.BuildStatement(syntax, () =>
+            {
+                this.VisitNodes(syntax.LeadingNodes);
+                this.Visit(syntax.Keyword);
+                this.documentStack.Push(Nil);
+                this.Visit(syntax.Path);
+            });
+
         public override void VisitTernaryOperationSyntax(TernaryOperationSyntax syntax) =>
             this.BuildWithSpread(() => base.VisitTernaryOperationSyntax(syntax));
 
@@ -177,18 +220,23 @@ namespace Bicep.Core.PrettyPrint
                 return Concat(openBracket, Spread(forKeyword, variableBlock, inKeyword, arrayExpression), Spread(colon, loopBody), closeBracket);
             });
 
-        public override void VisitForVariableBlockSyntax(ForVariableBlockSyntax syntax) =>
-            this.Build(() => base.VisitForVariableBlockSyntax(syntax), children =>
+        public override void VisitVariableBlockSyntax(VariableBlockSyntax syntax) =>
+            this.BuildWithConcat(() => {
+                this.Visit(syntax.OpenParen);
+                this.VisitCommaAndNewLineSeparated(syntax.Children, leadingAndTrailingSpace: false);
+                this.Visit(syntax.CloseParen);
+            });
+
+        public override void VisitLambdaSyntax(LambdaSyntax syntax) =>
+            this.Build(() => base.VisitLambdaSyntax(syntax), children =>
              {
-                 Debug.Assert(children.Length == 5);
+                 Debug.Assert(children.Length == 3);
 
-                 ILinkedDocument openParen = children[0];
-                 ILinkedDocument itemVariable = children[1];
-                 ILinkedDocument comma = children[2];
-                 ILinkedDocument indexVariable = children[3];
-                 ILinkedDocument closeParen = children[4];
+                 ILinkedDocument token = children[0];
+                 ILinkedDocument arrow = children[1];
+                 ILinkedDocument body = children[2];
 
-                 return Spread(Concat(openParen, itemVariable, comma), Concat(indexVariable, closeParen));
+                 return Spread(token, arrow, body);
              });
 
         private void VisitCommaAndNewLineSeparated(ImmutableArray<SyntaxBase> nodes, bool leadingAndTrailingSpace)

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bicep.Core;
 using Bicep.Core.Analyzers.Linter;
+using Bicep.Core.Analyzers.Linter.ApiVersions;
 using Bicep.Core.Configuration;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Emit;
@@ -50,6 +50,7 @@ namespace Bicep.LanguageServer.Handlers
         private readonly IFileResolver fileResolver;
         private readonly IModuleDispatcher moduleDispatcher;
         private readonly INamespaceProvider namespaceProvider;
+        private readonly ApiVersionProvider apiVersionProvider;
 
         public BicepDeploymentScopeRequestHandler(
             EmitterSettings emitterSettings,
@@ -60,7 +61,8 @@ namespace Bicep.LanguageServer.Handlers
             IFileResolver fileResolver,
             IModuleDispatcher moduleDispatcher,
             INamespaceProvider namespaceProvider,
-            ISerializer serializer)
+            ISerializer serializer,
+            ApiVersionProvider apiVersionProvider)
             : base(LangServerConstants.GetDeploymentScopeCommand, serializer)
         {
             this.compilationManager = compilationManager;
@@ -71,6 +73,7 @@ namespace Bicep.LanguageServer.Handlers
             this.fileResolver = fileResolver;
             this.moduleDispatcher = moduleDispatcher;
             this.namespaceProvider = namespaceProvider;
+            this.apiVersionProvider = apiVersionProvider;
         }
 
         public override Task<BicepDeploymentScopeResponse> Handle(BicepDeploymentScopeParams request, CancellationToken cancellationToken)
@@ -109,7 +112,7 @@ namespace Bicep.LanguageServer.Handlers
         {
             var fileUri = documentUri.ToUri();
 
-            KeyValuePair<BicepFile, IEnumerable<IDiagnostic>> diagnosticsByFile = compilation.GetAllDiagnosticsByBicepFile()
+            var diagnosticsByFile = compilation.GetAllDiagnosticsByBicepFile()
                 .FirstOrDefault(x => x.Key.FileUri == fileUri);
 
             if (diagnosticsByFile.Value.Any(x => x.Level == DiagnosticLevel.Error))
@@ -144,7 +147,7 @@ namespace Bicep.LanguageServer.Handlers
             if (context is null)
             {
                 SourceFileGrouping sourceFileGrouping = SourceFileGroupingBuilder.Build(this.fileResolver, this.moduleDispatcher, new Workspace(), fileUri, configuration);
-                return new Compilation(features, namespaceProvider, sourceFileGrouping, configuration, new LinterAnalyzer(configuration));
+                return new Compilation(features, namespaceProvider, sourceFileGrouping, configuration, this.apiVersionProvider, new LinterAnalyzer(configuration));
             }
             else
             {

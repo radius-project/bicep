@@ -119,6 +119,11 @@ var resourceGroup = ''
 var rgName = resourceGroup().name
 //@[04:10) Variable rgName. Type: error. Declaration start char: 0, length: 33
 
+var subscription = ''
+//@[04:16) Variable subscription. Type: ''. Declaration start char: 0, length: 21
+var subName = subscription().name
+//@[04:11) Variable subName. Type: error. Declaration start char: 0, length: 33
+
 // this does not work at the resource group scope
 var invalidLocationVar = deployment().location
 //@[04:22) Variable invalidLocationVar. Type: error. Declaration start char: 0, length: 46
@@ -336,5 +341,19 @@ var keyVaultSecretArrayVar = [
 var keyVaultSecretArrayInterpolatedVar = [
 //@[04:38) Variable keyVaultSecretArrayInterpolatedVar. Type: string[]. Declaration start char: 0, length: 76
   '${kv.getSecret('mySecret')}'
+]
+
+var listSecrets= ''
+//@[04:15) Variable listSecrets. Type: ''. Declaration start char: 0, length: 19
+var listSecretsVar = listSecrets()
+//@[04:18) Variable listSecretsVar. Type: error. Declaration start char: 0, length: 34
+
+var copy = [
+//@[04:08) Variable copy. Type: object[]. Declaration start char: 0, length: 82
+  {
+    name: 'one'
+    count: '[notAFunction()]'
+    input: {}
+  }
 ]
 

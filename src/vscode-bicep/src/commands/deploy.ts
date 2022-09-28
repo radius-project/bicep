@@ -80,7 +80,7 @@ export class DeployCommand implements Command {
       encodeURIComponent(documentUri.path)
     );
     this.outputChannelManager.appendToOutputChannel(
-      `Starting deployment of ${documentPath}`
+      `Preparing for deployment of ${documentPath}`
     );
 
     context.errorHandling.suppressDisplay = true;
@@ -388,10 +388,10 @@ export class DeployCommand implements Command {
 
       // If user chose to create/update/overwrite a parameters file at the end of deployment flow, we'll
       // open it in vscode.
-      if (parametersFileUpdateOption != ParametersFileUpdateOption.None) {
+      if (parametersFileUpdateOption !== ParametersFileUpdateOption.None) {
         if (
-          parametersFileUpdateOption == ParametersFileUpdateOption.Create ||
-          parametersFileUpdateOption == ParametersFileUpdateOption.Overwrite
+          parametersFileUpdateOption === ParametersFileUpdateOption.Create ||
+          parametersFileUpdateOption === ParametersFileUpdateOption.Overwrite
         ) {
           parametersFilePath = path.join(
             path.dirname(documentPath),
@@ -421,7 +421,7 @@ export class DeployCommand implements Command {
         const viewDeploymentInPortalMessage =
           deploymentStartResponse.viewDeploymentInPortalMessage;
 
-        if (viewDeploymentInPortalMessage != null) {
+        if (viewDeploymentInPortalMessage) {
           this.outputChannelManager.appendToOutputChannel(
             viewDeploymentInPortalMessage
           );
@@ -454,7 +454,7 @@ export class DeployCommand implements Command {
       }
     );
 
-    if (result.label == this._browse) {
+    if (result.label === this._browse) {
       const paramsPaths: Uri[] | undefined = await vscode.window.showOpenDialog(
         {
           canSelectMany: false,
@@ -463,14 +463,14 @@ export class DeployCommand implements Command {
           filters: { "JSON Files": ["json", "jsonc"] },
         }
       );
-      if (paramsPaths && paramsPaths.length == 1) {
+      if (paramsPaths && paramsPaths.length === 1) {
         const parameterFilePath = paramsPaths[0].fsPath;
         this.outputChannelManager.appendToOutputChannel(
           `Parameter file used in deployment -> ${parameterFilePath}`
         );
         return parameterFilePath;
       }
-    } else if (result.label == this._none) {
+    } else if (result.label === this._none) {
       return undefined;
     } else {
       this.outputChannelManager.appendToOutputChannel(
@@ -504,7 +504,7 @@ export class DeployCommand implements Command {
       const paramName = deploymentParameter.name;
       let paramValue = undefined;
       if (deploymentParameter.isMissingParam) {
-        paramValue = await vscode.window.showInputBox({
+        paramValue = await _context.ui.showInputBox({
           title: `Parameter: ${paramName}`,
           placeHolder: `Please enter value for parameter "${paramName}"`,
         });
@@ -521,11 +521,12 @@ export class DeployCommand implements Command {
             value: deploymentParameter.value,
             placeHolder: `Please enter value for parameter "${paramName}"`,
           };
-          paramValue = await vscode.window.showInputBox(options);
+          paramValue = await _context.ui.showInputBox(options);
         }
       }
 
-      if (paramValue != undefined) {
+      // undefined indicates to use the expression in the parameter default value
+      if (paramValue !== undefined) {
         const updatedDeploymentParameter: BicepUpdatedDeploymentParameter = {
           name: paramName,
           value: paramValue,
@@ -583,7 +584,7 @@ export class DeployCommand implements Command {
 
     _context.telemetry.properties.parametersFileUpdateOption =
       parametersFileUpdateOptionString;
-    if (result == this._yes) {
+    if (result === this._yes) {
       return parametersFileUpdateOption;
     } else {
       return ParametersFileUpdateOption.None;
@@ -621,8 +622,8 @@ export class DeployCommand implements Command {
       }
     );
 
-    if (result == enterNewValue) {
-      const paramValue = await vscode.window.showInputBox({
+    if (result === enterNewValue) {
+      const paramValue = await _context.ui.showInputBox({
         placeHolder: `Please enter value for parameter "${paramName}"`,
       });
 

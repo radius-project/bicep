@@ -1,7 +1,7 @@
 
 // unknown declaration
 bad
-//@[00:03) [BCP007 (Error)] This declaration type is not recognized. Specify a parameter, variable, resource, or output declaration. (CodeDescription: none) |bad|
+//@[00:03) [BCP007 (Error)] This declaration type is not recognized. Specify a metadata, parameter, variable, resource, or output declaration. (CodeDescription: none) |bad|
 
 // incomplete variable declaration #completionTest(0,1,2) -> declarations
 var
@@ -14,10 +14,10 @@ var
 // incomplete keyword
 // #completionTest(0,1) -> declarations
 v
-//@[00:01) [BCP007 (Error)] This declaration type is not recognized. Specify a parameter, variable, resource, or output declaration. (CodeDescription: none) |v|
+//@[00:01) [BCP007 (Error)] This declaration type is not recognized. Specify a metadata, parameter, variable, resource, or output declaration. (CodeDescription: none) |v|
 // #completionTest(0,1,2) -> declarations
 va
-//@[00:02) [BCP007 (Error)] This declaration type is not recognized. Specify a parameter, variable, resource, or output declaration. (CodeDescription: none) |va|
+//@[00:02) [BCP007 (Error)] This declaration type is not recognized. Specify a metadata, parameter, variable, resource, or output declaration. (CodeDescription: none) |va|
 
 // unassigned variable
 var foo
@@ -135,6 +135,7 @@ var test3 = {
 var testDupe = {
 //@[04:12) [no-unused-vars (Warning)] Variable "testDupe" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |testDupe|
   'duplicate': true
+//@[02:13) [prefer-unquoted-property-names (Warning)] Property names that are valid identifiers should be declared without quotation marks and accessed using dot notation. (CodeDescription: bicep core(https://aka.ms/bicep/linter/prefer-unquoted-property-names)) |'duplicate'|
 //@[02:13) [BCP025 (Error)] The property "duplicate" is declared multiple times in this object. Remove or rename the duplicate properties. (CodeDescription: none) |'duplicate'|
   duplicate: true
 //@[02:11) [BCP025 (Error)] The property "duplicate" is declared multiple times in this object. Remove or rename the duplicate properties. (CodeDescription: none) |duplicate|
@@ -166,7 +167,13 @@ var resourceGroup = ''
 //@[04:17) [no-unused-vars (Warning)] Variable "resourceGroup" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |resourceGroup|
 var rgName = resourceGroup().name
 //@[04:10) [no-unused-vars (Warning)] Variable "rgName" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |rgName|
-//@[13:26) [BCP059 (Error)] The name "resourceGroup" is not a function. (CodeDescription: none) |resourceGroup|
+//@[13:26) [BCP265 (Error)] The name "resourceGroup" is not a function. Did you mean "az.resourceGroup"? (CodeDescription: none) |resourceGroup|
+
+var subscription = ''
+//@[04:16) [no-unused-vars (Warning)] Variable "subscription" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |subscription|
+var subName = subscription().name
+//@[04:11) [no-unused-vars (Warning)] Variable "subName" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |subName|
+//@[14:26) [BCP265 (Error)] The name "subscription" is not a function. Did you mean "az.subscription"? (CodeDescription: none) |subscription|
 
 // this does not work at the resource group scope
 var invalidLocationVar = deployment().location
@@ -404,5 +411,21 @@ var keyVaultSecretArrayInterpolatedVar = [
 //@[04:38) [no-unused-vars (Warning)] Variable "keyVaultSecretArrayInterpolatedVar" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |keyVaultSecretArrayInterpolatedVar|
   '${kv.getSecret('mySecret')}'
 //@[05:29) [BCP180 (Error)] Function "getSecret" is not valid at this location. It can only be used when directly assigning to a module parameter with a secure decorator. (CodeDescription: none) |kv.getSecret('mySecret')|
+]
+
+var listSecrets= ''
+//@[04:15) [no-unused-vars (Warning)] Variable "listSecrets" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |listSecrets|
+var listSecretsVar = listSecrets()
+//@[04:18) [no-unused-vars (Warning)] Variable "listSecretsVar" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |listSecretsVar|
+//@[21:32) [BCP265 (Error)] The name "listSecrets" is not a function. Did you mean "az.listSecrets"? (CodeDescription: none) |listSecrets|
+
+var copy = [
+//@[04:08) [BCP239 (Error)] Identifier "copy" is a reserved Bicep symbol name and cannot be used in this context. (CodeDescription: none) |copy|
+//@[04:08) [no-unused-vars (Warning)] Variable "copy" is declared but never used. (CodeDescription: bicep core(https://aka.ms/bicep/linter/no-unused-vars)) |copy|
+  {
+    name: 'one'
+    count: '[notAFunction()]'
+    input: {}
+  }
 ]
 

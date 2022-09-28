@@ -6,6 +6,7 @@ using Bicep.Core.UnitTests.Assertions;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace Bicep.Cli.IntegrationTests
@@ -74,7 +75,55 @@ namespace Bicep.Cli.IntegrationTests
                     "information",
                     "version",
                     "bicep",
-                    "usage");
+                    "usage",
+                    "--license",
+                    "--third-party-notices",
+                    "license information",
+                    "third-party notices");
+            }
+        }
+
+        [TestMethod]
+        public async Task BicepLicenseShouldPrintLicense()
+        {
+            var (output, error, result) = await Bicep("--license");
+
+            using (new AssertionScope())
+            {
+                result.Should().Be(0);
+                error.Should().BeEmpty();
+
+                output.Should().NotBeEmpty();
+                output.Should().ContainAll(
+                    "MIT License",
+                    "Copyright (c) Microsoft Corporation.",
+                    "Permission is hereby granted",
+                    "The above copyright notice",
+                    "THE SOFTWARE IS PROVIDED \"AS IS\"");
+            }
+        }
+
+        [TestMethod]
+        public async Task BicepThirdPartyNoticesShouldPrintNotices()
+        {
+            var (output, error, result) = await Bicep("--third-party-notices");
+
+            using (new AssertionScope())
+            {
+                result.Should().Be(0);
+                error.Should().BeEmpty();
+
+                output.Should().NotBeEmpty();
+                output.Should().ContainAll(
+                    "MIT License",
+                    "Copyright (c) Microsoft Corporation.",
+                    "---------------------------------------------------------",
+                    "Copyright (c) .NET Foundation and Contributors",
+                    "THE SOFTWARE IS PROVIDED \"AS IS\"",
+                    "MIT");
+
+                // the notice file should be long
+                output.Length.Should().BeGreaterThan(100000);
             }
         }
 

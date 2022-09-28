@@ -342,6 +342,23 @@ var rgName = resourceGroup().name
 //@[29:33) Identifier |name|
 //@[33:35) NewLine |\n\n|
 
+var subscription = ''
+//@[00:03) Identifier |var|
+//@[04:16) Identifier |subscription|
+//@[17:18) Assignment |=|
+//@[19:21) StringComplete |''|
+//@[21:22) NewLine |\n|
+var subName = subscription().name
+//@[00:03) Identifier |var|
+//@[04:11) Identifier |subName|
+//@[12:13) Assignment |=|
+//@[14:26) Identifier |subscription|
+//@[26:27) LeftParen |(|
+//@[27:28) RightParen |)|
+//@[28:29) Dot |.|
+//@[29:33) Identifier |name|
+//@[33:35) NewLine |\n\n|
+
 // this does not work at the resource group scope
 //@[49:50) NewLine |\n|
 var invalidLocationVar = deployment().location
@@ -1179,6 +1196,53 @@ var keyVaultSecretArrayInterpolatedVar = [
 //@[28:29) RightParen |)|
 //@[29:31) StringRightPiece |}'|
 //@[31:32) NewLine |\n|
+]
+//@[00:01) RightSquare |]|
+//@[01:03) NewLine |\n\n|
+
+var listSecrets= ''
+//@[00:03) Identifier |var|
+//@[04:15) Identifier |listSecrets|
+//@[15:16) Assignment |=|
+//@[17:19) StringComplete |''|
+//@[19:20) NewLine |\n|
+var listSecretsVar = listSecrets()
+//@[00:03) Identifier |var|
+//@[04:18) Identifier |listSecretsVar|
+//@[19:20) Assignment |=|
+//@[21:32) Identifier |listSecrets|
+//@[32:33) LeftParen |(|
+//@[33:34) RightParen |)|
+//@[34:36) NewLine |\n\n|
+
+var copy = [
+//@[00:03) Identifier |var|
+//@[04:08) Identifier |copy|
+//@[09:10) Assignment |=|
+//@[11:12) LeftSquare |[|
+//@[12:13) NewLine |\n|
+  {
+//@[02:03) LeftBrace |{|
+//@[03:04) NewLine |\n|
+    name: 'one'
+//@[04:08) Identifier |name|
+//@[08:09) Colon |:|
+//@[10:15) StringComplete |'one'|
+//@[15:16) NewLine |\n|
+    count: '[notAFunction()]'
+//@[04:09) Identifier |count|
+//@[09:10) Colon |:|
+//@[11:29) StringComplete |'[notAFunction()]'|
+//@[29:30) NewLine |\n|
+    input: {}
+//@[04:09) Identifier |input|
+//@[09:10) Colon |:|
+//@[11:12) LeftBrace |{|
+//@[12:13) RightBrace |}|
+//@[13:14) NewLine |\n|
+  }
+//@[02:03) RightBrace |}|
+//@[03:04) NewLine |\n|
 ]
 //@[00:01) RightSquare |]|
 //@[01:02) NewLine |\n|
