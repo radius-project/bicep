@@ -348,108 +348,6 @@ resource secret 'core/Secret@v1' = {
             result.Should().NotHaveAnyDiagnostics();
         }
 
-
-        [TestMethod]
-        public void Kubernetes_import_existing_warns_with_readonly_fields()
-        {
-            var result = CompilationHelper.Compile(GetCompilationContext(), @"
-import kubernetes as kubernetes {
-  namespace: 'default'
-  kubeConfig: ''
-}
-resource service 'core/Service@v1' existing = {
-  metadata: {
-    name: 'existing-service'
-    namespace: 'default'
-    labels: {
-      format: 'k8s-extension'
-    }
-    annotations: {
-      foo: 'bar'
-    }
-  }
-}
-");
-
-            result.Should().GenerateATemplate();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
-            {
-                ("BCP073", DiagnosticLevel.Warning, "The property \"labels\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP073", DiagnosticLevel.Warning, "The property \"annotations\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-            });
-        }
-
-        [TestMethod]
-        public void Kubernetes_import_existing_resources()
-        {
-            var result = CompilationHelper.Compile(GetCompilationContext(), @"
-import kubernetes as kubernetes {
-  namespace: 'default'
-  kubeConfig: ''
-}
-resource service 'core/Service@v1' existing = {
-  metadata: {
-    name: 'existing-service'
-    namespace: 'default'
-  }
-}
-resource secret 'core/Secret@v1' existing = {
-  metadata: {
-    name: 'existing-secret'
-    namespace: 'default'
-  }
-}
-resource configmap 'core/ConfigMap@v1' existing = {
-  metadata: {
-    name: 'existing-configmap'
-    namespace: 'default'
-  }
-}
-");
-
-            result.Should().GenerateATemplate();
-            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
-        }
-
-        [TestMethod]
-        public void Kubernetes_import_existing_connectionstring_test()
-        {
-            var result = CompilationHelper.Compile(GetCompilationContext(), @"
-import kubernetes as kubernetes {
-  namespace: 'default'
-  kubeConfig: ''
-}
-resource redisService 'core/Service@v1' existing = {
-  metadata: {
-    name: 'redis-service'
-    namespace: 'default'
-  }
-}
-resource redisSecret 'core/Secret@v1' existing = {
-  metadata: {
-    name: 'redis-secret'
-    namespace: 'default'
-  }
-}
-resource secret 'core/Secret@v1' = {
-  metadata: {
-    name: 'conn-secret'
-    namespace: 'default'
-    labels: {
-      format: 'k8s-extension'
-    }
-  }
-  stringData: {
-    connectionString: '${redisService.metadata.name}.${redisService.metadata.namespace}.svc.cluster.local,password=${base64ToString(redisSecret.data.redisPassword)}'
-  }
-}
-");
-
-            result.Should().GenerateATemplate();
-            result.Should().NotHaveAnyDiagnostics();
-        }
-
-
         [TestMethod]
         public void Storage_import_basic_test_with_qualified_type()
         {
@@ -939,7 +837,7 @@ output arn string = stream.properties.Arn
             result.Template.Should().HaveValueAtPath("$.outputs.id.value", "[reference('stream').id]");
             result.Template.Should().HaveValueAtPath("$.outputs.arn.value", "[reference('stream').properties.Arn]");
         }
-        
+
         [TestMethod]
         public void Az_namespace_can_be_used_without_configuration()
         {

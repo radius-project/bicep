@@ -38,7 +38,7 @@
     <PackageReference Include="Azure.Bicep.Types.K8s" Version="0.1.11" />
     <ProjectReference Include="../Bicep.Types.Aws/Bicep.Types.Aws.csproj" />
     <PackageReference Include="System.IO.Abstractions" Version="17.2.3" />
->>>>>>> upstream/main
+    <PackageReference Include="Azure.Bicep.Internal.RoslynAnalyzers" Version="0.1.17" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="CoreResources.Designer.cs">
