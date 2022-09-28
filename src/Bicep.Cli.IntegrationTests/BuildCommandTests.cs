@@ -66,14 +66,14 @@ namespace Bicep.Cli.IntegrationTests
         [DynamicData(nameof(GetValidDataSets), DynamicDataSourceType.Method, DynamicDataDisplayNameDeclaringType = typeof(DataSet), DynamicDataDisplayName = nameof(DataSet.GetDisplayName))]
         public async Task Build_Valid_SingleFile_ShouldSucceed(DataSet dataSet)
         {
+            var outputDirectory = dataSet.SaveFilesToTestDirectory(TestContext);
             var clientFactory = dataSet.CreateMockRegistryClients(TestContext);
             var templateSpecRepositoryFactory = dataSet.CreateMockTemplateSpecRepositoryFactory(TestContext);
-            var outputDirectory = dataSet.SaveFilesToTestDirectory(TestContext);
             await dataSet.PublishModulesToRegistryAsync(clientFactory, TestContext);
-
             var bicepFilePath = Path.Combine(outputDirectory, DataSet.TestFileMain);
 
-            var settings = new InvocationSettings(BicepTestConstants.CreateFeaturesProvider(TestContext, registryEnabled: dataSet.HasExternalModules), clientFactory, templateSpecRepositoryFactory);
+            var features = BicepTestConstants.CreateFeatureProvider(TestContext, registryEnabled: dataSet.HasExternalModules);
+            var settings = new InvocationSettings(features, clientFactory, templateSpecRepositoryFactory);
             var (output, error, result) = await Bicep(settings, "build", bicepFilePath);
 
             using (new AssertionScope())
@@ -112,7 +112,8 @@ namespace Bicep.Cli.IntegrationTests
             await dataSet.PublishModulesToRegistryAsync(clientFactory, TestContext);
             var bicepFilePath = Path.Combine(outputDirectory, DataSet.TestFileMain);
 
-            var settings = new InvocationSettings(BicepTestConstants.CreateFeaturesProvider(TestContext, registryEnabled: dataSet.HasExternalModules), clientFactory, templateSpecRepositoryFactory);
+            var features = BicepTestConstants.CreateFeatureProvider(TestContext, registryEnabled: dataSet.HasExternalModules);
+            var settings = new InvocationSettings(features, clientFactory, templateSpecRepositoryFactory);
 
             var (output, error, result) = await Bicep(settings, "build", "--stdout", bicepFilePath);
 
@@ -150,7 +151,8 @@ namespace Bicep.Cli.IntegrationTests
             await dataSet.PublishModulesToRegistryAsync(clientFactory, TestContext);
             var bicepFilePath = Path.Combine(outputDirectory, DataSet.TestFileMain);
 
-            var settings = new InvocationSettings(BicepTestConstants.CreateFeaturesProvider(TestContext, registryEnabled: dataSet.HasExternalModules), clientFactory, templateSpecRepositoryFactory);
+            var features = BicepTestConstants.CreateFeatureProvider(TestContext, registryEnabled: dataSet.HasExternalModules);
+            var settings = new InvocationSettings(features, clientFactory, templateSpecRepositoryFactory);
 
             var (restoreOutput, restoreError, restoreResult) = await Bicep(settings, "restore", bicepFilePath);
             using (new AssertionScope())
@@ -182,6 +184,28 @@ namespace Bicep.Cli.IntegrationTests
                 actualLocation: compiledFilePath);
         }
 
+        [DataTestMethod]
+        [BaselineData_Bicepparam.TestData(Filter = BaselineData_Bicepparam.TestDataFilterType.ValidOnly)]
+        [TestCategory(BaselineHelper.BaselineTestCategory)]
+        public async Task Build_Valid_Params_File_Should_Succeed(BaselineData_Bicepparam baselineData)
+        {
+            var data = baselineData.GetData(TestContext);
+
+            var features = BicepTestConstants.CreateFeatureProvider(TestContext, paramsFilesEnabled: true);
+            var settings = new InvocationSettings(features, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory);
+
+            var (output, error, result) = await Bicep(settings, "build", data.Parameters.OutputFilePath);
+
+            using (new AssertionScope())
+            {
+                result.Should().Be(0);
+                output.Should().BeEmpty();
+                AssertNoErrors(error);
+            }
+
+            data.Compiled!.ShouldHaveExpectedJsonValue();
+        }
+
         [TestMethod]
         public async Task Build_Valid_SingleFile_WithDigestReference_ShouldSucceed()
         {
@@ -196,7 +220,7 @@ namespace Bicep.Cli.IntegrationTests
 
             var templateSpecRepositoryFactory = BicepTestConstants.TemplateSpecRepositoryFactory;
 
-            var settings = new InvocationSettings(BicepTestConstants.CreateFeaturesProvider(TestContext, registryEnabled: true), clientFactory.Object, BicepTestConstants.TemplateSpecRepositoryFactory);
+            var settings = new InvocationSettings(BicepTestConstants.CreateFeatureProvider(TestContext, registryEnabled: true), clientFactory.Object, BicepTestConstants.TemplateSpecRepositoryFactory);
 
             var tempDirectory = FileHelper.GetUniqueTestOutputPath(TestContext);
             Directory.CreateDirectory(tempDirectory);
@@ -270,6 +294,27 @@ module empty 'br:{registry}/{repository}@{digest}' = {{
             var defaultSettings = CreateDefaultSettings();
             var diagnostics = GetAllDiagnostics(bicepFilePath, defaultSettings.ClientFactory, defaultSettings.TemplateSpecRepositoryFactory);
             error.Should().ContainAll(diagnostics);
+        }
+
+        [DataTestMethod]
+        [BaselineData_Bicepparam.TestData(Filter = BaselineData_Bicepparam.TestDataFilterType.InvalidOnly)]
+        [TestCategory(BaselineHelper.BaselineTestCategory)]
+        public async Task Build_Invalid_Single_Params_File_ShouldFail_WithExpectedErrorMessage(BaselineData_Bicepparam baselineData)
+        {
+            var data = baselineData.GetData(TestContext);
+
+            var features = BicepTestConstants.CreateFeatureProvider(TestContext, paramsFilesEnabled: true);
+            var settings = new InvocationSettings(features, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory);
+            var diagnostics = GetAllParamDiagnostics(data.Parameters.OutputFilePath, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory);
+
+            var (output, error, result) = await Bicep(settings, "build", data.Parameters.OutputFilePath);
+
+            using (new AssertionScope())
+            {
+                result.Should().Be(1);
+                output.Should().BeEmpty();
+                error.Should().ContainAll(diagnostics);
+            }
         }
 
         [TestMethod]

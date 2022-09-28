@@ -4,13 +4,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, ButtonGroup, Col, Container, Dropdown, FormControl, Nav, Navbar, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
 
 import './playground.css';
-import examples from '../../../docs/examples/index.json';
 import { JsonEditor } from './jsonEditor';
 import { BicepEditor } from './bicepEditor';
 import { copyShareLinkToClipboard, handleShareLink } from './utils';
+import { quickstartsPaths, getQuickstartsLink } from './examples';
 import { decompile } from './lspInterop';
+import { IAppInsights } from '@microsoft/applicationinsights-common';
 
-export const Playground : React.FC = () => {
+interface Props {
+  insights: IAppInsights,
+}
+
+export const Playground : React.FC<Props> = (props) => {
+  const { insights } = props;
   const [jsonContent, setJsonContent] = useState('');
   const [bicepContent, setBicepContent] = useState('');
   const [initialContent, setInitialContent] = useState('');
@@ -30,12 +36,13 @@ export const Playground : React.FC = () => {
 
   async function loadExample(filePath: string) {
     withLoader(async () => {
-      const response = await fetch(`examples/${filePath}`);
+      const response = await fetch(getQuickstartsLink(filePath));
 
       if (!response.ok) {
         throw response.text();
       }
 
+      insights.trackEvent({ name: 'loadExample' }, { path: filePath });
       const bicepText = await response.text();
       setInitialContent(bicepText);
     });
@@ -50,14 +57,16 @@ export const Playground : React.FC = () => {
 
     handleShareLink(content => {
       if (content !== null) {
+        insights.trackEvent({ name: 'openSharedLink' });
         setInitialContent(content);
       } else {
-        loadExample('101/1vm-2nics-2subnets-1vnet/main.bicep');
+        setInitialContent('');
       }
     });
   }, []);
 
   const handlCopyClick = () => {
+    insights.trackEvent({ name: 'copySharedLink' });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     copyShareLinkToClipboard(bicepContent);
@@ -68,6 +77,7 @@ export const Playground : React.FC = () => {
     reader.onload = async (e) => {
       withLoader(async () => {
         try {
+          insights.trackEvent({ name: 'decompileJson' });
           const jsonContents = e.target.result.toString();
           const bicepContents = decompile(jsonContents);
           setInitialContent(bicepContents);
@@ -80,12 +90,12 @@ export const Playground : React.FC = () => {
     reader.readAsText(file);
   }
 
-  const filteredExamples = examples
-    .filter(x => x.description.toLowerCase().indexOf(filterText.toLowerCase()) !== -1)
-    .sort((a, b) => a.description > b.description ? 1 : -1);
+  const filteredExamples = quickstartsPaths
+    .filter(x => x.toLowerCase().indexOf(filterText.toLowerCase()) !== -1)
+    .sort((a, b) => a > b ? 1 : -1);
 
-  const dropdownItems = filteredExamples.map(({ filePath, description }) => (
-    <Dropdown.Item key={filePath} eventKey={filePath} active={false}>{description}</Dropdown.Item>
+  const dropdownItems = filteredExamples.map(path => (
+    <Dropdown.Item key={path} eventKey={path} active={false}>{path}</Dropdown.Item>
   ));
 
   const createTooltip = (text: string) => (
@@ -106,7 +116,7 @@ export const Playground : React.FC = () => {
           <Button size="sm" variant="primary" className="mx-1" onClick={() => uploadInputRef.current.click()}>Decompile</Button>
         </OverlayTrigger>
         <Dropdown as={ButtonGroup} onSelect={loadExample} onToggle={() => setFilterText('')}>
-          <OverlayTrigger placement="bottom" overlay={createTooltip('Select a sample Bicep file to start')}>
+          <OverlayTrigger placement="bottom" overlay={createTooltip('Select an Azure Quickstarts sample file')}>
             <Dropdown.Toggle as={Button} size="sm" variant="primary" className="mx-1">Sample Template</Dropdown.Toggle>
           </OverlayTrigger>
           <Dropdown.Menu align="end">

@@ -53,6 +53,15 @@ namespace Bicep.Core.Syntax
             }
         }
 
+        public virtual void VisitMetadataDeclarationSyntax(MetadataDeclarationSyntax syntax)
+        {
+            this.VisitNodes(syntax.LeadingNodes);
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Assignment);
+            this.Visit(syntax.Value);
+        }
+
         public virtual void VisitParameterDeclarationSyntax(ParameterDeclarationSyntax syntax)
         {
             this.VisitNodes(syntax.LeadingNodes);
@@ -221,12 +230,10 @@ namespace Bicep.Core.Syntax
             this.Visit(syntax.CloseSquare);
         }
 
-        public virtual void VisitForVariableBlockSyntax(ForVariableBlockSyntax syntax)
+        public virtual void VisitVariableBlockSyntax(VariableBlockSyntax syntax)
         {
             this.Visit(syntax.OpenParen);
-            this.Visit(syntax.ItemVariable);
-            this.Visit(syntax.Comma);
-            this.Visit(syntax.IndexVariable);
+            this.VisitNodes(syntax.Children);
             this.Visit(syntax.CloseParen);
         }
 
@@ -328,6 +335,29 @@ namespace Bicep.Core.Syntax
             this.Visit(syntax.AsKeyword);
             this.Visit(syntax.AliasName);
             this.Visit(syntax.Config);
+        }
+
+        public virtual void VisitParameterAssignmentSyntax(ParameterAssignmentSyntax syntax)
+        {
+            this.VisitNodes(syntax.LeadingNodes);
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Name);
+            this.Visit(syntax.Assignment);
+            this.Visit(syntax.Value);
+        }
+
+        public virtual void VisitUsingDeclarationSyntax(UsingDeclarationSyntax syntax)
+        {
+            this.VisitNodes(syntax.LeadingNodes);
+            this.Visit(syntax.Keyword);
+            this.Visit(syntax.Path);
+        }
+        
+        public virtual void VisitLambdaSyntax(LambdaSyntax syntax)
+        {
+            this.Visit(syntax.VariableSection);
+            this.Visit(syntax.Arrow);
+            this.Visit(syntax.Body);
         }
 
         protected void VisitTokens(IEnumerable<Token> tokens)

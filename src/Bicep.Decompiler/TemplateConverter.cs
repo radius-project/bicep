@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Azure.Deployments.Expression.Engines;
@@ -621,11 +622,11 @@ namespace Bicep.Decompiler
         private SyntaxBase ParseJValue(JValue value)
             => value.Type switch
             {
-                JTokenType.String => ParseString(value.ToString(), value),
-                JTokenType.Uri => ParseString(value.ToString(), value),
+                JTokenType.String => ParseString(value.ToString(CultureInfo.InvariantCulture), value),
+                JTokenType.Uri => ParseString(value.ToString(CultureInfo.InvariantCulture), value),
                 JTokenType.Integer => ParseIntegerJToken(value),
-                JTokenType.Date => ParseString(value.ToString(), value),
-                JTokenType.Float => ParseString(value.ToString(), value),
+                JTokenType.Date => ParseString(value.ToString(CultureInfo.InvariantCulture), value),
+                JTokenType.Float => ParseString(value.ToString(CultureInfo.InvariantCulture), value),
                 JTokenType.Boolean => value.Value<bool>() ?
                     new BooleanLiteralSyntax(SyntaxFactory.TrueKeywordToken, true) :
                     new BooleanLiteralSyntax(SyntaxFactory.FalseKeywordToken, false),
@@ -749,6 +750,18 @@ namespace Bicep.Decompiler
 
                     return null;
                 });
+
+        public MetadataDeclarationSyntax ParseMetadata(JProperty value)
+        {
+            List<SyntaxBase> leadingNodes = new();
+            return new MetadataDeclarationSyntax(
+                leadingNodes,
+                SyntaxFactory.CreateToken(TokenType.Identifier, "metadata"),
+                SyntaxFactory.CreateIdentifier(value.Name),
+                SyntaxFactory.AssignmentToken,
+                ParseJToken(value.Value)
+                );
+        }
 
         public ParameterDeclarationSyntax ParseParam(JProperty value)
         {
@@ -967,7 +980,7 @@ namespace Bicep.Decompiler
 
         private (SyntaxBase body, IEnumerable<SyntaxBase> decorators) ProcessResourceCopy(JObject resource, Func<JObject, SyntaxBase> resourceBodyFunc)
         {
-            if (TemplateHelpers.GetProperty(resource, "copy")?.Value is not JObject copyProperty)
+            if (TemplateHelpers.GetProperty(resource, LanguageConstants.CopyLoopIdentifier)?.Value is not JObject copyProperty)
             {
                 return (resourceBodyFunc(resource), Enumerable.Empty<SyntaxBase>());
             }
@@ -1143,7 +1156,7 @@ namespace Bicep.Decompiler
 
             var propsToOmit = new HashSet<string>(new[] {
                 "condition",
-                "copy",
+                LanguageConstants.CopyLoopIdentifier,
                 "resourceGroup",
                 "subscriptionId",
             }, StringComparer.OrdinalIgnoreCase);
@@ -1409,7 +1422,7 @@ namespace Bicep.Decompiler
             var resourcePropsToOmit = new HashSet<string>(new[]
             {
                 "condition",
-                "copy",
+                LanguageConstants.CopyLoopIdentifier,
                 "type",
                 "apiVersion",
                 "dependsOn",
@@ -1463,7 +1476,7 @@ namespace Bicep.Decompiler
             var identifier = nameResolver.TryLookupName(NameType.Output, value.Name) ?? throw new ConversionFailedException($"Unable to find output {value.Name}", value);
 
             SyntaxBase valueSyntax;
-            var copyVal = value.Value?["copy"];
+            var copyVal = value.Value?[LanguageConstants.CopyLoopIdentifier];
             if (copyVal is null)
             {
                 valueSyntax = ParseJToken(value.Value?["value"]);
@@ -1549,13 +1562,13 @@ namespace Bicep.Decompiler
 
         private static IEnumerable<(string name, JToken value, bool isCopyVariable)> GetVariables(IEnumerable<JProperty> variables)
         {
-            var nonCopyVariables = variables.Where(x => !StringComparer.OrdinalIgnoreCase.Equals(x.Name, "copy"));
+            var nonCopyVariables = variables.Where(x => !StringComparer.OrdinalIgnoreCase.Equals(x.Name, LanguageConstants.CopyLoopIdentifier));
             foreach (var nonCopyVariable in nonCopyVariables)
             {
                 yield return (nonCopyVariable.Name, nonCopyVariable.Value, false);
             }
 
-            var copyVariables = variables.FirstOrDefault(x => StringComparer.OrdinalIgnoreCase.Equals(x.Name, "copy"))?.Value as JArray;
+            var copyVariables = variables.FirstOrDefault(x => StringComparer.OrdinalIgnoreCase.Equals(x.Name, LanguageConstants.CopyLoopIdentifier))?.Value as JArray;
             foreach (var copyVariable in copyVariables ?? Enumerable.Empty<JToken>())
             {
                 if (copyVariable is not JObject variableObject)
@@ -1591,6 +1604,7 @@ namespace Bicep.Decompiler
                 throw new ConversionFailedException($"Decompilation of symbolic name templates is not currently supported", resourcesObject);
             }
 
+            var metadata = (TemplateHelpers.GetProperty(template, "metadata")?.Value as JObject ?? new JObject()).Properties();
             var parameters = (TemplateHelpers.GetProperty(template, "parameters")?.Value as JObject ?? new JObject()).Properties();
             var resources = TemplateHelpers.GetProperty(template, "resources")?.Value as JArray ?? new JArray();
             var variables = (TemplateHelpers.GetProperty(template, "variables")?.Value as JObject ?? new JObject()).Properties();
@@ -1604,7 +1618,7 @@ namespace Bicep.Decompiler
             var copyResourceLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var resource in resources.OfType<JObject>())
             {
-                var loopName = TemplateHelpers.GetNestedProperty(resource, "copy", "name")?.ToString();
+                var loopName = TemplateHelpers.GetNestedProperty(resource, LanguageConstants.CopyLoopIdentifier, "name")?.ToString();
                 if (loopName is null)
                 {
                     continue;
@@ -1617,6 +1631,8 @@ namespace Bicep.Decompiler
                 }
             }
 
+                    // We are ignoring _generator metadata since it is generated by bicep build
+            AddSyntaxBlock(statements, metadata.Where(x => !x.Name.StartsWith("_")).Select(ParseMetadata), false);
             AddSyntaxBlock(statements, parameters.Select(ParseParam), false);
             AddSyntaxBlock(statements, GetVariables(variables).Select(x => ParseVariable(x.name, x.value, x.isCopyVariable)), false);
             AddSyntaxBlock(statements, flattenedResources.Select(resource => ParseResource(copyResourceLookup, resource)), true);

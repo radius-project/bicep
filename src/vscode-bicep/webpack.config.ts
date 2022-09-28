@@ -41,7 +41,7 @@ const extensionConfig: webpack.Configuration = {
         loader: "esbuild-loader",
         options: {
           loader: "ts",
-          target: "es2016",
+          target: "es2019",
         },
         exclude: [/node_modules/, /visualizer\/app/, /test/],
       },
@@ -53,6 +53,14 @@ const extensionConfig: webpack.Configuration = {
         {
           from: "../textmate/bicep.tmlanguage",
           to: path.join(__dirname, "syntaxes/bicep.tmlanguage"),
+        },
+      ],
+    }) as { apply(...args: unknown[]): void },
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "../textmate/language-configuration.json",
+          to: path.join(__dirname, "syntaxes/language-configuration.json"),
         },
       ],
     }) as { apply(...args: unknown[]): void },
@@ -82,7 +90,7 @@ const visualizerConfig: webpack.Configuration = {
         loader: "esbuild-loader",
         options: {
           loader: "tsx",
-          target: "es2016",
+          target: "es2019",
         },
         exclude: /node_modules/,
       },

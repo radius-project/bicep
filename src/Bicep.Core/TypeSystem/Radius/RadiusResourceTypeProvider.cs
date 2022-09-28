@@ -203,7 +203,7 @@ namespace Bicep.Core.TypeSystem.Radius
                     throw new ArgumentException($"Resource {resourceType.TypeReference.FormatName()} has unexpected body type {bodyType.GetType()}");
             }
 
-            return new ResourceTypeComponents(resourceType.TypeReference, resourceType.ValidParentScopes, bodyType);
+            return resourceType with { Body = bodyType };
         }
 
         private static ObjectType SetBicepResourceProperties(ObjectType objectType, ResourceScope validParentScopes, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
@@ -287,7 +287,14 @@ namespace Bicep.Core.TypeSystem.Radius
                 return SetBicepResourceProperties(resourceType, flags);
             });
 
-            return new(declaringNamespace, resourceType.TypeReference, resourceType.ValidParentScopes, resourceType.Body, UniqueIdentifierProperties);
+            return new(
+                declaringNamespace,
+                resourceType.TypeReference,
+                resourceType.ValidParentScopes,
+                resourceType.ReadOnlyScopes,
+                resourceType.Flags,
+                resourceType.Body,
+                UniqueIdentifierProperties);
         }
 
         public ResourceType? TryGenerateFallbackType(NamespaceType declaringNamespace, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)

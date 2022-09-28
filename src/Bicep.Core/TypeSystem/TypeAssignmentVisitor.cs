@@ -21,24 +21,6 @@ namespace Bicep.Core.TypeSystem
 {
     public sealed class TypeAssignmentVisitor : SyntaxVisitor
     {
-        private class TypeAssignment
-        {
-            public TypeAssignment(ITypeReference reference)
-                : this(reference, Enumerable.Empty<IDiagnostic>())
-            {
-            }
-
-            public TypeAssignment(ITypeReference reference, IEnumerable<IDiagnostic> diagnostics)
-            {
-                Reference = reference;
-                Diagnostics = diagnostics;
-            }
-
-            public ITypeReference Reference { get; }
-
-            public IEnumerable<IDiagnostic> Diagnostics { get; }
-        }
-
         private readonly IFeatureProvider features;
         private readonly ITypeManager typeManager;
         private readonly IBinder binder;
@@ -173,25 +155,47 @@ namespace Bicep.Core.TypeSystem
                 }
 
                 var parent = this.binder.GetParent(syntax);
-                var @for = parent switch
+
+
+                switch (localVariableSymbol.LocalKind)
                 {
-                    ForSyntax forParent => forParent,
-                    ForVariableBlockSyntax block when this.binder.GetParent(block) is ForSyntax forParent => forParent,
-                    _ => throw new InvalidOperationException($"{syntax.GetType().Name} at {syntax.Span} has an unexpected parent of type {parent?.GetType().Name}")
-                };
+                    case LocalKind.ForExpressionItemVariable:
+                        // this local variable is a loop item variable
+                        // we should return item type of the array (if feasible)
+                        var @for = parent switch
+                        {
+                            ForSyntax forParent => forParent,
+                            VariableBlockSyntax block when this.binder.GetParent(block) is ForSyntax forParent => forParent,
+                            _ => throw new InvalidOperationException($"{syntax.GetType().Name} at {syntax.Span} has an unexpected parent of type {parent?.GetType().Name}")
+                        };
 
-                return localVariableSymbol.LocalKind switch
-                {
-                    // this local variable is a loop item variable
-                    // we should return item type of the array (if feasible)
-                    LocalKind.ForExpressionItemVariable => GetItemType(@for),
+                        return GetItemType(@for);
 
-                    // the local variable is an index variable
-                    // index variables are always of type int
-                    LocalKind.ForExpressionIndexVariable => LanguageConstants.Int,
+                    case LocalKind.ForExpressionIndexVariable:
+                        // the local variable is an index variable
+                        // index variables are always of type int
+                        return LanguageConstants.Int;
 
-                    _ => throw new InvalidOperationException($"Unexpected local kind '{localVariableSymbol.LocalKind}'.")
-                };
+                    case LocalKind.LambdaItemVariable:
+                        var (lambda, argumentIndex) = parent switch
+                        {
+                            LambdaSyntax lambdaSyntax => (lambdaSyntax, 0),
+                            VariableBlockSyntax block when this.binder.GetParent(block) is LambdaSyntax lambdaSyntax => (lambdaSyntax, block.Arguments.IndexOf(syntax)),
+                            _ => throw new InvalidOperationException($"{syntax.GetType().Name} at {syntax.Span} has an unexpected parent of type {parent?.GetType().Name}"),
+                        };
+
+                        if (binder.GetParent(lambda) is {} lambdaParent &&
+                            typeManager.GetDeclaredType(lambdaParent) is LambdaType lambdaType &&
+                            argumentIndex < lambdaType.ArgumentTypes.Length)
+                        {
+                            return lambdaType.ArgumentTypes[argumentIndex];
+                        }
+
+                        return LanguageConstants.Any;
+
+                    default:
+                        throw new InvalidOperationException($"Unexpected local kind '{localVariableSymbol.LocalKind}'.");
+                }
             });
 
         public override void VisitForSyntax(ForSyntax syntax)
@@ -252,24 +256,31 @@ namespace Bicep.Core.TypeSystem
                     return singleDeclaredType;
                 }
 
-                if (singleDeclaredType is ResourceType resourceType &&
-                    !resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                if (singleDeclaredType is ResourceType resourceType)
                 {
-                    // TODO move into Az extension
-                    var typeSegments = resourceType.TypeReference.TypeSegments;
+                    if (!resourceType.DeclaringNamespace.ResourceTypeProvider.HasDefinedType(resourceType.TypeReference))
+                    {
+                        // TODO move into Az extension
+                        var typeSegments = resourceType.TypeReference.TypeSegments;
 
-                    if (resourceType.DeclaringNamespace.ProviderName == AzNamespaceType.BuiltInName &&
-                        typeSegments.Length > 2 &&
-                        typeSegments.Where((type, i) => i > 1 && i < (typeSegments.Length - 1) && StringComparer.OrdinalIgnoreCase.Equals(type, "providers")).Any())
-                    {
-                        // Special check for (<type>/)+providers(/<type>)+
-                        // This indicates someone is trying to deploy an extension resource without using the 'scope' property.
-                        // We should instead point them towards documentation on the 'scope' property.
-                        diagnostics.Write(syntax.Type, x => x.ResourceTypeContainsProvidersSegment());
+                        if (resourceType.DeclaringNamespace.ProviderName == AzNamespaceType.BuiltInName &&
+                            typeSegments.Length > 2 &&
+                            typeSegments.Where((type, i) => i > 1 && i < (typeSegments.Length - 1) && StringComparer.OrdinalIgnoreCase.Equals(type, "providers")).Any())
+                        {
+                            // Special check for (<type>/)+providers(/<type>)+
+                            // This indicates someone is trying to deploy an extension resource without using the 'scope' property.
+                            // We should instead point them towards documentation on the 'scope' property.
+                            diagnostics.Write(syntax.Type, x => x.ResourceTypeContainsProvidersSegment());
+                        }
+                        else
+                        {
+                            diagnostics.Write(syntax.Type, x => x.ResourceTypesUnavailable(resourceType.TypeReference));
+                        }
                     }
-                    else
+
+                    if (!syntax.IsExistingResource() && resourceType.Flags.HasFlag(ResourceFlags.ReadOnly))
                     {
-                        diagnostics.Write(syntax.Type, x => x.ResourceTypesUnavailable(resourceType.TypeReference));
+                        diagnostics.Write(syntax.Type, x => x.ResourceTypeIsReadonly(resourceType.TypeReference));
                     }
                 }
 
@@ -439,7 +450,7 @@ namespace Bicep.Core.TypeSystem
 
                 this.ValidateDecorators(syntax.Decorators, namespaceType, diagnostics);
 
-                if (syntax.Config is not null)
+                if (syntax.Config is not SkippedTriviaSyntax)
                 {
                     if (namespaceType.ConfigurationType is null)
                     {
@@ -524,6 +535,30 @@ namespace Bicep.Core.TypeSystem
                 }
             }
         }
+
+        public override void VisitMetadataDeclarationSyntax(MetadataDeclarationSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                var errors = new List<ErrorDiagnostic>();
+
+                var valueType = typeManager.GetTypeInfo(syntax.Value);
+                CollectErrors(errors, valueType);
+
+                if (PropagateErrorType(errors, valueType))
+                {
+                    return ErrorType.Create(errors);
+                }
+
+                if (TypeValidator.AreTypesAssignable(valueType, LanguageConstants.Any) != true)
+                {
+                    return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.Value).VariableTypeAssignmentDisallowed(valueType));
+                }
+
+                ValidateDecorators(syntax.Decorators, valueType, diagnostics);
+                TypeValidator.GetCompileTimeConstantViolation(syntax.Value, diagnostics);
+
+                return valueType;
+            });
 
         public override void VisitVariableDeclarationSyntax(VariableDeclarationSyntax syntax)
             => AssignTypeWithDiagnostics(syntax, diagnostics =>
@@ -766,8 +801,13 @@ namespace Bicep.Core.TypeSystem
 
                 // operands don't appear to have errors
                 // let's match the operator now
-                var operatorInfo = BinaryOperationResolver.TryMatchExact(syntax.Operator, operandType1, operandType2);
-                if (operatorInfo != null)
+                // we may receive multiple matches when an overloaded operator (such as <, <=, >, or >=) is used with operands of "any" type
+                // however, overloaded operators MUST have the same return type, so we can use the first match
+                // (the return type constraint on overloaded operators has a corresponding test assertion to prevent future regressions)
+                var operatorInfo = BinaryOperationResolver
+                    .GetMatches(syntax.Operator, operandType1, operandType2)
+                    .FirstOrDefault();
+                if (operatorInfo is not null)
                 {
                     // we found a match - use its return type
                     return operatorInfo.ReturnType;
@@ -1049,9 +1089,25 @@ namespace Bicep.Core.TypeSystem
                     case FunctionSymbol function:
                         return GetFunctionSymbolType(function, syntax, errors, diagnostics);
 
+                    case Symbol symbolInfo when binder.NamespaceResolver.GetKnownFunctions(symbolInfo.Name).FirstOrDefault() is {} knownFunction:
+                        // A function exists, but it's being shadowed by another symbol in the file
+                        return ErrorType.Create(
+                            errors.Append(
+                                DiagnosticBuilder.ForPosition(syntax.Name.Span)
+                                .SymbolicNameShadowsAKnownFunction(syntax.Name.IdentifierName, knownFunction.DeclaringObject.Name, knownFunction.Name)));
+
                     default:
                         return ErrorType.Create(errors.Append(DiagnosticBuilder.ForPosition(syntax.Name.Span).SymbolicNameIsNotAFunction(syntax.Name.IdentifierName)));
                 }
+            });
+
+        public override void VisitLambdaSyntax(LambdaSyntax syntax)
+            => AssignTypeWithDiagnostics(syntax, diagnostics =>
+            {
+                var argumentTypes = syntax.GetLocalVariables().Select(x => typeManager.GetTypeInfo(x));
+                var returnType = TypeValidator.NarrowTypeAndCollectDiagnostics(typeManager, binder, diagnostics, syntax.Body, LanguageConstants.Any);
+
+                return new LambdaType(argumentTypes.ToImmutableArray<ITypeReference>(), returnType);
             });
 
         private Symbol? GetSymbolForDecorator(DecoratorSyntax decorator)
@@ -1077,6 +1133,7 @@ namespace Bicep.Core.TypeSystem
 
             var functionFlags = binder.GetParent(decorator) switch
             {
+                MetadataDeclarationSyntax _ => FunctionFlags.MetadataDecorator,
                 ResourceDeclarationSyntax _ => FunctionFlags.ResourceDecorator,
                 ModuleDeclarationSyntax _ => FunctionFlags.ModuleDecorator,
                 ParameterDeclarationSyntax _ => FunctionFlags.ParameterDecorator,
@@ -1199,6 +1256,7 @@ namespace Bicep.Core.TypeSystem
 
                 return functionSymbol?.FunctionFlags switch
                 {
+                    FunctionFlags.MetadataDecorator => builder.ExpectedMetadataDeclarationAfterDecorator(),
                     FunctionFlags.ParameterDecorator => builder.ExpectedParameterDeclarationAfterDecorator(),
                     FunctionFlags.VariableDecorator => builder.ExpectedVariableDeclarationAfterDecorator(),
                     FunctionFlags.ResourceDecorator => builder.ExpectedResourceDeclarationAfterDecorator(),
@@ -1332,7 +1390,7 @@ namespace Bicep.Core.TypeSystem
                 matchedFunctionOverloads.TryAdd(syntax, matchedOverload);
 
                 // return its type
-                var result = matchedOverload.ResultBuilder(binder, fileResolver, diagnosticWriter, syntax.Arguments.ToImmutableArray(), argumentTypes);
+                var result = matchedOverload.ResultBuilder(binder, fileResolver, diagnosticWriter, syntax, argumentTypes);
                 if (result.Value is not null)
                 {
                     matchedFunctionResultValues.TryAdd(syntax, result.Value);

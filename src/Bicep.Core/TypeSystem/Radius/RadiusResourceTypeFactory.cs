@@ -22,7 +22,7 @@ namespace Bicep.Core.TypeSystem.Radius
             var resourceTypeReference = ResourceTypeReference.Parse(resourceType.Name);
             var bodyType = GetTypeSymbol(resourceType.Body.Type, true);
 
-            return new ResourceTypeComponents(resourceTypeReference, ToResourceScope(resourceType.ScopeType), bodyType);
+            return new ResourceTypeComponents(resourceTypeReference, ToResourceScope(resourceType.ScopeType), ToResourceScope(resourceType.ReadOnlyScopes), ToResourceFlags(resourceType.Flags), bodyType);
         }
 
         private TypeSymbol GetTypeSymbol(Azure.Bicep.Types.Concrete.TypeBase serializedType, bool isResourceBodyType)
@@ -56,7 +56,7 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 flags |= TypePropertyFlags.DeployTimeConstant;
             }
-            if (!input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Required) && !input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.ReadOnly))
+            if(!input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Required) && !input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.ReadOnly))
             {
                 // for non-required and non-readonly resource properties, we allow null assignment
                 flags |= TypePropertyFlags.AllowImplicitNull;
@@ -70,8 +70,7 @@ namespace Bicep.Core.TypeSystem.Radius
             switch (typeBase)
             {
                 case Azure.Bicep.Types.Concrete.BuiltInType builtInType:
-                    return builtInType.Kind switch
-                    {
+                    return builtInType.Kind switch {
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Any => LanguageConstants.Any,
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Null => LanguageConstants.Null,
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Bool => LanguageConstants.Bool,
@@ -140,6 +139,16 @@ namespace Bicep.Core.TypeSystem.Radius
             return TypeSymbolValidationFlags.WarnOnTypeMismatch;
         }
 
+        private static ResourceFlags ToResourceFlags(Azure.Bicep.Types.Concrete.ResourceFlags input)
+        {
+            var output = ResourceFlags.None;
+            if (input.HasFlag(Azure.Bicep.Types.Concrete.ResourceFlags.ReadOnly)) {
+                output |= ResourceFlags.ReadOnly;
+            }
+
+            return output;
+        }
+
         private static ResourceScope ToResourceScope(Azure.Bicep.Types.Concrete.ScopeType input)
         {
             if (input == Azure.Bicep.Types.Concrete.ScopeType.Unknown)
@@ -156,5 +165,8 @@ namespace Bicep.Core.TypeSystem.Radius
 
             return output;
         }
+
+        private static ResourceScope ToResourceScope(Azure.Bicep.Types.Concrete.ScopeType? input)
+            => input.HasValue ? ToResourceScope(input.Value) : ResourceScope.None;
     }
 }

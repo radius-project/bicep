@@ -18,5 +18,7 @@ namespace Bicep.Core.Semantics
         Local,
         Scope,
         Property,
+        AssignedParameter,
+        Metadata,
     }
 }

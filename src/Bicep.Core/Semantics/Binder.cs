@@ -15,7 +15,7 @@ namespace Bicep.Core.Semantics
     {
         private readonly BicepFile bicepFile;
         private readonly ImmutableDictionary<SyntaxBase, Symbol> bindings;
-        private readonly ImmutableDictionary<DeclaredSymbol, ImmutableArray<DeclaredSymbol>> cyclesBySymbol;
+        private readonly ImmutableDictionary<BindableSymbol, ImmutableArray<BindableSymbol>> cyclesBySymbol;
 
         public Binder(INamespaceProvider namespaceProvider, BicepFile bicepFile, ISymbolContext symbolContext)
         {
@@ -53,7 +53,7 @@ namespace Bicep.Core.Semantics
         /// <param name="syntax">the syntax node</param>
         public Symbol? GetSymbolInfo(SyntaxBase syntax) => this.bindings.TryGetValue(syntax);
 
-        public ImmutableArray<DeclaredSymbol>? TryGetCycle(DeclaredSymbol declaredSymbol)
+        public ImmutableArray<BindableSymbol>? TryGetCycle(DeclaredSymbol declaredSymbol)
             => this.cyclesBySymbol.TryGetValue(declaredSymbol, out var cycle) ? cycle : null;
 
         private static ImmutableDictionary<string, DeclaredSymbol> GetUniqueDeclarations(IEnumerable<DeclaredSymbol> outermostDeclarations)
@@ -62,8 +62,9 @@ namespace Bicep.Core.Semantics
             // for simplicitly we will bind to the first one
             // it may cause follow-on type errors, but there will also be errors about duplicate identifiers as well
             return outermostDeclarations
+                .OrderBy(x => x is not OutputSymbol && x is not MetadataSymbol ? 0 : 1)
                 .ToLookup(x => x.Name, LanguageConstants.IdentifierComparer)
-                .ToImmutableDictionary(x => x.Key, x => x.First(), LanguageConstants.IdentifierComparer);
+                .ToImmutableDictionary(x => x.Key, x => x.First(), LanguageConstants.IdentifierComparer);;
         }
 
         private static NamespaceResolver GetNamespaceResolver(INamespaceProvider namespaceProvider, ResourceScope targetScope, ImmutableDictionary<string, DeclaredSymbol> uniqueDeclarations)
@@ -73,7 +74,7 @@ namespace Bicep.Core.Semantics
             return NamespaceResolver.Create(namespaceProvider, targetScope, importedNamespaces);
         }
 
-        private static ImmutableDictionary<DeclaredSymbol, ImmutableArray<DeclaredSymbol>> GetCyclesBySymbol(BicepFile bicepFile, IReadOnlyDictionary<SyntaxBase, Symbol> bindings)
+        private static ImmutableDictionary<BindableSymbol, ImmutableArray<BindableSymbol>> GetCyclesBySymbol(BicepFile bicepFile, IReadOnlyDictionary<SyntaxBase, Symbol> bindings)
         {
             return CyclicCheckVisitor.FindCycles(bicepFile.ProgramSyntax, bindings);
         }

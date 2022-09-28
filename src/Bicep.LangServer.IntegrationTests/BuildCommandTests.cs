@@ -28,7 +28,7 @@ namespace Bicep.LangServer.IntegrationTests
         public async Task Build_command_should_generate_template()
         {
             var diagnosticsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
-            var features = BicepTestConstants.CreateFeaturesProvider(
+            var features = BicepTestConstants.CreateFeatureProvider(
                 TestContext,
                 assemblyFileVersion: BicepTestConstants.DevAssemblyFileVersion);
 
@@ -42,8 +42,8 @@ namespace Bicep.LangServer.IntegrationTests
 
             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(
                 TestContext,
-                typeof(ExamplesTests).Assembly,
-                "Bicep.Core.Samples/Resources_CRLF");
+                typeof(DataSet).Assembly,
+                "Files/Resources_CRLF");
 
             var bicepFilePath = Path.Combine(outputDirectory, "main.bicep");
             var expectedJson = File.ReadAllText(Path.Combine(outputDirectory, "main.json"));
@@ -67,7 +67,7 @@ namespace Bicep.LangServer.IntegrationTests
         public async Task Build_command_should_generate_template_with_symbolic_names_if_enabled()
         {
             var diagnosticsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
-            var features = BicepTestConstants.CreateFeaturesProvider(
+            var features = BicepTestConstants.CreateFeatureProvider(
                 TestContext,
                 symbolicNameCodegenEnabled: true,
                 assemblyFileVersion: BicepTestConstants.DevAssemblyFileVersion);
@@ -82,8 +82,8 @@ namespace Bicep.LangServer.IntegrationTests
 
             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(
                 TestContext,
-                typeof(ExamplesTests).Assembly,
-                "Bicep.Core.Samples/Resources_CRLF");
+                typeof(DataSet).Assembly,
+                "Files/Resources_CRLF");
 
             var bicepFilePath = Path.Combine(outputDirectory, "main.bicep");
             var expectedJson = File.ReadAllText(Path.Combine(outputDirectory, "main.symbolicnames.json"));

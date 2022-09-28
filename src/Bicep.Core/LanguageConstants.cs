@@ -16,6 +16,9 @@ namespace Bicep.Core
         public const string LanguageId = "bicep";
         public const string LanguageFileExtension = ".bicep";
 
+        public const string ParamsLanguageId = "bicep-params";
+        public const string ParamsFileExtension = ".bicepparam";
+
         public const string JsonLanguageId = "json";
         public const string JsoncLanguageId = "jsonc";
         public const string ArmTemplateLanguageId = "arm-template"; // Provided by the ARM Tools VSCode extension.
@@ -38,7 +41,9 @@ namespace Bicep.Core
         public const string MissingName = "<missing>";
 
         public const string TargetScopeKeyword = "targetScope";
+        public const string MetadataKeyword = "metadata";
         public const string ParameterKeyword = "param";
+        public const string UsingKeyword = "using";
         public const string OutputKeyword = "output";
         public const string VariableKeyword = "var";
         public const string ResourceKeyword = "resource";
@@ -59,16 +64,15 @@ namespace Bicep.Core
         public const string TargetScopeTypeSubscription = "subscription";
         public const string TargetScopeTypeResourceGroup = "resourceGroup";
 
-        public const string BicepConfigurationFileName = "bicepconfig.json";
+        public const string CopyLoopIdentifier = "copy";
 
-        // An internal-only command used in code actions to edit a particular rule in the bicepconfig.json file
-        public const string EditLinterRuleCommandName = "bicep.EditLinterRule";
+        public const string BicepConfigurationFileName = "bicepconfig.json";
 
         public const string DisableNextLineDiagnosticsKeyword = "disable-next-line";
 
         public static readonly Regex ArmTemplateSchemaRegex = new(@"https?:\/\/schema\.management\.azure\.com\/schemas\/([^""\/]+\/[a-zA-Z]*[dD]eploymentTemplate\.json)#?");
 
-        public static readonly ImmutableSortedSet<string> DeclarationKeywords = new[] { ParameterKeyword, VariableKeyword, ResourceKeyword, OutputKeyword, ModuleKeyword }.ToImmutableSortedSet(StringComparer.Ordinal);
+        public static readonly ImmutableSortedSet<string> DeclarationKeywords = new[] { MetadataKeyword, ParameterKeyword, VariableKeyword, ResourceKeyword, OutputKeyword, ModuleKeyword }.ToImmutableSortedSet(StringComparer.Ordinal);
 
         public static readonly ImmutableSortedSet<string> ContextualKeywords = DeclarationKeywords
             .Add(TargetScopeKeyword)
@@ -79,6 +83,8 @@ namespace Bicep.Core
         public const string TrueKeyword = "true";
         public const string FalseKeyword = "false";
         public const string NullKeyword = "null";
+
+        public const string ListFunctionPrefix = "list";
 
         public static readonly ImmutableDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>(StringComparer.Ordinal)
         {
@@ -151,6 +157,10 @@ namespace Bicep.Core
         public static readonly TypeSymbol Bool = new PrimitiveType("bool", TypeSymbolValidationFlags.Default);
         public static readonly TypeSymbol Null = new PrimitiveType(NullKeyword, TypeSymbolValidationFlags.Default);
         public static readonly TypeSymbol Array = new ArrayType(ArrayType);
+
+        public static readonly TypeSymbol StringFilePath = new PrimitiveType(TypeNameString, TypeSymbolValidationFlags.IsStringFilePath);
+        public static readonly TypeSymbol StringJsonFilePath = new PrimitiveType(TypeNameString, TypeSymbolValidationFlags.IsStringFilePath | TypeSymbolValidationFlags.IsStringJsonFilePath);
+
         //Type for available loadTextContent encoding
 
         public static readonly ImmutableArray<(string name, Encoding encoding)> SupportedEncodings = new[]{
@@ -168,7 +178,7 @@ namespace Bicep.Core
 
         // types allowed to use in output and parameter declarations
         public static readonly ImmutableSortedDictionary<string, TypeSymbol> DeclarationTypes = new[] { String, Object, Int, Bool, Array }.ToImmutableSortedDictionary(type => type.Name, type => type, StringComparer.Ordinal);
-
+        
         public static TypeSymbol? TryGetDeclarationType(string? typeName)
         {
             if (typeName != null && DeclarationTypes.TryGetValue(typeName, out var primitiveType))

@@ -13,6 +13,8 @@ using Bicep.Core.TypeSystem;
 using Bicep.Core.UnitTests;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
+using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -21,8 +23,7 @@ namespace Bicep.Core.IntegrationTests
     [TestClass]
     public class ScenarioTests
     {
-        [NotNull]
-        public TestContext? TestContext { get; set; }
+        [NotNull] public TestContext? TestContext { get; set; }
 
         [TestMethod]
         // https://github.com/azure/bicep/issues/3636
@@ -43,7 +44,7 @@ namespace Bicep.Core.IntegrationTests
             {
                 const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 return new string(Enumerable.Repeat(chars, generateRandomInt())
-                  .Select(s => s[generateRandomInt(0, s.Length - 1)]).ToArray());
+                    .Select(s => s[generateRandomInt(0, s.Length - 1)]).ToArray());
             }
 
             var file = "param adminuser string\nvar adminstring = 'xyx ${adminuser} 123'\n";
@@ -53,6 +54,7 @@ namespace Bicep.Core.IntegrationTests
                 file += $"  testa{i}: '{randomString()} ${{adminuser}} {randomString()}'\n";
                 file += $"  testb{i}: '{randomString()} ${{adminstring}} {randomString()}'\n";
             }
+
             file += "}\n";
 
             // not a true test for existing diagnostics
@@ -72,7 +74,8 @@ param l
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP028", DiagnosticLevel.Error, "Identifier \"l\" is declared multiple times. Remove or rename the duplicates."),
                 ("BCP079", DiagnosticLevel.Error, "This expression is referencing its own declaration, which is not allowed."),
                 ("BCP028", DiagnosticLevel.Error, "Identifier \"l\" is declared multiple times. Remove or rename the duplicates."),
@@ -566,7 +569,8 @@ resource redis 'Microsoft.Cache/Redis@2019-07-01' = {
 "));
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"scope\" property of the \"module\" type, which requires a value that can be calculated at the start of the deployment. You are referencing a variable which cannot be calculated at the start (\"appResGrp\" -> \"rg\"). Properties of rg which can be calculated at the start include \"name\"."),
             });
         }
@@ -667,7 +671,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   location: location
 }
 
-resource rgOwner 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource rgOwner 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: '${guid(rg.name, 'owner')}'
   scope: rg
   properties: {
@@ -677,7 +681,7 @@ resource rgOwner 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = 
   }
 }
 
-resource rgContributor 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource rgContributor 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: '${guid(rg.name, 'contributor')}'
   scope: rg
   properties: {
@@ -687,7 +691,7 @@ resource rgContributor 'Microsoft.Authorization/roleAssignments@2020-04-01-previ
   }
 }
 
-resource rgReader 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource rgReader 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: '${guid(rg.name, 'reader')}'
   scope: rg
   properties: {
@@ -699,7 +703,8 @@ resource rgReader 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' =
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP139", DiagnosticLevel.Error, "A resource's scope must match the scope of the Bicep file for it to be deployable. You must use modules to deploy resources to a different scope."),
                 ("BCP139", DiagnosticLevel.Error, "A resource's scope must match the scope of the Bicep file for it to be deployable. You must use modules to deploy resources to a different scope."),
                 ("BCP139", DiagnosticLevel.Error, "A resource's scope must match the scope of the Bicep file for it to be deployable. You must use modules to deploy resources to a different scope."),
@@ -715,7 +720,8 @@ targetScope = 'blablah'
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP033", DiagnosticLevel.Error, "Expected a value of type \"'managementGroup' | 'resourceGroup' | 'subscription' | 'tenant'\" but the provided value is of type \"'blablah'\"."),
             });
         }
@@ -747,7 +753,8 @@ output duplicate string = 'hello'
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP145", DiagnosticLevel.Error, "Output \"duplicate\" is declared multiple times. Remove or rename the duplicates."),
                 ("BCP145", DiagnosticLevel.Error, "Output \"duplicate\" is declared multiple times. Remove or rename the duplicates."),
             });
@@ -763,7 +770,8 @@ output output2 string = output1
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP058", DiagnosticLevel.Error, "The name \"output1\" is an output. Outputs cannot be referenced in expressions."),
             });
         }
@@ -778,7 +786,8 @@ output xx = x
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP146", DiagnosticLevel.Error, "Expected an output type at this location. Please specify one of the following types: \"array\", \"bool\", \"int\", \"object\", \"string\"."),
             });
         }
@@ -877,14 +886,14 @@ module stamp_1_secrets './kevault-secrets.bicep' = [for secret in secrets: {
         public void Test_Issue1592()
         {
             var result = CompilationHelper.Compile(
-              ("main.bicep", @"
+                ("main.bicep", @"
 module foo 'test.bicep' = {
   name: 'foo'
 }
 
 output fooName string = foo.name
     "),
-              ("test.bicep", @""));
+                ("test.bicep", @""));
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             result.Template.Should().HaveValueAtPath("$.outputs['fooName'].value", "foo");
@@ -895,7 +904,7 @@ output fooName string = foo.name
         public void Test_Issue1592_special_cases()
         {
             var result = CompilationHelper.Compile(
-              ("main.bicep", @"
+                ("main.bicep", @"
 param someParam string
 
 module foo 'test.bicep' = {
@@ -905,7 +914,7 @@ module foo 'test.bicep' = {
 output fooName string = foo.name
 output fooOutput string = foo.outputs.test
     "),
-              ("test.bicep", @"
+                ("test.bicep", @"
 output test string = 'hello'
 "));
 
@@ -926,7 +935,8 @@ resource foo 'Microsoft.Compute/virtualMachines@2020-06-01' = {
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP025", DiagnosticLevel.Error, "The property \"name\" is declared multiple times in this object. Remove or rename the duplicate properties."),
                 ("BCP025", DiagnosticLevel.Error, "The property \"name\" is declared multiple times in this object. Remove or rename the duplicate properties."),
             });
@@ -943,7 +953,8 @@ var foo = 42
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP032", DiagnosticLevel.Error, "The value must be a compile-time constant."),
                 ("BCP057", DiagnosticLevel.Error, "The name \"w\" does not exist in the current context."),
             });
@@ -954,7 +965,9 @@ var foo = 42
         public void Test_Issue1630()
         {
             var result = CompilationHelper.Compile(@"
+#disable-next-line BCP241
 var singleResource = providers('Microsoft.Insights', 'components')
+#disable-next-line BCP241
 var allResources = providers('Microsoft.Insights')
 
 // singleResource is an object!
@@ -998,7 +1011,8 @@ output bar bool = true
 output bar int = 42
 "));
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP104", DiagnosticLevel.Error, "The referenced module has errors."),
             });
         }
@@ -1024,7 +1038,8 @@ resource eventGridSubscription 'Microsoft.EventGrid/topics/providers/eventSubscr
 
             // verify the template still compiles
             result.Template.Should().NotBeNull();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP174", DiagnosticLevel.Warning, "Type validation is not available for resource types declared containing a \"/providers/\" segment. Please instead use the \"scope\" property."),
             });
 
@@ -1041,7 +1056,8 @@ resource resC 'Rp.A/a/b/providers@2020-06-01' = {
 ");
 
             result.Template.Should().NotBeNull();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP081", DiagnosticLevel.Warning, "Resource type \"Rp.A/providers@2020-06-01\" does not have types available."),
                 ("BCP081", DiagnosticLevel.Warning, "Resource type \"Rp.A/providers/a/b@2020-06-01\" does not have types available."),
                 ("BCP081", DiagnosticLevel.Warning, "Resource type \"Rp.A/a/b/providers@2020-06-01\" does not have types available."),
@@ -1078,7 +1094,7 @@ resource aksDefaultPoolSubnet 'Microsoft.Network/virtualNetworks/subnets' existi
   name: aksDefaultPoolSubnetName
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(aksDefaultPoolSubnet.id, 'Network Contributor')
   scope: aksDefaultPoolSubnet
   properties: {
@@ -1093,7 +1109,8 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
 ");
 
             result.Should().NotGenerateATemplate();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP029", DiagnosticLevel.Error, "The resource type is not valid. Specify a valid resource type of format \"<types>@<apiVersion>\"."),
                 ("BCP062", DiagnosticLevel.Error, "The referenced declaration with name \"aksDefaultPoolSubnet\" is not valid."),
                 ("BCP062", DiagnosticLevel.Error, "The referenced declaration with name \"aksDefaultPoolSubnet\" is not valid."),
@@ -1124,7 +1141,7 @@ resource aksDefaultPoolSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-08
   name: aksDefaultPoolSubnetName
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(aksDefaultPoolSubnet.id, 'Network Contributor')
   scope: aksDefaultPoolSubnet
   properties: {
@@ -1138,7 +1155,8 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
 ");
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
-            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray {
+            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray
+            {
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'asdfsdf')]",
                 "[resourceId('Microsoft.Network/virtualNetworks', 'asdfasdf')]", // dependsOn should include the virtualNetwork parent resource
             });
@@ -1164,7 +1182,7 @@ resource userAssignedIdentities 'Microsoft.ManagedIdentity/userAssignedIdentitie
   location: 'West US'
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
   name: guid(virtualNetwork::aksDefaultPoolSubnet.id, 'Network Contributor')
   scope: virtualNetwork::aksDefaultPoolSubnet
   properties: {
@@ -1178,7 +1196,8 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
 ");
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
-            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray {
+            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray
+            {
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'asdfsdf')]",
                 "[resourceId('Microsoft.Network/virtualNetworks', 'asdfasdf')]", // dependsOn should include the virtualNetwork parent resource
             });
@@ -1209,7 +1228,7 @@ resource aksDefaultPoolSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-08
   name: aksDefaultPoolSubnetName
 }]
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [for (vnet, i) in vnets: {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = [for (vnet, i) in vnets: {
   name: guid(aksDefaultPoolSubnet[i].id, 'Network Contributor')
   scope: aksDefaultPoolSubnet[i]
   properties: {
@@ -1223,7 +1242,8 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
 ");
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
-            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray {
+            result.Template.Should().HaveValueAtPath("$.resources[?(@.type == 'Microsoft.Authorization/roleAssignments')].dependsOn", new JArray
+            {
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'asdfsdf')]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('vnets')[copyIndex()])]", // dependsOn should include the virtualNetwork parent resource
             });
@@ -1272,10 +1292,11 @@ output badArray array = [for (name, i) in jsonArrayBad : {
 
 
             var evaluated = TemplateEvaluator.Evaluate(result.Template);
-            var expectedOutput = new JArray {
-                new JObject { ["element"] = "one" },
-                new JObject { ["element"] = "two" },
-                new JObject { ["element"] = "three" },
+            var expectedOutput = new JArray
+            {
+                new JObject {["element"] = "one"},
+                new JObject {["element"] = "two"},
+                new JObject {["element"] = "three"},
             };
             evaluated.Should().HaveValueAtPath("$.outputs['flatArray'].value", expectedOutput);
             evaluated.Should().HaveValueAtPath("$.outputs['goodArray'].value", expectedOutput);
@@ -1290,28 +1311,33 @@ output badArray array = [for (name, i) in jsonArrayBad : {
 param providerNamespace string = 'Microsoft.Web'
 
 output providerOutput object = {
+#disable-next-line BCP241
   thing: providers(providerNamespace)
-
+#disable-next-line BCP241
   otherThing: providers(providerNamespace, 'sites')
 }
 ");
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
 
-            var providersMetadata = new[] {
-                new {
+            var providersMetadata = new[]
+            {
+                new
+                {
                     @namespace = "Microsoft.Web",
-                    resourceTypes = new[] {
-                        new {
+                    resourceTypes = new[]
+                    {
+                        new
+                        {
                             resourceType = "sites",
-                            locations = new[] { "West US", "East US", },
-                            apiVersions = new[] { "2019-01-01", "2020-01-01", },
+                            locations = new[] {"West US", "East US",},
+                            apiVersions = new[] {"2019-01-01", "2020-01-01",},
                         }
                     }
                 }
             };
 
-            var evaluated = TemplateEvaluator.Evaluate(result.Template, config => config with
+            var evaluated = TemplateEvaluator.Evaluate(result.Template, configBuilder: config => config with
             {
                 Metadata = new()
                 {
@@ -1322,11 +1348,13 @@ output providerOutput object = {
             evaluated.Should().HaveValueAtPath("$.outputs['providerOutput'].value.thing", new JObject
             {
                 ["namespace"] = "Microsoft.Web",
-                ["resourceTypes"] = new JArray {
-                    new JObject {
+                ["resourceTypes"] = new JArray
+                {
+                    new JObject
+                    {
                         ["resourceType"] = "sites",
-                        ["locations"] = new JArray { "West US", "East US" },
-                        ["apiVersions"] = new JArray { "2019-01-01", "2020-01-01" },
+                        ["locations"] = new JArray {"West US", "East US"},
+                        ["apiVersions"] = new JArray {"2019-01-01", "2020-01-01"},
                     }
                 }
             });
@@ -1344,30 +1372,39 @@ output providerOutput object = {
         public void Test_Issue2009_expanded()
         {
             var result = CompilationHelper.Compile(@"
+#disable-next-line BCP241
 output providersNamespace string = providers('Test.Rp').namespace
+#disable-next-line BCP241
 output providersResources array = providers('Test.Rp').resourceTypes
 
+#disable-next-line BCP241
 output providersResourceType string = providers('Test.Rp', 'fakeResource').resourceType
+#disable-next-line BCP241
 output providersApiVersionFirst string = providers('Test.Rp', 'fakeResource').apiVersions[0]
+#disable-next-line BCP241
 output providersLocationFirst string = providers('Test.Rp', 'fakeResource').locations[0]
 ");
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
 
-            var providersMetadata = new[] {
-                new {
+            var providersMetadata = new[]
+            {
+                new
+                {
                     @namespace = "Test.Rp",
-                    resourceTypes = new[] {
-                        new {
+                    resourceTypes = new[]
+                    {
+                        new
+                        {
                             resourceType = "fakeResource",
-                            locations = new[] { "Earth", "Mars" },
-                            apiVersions = new[] { "3024-01-01", "4100-01-01", },
+                            locations = new[] {"Earth", "Mars"},
+                            apiVersions = new[] {"3024-01-01", "4100-01-01",},
                         }
                     }
                 }
             };
 
-            var evaluated = TemplateEvaluator.Evaluate(result.Template, config => config with
+            var evaluated = TemplateEvaluator.Evaluate(result.Template, configBuilder: config => config with
             {
                 Metadata = new()
                 {
@@ -1376,11 +1413,13 @@ output providersLocationFirst string = providers('Test.Rp', 'fakeResource').loca
             });
 
             evaluated.Should().HaveValueAtPath("$.outputs['providersNamespace'].value", "Test.Rp");
-            evaluated.Should().HaveValueAtPath("$.outputs['providersResources'].value", new JArray {
-                new JObject {
+            evaluated.Should().HaveValueAtPath("$.outputs['providersResources'].value", new JArray
+            {
+                new JObject
+                {
                     ["resourceType"] = "fakeResource",
-                    ["locations"] = new JArray { "Earth", "Mars" },
-                    ["apiVersions"] = new JArray { "3024-01-01", "4100-01-01" },
+                    ["locations"] = new JArray {"Earth", "Mars"},
+                    ["apiVersions"] = new JArray {"3024-01-01", "4100-01-01"},
                 }
             });
 
@@ -1450,7 +1489,8 @@ resource vmNotWorking 'Microsoft.Compute/virtualMachines@2020-06-01' = {
 ");
 
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP037", DiagnosticLevel.Warning, "The property \"valThatDoesNotExist\" from source declaration \"vmNotWorkingProps\" is not allowed on objects of type \"VirtualMachineProperties\". Permissible properties include \"additionalCapabilities\", \"availabilitySet\", \"billingProfile\", \"diagnosticsProfile\", \"evictionPolicy\", \"extensionsTimeBudget\", \"hardwareProfile\", \"host\", \"hostGroup\", \"licenseType\", \"networkProfile\", \"osProfile\", \"priority\", \"proximityPlacementGroup\", \"securityProfile\", \"storageProfile\", \"virtualMachineScaleSet\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
             });
         }
@@ -1499,7 +1539,7 @@ resource my_subnet 'Microsoft.Network/virtualNetworks/subnets@2020-08-01' existi
   parent: vnet
 }
 
-resource my_interface 'Microsoft.Network/networkInterfaces@2015-05-01-preview' = {
+resource my_interface 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: 'nic-test01'
   location: vnet.location // this is not valid because it requires reference() if resource is 'existing'
   properties: {
@@ -1518,7 +1558,8 @@ resource my_interface 'Microsoft.Network/networkInterfaces@2015-05-01-preview' =
 }
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"location\" property of the \"Microsoft.Network/networkInterfaces\" type, which requires a value that can be calculated at the start of the deployment. Properties of vnet which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\"."),
             });
         }
@@ -1535,7 +1576,7 @@ var sqlDatabase = {
   dataEncryption: 'Enabled'
 }
 
-resource sqlDb 'Microsoft.Sql/servers/databases@2020-02-02-preview' existing = {
+resource sqlDb 'Microsoft.Sql/servers/databases@2021-02-01-preview' existing = {
   name: '${sqlServerName}/${sqlDatabase.name}'
 }
 
@@ -1669,7 +1710,8 @@ output tagsoutput object = {
 }
 "));
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"tags\" property of the \"Microsoft.Network/virtualWans\" type, which requires a value that can be calculated at the start of the deployment. Properties of tags which can be calculated at the start include \"name\"."),
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"tags\" property of the \"Microsoft.Network/virtualWans\" type, which requires a value that can be calculated at the start of the deployment. Properties of tags which can be calculated at the start include \"name\"."),
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"tags\" property of the \"Microsoft.Network/networkSecurityGroups\" type, which requires a value that can be calculated at the start of the deployment. Properties of tags which can be calculated at the start include \"name\"."),
@@ -1698,7 +1740,8 @@ output vmExtNames array = [for vmExtName in vm::vmExts: {
 }]
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP144", DiagnosticLevel.Error, "Directly referencing a resource or module collection is not currently supported. Apply an array indexer to the expression.")
             });
         }
@@ -1718,7 +1761,8 @@ output snetIds array = [for subnet in vnet.properties.subnets: {
 }]
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP178", DiagnosticLevel.Error, "This expression is being used in the for-expression, which requires a value that can be calculated at the start of the deployment. Properties of vnet which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\".")
             });
         }
@@ -1753,7 +1797,8 @@ resource rg3 'Microsoft.Resources/resourceGroups@2020-10-01' = if (rg2[0].tags.f
 }
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP179", DiagnosticLevel.Warning, "Unique resource or deployment name is required when looping. The loop item variable \"item\" must be referenced in at least one of the value expressions of the following properties: \"name\""),
                 ("BCP178", DiagnosticLevel.Error, "This expression is being used in the for-expression, which requires a value that can be calculated at the start of the deployment. You are referencing a variable which cannot be calculated at the start (\"test\" -> \"rg\"). Properties of rg which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\"."),
                 ("BCP177", DiagnosticLevel.Error, "This expression is being used in the if-condition expression, which requires a value that can be calculated at the start of the deployment. Properties of rg2 which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\".")
@@ -1772,7 +1817,8 @@ resource rg3 'Microsoft.Resources/resourceGroups@2020-10-01' = if (rg2[0].tags.f
 param foo string = 'peach'
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP027", DiagnosticLevel.Error, "The parameter expects a default value of type \"'apple' | 'banana'\" but provided value is of type \"'peach'\"."),
             });
         }
@@ -1814,7 +1860,8 @@ output storageAccount object = {
 }
 "));
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP181", DiagnosticLevel.Error, "This expression is being used in an argument of the function \"listSecrets\", which requires a value that can be calculated at the start of the deployment. Properties of stgModule which can be calculated at the start include \"name\"."),
                 ("BCP181", DiagnosticLevel.Error, "This expression is being used in an argument of the function \"listSecrets\", which requires a value that can be calculated at the start of the deployment. Properties of stgModule which can be calculated at the start include \"name\"."),
                 ("BCP181", DiagnosticLevel.Error, "This expression is being used in an argument of the function \"listKeys\", which requires a value that can be calculated at the start of the deployment. Properties of stgModule which can be calculated at the start include \"name\"."),
@@ -1840,7 +1887,8 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
 }
 ");
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"nameCopy\" -> \"name\")."),
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"name\" -> \"nameCopy\")."),
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"name\" -> \"nameCopy\").")
@@ -1901,11 +1949,13 @@ resource cname 'Microsoft.Network/dnsZones/CNAME@2018-05-01' = {
   parent: null
 }
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP036", DiagnosticLevel.Error, "The property \"name\" expected a value of type \"string\" but the provided value is of type \"null\"."),
                 ("BCP036", DiagnosticLevel.Error, "The property \"scope\" expected a value of type \"resource | tenant\" but the provided value is of type \"null\"."),
                 ("BCP036", DiagnosticLevel.Error, "The property \"name\" expected a value of type \"string\" but the provided value is of type \"null\"."),
                 ("BCP036", DiagnosticLevel.Error, "The property \"parent\" expected a value of type \"Microsoft.Network/dnsZones\" but the provided value is of type \"null\"."),
+                ("BCP240", DiagnosticLevel.Error, "The \"parent\" property only permits direct references to resources. Expressions are not supported."),
             });
         }
 
@@ -1939,7 +1989,7 @@ var primaryFoo = foos[0]
 ");
             result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
             {
-                ("BCP076",DiagnosticLevel.Error,"Cannot index over expression of type \"array | bool\". Arrays or objects are required.")
+                ("BCP076", DiagnosticLevel.Error, "Cannot index over expression of type \"array | bool\". Arrays or objects are required.")
             });
         }
 
@@ -2013,7 +2063,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
 ");
             result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
             {
-                ("BCP120",DiagnosticLevel.Error,"This expression is being used in an assignment to the \"name\" property of the \"Microsoft.Network/publicIPAddresses\" type, which requires a value that can be calculated at the start of the deployment.")
+                ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"name\" property of the \"Microsoft.Network/publicIPAddresses\" type, which requires a value that can be calculated at the start of the deployment.")
             });
         }
 
@@ -2022,14 +2072,14 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
         public void Test_Issue2291()
         {
             var result = CompilationHelper.Compile(@"
-resource registry 'Microsoft.ContainerRegistry/registries@2019-12-01-preview' existing = {
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
   name: 'foo'
   resource importPipeline 'importPipelines' existing = {
     name: 'import'
   }
 }
 
-resource pipelineRun 'Microsoft.ContainerRegistry/registries/pipelineRuns@2019-12-01-preview' = [for index in range(0, 3): if(registry::importPipeline.properties.trigger.sourceTrigger.status == 'Disabled') {
+resource pipelineRun 'Microsoft.ContainerRegistry/registries/pipelineRuns@2021-06-01-preview' = [for index in range(0, 3): if(registry::importPipeline.properties.trigger.sourceTrigger.status == 'Disabled') {
   parent: registry
   name: 'bar${index}'
   properties: {
@@ -2048,7 +2098,7 @@ resource pipelineRun 'Microsoft.ContainerRegistry/registries/pipelineRuns@2019-1
 ");
             result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
             {
-                ("BCP177",DiagnosticLevel.Error,"This expression is being used in the if-condition expression, which requires a value that can be calculated at the start of the deployment. Properties of importPipeline which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\".")
+                ("BCP177", DiagnosticLevel.Error, "This expression is being used in the if-condition expression, which requires a value that can be calculated at the start of the deployment. Properties of importPipeline which can be calculated at the start include \"apiVersion\", \"id\", \"name\", \"type\".")
             });
         }
 
@@ -2118,7 +2168,8 @@ resource subnetRef 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' existi
   scope: resourceGroup(vnetResourceGroupName)
 }
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP169", DiagnosticLevel.Error, "Expected resource name to contain 1 \"/\" character(s). The number of name segments must match the number of segments in the resource type."),
             });
         }
@@ -2237,7 +2288,7 @@ param endPointPropertiesWithIdentity object
 param endPointProperties object
 param defaultAdvancedFilterObject object
 
-resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@2020-10-15-preview' = {
+resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@2021-06-01-preview' = {
   name: '${eventGridSystemTopicName}/${subscription.name}'
   properties: {
     deliveryWithResourceIdentity: subscription.destination.useIdentity ? endPointPropertiesWithIdentity[toLower(subscription.destination.type)] : null
@@ -2375,7 +2426,10 @@ output test string = res.id
             result.Should().HaveDiagnostics(new[]
             {
                 ("BCP036", DiagnosticLevel.Error, "The property \"parent\" expected a value of type \"Microsoft.Network/virtualNetworks\" but the provided value is of type \"module\"."),
+                ("BCP240", DiagnosticLevel.Error, "The \"parent\" property only permits direct references to resources. Expressions are not supported."),
+                ("no-unused-existing-resources", DiagnosticLevel.Warning, "Existing resource \"res2\" is declared but never used."),
                 ("BCP036", DiagnosticLevel.Error, "The property \"parent\" expected a value of type \"Microsoft.Network/virtualNetworks\" but the provided value is of type \"tenant\"."),
+                ("BCP240", DiagnosticLevel.Error, "The \"parent\" property only permits direct references to resources. Expressions are not supported."),
             });
         }
 
@@ -2414,7 +2468,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2019-04-01' = {
   }
 }
 
-resource registry 'Microsoft.ContainerRegistry/registries@2019-12-01-preview' = {
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
   name: 'foo'
   location: 'westus'
   sku: {
@@ -2471,7 +2525,8 @@ resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
 ");
 
             result.Template.Should().NotHaveValue();
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"secret\" -> \"ap\" -> \"importPipeline\")."),
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"importPipeline\" -> \"secret\" -> \"ap\")."),
                 ("BCP080", DiagnosticLevel.Error, "The expression is involved in a cycle (\"importPipeline\" -> \"secret\" -> \"ap\")."),
@@ -2602,7 +2657,8 @@ output out3 string = paramString + paramString
 output out4 string = 'hello' + 'world'
 ");
 
-            result.Should().HaveDiagnostics(new[] {
+            result.Should().HaveDiagnostics(new[]
+            {
                 ("BCP045", DiagnosticLevel.Error, "Cannot apply operator \"+\" to operands of type \"string\" and \"string\". Use string interpolation instead."),
                 ("BCP045", DiagnosticLevel.Error, "Cannot apply operator \"+\" to operands of type \"string\" and \"'world'\". Use string interpolation instead."),
                 ("BCP045", DiagnosticLevel.Error, "Cannot apply operator \"+\" to operands of type \"string\" and \"string\". Use string interpolation instead."),
@@ -2724,7 +2780,8 @@ var myValue = 2147483647
         {
             var result = CompilationHelper.Compile(fileContents);
 
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP010", DiagnosticLevel.Error, "Expected a valid 64-bit signed integer.")
             });
         }
@@ -2736,14 +2793,16 @@ var myValue = 2147483647
         public void Test_Issue5456_1()
         {
             var typeReference = ResourceTypeReference.Parse("My.Rp/myResource@2020-01-01");
-            var typeLoader = TestTypeHelper.CreateAzResourceTypeLoaderWithTypes(new[] {
-                new ResourceTypeComponents(typeReference, ResourceScope.ResourceGroup, new ObjectType(typeReference.FormatName(), TypeSymbolValidationFlags.Default, new [] {
+            var typeLoader = TestTypeHelper.CreateAzResourceTypeLoaderWithTypes(new[]
+            {
+                new ResourceTypeComponents(typeReference, ResourceScope.ResourceGroup, ResourceScope.None, ResourceFlags.None, new ObjectType(typeReference.FormatName(), TypeSymbolValidationFlags.Default, new[]
+                {
                     new TypeProperty("name", LanguageConstants.String, TypePropertyFlags.DeployTimeConstant, "name property"),
                     new TypeProperty("tags", LanguageConstants.Array, TypePropertyFlags.ReadOnly, "tags property"),
-                    new TypeProperty("properties", new ObjectType("properties",TypeSymbolValidationFlags.Default, new []
+                    new TypeProperty("properties", new ObjectType("properties", TypeSymbolValidationFlags.Default, new[]
                     {
                         new TypeProperty("prop1", LanguageConstants.String, TypePropertyFlags.ReadOnly, "prop1")
-                    },null), TypePropertyFlags.ReadOnly, "properties property"),
+                    }, null), TypePropertyFlags.ReadOnly, "properties property"),
                 }, null))
             });
 
@@ -2804,18 +2863,16 @@ output contentVersion string = deployment().properties.template.contentVersion
         public void Test_Issue6044()
         {
             var context = new CompilationHelper.CompilationHelperContext(
-                Features: BicepTestConstants.CreateFeaturesProvider(TestContext, symbolicNameCodegenEnabled: true));
+                Features: BicepTestConstants.CreateFeatureProvider(TestContext, symbolicNameCodegenEnabled: true));
 
             var result = CompilationHelper.Compile(context, @"
 var adminUsername = 'cooluser'
-var adminPassword = 'p@ssw0rd'
 
 resource server 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: 'sql-${uniqueString(resourceGroup().id)}'
   location: resourceGroup().location
   properties: {
     administratorLogin: adminUsername
-    administratorLoginPassword: adminPassword
   }
 
   resource db 'databases' = {
@@ -2837,7 +2894,6 @@ resource server2 'Microsoft.Sql/servers@2021-02-01-preview' = {
   location: resourceGroup().location
   properties: {
     administratorLogin: adminUsername
-    administratorLoginPassword: adminPassword
   }
 
   resource db 'databases' = {
@@ -2911,7 +2967,8 @@ resource foo 'Microsoft.AAD/domainServices@2021-05-01' existing = {
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01'
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP018", DiagnosticLevel.Error, "Expected the \"=\" character at this location.")
             });
         }
@@ -2932,7 +2989,8 @@ resource foo 'Microsoft.Authorization/policyAssignments@2021-06-01' existing = {
 
 resource managementGroup 'Microsoft.Management/managementGroups@2021-04-01'
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP018", DiagnosticLevel.Error, "Expected the \"=\" character at this location.")
             });
         }
@@ -2960,7 +3018,7 @@ module test './con.txt'
             var sourceFileGrouping = SourceFileGroupingFactory.CreateForFiles(ImmutableDictionary.Create<Uri, string>(), new Uri(inputFile), fileResolver, configuration, features);
 
             // the bug was that the compilation would not complete
-            var compilation = new Compilation(features, BicepTestConstants.NamespaceProvider, sourceFileGrouping, configuration, BicepTestConstants.LinterAnalyzer);
+            var compilation = new Compilation(features, BicepTestConstants.NamespaceProvider, sourceFileGrouping, configuration,BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
             compilation.GetEntrypointSemanticModel().GetAllDiagnostics().Should().NotBeEmpty();
         }
 
@@ -3016,7 +3074,8 @@ resource foo 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
 }
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP120", DiagnosticLevel.Error, "This expression is being used in an assignment to the \"name\" property of the \"Microsoft.Storage/storageAccounts\" type, which requires a value that can be calculated at the start of the deployment. Properties of existingStg which can be calculated at the start include \"apiVersion\", \"id\", \"type\".")
             });
         }
@@ -3152,12 +3211,14 @@ resource auth 'Microsoft.Web/sites/config@2021-03-01' = [for (c, i) in configs: 
 ");
 
             // verify we have diagnostics for 'properties'
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP037", DiagnosticLevel.Warning, "The property \"madeUpProperty\" is not allowed on objects of type \"SiteAuthSettingsV2Properties\". Permissible properties include \"globalValidation\", \"httpSettings\", \"identityProviders\", \"login\", \"platform\". If this is an inaccuracy in the documentation, please report it to the Bicep Team.")
             });
 
             result.Template.Should().HaveValueAtPath("$.resources[1].name", "[format('{0}/{1}', variables('configs')[copyIndex()].name, 'authsettingsV2')]");
-            result.Template.Should().HaveValueAtPath("$.resources[1].dependsOn", new JArray {
+            result.Template.Should().HaveValueAtPath("$.resources[1].dependsOn", new JArray
+            {
                 "[resourceId('Microsoft.Web/sites', variables('configs')[copyIndex()].name)]",
             });
         }
@@ -3169,6 +3230,11 @@ resource auth 'Microsoft.Web/sites/config@2021-03-01' = [for (c, i) in configs: 
         public void Test_Issue_3356_Accept_Correct_Type_Definitions()
         {
             var result = CompilationHelper.Compile(@"
+resource msi 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: 'myIdentity'
+  location: resourceGroup().location
+}
+
 #disable-next-line BCP081
 resource foo 'Microsoft.Storage/storageAccounts@2021-09-00' = {
   name: 'test'
@@ -3188,10 +3254,14 @@ resource foo 'Microsoft.Storage/storageAccounts@2021-09-00' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      clientId: 'client1'
-      principalId: 'principal1'
+      '${msi.id}': {}
     }
   }
+}
+
+output fooIdProps object = {
+  clientId: foo.identity.userAssignedIdentities[msi.id].clientId
+  principalId: foo.identity.userAssignedIdentities[msi.id].principalId
 }
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
@@ -3224,13 +3294,20 @@ resource foo 'Microsoft.Storage/storageAccounts@2021-09-00' = {
     type: 'noType'
     tenantId: 3
     userAssignedIdentities: {
-      clientId: 1
-      principalId: 2
+      'blah': {
+        clientId: 1
+        principalId: 2
+      }
     }
   }
 }
+
+output fooBadIdProps object = {
+  clientId: foo.identity.userAssignedIdentities['blah'].hello
+}
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP081", DiagnosticLevel.Warning, "Resource type \"Microsoft.Storage/storageAccounts@2021-09-00\" does not have types available."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"name\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"capacity\" expected a value of type \"int\" but the provided value is of type \"'1'\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
@@ -3238,7 +3315,8 @@ resource foo 'Microsoft.Storage/storageAccounts@2021-09-00' = {
                 ("BCP036", DiagnosticLevel.Warning, "The property \"capacity\" expected a value of type \"int\" but the provided value is of type \"'2'\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"tenantId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"clientId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"principalId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team.")
+                ("BCP036", DiagnosticLevel.Warning, "The property \"principalId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP053", DiagnosticLevel.Error, "The type \"userAssignedIdentityProperties\" does not contain property \"hello\". Available properties include \"clientId\", \"principalId\"."),
             });
         }
 
@@ -3278,7 +3356,8 @@ resource vaultAssignments 'Microsoft.Authorization/roleAssignments@2020-10-01-pr
   }
 }]
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP179", DiagnosticLevel.Warning, "Unique resource or deployment name is required when looping. The loop item variable \"roleId\" must be referenced in at least one of the value expressions of the following properties: \"name\", \"scope\"")
             });
         }
@@ -3320,9 +3399,658 @@ resource vaultAssignments 'Microsoft.Authorization/roleAssignments@2020-10-01-pr
   }
 }]
 ");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+            {
                 ("BCP179", DiagnosticLevel.Warning, "Unique resource or deployment name is required when looping. The loop item variable \"roleId\" or the index variable \"index\" must be referenced in at least one of the value expressions of the following properties in the loop body: \"name\", \"scope\"")
             });
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7241
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue_7241_1()
+        {
+            var result = CompilationHelper.Compile(@"
+var foo = {
+  copy: [
+    {
+      name: 'blah'
+      count: '[notAFunction()]'
+      input: {}
+    }
+  ]
+}
+var bar = {
+  'copy': 'copy'
+}
+");
+
+            // verify we have diagnostics for 'properties'
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            result.Template.Should().NotBeNull();
+
+            using (new AssertionScope())
+            {
+                result.Template!.SelectToken("$.variables.foo").Should().NotBeNull()
+                    .And.Subject.As<JObject>().Properties().ElementAt(0).Name.Should().Be("[string('copy')]");
+                result.Template!.SelectToken("$.variables.bar").Should().NotBeNull()
+                    .And.Subject.As<JObject>().Properties().ElementAt(0).Name.Should().Be("[string('copy')]");
+                result.Template!.SelectToken("$.variables.bar").Should().NotBeNull()
+                    .And.Subject.As<JObject>().Properties().ElementAt(0).Value.Should().DeepEqual("copy");
+            }
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7241
+        /// </summary>
+        [DataTestMethod]
+        [DataRow("copy")]
+        [DataRow("COPY")]
+        [DataRow("Copy")]
+        [DataRow("CoPy")]
+        public void Test_Issue_7241_2(string copy)
+        {
+            var result = CompilationHelper.Compile(@"
+var " + copy + @" = {}
+");
+
+
+            using (new AssertionScope())
+            {
+                result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
+                {
+                    ("BCP239", DiagnosticLevel.Error, "Identifier \"copy\" is a reserved Bicep symbol name and cannot be used in this context.")
+                });
+                result.Template.Should().BeNull();
+            }
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7367
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue_7367()
+        {
+            var result = CompilationHelper.Compile(@"
+@description('App service plan resource group name. Can be empty if app service plan is in the same resource group as the service itself.')
+param appServicePlanResourceGroupName string = ''
+
+var appServicePlanName = 'test-svcplan'
+
+// This is not working.
+resource servicePlanWithCondition 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+  name: appServicePlanName
+  scope: empty(appServicePlanResourceGroupName) ? resourceGroup() : resourceGroup(appServicePlanResourceGroupName)
+}
+
+// Using local variable works.
+var _appServicePlanResourceGroupName = empty(appServicePlanResourceGroupName) ? resourceGroup().name : appServicePlanResourceGroupName
+
+resource servicePlanWithoutCondition 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+  name: appServicePlanName
+  scope: resourceGroup(_appServicePlanResourceGroupName)
+}
+
+output idScopeWithCondition string = servicePlanWithCondition.id
+output idScopeWithoutCondition string = servicePlanWithoutCondition.id
+");
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+                ("BCP270", DiagnosticLevel.Error, "The scope used for this declaration is ambiguous. A resource or module must only reference a single scope.")
+            });
+        }
+
+        [TestMethod]
+        // https://github.com/azure/bicep/issues/7367
+        public void Test_Issue7367_2()
+        {
+            var result = CompilationHelper.Compile(
+                ("main.bicep", @"
+param keyVaultName string
+param principalId string
+param roleDefinitionId string
+param secretName string = ''
+
+var hasSecret = secretName != null && secretName != ''
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+  resource secret 'secrets' existing = if (hasSecret) {
+    name: secretName
+  }
+}
+
+resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: roleDefinitionId
+}
+
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: hasSecret ? keyVault::secret : keyVault
+  name: hasSecret ? guid(resourceGroup().id, keyVaultName, secretName, principalId, roleDefinition.id) : guid(resourceGroup().id, keyVaultName, principalId, roleDefinition.id)
+  properties: {
+    roleDefinitionId: roleDefinition.id
+    principalId: principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+"));
+
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+                ("BCP270", DiagnosticLevel.Error, "The scope used for this declaration is ambiguous. A resource or module must only reference a single scope.")
+            });
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7154
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue_7154_Ternary_Syntax_Produces_Error()
+        {
+            var result = CompilationHelper.Compile(@"
+var deployServerlessCosmosDb = true
+
+resource cosmosDbServer 'Microsoft.DocumentDB/databaseAccounts@2021-07-01-preview' = {
+  kind: 'GlobalDocumentDB'
+  name: 'cosmosdbname'
+  location: resourceGroup().location
+  properties: {
+    createMode: 'Default'
+    locations: [
+      {
+        locationName: resourceGroup().location
+        failoverPriority: 0
+      }
+    ]
+    databaseAccountOfferType: 'Standard'
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+      maxIntervalInSeconds: 5
+      maxStalenessPrefix: 100
+    }
+    diagnosticLogSettings: {
+      enableFullTextQuery: 'None'
+    }
+  }
+}
+
+resource PassDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-07-01-preview' = {
+  parent: cosmosDbServer
+  name: 'PassDb'
+  properties: {
+    resource: {
+      id: 'PassDb'
+    }
+  }
+}
+
+resource QPDB 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-07-01-preview' = if(!deployServerlessCosmosDb) {
+  parent: cosmosDbServer
+  name: 'QPDB'
+  properties: {
+    resource: {
+      id: 'QPDB'
+    }
+  }
+}
+
+resource container_ActorColdStorage 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-07-01-preview' = {
+  parent: deployServerlessCosmosDb? PassDb: QPDB
+  name: 'ActorColdStorage'
+  properties: {
+    resource: {
+      id: 'ActorColdStorage'
+      partitionKey: {
+        paths: [
+          '/Type'
+        ]
+        kind: 'Hash'
+      }
+      conflictResolutionPolicy: {
+        mode: 'LastWriterWins'
+        conflictResolutionPath: '/_ts'
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+                ("BCP240", DiagnosticLevel.Error, "The \"parent\" property only permits direct references to resources. Expressions are not supported.")
+            });
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7154
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue_7154_2_Ternary_Syntax_With_Parentheses_Produces_Error()
+        {
+            var result = CompilationHelper.Compile(@"
+var deployServerlessCosmosDb = true
+
+resource cosmosDbServer 'Microsoft.DocumentDB/databaseAccounts@2021-07-01-preview' = {
+  kind: 'GlobalDocumentDB'
+  name: 'cosmosdbname'
+  location: resourceGroup().location
+  properties: {
+    createMode: 'Default'
+    locations: [
+      {
+        locationName: resourceGroup().location
+        failoverPriority: 0
+      }
+    ]
+    databaseAccountOfferType: 'Standard'
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+      maxIntervalInSeconds: 5
+      maxStalenessPrefix: 100
+    }
+    diagnosticLogSettings: {
+      enableFullTextQuery: 'None'
+    }
+  }
+}
+
+resource PassDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-07-01-preview' = {
+  parent: cosmosDbServer
+  name: 'PassDb'
+  properties: {
+    resource: {
+      id: 'PassDb'
+    }
+  }
+}
+
+resource QPDB 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-07-01-preview' = if(!deployServerlessCosmosDb) {
+  parent: cosmosDbServer
+  name: 'QPDB'
+  properties: {
+    resource: {
+      id: 'QPDB'
+    }
+  }
+}
+
+resource container_ActorColdStorage 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-07-01-preview' = {
+  parent: (deployServerlessCosmosDb)? PassDb: QPDB
+  name: 'ActorColdStorage'
+  properties: {
+    resource: {
+      id: 'ActorColdStorage'
+      partitionKey: {
+        paths: [
+          '/Type'
+        ]
+        kind: 'Hash'
+      }
+      conflictResolutionPolicy: {
+        mode: 'LastWriterWins'
+        conflictResolutionPath: '/_ts'
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
+                ("BCP240", DiagnosticLevel.Error, "The \"parent\" property only permits direct references to resources. Expressions are not supported.")
+            });
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7271
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue7271()
+        {
+            var result = CompilationHelper.Compile(@"
+var less           = any(1) < any(2)
+var lessOrEqual    = any(1) <= any(2)
+var greater        = any(1) > any(2)
+var greaterOrEqual = any(1) >= any(2)");
+
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/6951
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue6951()
+        {
+            const string Main = @"
+param SfAppCertificateSubjectNames array
+
+module SfAppCertificates './certificate-generation.bicep' = [for cert in SfAppCertificateSubjectNames: {
+  name: 'sfdsf'
+  params: {
+
+  }
+}]
+
+var nodeTypes = []
+
+resource SFNodeTypes 'Microsoft.ServiceFabric/managedClusters/nodeTypes@2022-02-01-preview' = [for node in nodeTypes: if (node.instanceCount > 0) {
+  name: node.name
+  parent: SF
+  properties: {
+    //...
+    vmSecrets: [for (subjectName, i) in SfAppCertificateSubjectNames if (contains(SfAppCertificateSubjectNames[i].targetNodeTypes, node.name)): {
+      sourceVault: {
+        id: resourceId('Microsoft.KeyVault/vaults', SfAppCertificates[i].outputs.KeyVaultName)
+      }
+      vaultCertificates: [
+        {
+          certificateStore: 'My'
+          certificateUrl: SfAppCertificates[i].outputs.PublicCertificateUrl
+        }
+      ]
+    }]
+  }
+}]
+";
+            var result = CompilationHelper.Compile(("main.bicep", Main), ("certificate-generation.bicep", string.Empty));
+
+            // the above snippet is malformed but should not throw
+            result.Diagnostics.Should().NotBeEmpty();
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/2017
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue2017()
+        {
+            var result = CompilationHelper.Compile(@"
+var providersTest = providers('Microsoft.Resources').namespace
+var providersTest2 = providers('Microsoft.Resources', 'deployments').locations
+").ExcludingLinterDiagnostics();
+
+            result.Should().HaveDiagnostics(new [] {
+                ("BCP241", DiagnosticLevel.Warning, "The \"providers\" function is deprecated and will be removed in a future release of Bicep. Please add a comment to https://github.com/Azure/bicep/issues/2017 if you believe this will impact your workflow."),
+                ("BCP241", DiagnosticLevel.Warning, "The \"providers\" function is deprecated and will be removed in a future release of Bicep. Please add a comment to https://github.com/Azure/bicep/issues/2017 if you believe this will impact your workflow."),
+            });
+
+            result.Diagnostics.Should().OnlyContain(x => x.Styling == DiagnosticStyling.ShowCodeDeprecated);
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7482
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue7482()
+        {
+            var result = CompilationHelper.Compile(
+                ("main.bicep", @"
+module optionModuleLoop 'module.bicep' = [for item in ['option:a','option:b']: {
+  name: 'myOptionModule-${uniqueString(item)}'
+  params: {
+    option: item
+  }
+}]
+"),
+                ("module.bicep", @"
+@allowed(['option:a','option:b', 'option:c', 'option:d'])
+param option string
+
+var optionsLUT = {
+  'option:a': {
+    text: 'Option A'
+    value: 'a'
+  }
+  'option:b': {
+    text: 'Option B'
+    value: 'b'
+  }
+  'option:c': {
+    text: 'Option C'
+    value: 'c'
+  }
+}
+
+var optionType = optionsLUT[option]
+
+output optionTypeText string = optionType.text
+output optionTypeValue string = optionType.value
+")).ExcludingLinterDiagnostics();
+
+            result.Should().NotHaveAnyDiagnostics();
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7482
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue7482_alternative()
+        {
+            var result = CompilationHelper.Compile(
+                ("main.bicep", @"
+var options = ['option:a','option:b']
+module optionModuleLoop 'module.bicep' = [for item in options: {
+  name: 'myOptionModule-${uniqueString(item)}'
+  params: {
+    option: item
+  }
+}]
+"),
+                ("module.bicep", @"
+@allowed(['option:a','option:b', 'option:c', 'option:d'])
+param option string
+
+var optionsLUT = {
+  'option:a': {
+    text: 'Option A'
+    value: 'a'
+  }
+  'option:b': {
+    text: 'Option B'
+    value: 'b'
+  }
+  'option:c': {
+    text: 'Option C'
+    value: 'c'
+  }
+}
+
+var optionType = optionsLUT[option]
+
+output optionTypeText string = optionType.text
+output optionTypeValue string = optionType.value
+")).ExcludingLinterDiagnostics();
+
+            result.Should().NotHaveAnyDiagnostics();
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7861
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue7861()
+        {
+            var result = CompilationHelper.Compile(
+                ("main.bicep", @"
+param objectId string
+param keyvaultName string
+
+resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: keyvaultName
+
+  resource accessPolicy 'accessPolicies' = {
+    name: 'add'
+    properties: {
+      accessPolicies: [
+        {
+          tenantId: subscription().tenantId
+          objectId: objectId
+          permissions: {
+            certificates: [
+              'get'
+            ]
+            secrets: [
+              'get'
+            ]
+            keys:[
+              'get'
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+"));
+
+            result.Should().NotHaveAnyDiagnostics();
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/6477
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue6477()
+        {
+            var result = CompilationHelper.Compile(@"
+param storageAccountName string
+
+@allowed([
+  'Standard_GRS'
+  'Standard_ZRS'
+])
+@description('Storage account SKU.  Standard_ZRS should be used if region supports, else Standard_GRS.')
+param storageAccountSku string
+
+resource storageAccountName_resource 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: storageAccountName
+  #disable-next-line no-loc-expr-outside-params
+  location: resourceGroup().location
+  sku: {
+    name: storageAccountSku
+    #disable-next-line BCP073
+    tier: 'Standard'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowBlobPublicAccess: true // Ibiza requires anonymous access to the container
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+    encryption: {
+      services: {
+        file: {
+          enabled: true
+        }
+        blob: {
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+    accessTier: 'Hot'
+  }
+
+  resource blobs 'blobServices' existing = {
+    name: 'default'
+
+    resource containers 'containers' = {
+      name: 'extension'
+      properties: {
+        publicAccess: 'Container'
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            result.Template.Should().HaveValueAtPath("$.resources[0].type", "Microsoft.Storage/storageAccounts/blobServices/containers");
+            result.Template.Should().HaveValueAtPath("$.resources[0].dependsOn", new JArray("[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"));
+
+            result.Template.Should().HaveValueAtPath("$.resources[1].type", "Microsoft.Storage/storageAccounts");
+            result.Template.Should().NotHaveValueAtPath("$.resources[1].dependsOn");
+        }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/7455
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue7455()
+        {
+            var result = CompilationHelper.Compile(@"
+var test1  = {
+  'tata':'loco'
+}
+
+var test2 = {
+  'tata':'cola'
+}
+
+param useFirst bool = true
+
+var value = (useFirst ? test1 : test2).tata
+").ExcludingLinterDiagnostics();
+
+            result.Should().NotHaveAnyDiagnostics();
+       }
+
+        /// <summary>
+        /// https://github.com/Azure/bicep/issues/6863
+        /// </summary>
+        [TestMethod]
+        public void Test_Issue6863()
+        {
+            var result = CompilationHelper.Compile(@"
+@description('Region to deploy to')
+param Location string = resourceGroup().location
+
+var Names = [
+  'fruit-primary'
+  'fruit-secondary'
+]
+
+var Service_Bus_Queues = [
+  'apples'
+  'oranges'
+]
+
+resource serviceBuses 'Microsoft.ServiceBus/namespaces@2021-11-01' = [for name in Names: {
+  name: name
+  location: Location
+  sku: {
+    name: 'Premium'
+    tier: 'Premium'
+  }
+  properties: {
+    zoneRedundant: false
+  }
+}]
+
+resource queues 'Microsoft.ServiceBus/namespaces/queues@2021-11-01' = [for item in Service_Bus_Queues: {
+  parent: serviceBuses[0]
+  name: item
+}]
+
+resource queueAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2021-11-01' = [for (item, index) in Service_Bus_Queues: {
+  parent: queues[index]
+  name: 'Listen'
+  properties: {
+    rights: [
+      'Listen'
+    ]
+  }
+}]
+");
+
+            result.Should().NotHaveAnyDiagnostics();
+
+            result.Template.Should().HaveValueAtPath("$.resources[0].copy.name", "serviceBuses");
+            result.Template.Should().HaveValueAtPath("$.resources[0].name", "[variables('Names')[copyIndex()]]");
+            result.Template.Should().NotHaveValueAtPath("$.resources[0].dependsOn");
+
+            result.Template.Should().HaveValueAtPath("$.resources[1].copy.name", "queues");
+            result.Template.Should().HaveValueAtPath("$.resources[1].name", "[format('{0}/{1}', variables('Names')[0], variables('Service_Bus_Queues')[copyIndex()])]");
+            result.Template.Should().HaveValueAtPath("$.resources[1].dependsOn", new JArray("[resourceId('Microsoft.ServiceBus/namespaces', variables('Names')[0])]"));
+
+            result.Template.Should().HaveValueAtPath("$.resources[2].copy.name", "queueAuthorizationRules");
+            result.Template.Should().HaveValueAtPath("$.resources[2].name", "[format('{0}/{1}/{2}', variables('Names')[0], variables('Service_Bus_Queues')[copyIndex()], 'Listen')]");
+            result.Template.Should().HaveValueAtPath("$.resources[2].dependsOn", new JArray("[resourceId('Microsoft.ServiceBus/namespaces/queues', variables('Names')[0], variables('Service_Bus_Queues')[copyIndex()])]"));
         }
     }
 }
