@@ -21,6 +21,7 @@ namespace Bicep.Core.Emit
         private readonly EmitterContext context;
         private readonly EmitterSettings settings;
 
+
         public void Write(JsonTextWriter writer, string existingContent)
         {
             var existingParamsContent = null as JToken;
