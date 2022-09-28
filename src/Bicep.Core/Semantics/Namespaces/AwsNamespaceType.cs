@@ -23,8 +23,6 @@ namespace Bicep.Core.Semantics.Namespaces
         {
             return new ObjectType("configuration", TypeSymbolValidationFlags.Default, new TypeProperty[]
             {
-                new TypeProperty("account", LanguageConstants.String),
-                new TypeProperty("region", LanguageConstants.String),
             }, null);
         }
 
