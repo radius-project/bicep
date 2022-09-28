@@ -52,7 +52,7 @@ jobs:
           path: ./artifacts
 
   publish:
-    # if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build"]
     runs-on: ubuntu-latest
