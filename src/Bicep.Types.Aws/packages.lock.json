@@ -11,6 +11,12 @@
           "System.Text.Json": "6.0.4"
         }
       },
+      "Azure.Deployments.Internal.GenerateNotice": {
+        "type": "Direct",
+        "requested": "[0.1.13, )",
+        "resolved": "0.1.13",
+        "contentHash": "l9bZLZxtzNF33jexI8o9IKUoxenIh9rqO96ApaZ0AoXhPe0OL7tJ+fwsNHIOk4f1Ysyq85+A0kbzef2wQLd9Cw=="
+      },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",
         "requested": "[3.3.3, )",

@@ -2005,8 +2005,10 @@
         "type": "Project",
         "dependencies": {
           "Azure.Bicep.Types": "[0.2.115, )",
+          "Azure.Bicep.Types.Aws": "[1.0.0, )",
           "Azure.Bicep.Types.Az": "[0.2.115, )",
           "Azure.Bicep.Types.K8s": "[0.1.11, )",
+          "Azure.Bicep.Types.Radius": "[1.0.0, )",
           "Azure.Containers.ContainerRegistry": "[1.1.0-beta.4, )",
           "Azure.Deployments.Core": "[1.0.694, )",
           "Azure.Deployments.Expression": "[1.0.694, )",
@@ -2034,10 +2036,13 @@
       "Azure.Bicep.Types.Aws": {
         "type": "Project",
         "dependencies": {
-          "Azure.Bicep.Core": "[1.0.0, )",
-          "Azure.Bicep.Decompiler": "[1.0.0, )",
-          "Microsoft.Extensions.Logging": "[6.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[6.0.2, )"
+          "Azure.Bicep.Types": "[0.1.538, )"
+        }
+      },
+      "Azure.Bicep.Types.Radius": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.Bicep.Types": "[0.1.449, )"
         }
       },
       "bicep.core.samples": {
@@ -2049,7 +2054,7 @@
           "MSTest.TestAdapter": "[2.2.10, )",
           "MSTest.TestFramework": "[2.2.10, )",
           "Microsoft.NET.Test.Sdk": "[17.3.1, )",
-          "bicep": "[1.0.0, )"
+          "rad-bicep": "[1.0.0, )"
         }
       },
       "bicep.core.unittests": {
@@ -2080,10 +2085,10 @@
       "rad-bicep": {
         "type": "Project",
         "dependencies": {
-          "Azure.Bicep.Core": "1.0.0",
-          "Azure.Bicep.Decompiler": "1.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
+          "Azure.Bicep.Core": "[1.0.0, )",
+          "Azure.Bicep.Decompiler": "[1.0.0, )",
+          "Microsoft.Extensions.Logging": "[6.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[6.0.2, )"
         }
       }
     },
