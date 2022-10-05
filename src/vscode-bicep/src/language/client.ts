@@ -248,11 +248,8 @@ function configureTelemetry(client: lsp.LanguageClient) {
 }
 
 function getFeatureEnvVars() {
-  const importsEnabledExperimental = vscode.workspace
-    .getConfiguration("bicep")
-    .get<boolean>("importsEnabledExperimental");
-
+  // This function will probably be removed in the future. We had to
+  // remove the code that was here to keep imports enabled.
   return {
-    BICEP_IMPORTS_ENABLED_EXPERIMENTAL: importsEnabledExperimental,
   };
 }
