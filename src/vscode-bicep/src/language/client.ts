@@ -248,11 +248,12 @@ function configureTelemetry(client: lsp.LanguageClient) {
 }
 
 function getFeatureEnvVars() {
+  // The Radius team really wants this on, and the Bicep team
+  // isn't quite sure....
   const importsEnabledExperimental = vscode.workspace
     .getConfiguration("bicep")
     .get<boolean>("importsEnabledExperimental");
 
   return {
-    BICEP_IMPORTS_ENABLED_EXPERIMENTAL: importsEnabledExperimental,
   };
 }
