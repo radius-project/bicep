@@ -3,24 +3,21 @@
 ## Resource AWS.GlobalAccelerator/Accelerator@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.GlobalAccelerator/AcceleratorProperties](#awsglobalacceleratoracceleratorproperties) (Required): properties of the resource
 
 ## Resource AWS.GlobalAccelerator/EndpointGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.GlobalAccelerator/EndpointGroupProperties](#awsglobalacceleratorendpointgroupproperties) (Required): properties of the resource
 
 ## Resource AWS.GlobalAccelerator/Listener@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.GlobalAccelerator/ListenerProperties](#awsglobalacceleratorlistenerproperties) (Required): properties of the resource
 
 ## AWS.GlobalAccelerator/AcceleratorProperties
 ### Properties
-* **AcceleratorArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the accelerator.
+* **AcceleratorArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the accelerator.
 * **DnsName**: string (ReadOnly): The Domain Name System (DNS) name that Global Accelerator creates that points to your accelerator's static IP addresses.
 * **Enabled**: bool: Indicates whether an accelerator is enabled. The value is true or false.
 * **IpAddresses**: [IpAddress](#ipaddress)[]: The IP addresses from BYOIP Prefix pool.
@@ -40,7 +37,7 @@
 ## AWS.GlobalAccelerator/EndpointGroupProperties
 ### Properties
 * **EndpointConfigurations**: [EndpointConfiguration](#endpointconfiguration)[]: The list of endpoint objects.
-* **EndpointGroupArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the endpoint group
+* **EndpointGroupArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the endpoint group
 * **EndpointGroupRegion**: string (Required): The name of the AWS Region where the endpoint group is located
 * **HealthCheckIntervalSeconds**: int: The time in seconds between each health check for an endpoint. Must be a value of 10 or 30
 * **HealthCheckPath**: string
@@ -69,7 +66,7 @@
 ### Properties
 * **AcceleratorArn**: string (Required): The Amazon Resource Name (ARN) of the accelerator.
 * **ClientAffinity**: string: Client affinity lets you direct all requests from a user to the same endpoint.
-* **ListenerArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the listener.
+* **ListenerArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the listener.
 * **PortRanges**: [PortRange](#portrange)[] (Required)
 * **Protocol**: string (Required): The protocol for the listener.
 

@@ -3,32 +3,28 @@
 ## Resource AWS.Backup/BackupPlan@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Backup/BackupPlanProperties](#awsbackupbackupplanproperties) (Required): properties of the resource
 
 ## Resource AWS.Backup/BackupVault@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Backup/BackupVaultProperties](#awsbackupbackupvaultproperties) (Required): properties of the resource
 
 ## Resource AWS.Backup/Framework@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Backup/FrameworkProperties](#awsbackupframeworkproperties) (Required): properties of the resource
 
 ## Resource AWS.Backup/ReportPlan@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Backup/ReportPlanProperties](#awsbackupreportplanproperties) (Required): properties of the resource
 
 ## AWS.Backup/BackupPlanProperties
 ### Properties
 * **BackupPlan**: [BackupPlanResourceType](#backupplanresourcetype) (Required)
 * **BackupPlanArn**: string (ReadOnly)
-* **BackupPlanId**: string (ReadOnly)
+* **BackupPlanId**: string (ReadOnly, Identifier)
 * **BackupPlanTags**: [BackupPlan_BackupPlanTags](#backupplanbackupplantags)
 * **VersionId**: string (ReadOnly)
 
@@ -78,7 +74,7 @@
 ### Properties
 * **AccessPolicy**: [BackupVault_AccessPolicy](#backupvaultaccesspolicy) | string
 * **BackupVaultArn**: string (ReadOnly)
-* **BackupVaultName**: [BackupVaultNamePattern](#backupvaultnamepattern) (Required)
+* **BackupVaultName**: [BackupVaultNamePattern](#backupvaultnamepattern) (Required, Identifier)
 * **BackupVaultTags**: [BackupVault_BackupVaultTags](#backupvaultbackupvaulttags)
 * **EncryptionKeyArn**: string
 * **LockConfiguration**: [LockConfigurationType](#lockconfigurationtype)
@@ -105,7 +101,7 @@
 ### Properties
 * **CreationTime**: int (ReadOnly): The date and time that a framework is created, in Unix format and Coordinated Universal Time (UTC). The value of `CreationTime` is accurate to milliseconds. For example, the value 1516925490.087 represents Friday, January 26, 2018 12:11:30.087 AM.
 * **DeploymentStatus**: string (ReadOnly): The deployment status of a framework. The statuses are: `CREATE_IN_PROGRESS | UPDATE_IN_PROGRESS | DELETE_IN_PROGRESS | COMPLETED | FAILED`
-* **FrameworkArn**: string (ReadOnly): An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource
+* **FrameworkArn**: string (ReadOnly, Identifier): An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource
 * **FrameworkControls**: [FrameworkControl](#frameworkcontrol)[] (Required): Contains detailed information about all of the controls of a framework. Each framework must contain at least one control.
 * **FrameworkDescription**: string: An optional description of the framework with a maximum 1,024 characters.
 * **FrameworkName**: string: The unique name of a framework. This name is between 1 and 256 characters, starting with a letter, and consisting of letters (a-z, A-Z), numbers (0-9), and underscores (_).
@@ -145,7 +141,7 @@
 ## AWS.Backup/ReportPlanProperties
 ### Properties
 * **ReportDeliveryChannel**: [ReportPlan_ReportDeliveryChannel](#reportplanreportdeliverychannel) (Required): A structure that contains information about where and how to deliver your reports, specifically your Amazon S3 bucket name, S3 key prefix, and the formats of your reports.
-* **ReportPlanArn**: string (ReadOnly): An Amazon Resource Name (ARN) that uniquely identifies a resource. The format of the ARN depends on the resource type.
+* **ReportPlanArn**: string (ReadOnly, Identifier): An Amazon Resource Name (ARN) that uniquely identifies a resource. The format of the ARN depends on the resource type.
 * **ReportPlanDescription**: string: An optional description of the report plan with a maximum of 1,024 characters.
 * **ReportPlanName**: string: The unique name of the report plan. The name must be between 1 and 256 characters, starting with a letter, and consisting of letters (a-z, A-Z), numbers (0-9), and underscores (_).
 * **ReportPlanTags**: [Tag](#tag)[]: Metadata that you can assign to help organize the report plans that you create. Each tag is a key-value pair.

@@ -3,12 +3,11 @@
 ## Resource AWS.ConnectCampaigns/Campaign@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ConnectCampaigns/CampaignProperties](#awsconnectcampaignscampaignproperties) (Required): properties of the resource
 
 ## AWS.ConnectCampaigns/CampaignProperties
 ### Properties
-* **Arn**: string (ReadOnly): Amazon Connect Campaign Arn
+* **Arn**: string (ReadOnly, Identifier): Amazon Connect Campaign Arn
 * **ConnectInstanceArn**: string (Required): Amazon Connect Instance Arn
 * **DialerConfig**: [DialerConfig](#dialerconfig) (Required)
 * **Name**: string (Required): Amazon Connect Campaign Name

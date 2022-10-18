@@ -3,19 +3,16 @@
 ## Resource AWS.IoTEvents/AlarmModel@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoTEvents/AlarmModelProperties](#awsioteventsalarmmodelproperties) (Required): properties of the resource
 
 ## Resource AWS.IoTEvents/DetectorModel@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoTEvents/DetectorModelProperties](#awsioteventsdetectormodelproperties) (Required): properties of the resource
 
 ## Resource AWS.IoTEvents/Input@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoTEvents/InputProperties](#awsioteventsinputproperties) (Required): properties of the resource
 
 ## AWS.IoTEvents/AlarmModelProperties
@@ -23,7 +20,7 @@
 * **AlarmCapabilities**: [AlarmCapabilities](#alarmcapabilities)
 * **AlarmEventActions**: [AlarmEventActions](#alarmeventactions)
 * **AlarmModelDescription**: string: A brief description of the alarm model.
-* **AlarmModelName**: string: The name of the alarm model.
+* **AlarmModelName**: string (Identifier): The name of the alarm model.
 * **AlarmRule**: [AlarmRule](#alarmrule) (Required)
 * **Key**: string: The value used to identify a alarm instance. When a device or system sends input, a new alarm instance with a unique key value is created. AWS IoT Events can continue to route input to its corresponding alarm instance based on this identifying information.
 
@@ -75,7 +72,7 @@ For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/la
 ### Properties
 * **DetectorModelDefinition**: [DetectorModelDefinition](#detectormodeldefinition) (Required)
 * **DetectorModelDescription**: string: A brief description of the detector model.
-* **DetectorModelName**: string: The name of the detector model.
+* **DetectorModelName**: string (Identifier): The name of the detector model.
 * **EvaluationMethod**: string: Information about the order in which events are evaluated and how actions are executed.
 * **Key**: string: The value used to identify a detector instance. When a device or system sends input, a new detector instance with a unique key value is created. AWS IoT Events can continue to route input to its corresponding detector instance based on this identifying information.
 
@@ -270,7 +267,7 @@ If you don't specify `rangeKeyField`, the default value is `STRING`.
 ### Properties
 * **InputDefinition**: [InputDefinition](#inputdefinition) (Required)
 * **InputDescription**: string: A brief description of the input.
-* **InputName**: string: The name of the input.
+* **InputName**: string (Identifier): The name of the input.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
 For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html).

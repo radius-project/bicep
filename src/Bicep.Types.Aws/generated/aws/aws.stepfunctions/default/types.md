@@ -3,18 +3,16 @@
 ## Resource AWS.StepFunctions/Activity@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.StepFunctions/ActivityProperties](#awsstepfunctionsactivityproperties) (Required): properties of the resource
 
 ## Resource AWS.StepFunctions/StateMachine@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.StepFunctions/StateMachineProperties](#awsstepfunctionsstatemachineproperties) (Required): properties of the resource
 
 ## AWS.StepFunctions/ActivityProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **Name**: string (Required)
 * **Tags**: [TagsEntry](#tagsentry)[]
 
@@ -25,7 +23,7 @@
 
 ## AWS.StepFunctions/StateMachineProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **Definition**: [Definition](#definition) (WriteOnly)
 * **DefinitionS3Location**: [S3Location](#s3location) (WriteOnly)
 * **DefinitionString**: string

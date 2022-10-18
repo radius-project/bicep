@@ -3,12 +3,11 @@
 ## Resource AWS.InspectorV2/Filter@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.InspectorV2/FilterProperties](#awsinspectorv2filterproperties) (Required): properties of the resource
 
 ## AWS.InspectorV2/FilterProperties
 ### Properties
-* **Arn**: string (ReadOnly): Findings filter ARN.
+* **Arn**: string (ReadOnly, Identifier): Findings filter ARN.
 * **Description**: string: Findings filter description.
 * **FilterAction**: [FilterAction](#filteraction) (Required): Findings filter action.
 * **FilterCriteria**: [FilterCriteria](#filtercriteria) (Required): Findings filter criteria.

@@ -3,7 +3,6 @@
 ## Resource AWS.SNS/Topic@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SNS/TopicProperties](#awssnstopicproperties): properties of the resource
 
 ## AWS.SNS/TopicProperties
@@ -22,7 +21,7 @@ When you set ContentBasedDeduplication to true, Amazon SNS uses a SHA-256 hash t
 This property applies only to [server-side-encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html).
 * **Subscription**: [Subscription](#subscription)[]: The SNS subscriptions (endpoints) for this topic.
 * **Tags**: [Tag](#tag)[]
-* **TopicArn**: string (ReadOnly)
+* **TopicArn**: string (ReadOnly, Identifier)
 * **TopicName**: string: The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with .fifo.
 
 If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see Name Type.

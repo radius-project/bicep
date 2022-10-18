@@ -3,37 +3,32 @@
 ## Resource AWS.MediaConnect/Flow@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MediaConnect/FlowProperties](#awsmediaconnectflowproperties) (Required): properties of the resource
 
 ## Resource AWS.MediaConnect/FlowEntitlement@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MediaConnect/FlowEntitlementProperties](#awsmediaconnectflowentitlementproperties) (Required): properties of the resource
 
 ## Resource AWS.MediaConnect/FlowOutput@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MediaConnect/FlowOutputProperties](#awsmediaconnectflowoutputproperties) (Required): properties of the resource
 
 ## Resource AWS.MediaConnect/FlowSource@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MediaConnect/FlowSourceProperties](#awsmediaconnectflowsourceproperties) (Required): properties of the resource
 
 ## Resource AWS.MediaConnect/FlowVpcInterface@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MediaConnect/FlowVpcInterfaceProperties](#awsmediaconnectflowvpcinterfaceproperties) (Required): properties of the resource
 
 ## AWS.MediaConnect/FlowProperties
 ### Properties
 * **AvailabilityZone**: string: The Availability Zone that you want to create the flow in. These options are limited to the Availability Zones within the current AWS.
-* **FlowArn**: string (ReadOnly): The Amazon Resource Name (ARN), a unique identifier for any AWS resource, of the flow.
+* **FlowArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN), a unique identifier for any AWS resource, of the flow.
 * **FlowAvailabilityZone**: string (ReadOnly): The Availability Zone that you want to create the flow in. These options are limited to the Availability Zones within the current AWS.(ReadOnly)
 * **Name**: string (Required): The name of the flow.
 * **Source**: [Source](#source) (Required): The source of the flow.
@@ -79,7 +74,7 @@
 * **DataTransferSubscriberFeePercent**: int: Percentage from 0-100 of the data transfer cost to be billed to the subscriber.
 * **Description**: string (Required): A description of the entitlement.
 * **Encryption**: [Encryption](#encryption): The type of encryption that will be used on the output that is associated with this entitlement.
-* **EntitlementArn**: string (ReadOnly): The ARN of the entitlement.
+* **EntitlementArn**: string (ReadOnly, Identifier): The ARN of the entitlement.
 * **EntitlementStatus**: string:  An indication of whether the entitlement is enabled.
 * **FlowArn**: string (Required): The ARN of the flow.
 * **Name**: string (Required): The name of the entitlement.
@@ -107,7 +102,7 @@
 * **MaxLatency**: int: The maximum latency in milliseconds. This parameter applies only to RIST-based and Zixi-based streams.
 * **MinLatency**: int: The minimum latency in milliseconds.
 * **Name**: string: The name of the output. This value must be unique within the current flow.
-* **OutputArn**: string (ReadOnly): The ARN of the output.
+* **OutputArn**: string (ReadOnly, Identifier): The ARN of the output.
 * **Port**: int: The port to use when content is distributed to this output.
 * **Protocol**: string (Required): The protocol that is used by the source or output.
 * **RemoteId**: string: The remote ID for the Zixi-pull stream.
@@ -138,7 +133,7 @@
 * **MaxLatency**: int: The maximum latency in milliseconds. This parameter applies only to RIST-based and Zixi-based streams.
 * **Name**: string (Required): The name of the source.
 * **Protocol**: string: The protocol that is used by the source.
-* **SourceArn**: string (ReadOnly): The ARN of the source.
+* **SourceArn**: string (ReadOnly, Identifier): The ARN of the source.
 * **SourceIngestPort**: string (ReadOnly): The port that the flow will be listening on for incoming content.(ReadOnly)
 * **StreamId**: string: The stream ID that you want to use for this transport. This parameter applies only to Zixi-based streams.
 * **VpcInterfaceName**: string: The name of the VPC Interface this Source is configured with.
@@ -158,8 +153,8 @@
 
 ## AWS.MediaConnect/FlowVpcInterfaceProperties
 ### Properties
-* **FlowArn**: string (Required): The Amazon Resource Name (ARN), a unique identifier for any AWS resource, of the flow.
-* **Name**: string (Required): Immutable and has to be a unique against other VpcInterfaces in this Flow.
+* **FlowArn**: string (Required, Identifier): The Amazon Resource Name (ARN), a unique identifier for any AWS resource, of the flow.
+* **Name**: string (Required, Identifier): Immutable and has to be a unique against other VpcInterfaces in this Flow.
 * **NetworkInterfaceIds**: string[] (ReadOnly): IDs of the network interfaces created in customer's account by MediaConnect.
 * **RoleArn**: string (Required): Role Arn MediaConnect can assumes to create ENIs in customer's account.
 * **SecurityGroupIds**: string[] (Required): Security Group IDs to be used on ENI.

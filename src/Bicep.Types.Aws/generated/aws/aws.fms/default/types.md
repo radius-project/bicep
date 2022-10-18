@@ -3,19 +3,17 @@
 ## Resource AWS.FMS/NotificationChannel@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.FMS/NotificationChannelProperties](#awsfmsnotificationchannelproperties) (Required): properties of the resource
 
 ## Resource AWS.FMS/Policy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.FMS/PolicyProperties](#awsfmspolicyproperties) (Required): properties of the resource
 
 ## AWS.FMS/NotificationChannelProperties
 ### Properties
 * **SnsRoleName**: [ResourceArn](#resourcearn) (Required)
-* **SnsTopicArn**: [ResourceArn](#resourcearn) (Required)
+* **SnsTopicArn**: [ResourceArn](#resourcearn) (Required, Identifier)
 
 ## ResourceArn
 ### Properties
@@ -26,7 +24,7 @@
 * **DeleteAllPolicyResources**: bool (WriteOnly)
 * **ExcludeMap**: [IEMap](#iemap)
 * **ExcludeResourceTags**: bool (Required)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **IncludeMap**: [IEMap](#iemap)
 * **PolicyName**: string (Required)
 * **RemediationEnabled**: bool (Required)

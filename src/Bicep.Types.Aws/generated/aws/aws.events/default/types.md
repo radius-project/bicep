@@ -3,25 +3,21 @@
 ## Resource AWS.Events/ApiDestination@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Events/ApiDestinationProperties](#awseventsapidestinationproperties) (Required): properties of the resource
 
 ## Resource AWS.Events/Archive@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Events/ArchiveProperties](#awseventsarchiveproperties) (Required): properties of the resource
 
 ## Resource AWS.Events/Connection@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Events/ConnectionProperties](#awseventsconnectionproperties) (Required): properties of the resource
 
 ## Resource AWS.Events/Endpoint@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Events/EndpointProperties](#awseventsendpointproperties) (Required): properties of the resource
 
 ## AWS.Events/ApiDestinationProperties
@@ -32,11 +28,11 @@
 * **HttpMethod**: string (Required)
 * **InvocationEndpoint**: string (Required): Url endpoint to invoke.
 * **InvocationRateLimitPerSecond**: int
-* **Name**: string: Name of the apiDestination.
+* **Name**: string (Identifier): Name of the apiDestination.
 
 ## AWS.Events/ArchiveProperties
 ### Properties
-* **ArchiveName**: string (ReadOnly)
+* **ArchiveName**: string (ReadOnly, Identifier)
 * **Arn**: string (ReadOnly)
 * **Description**: string
 * **EventPattern**: [Archive_EventPattern](#archiveeventpattern)
@@ -52,7 +48,7 @@
 * **AuthorizationType**: string (Required)
 * **AuthParameters**: [AuthParameters](#authparameters) (Required, WriteOnly)
 * **Description**: string: Description of the connection.
-* **Name**: string: Name of the connection.
+* **Name**: string (Identifier): Name of the connection.
 * **SecretArn**: string (ReadOnly): The arn of the secrets manager secret created in the customer account.
 
 ## AuthParameters
@@ -103,7 +99,7 @@
 * **EndpointId**: string (ReadOnly)
 * **EndpointUrl**: string (ReadOnly)
 * **EventBuses**: [EventBuses](#eventbuses) (Required)
-* **Name**: string (Required)
+* **Name**: string (Required, Identifier)
 * **ReplicationConfig**: [ReplicationConfig](#replicationconfig)
 * **RoleArn**: string
 * **RoutingConfig**: [RoutingConfig](#routingconfig) (Required)

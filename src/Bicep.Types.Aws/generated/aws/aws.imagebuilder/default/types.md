@@ -3,24 +3,21 @@
 ## Resource AWS.ImageBuilder/DistributionConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ImageBuilder/DistributionConfigurationProperties](#awsimagebuilderdistributionconfigurationproperties) (Required): properties of the resource
 
 ## Resource AWS.ImageBuilder/ImagePipeline@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ImageBuilder/ImagePipelineProperties](#awsimagebuilderimagepipelineproperties): properties of the resource
 
 ## Resource AWS.ImageBuilder/InfrastructureConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ImageBuilder/InfrastructureConfigurationProperties](#awsimagebuilderinfrastructureconfigurationproperties) (Required): properties of the resource
 
 ## AWS.ImageBuilder/DistributionConfigurationProperties
 ### Properties
-* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the distribution configuration.
+* **Arn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the distribution configuration.
 * **Description**: string: The description of the distribution configuration.
 * **Distributions**: [Distribution](#distribution)[] (Required): The distributions of the distribution configuration.
 * **Name**: string (Required): The name of the distribution configuration.
@@ -97,7 +94,7 @@
 
 ## AWS.ImageBuilder/ImagePipelineProperties
 ### Properties
-* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the image pipeline.
+* **Arn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the image pipeline.
 * **ContainerRecipeArn**: string: The Amazon Resource Name (ARN) of the container recipe that defines how images are configured and tested.
 * **Description**: string: The description of the image pipeline.
 * **DistributionConfigurationArn**: string: The Amazon Resource Name (ARN) of the distribution configuration associated with this image pipeline.
@@ -125,7 +122,7 @@
 
 ## AWS.ImageBuilder/InfrastructureConfigurationProperties
 ### Properties
-* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the infrastructure configuration.
+* **Arn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the infrastructure configuration.
 * **Description**: string: The description of the infrastructure configuration.
 * **InstanceMetadataOptions**: [InstanceMetadataOptions](#instancemetadataoptions): The instance metadata option settings for the infrastructure configuration.
 * **InstanceProfileName**: string (Required): The instance profile of the infrastructure configuration.

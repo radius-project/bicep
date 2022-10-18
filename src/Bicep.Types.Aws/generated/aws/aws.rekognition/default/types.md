@@ -3,25 +3,22 @@
 ## Resource AWS.Rekognition/Collection@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Rekognition/CollectionProperties](#awsrekognitioncollectionproperties) (Required): properties of the resource
 
 ## Resource AWS.Rekognition/Project@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Rekognition/ProjectProperties](#awsrekognitionprojectproperties) (Required): properties of the resource
 
 ## Resource AWS.Rekognition/StreamProcessor@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Rekognition/StreamProcessorProperties](#awsrekognitionstreamprocessorproperties) (Required): properties of the resource
 
 ## AWS.Rekognition/CollectionProperties
 ### Properties
 * **Arn**: [Arn](#arn) (ReadOnly)
-* **CollectionId**: [CollectionId](#collectionid) (Required)
+* **CollectionId**: [CollectionId](#collectionid) (Required, Identifier)
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
 ## Arn
@@ -38,7 +35,7 @@
 ## AWS.Rekognition/ProjectProperties
 ### Properties
 * **Arn**: [Arn](#arn) (ReadOnly)
-* **ProjectName**: [ProjectName](#projectname) (Required)
+* **ProjectName**: [ProjectName](#projectname) (Required, Identifier)
 
 ## Arn
 ### Properties
@@ -56,7 +53,7 @@
 * **KinesisDataStream**: [KinesisDataStream](#kinesisdatastream)
 * **KinesisVideoStream**: [KinesisVideoStream](#kinesisvideostream) (Required)
 * **KmsKeyId**: string: The KMS key that is used by Rekognition to encrypt any intermediate customer metadata and store in the customer's S3 bucket.
-* **Name**: string: Name of the stream processor. It's an identifier you assign to the stream processor. You can use it to manage the stream processor.
+* **Name**: string (Identifier): Name of the stream processor. It's an identifier you assign to the stream processor. You can use it to manage the stream processor.
 * **NotificationChannel**: [NotificationChannel](#notificationchannel)
 * **PolygonRegionsOfInterest**: [Polygon](#polygon)[]: The PolygonRegionsOfInterest specifies a set of polygon areas of interest in the video frames to analyze, as part of connected home feature. Each polygon is in turn, an ordered list of Point
 * **RoleArn**: string (Required): ARN of the IAM role that allows access to the stream processor, and provides Rekognition read permissions for KVS stream and write permissions to S3 bucket and SNS topic.

@@ -3,12 +3,11 @@
 ## Resource AWS.ElasticBeanstalk/Application@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ElasticBeanstalk/ApplicationProperties](#awselasticbeanstalkapplicationproperties): properties of the resource
 
 ## AWS.ElasticBeanstalk/ApplicationProperties
 ### Properties
-* **ApplicationName**: string: A name for the Elastic Beanstalk application. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the application name.
+* **ApplicationName**: string (Identifier): A name for the Elastic Beanstalk application. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the application name.
 * **Description**: string: Your description of the application.
 * **ResourceLifecycleConfig**: [ApplicationResourceLifecycleConfig](#applicationresourcelifecycleconfig): Specifies an application resource lifecycle configuration to prevent your application from accumulating too many versions.
 

@@ -3,13 +3,11 @@
 ## Resource AWS.ElasticLoadBalancingV2/Listener@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ElasticLoadBalancingV2/ListenerProperties](#awselasticloadbalancingv2listenerproperties) (Required): properties of the resource
 
 ## Resource AWS.ElasticLoadBalancingV2/ListenerRule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ElasticLoadBalancingV2/ListenerRuleProperties](#awselasticloadbalancingv2listenerruleproperties) (Required): properties of the resource
 
 ## AWS.ElasticLoadBalancingV2/ListenerProperties
@@ -17,7 +15,7 @@
 * **AlpnPolicy**: string[]
 * **Certificates**: [Certificate](#certificate)[]
 * **DefaultActions**: [Action](#action)[] (Required, WriteOnly)
-* **ListenerArn**: string (ReadOnly)
+* **ListenerArn**: string (ReadOnly, Identifier)
 * **LoadBalancerArn**: string (Required)
 * **Port**: int
 * **Protocol**: string
@@ -107,7 +105,7 @@
 * **IsDefault**: bool (ReadOnly)
 * **ListenerArn**: string (Required)
 * **Priority**: int (Required)
-* **RuleArn**: string (ReadOnly)
+* **RuleArn**: string (ReadOnly, Identifier)
 
 ## Action
 ### Properties

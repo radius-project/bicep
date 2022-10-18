@@ -3,19 +3,17 @@
 ## Resource AWS.SSMContacts/Contact@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SSMContacts/ContactProperties](#awsssmcontactscontactproperties) (Required): properties of the resource
 
 ## Resource AWS.SSMContacts/ContactChannel@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SSMContacts/ContactChannelProperties](#awsssmcontactscontactchannelproperties): properties of the resource
 
 ## AWS.SSMContacts/ContactProperties
 ### Properties
 * **Alias**: string (Required): Alias of the contact. String value with 20 to 256 characters. Only alphabetical, numeric characters, dash, or underscore allowed.
-* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the contact.
+* **Arn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the contact.
 * **DisplayName**: string (Required): Name of the contact. String value with 3 to 256 characters. Only alphabetical, space, numeric characters, dash, or underscore allowed.
 * **Plan**: [Stage](#stage)[] (Required, WriteOnly): The stages that an escalation plan or engagement plan engages contacts and contact methods in.
 * **Type**: string (Required): Contact type, which specify type of contact. Currently supported values: ?PERSONAL?, ?SHARED?, ?OTHER?.
@@ -42,7 +40,7 @@
 
 ## AWS.SSMContacts/ContactChannelProperties
 ### Properties
-* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the engagement to a contact channel.
+* **Arn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the engagement to a contact channel.
 * **ChannelAddress**: string: The details that SSM Incident Manager uses when trying to engage the contact channel.
 * **ChannelName**: string: The device name. String of 6 to 50 alphabetical, numeric, dash, and underscore characters.
 * **ChannelType**: string: Device type, which specify notification channel. Currently supported values: ?SMS?, ?VOICE?, ?EMAIL?, ?CHATBOT.

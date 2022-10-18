@@ -3,25 +3,22 @@
 ## Resource AWS.RolesAnywhere/CRL@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RolesAnywhere/CRLProperties](#awsrolesanywherecrlproperties): properties of the resource
 
 ## Resource AWS.RolesAnywhere/Profile@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RolesAnywhere/ProfileProperties](#awsrolesanywhereprofileproperties): properties of the resource
 
 ## Resource AWS.RolesAnywhere/TrustAnchor@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RolesAnywhere/TrustAnchorProperties](#awsrolesanywheretrustanchorproperties): properties of the resource
 
 ## AWS.RolesAnywhere/CRLProperties
 ### Properties
 * **CrlData**: string
-* **CrlId**: string (ReadOnly)
+* **CrlId**: string (ReadOnly, Identifier)
 * **Enabled**: bool
 * **Name**: string
 * **Tags**: [Tag](#tag)[]
@@ -39,7 +36,7 @@
 * **ManagedPolicyArns**: string[]
 * **Name**: string
 * **ProfileArn**: string (ReadOnly)
-* **ProfileId**: string (ReadOnly)
+* **ProfileId**: string (ReadOnly, Identifier)
 * **RequireInstanceProperties**: bool
 * **RoleArns**: string[]
 * **SessionPolicy**: string
@@ -57,7 +54,7 @@
 * **Source**: [Source](#source)
 * **Tags**: [Tag](#tag)[]
 * **TrustAnchorArn**: string (ReadOnly)
-* **TrustAnchorId**: string (ReadOnly)
+* **TrustAnchorId**: string (ReadOnly, Identifier)
 
 ## Source
 ### Properties

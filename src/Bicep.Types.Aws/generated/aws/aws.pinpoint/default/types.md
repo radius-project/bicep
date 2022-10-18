@@ -3,7 +3,6 @@
 ## Resource AWS.Pinpoint/InAppTemplate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Pinpoint/InAppTemplateProperties](#awspinpointinapptemplateproperties) (Required): properties of the resource
 
 ## AWS.Pinpoint/InAppTemplateProperties
@@ -14,7 +13,7 @@
 * **Layout**: string
 * **Tags**: [InAppTemplate_Tags](#inapptemplatetags)
 * **TemplateDescription**: string
-* **TemplateName**: string (Required)
+* **TemplateName**: string (Required, Identifier)
 
 ## InAppMessageContent
 ### Properties

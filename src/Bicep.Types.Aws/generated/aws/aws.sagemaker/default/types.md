@@ -3,73 +3,62 @@
 ## Resource AWS.SageMaker/AppImageConfig@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/AppImageConfigProperties](#awssagemakerappimageconfigproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/Device@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/DeviceProperties](#awssagemakerdeviceproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/DeviceFleet@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/DeviceFleetProperties](#awssagemakerdevicefleetproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/Domain@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/DomainProperties](#awssagemakerdomainproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/Image@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/ImageProperties](#awssagemakerimageproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/ModelPackage@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/ModelPackageProperties](#awssagemakermodelpackageproperties): properties of the resource
 
 ## Resource AWS.SageMaker/ModelPackageGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/ModelPackageGroupProperties](#awssagemakermodelpackagegroupproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/MonitoringSchedule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/MonitoringScheduleProperties](#awssagemakermonitoringscheduleproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/Pipeline@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/PipelineProperties](#awssagemakerpipelineproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/Project@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/ProjectProperties](#awssagemakerprojectproperties) (Required): properties of the resource
 
 ## Resource AWS.SageMaker/UserProfile@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SageMaker/UserProfileProperties](#awssagemakeruserprofileproperties) (Required): properties of the resource
 
 ## AWS.SageMaker/AppImageConfigProperties
 ### Properties
 * **AppImageConfigArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the AppImageConfig.
-* **AppImageConfigName**: string (Required): The Name of the AppImageConfig.
+* **AppImageConfigName**: string (Required, Identifier): The Name of the AppImageConfig.
 * **KernelGatewayImageConfig**: [KernelGatewayImageConfig](#kernelgatewayimageconfig): The KernelGatewayImageConfig.
 * **Tags**: [Tag](#tag)[] (WriteOnly): A list of tags to apply to the AppImageConfig.
 
@@ -114,7 +103,7 @@
 ## AWS.SageMaker/DeviceFleetProperties
 ### Properties
 * **Description**: string: Description for the edge device fleet
-* **DeviceFleetName**: string (Required): The name of the edge device fleet
+* **DeviceFleetName**: string (Required, Identifier): The name of the edge device fleet
 * **OutputConfig**: [EdgeOutputConfig](#edgeoutputconfig) (Required): S3 bucket and an ecryption key id (if available) to store outputs for the fleet
 * **RoleArn**: string (Required): Role associated with the device fleet
 * **Tags**: [Tag](#tag)[]: Associate tags with the resource
@@ -136,7 +125,7 @@
 * **AuthMode**: string (Required): The mode of authentication that members use to access the domain.
 * **DefaultUserSettings**: [UserSettings](#usersettings) (Required): The default user settings.
 * **DomainArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the created domain.
-* **DomainId**: string (ReadOnly): The domain name.
+* **DomainId**: string (ReadOnly, Identifier): The domain name.
 * **DomainName**: string (Required): A name for the domain.
 * **DomainSettings**: [DomainSettings](#domainsettings)
 * **HomeEfsFileSystemId**: string (ReadOnly): The ID of the Amazon Elastic File System (EFS) managed by this Domain.
@@ -215,7 +204,7 @@
 
 ## AWS.SageMaker/ImageProperties
 ### Properties
-* **ImageArn**: [ImageArn](#imagearn) (ReadOnly)
+* **ImageArn**: [ImageArn](#imagearn) (ReadOnly, Identifier)
 * **ImageDescription**: [ImageDescription](#imagedescription)
 * **ImageDisplayName**: [ImageDisplayName](#imagedisplayname)
 * **ImageName**: [ImageName](#imagename) (Required)
@@ -262,7 +251,7 @@
 * **MetadataProperties**: [MetadataProperties](#metadataproperties)
 * **ModelApprovalStatus**: [ModelApprovalStatus](#modelapprovalstatus)
 * **ModelMetrics**: [ModelMetrics](#modelmetrics)
-* **ModelPackageArn**: [ModelPackageArn](#modelpackagearn) (ReadOnly)
+* **ModelPackageArn**: [ModelPackageArn](#modelpackagearn) (ReadOnly, Identifier)
 * **ModelPackageDescription**: [ModelPackageDescription](#modelpackagedescription)
 * **ModelPackageGroupName**: [ModelPackageGroupName](#modelpackagegroupname)
 * **ModelPackageName**: [ModelPackageName](#modelpackagename)
@@ -535,7 +524,7 @@
 ## AWS.SageMaker/ModelPackageGroupProperties
 ### Properties
 * **CreationTime**: string (ReadOnly): The time at which the model package group was created.
-* **ModelPackageGroupArn**: [ModelPackageGroupArn](#modelpackagegrouparn) (ReadOnly)
+* **ModelPackageGroupArn**: [ModelPackageGroupArn](#modelpackagegrouparn) (ReadOnly, Identifier)
 * **ModelPackageGroupDescription**: [ModelPackageGroupDescription](#modelpackagegroupdescription)
 * **ModelPackageGroupName**: [ModelPackageGroupName](#modelpackagegroupname) (Required)
 * **ModelPackageGroupPolicy**: [ModelPackageGroup_ModelPackageGroupPolicy](#modelpackagegroupmodelpackagegrouppolicy) | string
@@ -563,7 +552,7 @@
 * **FailureReason**: string: Contains the reason a monitoring job failed, if it failed.
 * **LastModifiedTime**: string (ReadOnly): A timestamp that indicates the last time the monitoring job was modified.
 * **LastMonitoringExecutionSummary**: [MonitoringExecutionSummary](#monitoringexecutionsummary): Describes metadata on the last execution to run, if there was one.
-* **MonitoringScheduleArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the monitoring schedule.
+* **MonitoringScheduleArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the monitoring schedule.
 * **MonitoringScheduleConfig**: [MonitoringScheduleConfig](#monitoringscheduleconfig) (Required)
 * **MonitoringScheduleName**: [MonitoringScheduleName](#monitoringschedulename) (Required)
 * **MonitoringScheduleStatus**: string: The status of a schedule job.
@@ -697,7 +686,7 @@
 * **PipelineDefinition**: [Pipeline_PipelineDefinition](#pipelinepipelinedefinition) (Required)
 * **PipelineDescription**: string: The description of the Pipeline.
 * **PipelineDisplayName**: string: The display name of the Pipeline.
-* **PipelineName**: string (Required): The name of the Pipeline.
+* **PipelineName**: string (Required, Identifier): The name of the Pipeline.
 * **RoleArn**: string (Required): Role Arn
 * **Tags**: [Tag](#tag)[]
 
@@ -716,7 +705,7 @@
 ## AWS.SageMaker/ProjectProperties
 ### Properties
 * **CreationTime**: string (ReadOnly): The time at which the project was created.
-* **ProjectArn**: [ProjectArn](#projectarn) (ReadOnly)
+* **ProjectArn**: [ProjectArn](#projectarn) (ReadOnly, Identifier)
 * **ProjectDescription**: [ProjectDescription](#projectdescription)
 * **ProjectId**: [ProjectId](#projectid) (ReadOnly)
 * **ProjectName**: [ProjectName](#projectname) (Required)
@@ -773,12 +762,12 @@
 
 ## AWS.SageMaker/UserProfileProperties
 ### Properties
-* **DomainId**: string (Required): The ID of the associated Domain.
+* **DomainId**: string (Required, Identifier): The ID of the associated Domain.
 * **SingleSignOnUserIdentifier**: string: A specifier for the type of value specified in SingleSignOnUserValue. Currently, the only supported value is "UserName". If the Domain's AuthMode is SSO, this field is required. If the Domain's AuthMode is not SSO, this field cannot be specified.
 * **SingleSignOnUserValue**: string: The username of the associated AWS Single Sign-On User for this UserProfile. If the Domain's AuthMode is SSO, this field is required, and must match a valid username of a user in your directory. If the Domain's AuthMode is not SSO, this field cannot be specified.
 * **Tags**: [Tag](#tag)[] (WriteOnly): A list of tags to apply to the user profile.
 * **UserProfileArn**: string (ReadOnly): The user profile Amazon Resource Name (ARN).
-* **UserProfileName**: string (Required): A name for the UserProfile.
+* **UserProfileName**: string (Required, Identifier): A name for the UserProfile.
 * **UserSettings**: [UserSettings](#usersettings): A collection of settings.
 
 ## Tag

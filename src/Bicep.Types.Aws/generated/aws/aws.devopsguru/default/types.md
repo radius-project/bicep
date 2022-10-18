@@ -3,13 +3,12 @@
 ## Resource AWS.DevOpsGuru/ResourceCollection@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DevOpsGuru/ResourceCollectionProperties](#awsdevopsgururesourcecollectionproperties) (Required): properties of the resource
 
 ## AWS.DevOpsGuru/ResourceCollectionProperties
 ### Properties
 * **ResourceCollectionFilter**: [ResourceCollectionFilter](#resourcecollectionfilter) (Required)
-* **ResourceCollectionType**: string (ReadOnly): The type of ResourceCollection
+* **ResourceCollectionType**: string (ReadOnly, Identifier): The type of ResourceCollection
 
 ## ResourceCollectionFilter
 ### Properties

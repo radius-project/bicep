@@ -3,30 +3,26 @@
 ## Resource AWS.RoboMaker/Fleet@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RoboMaker/FleetProperties](#awsrobomakerfleetproperties): properties of the resource
 
 ## Resource AWS.RoboMaker/Robot@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RoboMaker/RobotProperties](#awsrobomakerrobotproperties) (Required): properties of the resource
 
 ## Resource AWS.RoboMaker/RobotApplication@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RoboMaker/RobotApplicationProperties](#awsrobomakerrobotapplicationproperties) (Required): properties of the resource
 
 ## Resource AWS.RoboMaker/SimulationApplication@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RoboMaker/SimulationApplicationProperties](#awsrobomakersimulationapplicationproperties) (Required): properties of the resource
 
 ## AWS.RoboMaker/FleetProperties
 ### Properties
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **Name**: string: The name of the fleet.
 * **Tags**: [Tags](#tags)
 
@@ -39,7 +35,7 @@
 ## AWS.RoboMaker/RobotProperties
 ### Properties
 * **Architecture**: string (Required): The target architecture of the robot.
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **Fleet**: string: The Amazon Resource Name (ARN) of the fleet.
 * **GreengrassGroupId**: string (Required): The Greengrass group id.
 * **Name**: string: The name for the robot.
@@ -53,7 +49,7 @@
 
 ## AWS.RoboMaker/RobotApplicationProperties
 ### Properties
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **CurrentRevisionId**: string: The revision ID of robot application.
 * **Environment**: string: The URI of the Docker image for the robot application.
 * **Name**: string: The name of the robot application.
@@ -80,7 +76,7 @@
 
 ## AWS.RoboMaker/SimulationApplicationProperties
 ### Properties
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **CurrentRevisionId**: string: The current revision id.
 * **Environment**: string: The URI of the Docker image for the robot application.
 * **Name**: string: The name of the simulation application.

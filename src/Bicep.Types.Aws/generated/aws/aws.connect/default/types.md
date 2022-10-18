@@ -3,66 +3,56 @@
 ## Resource AWS.Connect/ContactFlow@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/ContactFlowProperties](#awsconnectcontactflowproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/ContactFlowModule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/ContactFlowModuleProperties](#awsconnectcontactflowmoduleproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/HoursOfOperation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/HoursOfOperationProperties](#awsconnecthoursofoperationproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/Instance@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/InstanceProperties](#awsconnectinstanceproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/InstanceStorageConfig@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/InstanceStorageConfigProperties](#awsconnectinstancestorageconfigproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/PhoneNumber@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/PhoneNumberProperties](#awsconnectphonenumberproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/QuickConnect@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/QuickConnectProperties](#awsconnectquickconnectproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/TaskTemplate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/TaskTemplateProperties](#awsconnecttasktemplateproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/User@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/UserProperties](#awsconnectuserproperties) (Required): properties of the resource
 
 ## Resource AWS.Connect/UserHierarchyGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Connect/UserHierarchyGroupProperties](#awsconnectuserhierarchygroupproperties) (Required): properties of the resource
 
 ## AWS.Connect/ContactFlowProperties
 ### Properties
-* **ContactFlowArn**: string (ReadOnly): The identifier of the contact flow (ARN).
+* **ContactFlowArn**: string (ReadOnly, Identifier): The identifier of the contact flow (ARN).
 * **Content**: string (Required): The content of the contact flow in JSON format.
 * **Description**: string: The description of the contact flow.
 * **InstanceArn**: string (Required): The identifier of the Amazon Connect instance (ARN).
@@ -78,7 +68,7 @@
 
 ## AWS.Connect/ContactFlowModuleProperties
 ### Properties
-* **ContactFlowModuleArn**: string (ReadOnly): The identifier of the contact flow module (ARN).
+* **ContactFlowModuleArn**: string (ReadOnly, Identifier): The identifier of the contact flow module (ARN).
 * **Content**: string (Required): The content of the contact flow module in JSON format.
 * **Description**: string: The description of the contact flow module.
 * **InstanceArn**: string (Required): The identifier of the Amazon Connect instance (ARN).
@@ -96,7 +86,7 @@
 ### Properties
 * **Config**: [HoursOfOperationConfig](#hoursofoperationconfig)[] (Required): Configuration information for the hours of operation: day, start time, and end time.
 * **Description**: string: The description of the hours of operation.
-* **HoursOfOperationArn**: string (ReadOnly): The Amazon Resource Name (ARN) for the hours of operation.
+* **HoursOfOperationArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) for the hours of operation.
 * **InstanceArn**: string (Required): The identifier of the Amazon Connect instance.
 * **Name**: string (Required): The name of the hours of operation.
 * **Tags**: [Tag](#tag)[]: One or more tags.
@@ -120,7 +110,7 @@
 
 ## AWS.Connect/InstanceProperties
 ### Properties
-* **Arn**: string (ReadOnly): An instanceArn is automatically generated on creation based on instanceId.
+* **Arn**: string (ReadOnly, Identifier): An instanceArn is automatically generated on creation based on instanceId.
 * **Attributes**: [Attributes](#attributes) (Required): The attributes for the instance.
 * **CreatedTime**: string (ReadOnly): Timestamp of instance creation logged as part of instance creation.
 * **DirectoryId**: string (WriteOnly): Existing directoryId user wants to map to the new Connect instance.
@@ -163,12 +153,12 @@
 
 ## AWS.Connect/InstanceStorageConfigProperties
 ### Properties
-* **AssociationId**: [AssociationId](#associationid) (ReadOnly)
-* **InstanceArn**: string (Required): Connect Instance ID with which the storage config will be associated
+* **AssociationId**: [AssociationId](#associationid) (ReadOnly, Identifier)
+* **InstanceArn**: string (Required, Identifier): Connect Instance ID with which the storage config will be associated
 * **KinesisFirehoseConfig**: [KinesisFirehoseConfig](#kinesisfirehoseconfig)
 * **KinesisStreamConfig**: [KinesisStreamConfig](#kinesisstreamconfig)
 * **KinesisVideoStreamConfig**: [KinesisVideoStreamConfig](#kinesisvideostreamconfig)
-* **ResourceType**: [InstanceStorageResourceType](#instancestorageresourcetype) (Required)
+* **ResourceType**: [InstanceStorageResourceType](#instancestorageresourcetype) (Required, Identifier)
 * **S3Config**: [S3Config](#s3config)
 * **StorageType**: [StorageType](#storagetype) (Required)
 
@@ -232,7 +222,7 @@
 * **Address**: string (ReadOnly): The phone number e164 address.
 * **CountryCode**: string (Required): The phone number country code.
 * **Description**: string: The description of the phone number.
-* **PhoneNumberArn**: string (ReadOnly): The phone number ARN
+* **PhoneNumberArn**: string (ReadOnly, Identifier): The phone number ARN
 * **Prefix**: string (WriteOnly): The phone number prefix.
 * **Tags**: [Tag](#tag)[]: One or more tags.
 * **TargetArn**: string (Required): The ARN of the Amazon Connect instance the phone number is claimed to.
@@ -248,7 +238,7 @@
 * **Description**: string: The description of the quick connect.
 * **InstanceArn**: string (Required): The identifier of the Amazon Connect instance.
 * **Name**: string (Required): The name of the quick connect.
-* **QuickConnectArn**: string (ReadOnly): The Amazon Resource Name (ARN) for the quick connect.
+* **QuickConnectArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) for the quick connect.
 * **QuickConnectConfig**: [QuickConnectConfig](#quickconnectconfig) (Required): Configuration settings for the quick connect.
 * **Tags**: [Tag](#tag)[]: One or more tags.
 
@@ -295,7 +285,7 @@
 
 ## AWS.Connect/TaskTemplateProperties
 ### Properties
-* **Arn**: string (ReadOnly): The identifier (arn) of the task template.
+* **Arn**: string (ReadOnly, Identifier): The identifier (arn) of the task template.
 * **ClientToken**: [ClientToken](#clienttoken)
 * **Constraints**: [TaskTemplate_Constraints](#tasktemplateconstraints): The constraints for the task template
 * **ContactFlowArn**: string: The identifier of the contact flow.
@@ -369,7 +359,7 @@
 * **RoutingProfileArn**: string (Required): The identifier of the routing profile for the user.
 * **SecurityProfileArns**: [SecurityProfileArn](#securityprofilearn)[] (Required): One or more security profile arns for the user
 * **Tags**: [Tag](#tag)[]: One or more tags.
-* **UserArn**: string (ReadOnly): The Amazon Resource Name (ARN) for the user.
+* **UserArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) for the user.
 * **Username**: string (Required): The user name for the account.
 
 ## UserIdentityInfo
@@ -419,7 +409,7 @@
 * **InstanceArn**: string (Required): The identifier of the Amazon Connect instance.
 * **Name**: string (Required): The name of the user hierarchy group.
 * **ParentGroupArn**: [UserHierarchyGroupArn](#userhierarchygrouparn): The Amazon Resource Name (ARN) for the parent user hierarchy group.
-* **UserHierarchyGroupArn**: [UserHierarchyGroupArn](#userhierarchygrouparn) (ReadOnly): The Amazon Resource Name (ARN) for the user hierarchy group.
+* **UserHierarchyGroupArn**: [UserHierarchyGroupArn](#userhierarchygrouparn) (ReadOnly, Identifier): The Amazon Resource Name (ARN) for the user hierarchy group.
 
 ## UserHierarchyGroupArn
 ### Properties

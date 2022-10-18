@@ -3,13 +3,12 @@
 ## Resource AWS.Kinesis/Stream@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Kinesis/StreamProperties](#awskinesisstreamproperties): properties of the resource
 
 ## AWS.Kinesis/StreamProperties
 ### Properties
 * **Arn**: string (ReadOnly): The Amazon resource name (ARN) of the Kinesis stream
-* **Name**: string: The name of the Kinesis stream.
+* **Name**: string (Identifier): The name of the Kinesis stream.
 * **RetentionPeriodHours**: int: The number of hours for the data records that are stored in shards to remain accessible.
 * **ShardCount**: int: The number of shards that the stream uses. Required when StreamMode = PROVISIONED is passed.
 * **StreamEncryption**: [StreamEncryption](#streamencryption): When specified, enables or updates server-side encryption using an AWS KMS key for a specified stream.

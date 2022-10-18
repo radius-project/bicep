@@ -3,13 +3,11 @@
 ## Resource AWS.AppSync/DomainName@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppSync/DomainNameProperties](#awsappsyncdomainnameproperties) (Required): properties of the resource
 
 ## Resource AWS.AppSync/DomainNameApiAssociation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppSync/DomainNameApiAssociationProperties](#awsappsyncdomainnameapiassociationproperties) (Required): properties of the resource
 
 ## AWS.AppSync/DomainNameProperties
@@ -17,12 +15,12 @@
 * **AppSyncDomainName**: string (ReadOnly)
 * **CertificateArn**: string (Required)
 * **Description**: string
-* **DomainName**: string (Required, ReadOnly)
+* **DomainName**: string (Required, ReadOnly, Identifier)
 * **HostedZoneId**: string (ReadOnly)
 
 ## AWS.AppSync/DomainNameApiAssociationProperties
 ### Properties
-* **ApiAssociationIdentifier**: string (ReadOnly)
+* **ApiAssociationIdentifier**: string (ReadOnly, Identifier)
 * **ApiId**: string (Required)
 * **DomainName**: string (Required)
 

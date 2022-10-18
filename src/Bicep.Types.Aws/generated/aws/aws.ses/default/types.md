@@ -3,37 +3,32 @@
 ## Resource AWS.SES/ConfigurationSet@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SES/ConfigurationSetProperties](#awssesconfigurationsetproperties): properties of the resource
 
 ## Resource AWS.SES/ConfigurationSetEventDestination@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SES/ConfigurationSetEventDestinationProperties](#awssesconfigurationseteventdestinationproperties) (Required): properties of the resource
 
 ## Resource AWS.SES/ContactList@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SES/ContactListProperties](#awssescontactlistproperties): properties of the resource
 
 ## Resource AWS.SES/EmailIdentity@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SES/EmailIdentityProperties](#awssesemailidentityproperties) (Required): properties of the resource
 
 ## Resource AWS.SES/Template@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.SES/TemplateProperties](#awssestemplateproperties): properties of the resource
 
 ## AWS.SES/ConfigurationSetProperties
 ### Properties
 * **DeliveryOptions**: [DeliveryOptions](#deliveryoptions)
-* **Name**: string: The name of the configuration set.
+* **Name**: string (Identifier): The name of the configuration set.
 * **ReputationOptions**: [ReputationOptions](#reputationoptions)
 * **SendingOptions**: [SendingOptions](#sendingoptions)
 * **SuppressionOptions**: [SuppressionOptions](#suppressionoptions)
@@ -64,7 +59,7 @@
 ### Properties
 * **ConfigurationSetName**: string (Required): The name of the configuration set that contains the event destination.
 * **EventDestination**: [EventDestination](#eventdestination) (Required): The event destination object.
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 
 ## EventDestination
 ### Properties
@@ -96,7 +91,7 @@
 
 ## AWS.SES/ContactListProperties
 ### Properties
-* **ContactListName**: string: The name of the contact list.
+* **ContactListName**: string (Identifier): The name of the contact list.
 * **Description**: string: The description of the contact list.
 * **Tags**: [Tag](#tag)[]: The tags (keys and values) associated with the contact list.
 * **Topics**: [Topic](#topic)[]: The topics associated with the contact list.
@@ -124,7 +119,7 @@
 * **DkimDNSTokenValue2**: string (ReadOnly)
 * **DkimDNSTokenValue3**: string (ReadOnly)
 * **DkimSigningAttributes**: [DkimSigningAttributes](#dkimsigningattributes) (WriteOnly)
-* **EmailIdentity**: string (Required): The email address or domain to verify.
+* **EmailIdentity**: string (Required, Identifier): The email address or domain to verify.
 * **FeedbackAttributes**: [FeedbackAttributes](#feedbackattributes)
 * **MailFromAttributes**: [MailFromAttributes](#mailfromattributes)
 
@@ -153,7 +148,7 @@
 
 ## AWS.SES/TemplateProperties
 ### Properties
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **Template**: [Template](#template)
 
 ## Template

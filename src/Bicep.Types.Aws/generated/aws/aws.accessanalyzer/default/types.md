@@ -3,14 +3,13 @@
 ## Resource AWS.AccessAnalyzer/Analyzer@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AccessAnalyzer/AnalyzerProperties](#awsaccessanalyzeranalyzerproperties) (Required): properties of the resource
 
 ## AWS.AccessAnalyzer/AnalyzerProperties
 ### Properties
 * **AnalyzerName**: string: Analyzer name
 * **ArchiveRules**: [ArchiveRule](#archiverule)[]
-* **Arn**: string (ReadOnly): Amazon Resource Name (ARN) of the analyzer
+* **Arn**: string (ReadOnly, Identifier): Amazon Resource Name (ARN) of the analyzer
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 * **Type**: string (Required): The type of the analyzer, must be ACCOUNT or ORGANIZATION
 

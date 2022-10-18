@@ -3,7 +3,6 @@
 ## Resource AWS.HealthLake/FHIRDatastore@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.HealthLake/FHIRDatastoreProperties](#awshealthlakefhirdatastoreproperties) (Required): properties of the resource
 
 ## AWS.HealthLake/FHIRDatastoreProperties
@@ -11,7 +10,7 @@
 * **CreatedAt**: [CreatedAt](#createdat) (ReadOnly)
 * **DatastoreArn**: [DatastoreArn](#datastorearn) (ReadOnly)
 * **DatastoreEndpoint**: [DatastoreEndpoint](#datastoreendpoint) (ReadOnly)
-* **DatastoreId**: [DatastoreId](#datastoreid) (ReadOnly)
+* **DatastoreId**: [DatastoreId](#datastoreid) (ReadOnly, Identifier)
 * **DatastoreName**: [DatastoreName](#datastorename)
 * **DatastoreStatus**: [DatastoreStatus](#datastorestatus) (ReadOnly)
 * **DatastoreTypeVersion**: [DatastoreTypeVersion](#datastoretypeversion) (Required)

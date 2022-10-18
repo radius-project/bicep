@@ -3,25 +3,23 @@
 ## Resource AWS.AmplifyUIBuilder/Component@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AmplifyUIBuilder/ComponentProperties](#awsamplifyuibuildercomponentproperties) (Required): properties of the resource
 
 ## Resource AWS.AmplifyUIBuilder/Theme@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AmplifyUIBuilder/ThemeProperties](#awsamplifyuibuilderthemeproperties) (Required): properties of the resource
 
 ## AWS.AmplifyUIBuilder/ComponentProperties
 ### Properties
-* **AppId**: string (ReadOnly)
+* **AppId**: string (ReadOnly, Identifier)
 * **BindingProperties**: [ComponentBindingProperties](#componentbindingproperties) (Required)
 * **Children**: [ComponentChild](#componentchild)[]
 * **CollectionProperties**: [ComponentCollectionProperties](#componentcollectionproperties)
 * **ComponentType**: string (Required)
-* **EnvironmentName**: string (ReadOnly)
+* **EnvironmentName**: string (ReadOnly, Identifier)
 * **Events**: [ComponentEvents](#componentevents)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **Name**: string (Required)
 * **Overrides**: [ComponentOverrides](#componentoverrides) (Required)
 * **Properties**: [ComponentProperties](#componentproperties) (Required)
@@ -66,10 +64,10 @@
 
 ## AWS.AmplifyUIBuilder/ThemeProperties
 ### Properties
-* **AppId**: string (ReadOnly)
+* **AppId**: string (ReadOnly, Identifier)
 * **CreatedAt**: string (ReadOnly)
-* **EnvironmentName**: string (ReadOnly)
-* **Id**: string (ReadOnly)
+* **EnvironmentName**: string (ReadOnly, Identifier)
+* **Id**: string (ReadOnly, Identifier)
 * **ModifiedAt**: string (ReadOnly)
 * **Name**: string (Required)
 * **Overrides**: [ThemeValues](#themevalues)[]

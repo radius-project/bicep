@@ -3,12 +3,11 @@
 ## Resource AWS.EMRServerless/Application@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EMRServerless/ApplicationProperties](#awsemrserverlessapplicationproperties) (Required): properties of the resource
 
 ## AWS.EMRServerless/ApplicationProperties
 ### Properties
-* **ApplicationId**: string (ReadOnly): The ID of the EMR Serverless Application.
+* **ApplicationId**: string (ReadOnly, Identifier): The ID of the EMR Serverless Application.
 * **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the EMR Serverless Application.
 * **AutoStartConfiguration**: [AutoStartConfiguration](#autostartconfiguration): Configuration for Auto Start of Application.
 * **AutoStopConfiguration**: [AutoStopConfiguration](#autostopconfiguration): Configuration for Auto Stop of Application.

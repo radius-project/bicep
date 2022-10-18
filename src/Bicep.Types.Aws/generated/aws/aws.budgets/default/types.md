@@ -3,16 +3,15 @@
 ## Resource AWS.Budgets/BudgetsAction@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Budgets/BudgetsActionProperties](#awsbudgetsbudgetsactionproperties) (Required): properties of the resource
 
 ## AWS.Budgets/BudgetsActionProperties
 ### Properties
-* **ActionId**: string (ReadOnly)
+* **ActionId**: string (ReadOnly, Identifier)
 * **ActionThreshold**: [ActionThreshold](#actionthreshold) (Required)
 * **ActionType**: string (Required)
 * **ApprovalModel**: string
-* **BudgetName**: string (Required)
+* **BudgetName**: string (Required, Identifier)
 * **Definition**: [Definition](#definition) (Required)
 * **ExecutionRoleArn**: string (Required)
 * **NotificationType**: string (Required)

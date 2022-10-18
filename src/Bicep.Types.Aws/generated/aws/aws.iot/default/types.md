@@ -3,114 +3,96 @@
 ## Resource AWS.IoT/AccountAuditConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/AccountAuditConfigurationProperties](#awsiotaccountauditconfigurationproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/Authorizer@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/AuthorizerProperties](#awsiotauthorizerproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/CACertificate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/CACertificateProperties](#awsiotcacertificateproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/Certificate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/CertificateProperties](#awsiotcertificateproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/CustomMetric@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/CustomMetricProperties](#awsiotcustommetricproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/Dimension@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/DimensionProperties](#awsiotdimensionproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/DomainConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/DomainConfigurationProperties](#awsiotdomainconfigurationproperties): properties of the resource
 
 ## Resource AWS.IoT/FleetMetric@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/FleetMetricProperties](#awsiotfleetmetricproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/Logging@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/LoggingProperties](#awsiotloggingproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/MitigationAction@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/MitigationActionProperties](#awsiotmitigationactionproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/Policy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/PolicyProperties](#awsiotpolicyproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/ProvisioningTemplate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/ProvisioningTemplateProperties](#awsiotprovisioningtemplateproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/ResourceSpecificLogging@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/ResourceSpecificLoggingProperties](#awsiotresourcespecificloggingproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/RoleAlias@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/RoleAliasProperties](#awsiotrolealiasproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/ScheduledAudit@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/ScheduledAuditProperties](#awsiotscheduledauditproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/SecurityProfile@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/SecurityProfileProperties](#awsiotsecurityprofileproperties): properties of the resource
 
 ## Resource AWS.IoT/TopicRule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/TopicRuleProperties](#awsiottopicruleproperties) (Required): properties of the resource
 
 ## Resource AWS.IoT/TopicRuleDestination@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.IoT/TopicRuleDestinationProperties](#awsiottopicruledestinationproperties): properties of the resource
 
 ## AWS.IoT/AccountAuditConfigurationProperties
 ### Properties
-* **AccountId**: string (Required): Your 12-digit account ID (used as the primary identifier for the CloudFormation resource).
+* **AccountId**: string (Required, Identifier): Your 12-digit account ID (used as the primary identifier for the CloudFormation resource).
 * **AuditCheckConfigurations**: [AuditCheckConfigurations](#auditcheckconfigurations) (Required)
 * **AuditNotificationTargetConfigurations**: [AuditNotificationTargetConfigurations](#auditnotificationtargetconfigurations)
 * **RoleArn**: string (Required): The ARN of the role that grants permission to AWS IoT to access information about your devices, policies, certificates and other items as required when performing an audit.
@@ -150,7 +132,7 @@
 ### Properties
 * **Arn**: string (ReadOnly)
 * **AuthorizerFunctionArn**: string (Required)
-* **AuthorizerName**: string
+* **AuthorizerName**: string (Identifier)
 * **EnableCachingForHttp**: bool
 * **SigningDisabled**: bool
 * **Status**: string
@@ -172,7 +154,7 @@
 * **AutoRegistrationStatus**: string
 * **CACertificatePem**: string (Required)
 * **CertificateMode**: string
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **RegistrationConfig**: [RegistrationConfig](#registrationconfig)
 * **Status**: string (Required)
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
@@ -196,14 +178,14 @@
 * **CertificateMode**: string
 * **CertificatePem**: string
 * **CertificateSigningRequest**: string (WriteOnly)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **Status**: string (Required)
 
 ## AWS.IoT/CustomMetricProperties
 ### Properties
 * **DisplayName**: string: Field represents a friendly name in the console for the custom metric; it doesn't have to be unique. Don't use this name as the metric identifier in the device metric report. Can be updated once defined.
 * **MetricArn**: string (ReadOnly): The Amazon Resource Number (ARN) of the custom metric.
-* **MetricName**: string: The name of the custom metric. This will be used in the metric report submitted from the device/thing. Shouldn't begin with aws: . Cannot be updated once defined.
+* **MetricName**: string (Identifier): The name of the custom metric. This will be used in the metric report submitted from the device/thing. Shouldn't begin with aws: . Cannot be updated once defined.
 * **MetricType**: string (Required): The type of the custom metric. Types include string-list, ip-address-list, number-list, and number.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
@@ -215,7 +197,7 @@
 ## AWS.IoT/DimensionProperties
 ### Properties
 * **Arn**: string (ReadOnly): The ARN (Amazon resource name) of the created dimension.
-* **Name**: string: A unique identifier for the dimension.
+* **Name**: string (Identifier): A unique identifier for the dimension.
 * **StringValues**: string[] (Required): Specifies the value or list of values for the dimension.
 * **Tags**: [Tag](#tag)[]: Metadata that can be used to manage the dimension.
 * **Type**: string (Required): Specifies the type of the dimension.
@@ -229,7 +211,7 @@
 ### Properties
 * **Arn**: string (ReadOnly)
 * **AuthorizerConfig**: [AuthorizerConfig](#authorizerconfig)
-* **DomainConfigurationName**: string
+* **DomainConfigurationName**: string (Identifier)
 * **DomainConfigurationStatus**: string
 * **DomainName**: string
 * **DomainType**: string (ReadOnly)
@@ -264,7 +246,7 @@
 * **IndexName**: string: The index name of a fleet metric
 * **LastModifiedDate**: int (ReadOnly): The last modified date of a fleet metric
 * **MetricArn**: string (ReadOnly): The Amazon Resource Number (ARN) of a fleet metric metric
-* **MetricName**: string (Required): The name of the fleet metric
+* **MetricName**: string (Required, Identifier): The name of the fleet metric
 * **Period**: int: The period of metric emission in seconds
 * **QueryString**: string: The Fleet Indexing query used by a fleet metric
 * **QueryVersion**: string: The version of a Fleet Indexing query used by a fleet metric
@@ -284,13 +266,13 @@
 
 ## AWS.IoT/LoggingProperties
 ### Properties
-* **AccountId**: string (Required): Your 12-digit account ID (used as the primary identifier for the CloudFormation resource).
+* **AccountId**: string (Required, Identifier): Your 12-digit account ID (used as the primary identifier for the CloudFormation resource).
 * **DefaultLogLevel**: string (Required): The log level to use. Valid values are: ERROR, WARN, INFO, DEBUG, or DISABLED.
 * **RoleArn**: string (Required): The ARN of the role that allows IoT to write to Cloudwatch logs.
 
 ## AWS.IoT/MitigationActionProperties
 ### Properties
-* **ActionName**: string: A unique identifier for the mitigation action.
+* **ActionName**: string (Identifier): A unique identifier for the mitigation action.
 * **ActionParams**: [ActionParams](#actionparams) (Required)
 * **MitigationActionArn**: string (ReadOnly)
 * **MitigationActionId**: string (ReadOnly)
@@ -340,7 +322,7 @@
 ## AWS.IoT/PolicyProperties
 ### Properties
 * **Arn**: string (ReadOnly)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **PolicyDocument**: [Policy_PolicyDocument](#policypolicydocument) (Required)
 * **PolicyName**: string
 
@@ -356,7 +338,7 @@
 * **Tags**: [Tag](#tag)[]
 * **TemplateArn**: string (ReadOnly)
 * **TemplateBody**: string (Required)
-* **TemplateName**: string
+* **TemplateName**: string (Identifier)
 * **TemplateType**: string
 
 ## ProvisioningHook
@@ -372,14 +354,14 @@
 ## AWS.IoT/ResourceSpecificLoggingProperties
 ### Properties
 * **LogLevel**: string (Required): The log level for a specific target. Valid values are: ERROR, WARN, INFO, DEBUG, or DISABLED.
-* **TargetId**: string (ReadOnly): Unique Id for a Target (TargetType:TargetName), this will be internally built to serve as primary identifier for a log target.
+* **TargetId**: string (ReadOnly, Identifier): Unique Id for a Target (TargetType:TargetName), this will be internally built to serve as primary identifier for a log target.
 * **TargetName**: string (Required): The target name.
 * **TargetType**: string (Required): The target type. Value must be THING_GROUP, CLIENT_ID, SOURCE_IP, PRINCIPAL_ID.
 
 ## AWS.IoT/RoleAliasProperties
 ### Properties
 * **CredentialDurationSeconds**: int
-* **RoleAlias**: string
+* **RoleAlias**: string (Identifier)
 * **RoleAliasArn**: string (ReadOnly)
 * **RoleArn**: string (Required)
 * **Tags**: [Tag](#tag)[]
@@ -395,7 +377,7 @@
 * **DayOfWeek**: string: The day of the week on which the scheduled audit takes place. Can be one of SUN, MON, TUE,WED, THU, FRI, or SAT. This field is required if the frequency parameter is set to WEEKLY or BIWEEKLY.
 * **Frequency**: string (Required): How often the scheduled audit takes place. Can be one of DAILY, WEEKLY, BIWEEKLY, or MONTHLY.
 * **ScheduledAuditArn**: string (ReadOnly): The ARN (Amazon resource name) of the scheduled audit.
-* **ScheduledAuditName**: string: The name you want to give to the scheduled audit.
+* **ScheduledAuditName**: string (Identifier): The name you want to give to the scheduled audit.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 * **TargetCheckNames**: string[] (Required): Which checks are performed during the scheduled audit. Checks must be enabled for your account.
 
@@ -411,7 +393,7 @@
 * **Behaviors**: [Behavior](#behavior)[]: Specifies the behaviors that, when violated by a device (thing), cause an alert.
 * **SecurityProfileArn**: string (ReadOnly): The ARN (Amazon resource name) of the created security profile.
 * **SecurityProfileDescription**: string: A description of the security profile.
-* **SecurityProfileName**: string: A unique identifier for the security profile.
+* **SecurityProfileName**: string (Identifier): A unique identifier for the security profile.
 * **Tags**: [Tag](#tag)[]: Metadata that can be used to manage the security profile.
 * **TargetArns**: string[]: A set of target ARNs that the security profile is attached to.
 
@@ -471,7 +453,7 @@
 ## AWS.IoT/TopicRuleProperties
 ### Properties
 * **Arn**: string (ReadOnly)
-* **RuleName**: string
+* **RuleName**: string (Identifier)
 * **Tags**: [Tag](#tag)[]
 * **TopicRulePayload**: [TopicRulePayload](#topicrulepayload) (Required)
 
@@ -717,7 +699,7 @@
 
 ## AWS.IoT/TopicRuleDestinationProperties
 ### Properties
-* **Arn**: string (ReadOnly): Amazon Resource Name (ARN).
+* **Arn**: string (ReadOnly, Identifier): Amazon Resource Name (ARN).
 * **HttpUrlProperties**: [HttpUrlDestinationSummary](#httpurldestinationsummary): HTTP URL destination properties.
 * **Status**: [TopicRuleDestinationStatus](#topicruledestinationstatus): The status of the TopicRuleDestination.
 * **StatusReason**: string (ReadOnly): The reasoning for the current status of the TopicRuleDestination.

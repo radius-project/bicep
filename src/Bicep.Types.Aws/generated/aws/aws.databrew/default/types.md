@@ -3,37 +3,31 @@
 ## Resource AWS.DataBrew/Dataset@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/DatasetProperties](#awsdatabrewdatasetproperties) (Required): properties of the resource
 
 ## Resource AWS.DataBrew/Job@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/JobProperties](#awsdatabrewjobproperties) (Required): properties of the resource
 
 ## Resource AWS.DataBrew/Project@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/ProjectProperties](#awsdatabrewprojectproperties) (Required): properties of the resource
 
 ## Resource AWS.DataBrew/Recipe@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/RecipeProperties](#awsdatabrewrecipeproperties) (Required): properties of the resource
 
 ## Resource AWS.DataBrew/Ruleset@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/RulesetProperties](#awsdatabrewrulesetproperties) (Required): properties of the resource
 
 ## Resource AWS.DataBrew/Schedule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DataBrew/ScheduleProperties](#awsdatabrewscheduleproperties) (Required): properties of the resource
 
 ## AWS.DataBrew/DatasetProperties
@@ -41,7 +35,7 @@
 * **Format**: string: Dataset format
 * **FormatOptions**: [FormatOptions](#formatoptions): Format options for dataset
 * **Input**: [Input](#input) (Required): Input
-* **Name**: string (Required): Dataset name
+* **Name**: string (Required, Identifier): Dataset name
 * **PathOptions**: [PathOptions](#pathoptions): PathOptions
 * **Tags**: [Tag](#tag)[]
 
@@ -128,7 +122,7 @@
 * **CreateColumn**: bool: Add the value of this parameter as a column in a dataset.
 * **DatetimeOptions**: [DatetimeOptions](#datetimeoptions)
 * **Filter**: [FilterExpression](#filterexpression)
-* **Name**: [PathParameterName](#pathparametername) (Required)
+* **Name**: [PathParameterName](#pathparametername) (Required, Identifier)
 * **Type**: string (Required): Parameter type
 
 ## DatetimeOptions
@@ -156,7 +150,7 @@
 * **LogSubscription**: string: Log subscription
 * **MaxCapacity**: int: Max capacity
 * **MaxRetries**: int: Max retries
-* **Name**: string (Required): Job name
+* **Name**: string (Required, Identifier): Job name
 * **OutputLocation**: [OutputLocation](#outputlocation): Output location
 * **Outputs**: [Output](#output)[]
 * **ProfileConfiguration**: [ProfileConfiguration](#profileconfiguration): Profile Job configuration
@@ -247,7 +241,7 @@
 
 ## ColumnSelector
 ### Properties
-* **Name**: string
+* **Name**: string (Identifier)
 * **Regex**: string
 
 ## StatisticsConfiguration
@@ -277,7 +271,7 @@
 
 ## Recipe
 ### Properties
-* **Name**: string (Required): Recipe name
+* **Name**: string (Required, Identifier): Recipe name
 * **Version**: string: Recipe version
 
 ## Tag
@@ -296,7 +290,7 @@
 ## AWS.DataBrew/ProjectProperties
 ### Properties
 * **DatasetName**: string (Required): Dataset name
-* **Name**: string (Required): Project name
+* **Name**: string (Required, Identifier): Project name
 * **RecipeName**: string (Required): Recipe name
 * **RoleArn**: string (Required): Role arn
 * **Sample**: [Sample](#sample): Sample
@@ -315,7 +309,7 @@
 ## AWS.DataBrew/RecipeProperties
 ### Properties
 * **Description**: string: Description of the recipe
-* **Name**: string (Required): Recipe name
+* **Name**: string (Required, Identifier): Recipe name
 * **Steps**: [Recipe_RecipeStep](#reciperecipestep)[] (Required)
 * **Tags**: [Tag](#tag)[]
 
@@ -346,7 +340,7 @@
 ## AWS.DataBrew/RulesetProperties
 ### Properties
 * **Description**: string: Description of the Ruleset
-* **Name**: string (Required): Name of the Ruleset
+* **Name**: string (Required, Identifier): Name of the Ruleset
 * **Rules**: [Rule](#rule)[] (Required): List of the data quality rules in the ruleset
 * **Tags**: [Tag](#tag)[]
 * **TargetArn**: string (Required): Arn of the target resource (dataset) to apply the ruleset to
@@ -356,7 +350,7 @@
 * **CheckExpression**: [Expression](#expression) (Required)
 * **ColumnSelectors**: [ColumnSelector](#columnselector)[]
 * **Disabled**: [Disabled](#disabled)
-* **Name**: string (Required): Name of the rule
+* **Name**: string (Required, Identifier): Name of the rule
 * **SubstitutionMap**: [ValuesMap](#valuesmap)
 * **Threshold**: [Threshold](#threshold)
 
@@ -365,7 +359,7 @@
 
 ## ColumnSelector
 ### Properties
-* **Name**: string: The name of a column from a dataset
+* **Name**: string (Identifier): The name of a column from a dataset
 * **Regex**: string: A regular expression for selecting a column from a dataset
 
 ## Disabled
@@ -398,7 +392,7 @@
 ### Properties
 * **CronExpression**: string (Required): Schedule cron
 * **JobNames**: [JobName](#jobname)[]
-* **Name**: string (Required): Schedule Name
+* **Name**: string (Required, Identifier): Schedule Name
 * **Tags**: [Tag](#tag)[]
 
 ## JobName

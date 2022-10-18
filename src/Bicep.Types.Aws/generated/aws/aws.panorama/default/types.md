@@ -3,24 +3,21 @@
 ## Resource AWS.Panorama/ApplicationInstance@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Panorama/ApplicationInstanceProperties](#awspanoramaapplicationinstanceproperties) (Required): properties of the resource
 
 ## Resource AWS.Panorama/Package@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Panorama/PackageProperties](#awspanoramapackageproperties) (Required): properties of the resource
 
 ## Resource AWS.Panorama/PackageVersion@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Panorama/PackageVersionProperties](#awspanoramapackageversionproperties) (Required): properties of the resource
 
 ## AWS.Panorama/ApplicationInstanceProperties
 ### Properties
-* **ApplicationInstanceId**: [ApplicationInstanceId](#applicationinstanceid) (ReadOnly)
+* **ApplicationInstanceId**: [ApplicationInstanceId](#applicationinstanceid) (ReadOnly, Identifier)
 * **ApplicationInstanceIdToReplace**: [ApplicationInstanceId](#applicationinstanceid)
 * **Arn**: [ApplicationInstanceArn](#applicationinstancearn) (ReadOnly)
 * **CreatedTime**: [Timestamp](#timestamp) (ReadOnly)
@@ -99,7 +96,7 @@
 ### Properties
 * **Arn**: [NodePackageArn](#nodepackagearn) (ReadOnly)
 * **CreatedTime**: [CreatedTime](#createdtime) (ReadOnly)
-* **PackageId**: [NodePackageId](#nodepackageid) (ReadOnly)
+* **PackageId**: [NodePackageId](#nodepackageid) (ReadOnly, Identifier)
 * **PackageName**: [NodePackageName](#nodepackagename) (Required)
 * **StorageLocation**: [StorageLocation](#storagelocation) (ReadOnly)
 * **Tags**: [TagList](#taglist)
@@ -133,10 +130,10 @@
 * **MarkLatest**: bool
 * **OwnerAccount**: [PackageOwnerAccount](#packageowneraccount)
 * **PackageArn**: [NodePackageArn](#nodepackagearn) (ReadOnly)
-* **PackageId**: [NodePackageId](#nodepackageid) (Required)
+* **PackageId**: [NodePackageId](#nodepackageid) (Required, Identifier)
 * **PackageName**: [NodePackageName](#nodepackagename) (ReadOnly)
-* **PackageVersion**: [NodePackageVersion](#nodepackageversion) (Required)
-* **PatchVersion**: [NodePackagePatchVersion](#nodepackagepatchversion) (Required)
+* **PackageVersion**: [NodePackageVersion](#nodepackageversion) (Required, Identifier)
+* **PatchVersion**: [NodePackagePatchVersion](#nodepackagepatchversion) (Required, Identifier)
 * **RegisteredTime**: [TimeStamp](#timestamp) (ReadOnly)
 * **Status**: [PackageVersionStatus](#packageversionstatus) (ReadOnly)
 * **StatusDescription**: [PackageVersionStatusDescription](#packageversionstatusdescription) (ReadOnly)

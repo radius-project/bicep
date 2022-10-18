@@ -3,13 +3,11 @@
 ## Resource AWS.Synthetics/Canary@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Synthetics/CanaryProperties](#awssyntheticscanaryproperties) (Required): properties of the resource
 
 ## Resource AWS.Synthetics/Group@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Synthetics/GroupProperties](#awssyntheticsgroupproperties) (Required): properties of the resource
 
 ## AWS.Synthetics/CanaryProperties
@@ -21,7 +19,7 @@
 * **ExecutionRoleArn**: string (Required): Lambda Execution role used to run your canaries
 * **FailureRetentionPeriod**: int: Retention period of failed canary runs represented in number of days
 * **Id**: string (ReadOnly): Id of the canary
-* **Name**: string (Required): Name of the canary.
+* **Name**: string (Required, Identifier): Name of the canary.
 * **RunConfig**: [RunConfig](#runconfig): Provide canary run configuration
 * **RuntimeVersion**: string (Required): Runtime version of Synthetics Library
 * **Schedule**: [Schedule](#schedule) (Required): Frequency to run your canaries
@@ -88,7 +86,7 @@
 ## AWS.Synthetics/GroupProperties
 ### Properties
 * **Id**: string (ReadOnly): Id of the group.
-* **Name**: string (Required): Name of the group.
+* **Name**: string (Required, Identifier): Name of the group.
 * **ResourceArns**: [ResourceArn](#resourcearn)[]
 * **Tags**: [Tag](#tag)[]
 

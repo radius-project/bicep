@@ -3,24 +3,21 @@
 ## Resource AWS.MSK/BatchScramSecret@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MSK/BatchScramSecretProperties](#awsmskbatchscramsecretproperties) (Required): properties of the resource
 
 ## Resource AWS.MSK/Cluster@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MSK/ClusterProperties](#awsmskclusterproperties) (Required): properties of the resource
 
 ## Resource AWS.MSK/Configuration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.MSK/ConfigurationProperties](#awsmskconfigurationproperties) (Required): properties of the resource
 
 ## AWS.MSK/BatchScramSecretProperties
 ### Properties
-* **ClusterArn**: string (Required)
+* **ClusterArn**: string (Required, Identifier)
 * **SecretArnList**: [SecretArnList](#secretarnlist)
 
 ## SecretArnList
@@ -28,7 +25,7 @@
 
 ## AWS.MSK/ClusterProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **BrokerNodeGroupInfo**: [BrokerNodeGroupInfo](#brokernodegroupinfo) (Required)
 * **ClientAuthentication**: [ClientAuthentication](#clientauthentication)
 * **ClusterName**: string (Required)
@@ -103,7 +100,7 @@
 
 ## ConfigurationInfo
 ### Properties
-* **Arn**: string (Required)
+* **Arn**: string (Required, Identifier)
 * **Revision**: int (Required)
 
 ## EncryptionInfo
@@ -168,7 +165,7 @@
 
 ## AWS.MSK/ConfigurationProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **Description**: string
 * **KafkaVersionsList**: [KafkaVersionsList](#kafkaversionslist)
 * **Name**: string (Required)

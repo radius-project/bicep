@@ -3,13 +3,11 @@
 ## Resource AWS.DynamoDB/GlobalTable@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DynamoDB/GlobalTableProperties](#awsdynamodbglobaltableproperties) (Required): properties of the resource
 
 ## Resource AWS.DynamoDB/Table@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.DynamoDB/TableProperties](#awsdynamodbtableproperties) (Required): properties of the resource
 
 ## AWS.DynamoDB/GlobalTableProperties
@@ -25,7 +23,7 @@
 * **StreamArn**: string (ReadOnly)
 * **StreamSpecification**: [StreamSpecification](#streamspecification)
 * **TableId**: string (ReadOnly)
-* **TableName**: string
+* **TableName**: string (Identifier)
 * **TimeToLiveSpecification**: [TimeToLiveSpecification](#timetolivespecification)
 * **WriteProvisionedThroughputSettings**: [WriteProvisionedThroughputSettings](#writeprovisionedthroughputsettings)
 
@@ -145,7 +143,7 @@
 * **StreamArn**: string (ReadOnly)
 * **StreamSpecification**: [StreamSpecification](#streamspecification)
 * **TableClass**: string
-* **TableName**: string
+* **TableName**: string (Identifier)
 * **Tags**: [Tag](#tag)[]
 * **TimeToLiveSpecification**: [TimeToLiveSpecification](#timetolivespecification)
 

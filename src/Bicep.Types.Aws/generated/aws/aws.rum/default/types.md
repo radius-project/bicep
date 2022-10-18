@@ -3,7 +3,6 @@
 ## Resource AWS.RUM/AppMonitor@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.RUM/AppMonitorProperties](#awsrumappmonitorproperties) (Required): properties of the resource
 
 ## AWS.RUM/AppMonitorProperties
@@ -11,7 +10,7 @@
 * **AppMonitorConfiguration**: [AppMonitorConfiguration](#appmonitorconfiguration)
 * **CwLogEnabled**: bool: Data collected by RUM is kept by RUM for 30 days and then deleted. This parameter specifies whether RUM sends a copy of this telemetry data to CWLlong in your account. This enables you to keep the telemetry data for more than 30 days, but it does incur CWLlong charges. If you omit this parameter, the default is false
 * **Domain**: string (Required): The top-level internet domain name for which your application has administrative authority.
-* **Name**: string (Required): A name for the app monitor
+* **Name**: string (Required, Identifier): A name for the app monitor
 * **Tags**: [TagDef](#tagdef)
 
 ## AppMonitorConfiguration

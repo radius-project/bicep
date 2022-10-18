@@ -3,13 +3,12 @@
 ## Resource AWS.KafkaConnect/Connector@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.KafkaConnect/ConnectorProperties](#awskafkaconnectconnectorproperties) (Required): properties of the resource
 
 ## AWS.KafkaConnect/ConnectorProperties
 ### Properties
 * **Capacity**: [Capacity](#capacity) (Required)
-* **ConnectorArn**: string (ReadOnly): Amazon Resource Name for the created Connector.
+* **ConnectorArn**: string (ReadOnly, Identifier): Amazon Resource Name for the created Connector.
 * **ConnectorConfiguration**: [Connector_ConnectorConfiguration](#connectorconnectorconfiguration) (Required): The configuration for the connector.
 * **ConnectorDescription**: string: A summary description of the connector.
 * **ConnectorName**: string (Required): The name of the connector.

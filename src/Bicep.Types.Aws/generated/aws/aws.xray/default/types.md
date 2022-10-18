@@ -3,19 +3,17 @@
 ## Resource AWS.XRay/Group@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.XRay/GroupProperties](#awsxraygroupproperties): properties of the resource
 
 ## Resource AWS.XRay/SamplingRule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.XRay/SamplingRuleProperties](#awsxraysamplingruleproperties): properties of the resource
 
 ## AWS.XRay/GroupProperties
 ### Properties
 * **FilterExpression**: string: The filter expression defining criteria by which to group traces.
-* **GroupARN**: string (ReadOnly): The ARN of the group that was generated on creation.
+* **GroupARN**: string (ReadOnly, Identifier): The ARN of the group that was generated on creation.
 * **GroupName**: string: The case-sensitive name of the new group. Names must be unique.
 * **InsightsConfiguration**: [InsightsConfiguration](#insightsconfiguration)
 * **Tags**: [Tags](#tags)
@@ -30,7 +28,7 @@
 
 ## AWS.XRay/SamplingRuleProperties
 ### Properties
-* **RuleARN**: [RuleARN](#rulearn) (ReadOnly)
+* **RuleARN**: [RuleARN](#rulearn) (ReadOnly, Identifier)
 * **RuleName**: [RuleName](#rulename)
 * **SamplingRule**: [SamplingRule](#samplingrule)
 * **SamplingRuleRecord**: [SamplingRuleRecord](#samplingrulerecord)
@@ -52,7 +50,7 @@
 * **Priority**: int: The priority of the sampling rule.
 * **ReservoirSize**: int: A fixed number of matching requests to instrument per second, prior to applying the fixed rate. The reservoir is not used directly by services, but applies to all services using the rule collectively.
 * **ResourceARN**: string: Matches the ARN of the AWS resource on which the service runs.
-* **RuleARN**: [RuleARN](#rulearn)
+* **RuleARN**: [RuleARN](#rulearn) (Identifier)
 * **RuleName**: [RuleName](#rulename)
 * **ServiceName**: string: Matches the name that the service uses to identify itself in segments.
 * **ServiceType**: string: Matches the origin that the service uses to identify its type in segments.
@@ -77,7 +75,7 @@
 * **Priority**: int: The priority of the sampling rule.
 * **ReservoirSize**: int: A fixed number of matching requests to instrument per second, prior to applying the fixed rate. The reservoir is not used directly by services, but applies to all services using the rule collectively.
 * **ResourceARN**: string: Matches the ARN of the AWS resource on which the service runs.
-* **RuleARN**: [RuleARN](#rulearn)
+* **RuleARN**: [RuleARN](#rulearn) (Identifier)
 * **RuleName**: [RuleName](#rulename)
 * **ServiceName**: string: Matches the name that the service uses to identify itself in segments.
 * **ServiceType**: string: Matches the origin that the service uses to identify its type in segments.

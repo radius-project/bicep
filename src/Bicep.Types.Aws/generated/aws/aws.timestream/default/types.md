@@ -3,25 +3,22 @@
 ## Resource AWS.Timestream/Database@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Timestream/DatabaseProperties](#awstimestreamdatabaseproperties): properties of the resource
 
 ## Resource AWS.Timestream/ScheduledQuery@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Timestream/ScheduledQueryProperties](#awstimestreamscheduledqueryproperties) (Required): properties of the resource
 
 ## Resource AWS.Timestream/Table@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Timestream/TableProperties](#awstimestreamtableproperties) (Required): properties of the resource
 
 ## AWS.Timestream/DatabaseProperties
 ### Properties
 * **Arn**: string (ReadOnly)
-* **DatabaseName**: string: The name for the database. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the database name.
+* **DatabaseName**: string (Identifier): The name for the database. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the database name.
 * **KmsKeyId**: string: The KMS key for the database. If the KMS key is not specified, the database will be encrypted with a Timestream managed KMS key located in your account.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
@@ -32,7 +29,7 @@
 
 ## AWS.Timestream/ScheduledQueryProperties
 ### Properties
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **ClientToken**: [ClientToken](#clienttoken)
 * **ErrorReportConfiguration**: [ErrorReportConfiguration](#errorreportconfiguration) (Required)
 * **KmsKeyId**: [KmsKeyId](#kmskeyid)
@@ -156,11 +153,11 @@
 ## AWS.Timestream/TableProperties
 ### Properties
 * **Arn**: string (ReadOnly)
-* **DatabaseName**: string (Required): The name for the database which the table to be created belongs to.
+* **DatabaseName**: string (Required, Identifier): The name for the database which the table to be created belongs to.
 * **MagneticStoreWriteProperties**: [Table_MagneticStoreWriteProperties](#tablemagneticstorewriteproperties): The properties that determine whether magnetic store writes are enabled.
 * **Name**: string (ReadOnly): The table name exposed as a read-only attribute.
 * **RetentionProperties**: [Table_RetentionProperties](#tableretentionproperties): The retention duration of the memory store and the magnetic store.
-* **TableName**: string: The name for the table. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the table name.
+* **TableName**: string (Identifier): The name for the table. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the table name.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
 ## Table_MagneticStoreWriteProperties

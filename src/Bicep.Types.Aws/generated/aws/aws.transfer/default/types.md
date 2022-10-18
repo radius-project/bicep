@@ -3,7 +3,6 @@
 ## Resource AWS.Transfer/Workflow@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Transfer/WorkflowProperties](#awstransferworkflowproperties) (Required): properties of the resource
 
 ## AWS.Transfer/WorkflowProperties
@@ -13,7 +12,7 @@
 * **OnExceptionSteps**: [WorkflowStep](#workflowstep)[]: Specifies the steps (actions) to take if any errors are encountered during execution of the workflow.
 * **Steps**: [WorkflowStep](#workflowstep)[] (Required): Specifies the details for the steps that are in the specified workflow.
 * **Tags**: [Tag](#tag)[]: Key-value pairs that can be used to group and search for workflows. Tags are metadata attached to workflows for any purpose.
-* **WorkflowId**: string (ReadOnly): A unique identifier for the workflow.
+* **WorkflowId**: string (ReadOnly, Identifier): A unique identifier for the workflow.
 
 ## WorkflowStep
 ### Properties

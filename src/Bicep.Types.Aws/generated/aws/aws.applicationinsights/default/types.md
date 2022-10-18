@@ -3,12 +3,11 @@
 ## Resource AWS.ApplicationInsights/Application@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ApplicationInsights/ApplicationProperties](#awsapplicationinsightsapplicationproperties) (Required): properties of the resource
 
 ## AWS.ApplicationInsights/ApplicationProperties
 ### Properties
-* **ApplicationARN**: string (ReadOnly): The ARN of the ApplicationInsights application.
+* **ApplicationARN**: string (ReadOnly, Identifier): The ARN of the ApplicationInsights application.
 * **AutoConfigurationEnabled**: bool: If set to true, application will be configured with recommended monitoring configuration.
 * **ComponentMonitoringSettings**: [ComponentMonitoringSetting](#componentmonitoringsetting)[]: The monitoring settings of the components.
 * **CustomComponents**: [CustomComponent](#customcomponent)[]: The custom grouped components.

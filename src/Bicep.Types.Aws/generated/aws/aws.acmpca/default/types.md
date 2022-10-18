@@ -3,27 +3,24 @@
 ## Resource AWS.ACMPCA/Certificate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ACMPCA/CertificateProperties](#awsacmpcacertificateproperties) (Required): properties of the resource
 
 ## Resource AWS.ACMPCA/CertificateAuthority@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ACMPCA/CertificateAuthorityProperties](#awsacmpcacertificateauthorityproperties) (Required): properties of the resource
 
 ## Resource AWS.ACMPCA/CertificateAuthorityActivation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ACMPCA/CertificateAuthorityActivationProperties](#awsacmpcacertificateauthorityactivationproperties) (Required): properties of the resource
 
 ## AWS.ACMPCA/CertificateProperties
 ### Properties
 * **ApiPassthrough**: [ApiPassthrough](#apipassthrough) (WriteOnly): These are fields to be overridden in a certificate at the time of issuance. These requires an API_Passthrough template be used or they will be ignored.
-* **Arn**: [Arn](#arn) (ReadOnly): The ARN of the issued certificate.
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier): The ARN of the issued certificate.
 * **Certificate**: string (ReadOnly): The issued certificate in base 64 PEM-encoded format.
-* **CertificateAuthorityArn**: [Arn](#arn) (Required): The Amazon Resource Name (ARN) for the private CA to issue the certificate.
+* **CertificateAuthorityArn**: [Arn](#arn) (Required, Identifier): The Amazon Resource Name (ARN) for the private CA to issue the certificate.
 * **CertificateSigningRequest**: string (Required, WriteOnly): The certificate signing request (CSR) for the Certificate.
 * **SigningAlgorithm**: string (Required): The name of the algorithm that will be used to sign the Certificate.
 * **TemplateArn**: [Arn](#arn): Specifies a custom configuration template to use when issuing a certificate. If this parameter is not provided, ACM Private CA defaults to the EndEntityCertificate/V1 template.
@@ -98,7 +95,7 @@
 
 ## AWS.ACMPCA/CertificateAuthorityProperties
 ### Properties
-* **Arn**: [Arn](#arn) (ReadOnly): The Amazon Resource Name (ARN) of the certificate authority.
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the certificate authority.
 * **CertificateSigningRequest**: string (ReadOnly): The base64 PEM-encoded certificate signing request (CSR) for your certificate authority certificate.
 * **CsrExtensions**: [CsrExtensions](#csrextensions): Structure that contains CSR pass through extension information used by the CreateCertificateAuthority action.
 * **KeyAlgorithm**: string (Required): Public key algorithm and size, in bits, of the key pair that your CA creates when it issues a certificate.
@@ -179,7 +176,7 @@
 ## AWS.ACMPCA/CertificateAuthorityActivationProperties
 ### Properties
 * **Certificate**: string (Required, WriteOnly): Certificate Authority certificate that will be installed in the Certificate Authority.
-* **CertificateAuthorityArn**: string (Required): Arn of the Certificate Authority.
+* **CertificateAuthorityArn**: string (Required, Identifier): Arn of the Certificate Authority.
 * **CertificateChain**: string (WriteOnly): Certificate chain for the Certificate Authority certificate.
 * **CompleteCertificateChain**: string (ReadOnly): The complete certificate chain, including the Certificate Authority certificate.
 * **Status**: string: The status of the Certificate Authority.

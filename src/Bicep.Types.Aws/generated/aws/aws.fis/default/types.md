@@ -3,14 +3,13 @@
 ## Resource AWS.FIS/ExperimentTemplate@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.FIS/ExperimentTemplateProperties](#awsfisexperimenttemplateproperties) (Required): properties of the resource
 
 ## AWS.FIS/ExperimentTemplateProperties
 ### Properties
 * **Actions**: [ExperimentTemplateActionMap](#experimenttemplateactionmap)
 * **Description**: [ExperimentTemplateDescription](#experimenttemplatedescription) (Required)
-* **Id**: [ExperimentTemplateId](#experimenttemplateid) (ReadOnly)
+* **Id**: [ExperimentTemplateId](#experimenttemplateid) (ReadOnly, Identifier)
 * **LogConfiguration**: [ExperimentTemplateLogConfiguration](#experimenttemplatelogconfiguration)
 * **RoleArn**: [RoleArn](#rolearn) (Required)
 * **StopConditions**: [ExperimentTemplateStopConditionList](#experimenttemplatestopconditionlist) (Required)

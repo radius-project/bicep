@@ -3,25 +3,21 @@
 ## Resource AWS.NetworkFirewall/Firewall@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.NetworkFirewall/FirewallProperties](#awsnetworkfirewallfirewallproperties) (Required): properties of the resource
 
 ## Resource AWS.NetworkFirewall/FirewallPolicy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.NetworkFirewall/FirewallPolicyProperties](#awsnetworkfirewallfirewallpolicyproperties) (Required): properties of the resource
 
 ## Resource AWS.NetworkFirewall/LoggingConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.NetworkFirewall/LoggingConfigurationProperties](#awsnetworkfirewallloggingconfigurationproperties) (Required): properties of the resource
 
 ## Resource AWS.NetworkFirewall/RuleGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.NetworkFirewall/RuleGroupProperties](#awsnetworkfirewallrulegroupproperties) (Required): properties of the resource
 
 ## AWS.NetworkFirewall/FirewallProperties
@@ -29,7 +25,7 @@
 * **DeleteProtection**: bool
 * **Description**: string
 * **EndpointIds**: [EndpointId](#endpointid)[] (ReadOnly)
-* **FirewallArn**: [ResourceArn](#resourcearn) (ReadOnly)
+* **FirewallArn**: [ResourceArn](#resourcearn) (ReadOnly, Identifier)
 * **FirewallId**: string (ReadOnly)
 * **FirewallName**: string (Required)
 * **FirewallPolicyArn**: [ResourceArn](#resourcearn) (Required)
@@ -58,7 +54,7 @@
 ### Properties
 * **Description**: string
 * **FirewallPolicy**: [FirewallPolicy](#firewallpolicy) (Required)
-* **FirewallPolicyArn**: [ResourceArn](#resourcearn) (ReadOnly)
+* **FirewallPolicyArn**: [ResourceArn](#resourcearn) (ReadOnly, Identifier)
 * **FirewallPolicyId**: string (ReadOnly)
 * **FirewallPolicyName**: string (Required)
 * **Tags**: [Tag](#tag)[]
@@ -120,7 +116,7 @@
 
 ## AWS.NetworkFirewall/LoggingConfigurationProperties
 ### Properties
-* **FirewallArn**: [ResourceArn](#resourcearn) (Required)
+* **FirewallArn**: [ResourceArn](#resourcearn) (Required, Identifier)
 * **FirewallName**: string
 * **LoggingConfiguration**: [LoggingConfiguration](#loggingconfiguration) (Required)
 
@@ -145,7 +141,7 @@
 * **Capacity**: int (Required)
 * **Description**: string
 * **RuleGroup**: [RuleGroup](#rulegroup)
-* **RuleGroupArn**: [ResourceArn](#resourcearn) (ReadOnly)
+* **RuleGroupArn**: [ResourceArn](#resourcearn) (ReadOnly, Identifier)
 * **RuleGroupId**: string (ReadOnly)
 * **RuleGroupName**: string (Required)
 * **Tags**: [Tag](#tag)[]

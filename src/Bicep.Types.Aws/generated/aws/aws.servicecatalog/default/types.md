@@ -3,13 +3,11 @@
 ## Resource AWS.ServiceCatalog/CloudFormationProvisionedProduct@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ServiceCatalog/CloudFormationProvisionedProductProperties](#awsservicecatalogcloudformationprovisionedproductproperties): properties of the resource
 
 ## Resource AWS.ServiceCatalog/ServiceAction@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.ServiceCatalog/ServiceActionProperties](#awsservicecatalogserviceactionproperties) (Required): properties of the resource
 
 ## AWS.ServiceCatalog/CloudFormationProvisionedProductProperties
@@ -22,7 +20,7 @@
 * **PathName**: string
 * **ProductId**: string
 * **ProductName**: string
-* **ProvisionedProductId**: string (ReadOnly)
+* **ProvisionedProductId**: string (ReadOnly, Identifier)
 * **ProvisionedProductName**: string
 * **ProvisioningArtifactId**: string
 * **ProvisioningArtifactName**: string
@@ -60,7 +58,7 @@
 * **Definition**: [DefinitionParameter](#definitionparameter)[] (Required)
 * **DefinitionType**: string (Required)
 * **Description**: string
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **Name**: string (Required)
 
 ## DefinitionParameter

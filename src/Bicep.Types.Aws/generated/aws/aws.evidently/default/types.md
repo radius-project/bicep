@@ -3,30 +3,26 @@
 ## Resource AWS.Evidently/Experiment@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Evidently/ExperimentProperties](#awsevidentlyexperimentproperties) (Required): properties of the resource
 
 ## Resource AWS.Evidently/Feature@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Evidently/FeatureProperties](#awsevidentlyfeatureproperties) (Required): properties of the resource
 
 ## Resource AWS.Evidently/Launch@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Evidently/LaunchProperties](#awsevidentlylaunchproperties) (Required): properties of the resource
 
 ## Resource AWS.Evidently/Project@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Evidently/ProjectProperties](#awsevidentlyprojectproperties) (Required): properties of the resource
 
 ## AWS.Evidently/ExperimentProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **Description**: string
 * **MetricGoals**: [MetricGoalObject](#metricgoalobject)[] (Required)
 * **Name**: string (Required)
@@ -80,7 +76,7 @@
 
 ## AWS.Evidently/FeatureProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **DefaultVariation**: string
 * **Description**: string
 * **EntityOverrides**: [EntityOverride](#entityoverride)[]
@@ -110,7 +106,7 @@
 
 ## AWS.Evidently/LaunchProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **Description**: string
 * **ExecutionStatus**: [ExecutionStatusObject](#executionstatusobject): Start or Stop Launch Launch. Default is not started.
 * **Groups**: [LaunchGroupObject](#launchgroupobject)[] (Required)
@@ -166,7 +162,7 @@
 
 ## AWS.Evidently/ProjectProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **DataDelivery**: [DataDeliveryObject](#datadeliveryobject)
 * **Description**: string
 * **Name**: string (Required)

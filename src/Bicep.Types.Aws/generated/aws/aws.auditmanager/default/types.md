@@ -3,13 +3,12 @@
 ## Resource AWS.AuditManager/Assessment@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AuditManager/AssessmentProperties](#awsauditmanagerassessmentproperties): properties of the resource
 
 ## AWS.AuditManager/AssessmentProperties
 ### Properties
 * **Arn**: [AssessmentArn](#assessmentarn) (ReadOnly)
-* **AssessmentId**: [UUID](#uuid) (ReadOnly)
+* **AssessmentId**: [UUID](#uuid) (ReadOnly, Identifier)
 * **AssessmentReportsDestination**: [AssessmentReportsDestination](#assessmentreportsdestination)
 * **AwsAccount**: [AWSAccount](#awsaccount)
 * **CreationTime**: [Timestamp](#timestamp) (ReadOnly)
@@ -59,7 +58,7 @@
 
 ## Delegation
 ### Properties
-* **AssessmentId**: [UUID](#uuid)
+* **AssessmentId**: [UUID](#uuid) (Identifier)
 * **AssessmentName**: [AssessmentName](#assessmentname)
 * **Comment**: [DelegationComment](#delegationcomment)
 * **ControlSetId**: [ControlSetId](#controlsetid)

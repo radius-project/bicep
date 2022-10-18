@@ -3,39 +3,34 @@
 ## Resource AWS.EKS/Addon@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EKS/AddonProperties](#awseksaddonproperties) (Required): properties of the resource
 
 ## Resource AWS.EKS/Cluster@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EKS/ClusterProperties](#awseksclusterproperties) (Required): properties of the resource
 
 ## Resource AWS.EKS/FargateProfile@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EKS/FargateProfileProperties](#awseksfargateprofileproperties) (Required): properties of the resource
 
 ## Resource AWS.EKS/IdentityProviderConfig@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EKS/IdentityProviderConfigProperties](#awseksidentityproviderconfigproperties) (Required): properties of the resource
 
 ## Resource AWS.EKS/Nodegroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.EKS/NodegroupProperties](#awseksnodegroupproperties) (Required): properties of the resource
 
 ## AWS.EKS/AddonProperties
 ### Properties
-* **AddonName**: string (Required): Name of Addon
+* **AddonName**: string (Required, Identifier): Name of Addon
 * **AddonVersion**: string: Version of Addon
 * **Arn**: string (ReadOnly): Amazon Resource Name (ARN) of the add-on
-* **ClusterName**: string (Required): Name of Cluster
+* **ClusterName**: string (Required, Identifier): Name of Cluster
 * **ResolveConflicts**: string (WriteOnly): Resolve parameter value conflicts
 * **ServiceAccountRoleArn**: string: IAM role to bind to the add-on's service account
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
@@ -55,7 +50,7 @@
 * **Endpoint**: string (ReadOnly): The endpoint for your Kubernetes API server, such as https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com.
 * **KubernetesNetworkConfig**: [KubernetesNetworkConfig](#kubernetesnetworkconfig)
 * **Logging**: [Logging](#logging)
-* **Name**: string: The unique name to give to your cluster.
+* **Name**: string (Identifier): The unique name to give to your cluster.
 * **OpenIdConnectIssuerUrl**: string (ReadOnly): The issuer URL for the cluster's OIDC identity provider, such as https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E. If you need to remove https:// from this output value, you can include the following code in your template.
 * **ResourcesVpcConfig**: [ResourcesVpcConfig](#resourcesvpcconfig) (Required)
 * **RoleArn**: string (Required): The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
@@ -104,8 +99,8 @@
 ## AWS.EKS/FargateProfileProperties
 ### Properties
 * **Arn**: string (ReadOnly)
-* **ClusterName**: string (Required): Name of the Cluster
-* **FargateProfileName**: string: Name of FargateProfile
+* **ClusterName**: string (Required, Identifier): Name of the Cluster
+* **FargateProfileName**: string (Identifier): Name of FargateProfile
 * **PodExecutionRoleArn**: string (Required): The IAM policy arn for pods
 * **Selectors**: [Selector](#selector)[] (Required)
 * **Subnets**: string[]
@@ -128,12 +123,12 @@
 
 ## AWS.EKS/IdentityProviderConfigProperties
 ### Properties
-* **ClusterName**: string (Required): The name of the identity provider configuration.
+* **ClusterName**: string (Required, Identifier): The name of the identity provider configuration.
 * **IdentityProviderConfigArn**: string (ReadOnly): The ARN of the configuration.
-* **IdentityProviderConfigName**: string: The name of the OIDC provider configuration.
+* **IdentityProviderConfigName**: string (Identifier): The name of the OIDC provider configuration.
 * **Oidc**: [OidcIdentityProviderConfig](#oidcidentityproviderconfig)
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
-* **Type**: string (Required): The type of the identity provider configuration.
+* **Type**: string (Required, Identifier): The type of the identity provider configuration.
 
 ## OidcIdentityProviderConfig
 ### Properties
@@ -163,7 +158,7 @@
 * **ClusterName**: string (Required): Name of the cluster to create the node group in.
 * **DiskSize**: int: The root device disk size (in GiB) for your node group instances.
 * **ForceUpdateEnabled**: bool (WriteOnly): Force the update if the existing node group's pods are unable to be drained due to a pod disruption budget issue.
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **InstanceTypes**: string[]: Specify the instance types for a node group.
 * **Labels**: [Nodegroup_Labels](#nodegrouplabels): The Kubernetes labels to be applied to the nodes in the node group when they are created.
 * **LaunchTemplate**: [LaunchTemplateSpecification](#launchtemplatespecification): An object representing a node group's launch template specification.
@@ -183,7 +178,7 @@
 
 ## LaunchTemplateSpecification
 ### Properties
-* **Id**: string
+* **Id**: string (Identifier)
 * **Name**: string
 * **Version**: string
 

@@ -3,20 +3,18 @@
 ## Resource AWS.AppIntegrations/DataIntegration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppIntegrations/DataIntegrationProperties](#awsappintegrationsdataintegrationproperties) (Required): properties of the resource
 
 ## Resource AWS.AppIntegrations/EventIntegration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppIntegrations/EventIntegrationProperties](#awsappintegrationseventintegrationproperties) (Required): properties of the resource
 
 ## AWS.AppIntegrations/DataIntegrationProperties
 ### Properties
 * **DataIntegrationArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the data integration.
 * **Description**: string: The data integration description.
-* **Id**: string (ReadOnly): The unique identifer of the data integration.
+* **Id**: string (ReadOnly, Identifier): The unique identifer of the data integration.
 * **KmsKey**: string (Required): The KMS key of the data integration.
 * **Name**: string (Required): The name of the data integration.
 * **ScheduleConfig**: [ScheduleConfig](#scheduleconfig) (Required): The name of the data and how often it should be pulled from the source.
@@ -41,7 +39,7 @@
 * **EventBridgeBus**: string (Required): The Amazon Eventbridge bus for the event integration.
 * **EventFilter**: [EventFilter](#eventfilter) (Required): The EventFilter (source) associated with the event integration.
 * **EventIntegrationArn**: string (ReadOnly): The Amazon Resource Name (ARN) of the event integration.
-* **Name**: string (Required): The name of the event integration.
+* **Name**: string (Required, Identifier): The name of the event integration.
 * **Tags**: [Tag](#tag)[]: The tags (keys and values) associated with the event integration.
 
 ## EventIntegrationAssociation

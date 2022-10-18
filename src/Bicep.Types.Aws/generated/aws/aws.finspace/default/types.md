@@ -3,7 +3,6 @@
 ## Resource AWS.FinSpace/Environment@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.FinSpace/EnvironmentProperties](#awsfinspaceenvironmentproperties) (Required): properties of the resource
 
 ## AWS.FinSpace/EnvironmentProperties
@@ -13,7 +12,7 @@
 * **DedicatedServiceAccountId**: string (ReadOnly): ID for FinSpace created account used to store Environment artifacts
 * **Description**: string: Description of the Environment
 * **EnvironmentArn**: string (ReadOnly): ARN of the Environment
-* **EnvironmentId**: string (ReadOnly): Unique identifier for representing FinSpace Environment
+* **EnvironmentId**: string (ReadOnly, Identifier): Unique identifier for representing FinSpace Environment
 * **EnvironmentUrl**: string (ReadOnly): URL used to login to the Environment
 * **FederationMode**: string: Federation mode used with the Environment
 * **FederationParameters**: [FederationParameters](#federationparameters)

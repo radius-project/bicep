@@ -3,19 +3,16 @@
 ## Resource AWS.Amplify/App@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Amplify/AppProperties](#awsamplifyappproperties) (Required): properties of the resource
 
 ## Resource AWS.Amplify/Branch@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Amplify/BranchProperties](#awsamplifybranchproperties) (Required): properties of the resource
 
 ## Resource AWS.Amplify/Domain@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Amplify/DomainProperties](#awsamplifydomainproperties) (Required): properties of the resource
 
 ## AWS.Amplify/AppProperties
@@ -23,7 +20,7 @@
 * **AccessToken**: string (WriteOnly)
 * **AppId**: string (ReadOnly)
 * **AppName**: string (ReadOnly)
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **AutoBranchCreationConfig**: [AutoBranchCreationConfig](#autobranchcreationconfig) (WriteOnly)
 * **BasicAuthConfig**: [BasicAuthConfig](#basicauthconfig) (WriteOnly)
 * **BuildSpec**: string
@@ -78,7 +75,7 @@
 ## AWS.Amplify/BranchProperties
 ### Properties
 * **AppId**: string (Required)
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **BasicAuthConfig**: [BasicAuthConfig](#basicauthconfig) (WriteOnly)
 * **BranchName**: string (Required)
 * **BuildSpec**: string
@@ -110,7 +107,7 @@
 ## AWS.Amplify/DomainProperties
 ### Properties
 * **AppId**: string (Required)
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **AutoSubDomainCreationPatterns**: string[]
 * **AutoSubDomainIAMRole**: string
 * **CertificateRecord**: string (ReadOnly)

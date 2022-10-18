@@ -3,25 +3,22 @@
 ## Resource AWS.AppStream/Application@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppStream/ApplicationProperties](#awsappstreamapplicationproperties) (Required): properties of the resource
 
 ## Resource AWS.AppStream/DirectoryConfig@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppStream/DirectoryConfigProperties](#awsappstreamdirectoryconfigproperties) (Required): properties of the resource
 
 ## Resource AWS.AppStream/Entitlement@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.AppStream/EntitlementProperties](#awsappstreamentitlementproperties) (Required): properties of the resource
 
 ## AWS.AppStream/ApplicationProperties
 ### Properties
 * **AppBlockArn**: [Arn](#arn) (Required)
-* **Arn**: [Arn](#arn) (ReadOnly)
+* **Arn**: [Arn](#arn) (ReadOnly, Identifier)
 * **AttributesToDelete**: [ApplicationAttribute](#applicationattribute)[]
 * **CreatedTime**: string (ReadOnly)
 * **Description**: string
@@ -56,7 +53,7 @@
 
 ## AWS.AppStream/DirectoryConfigProperties
 ### Properties
-* **DirectoryName**: string (Required)
+* **DirectoryName**: string (Required, Identifier)
 * **OrganizationalUnitDistinguishedNames**: string[] (Required)
 * **ServiceAccountCredentials**: [ServiceAccountCredentials](#serviceaccountcredentials) (Required)
 
@@ -72,11 +69,11 @@
 * **CreatedTime**: string (ReadOnly)
 * **Description**: string
 * **LastModifiedTime**: string (ReadOnly)
-* **Name**: string (Required)
-* **StackName**: string (Required)
+* **Name**: string (Required, Identifier)
+* **StackName**: string (Required, Identifier)
 
 ## Attribute
 ### Properties
-* **Name**: string (Required)
+* **Name**: string (Required, Identifier)
 * **Value**: string (Required)
 

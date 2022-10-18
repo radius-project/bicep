@@ -3,19 +3,16 @@
 ## Resource AWS.Kendra/DataSource@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Kendra/DataSourceProperties](#awskendradatasourceproperties) (Required): properties of the resource
 
 ## Resource AWS.Kendra/Faq@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Kendra/FaqProperties](#awskendrafaqproperties) (Required): properties of the resource
 
 ## Resource AWS.Kendra/Index@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Kendra/IndexProperties](#awskendraindexproperties) (Required): properties of the resource
 
 ## AWS.Kendra/DataSourceProperties
@@ -24,8 +21,8 @@
 * **CustomDocumentEnrichmentConfiguration**: [CustomDocumentEnrichmentConfiguration](#customdocumentenrichmentconfiguration)
 * **DataSourceConfiguration**: [DataSourceConfiguration](#datasourceconfiguration)
 * **Description**: [Description](#description)
-* **Id**: [Id](#id) (ReadOnly)
-* **IndexId**: [IndexId](#indexid) (Required)
+* **Id**: [Id](#id) (ReadOnly, Identifier)
+* **IndexId**: [IndexId](#indexid) (Required, Identifier)
 * **Name**: [Name](#name) (Required)
 * **RoleArn**: [RoleArn](#rolearn)
 * **Schedule**: [Schedule](#schedule)
@@ -478,8 +475,8 @@
 * **Arn**: string (ReadOnly)
 * **Description**: [Description](#description): FAQ description
 * **FileFormat**: [FileFormat](#fileformat): FAQ file format
-* **Id**: [Id](#id) (ReadOnly)
-* **IndexId**: [IndexId](#indexid) (Required): Index ID
+* **Id**: [Id](#id) (ReadOnly, Identifier)
+* **IndexId**: [IndexId](#indexid) (Required, Identifier): Index ID
 * **Name**: [FaqName](#faqname) (Required): FAQ name
 * **RoleArn**: [RoleArn](#rolearn) (Required): FAQ role ARN
 * **S3Path**: [S3Path](#s3path) (Required): FAQ S3 path
@@ -524,7 +521,7 @@
 * **Description**: [Description](#description): A description for the index
 * **DocumentMetadataConfigurations**: [DocumentMetadataConfigurationList](#documentmetadataconfigurationlist): Document metadata configurations
 * **Edition**: [Edition](#edition) (Required)
-* **Id**: [Id](#id) (ReadOnly)
+* **Id**: [Id](#id) (ReadOnly, Identifier)
 * **Name**: [Name](#name) (Required)
 * **RoleArn**: [RoleArn](#rolearn) (Required)
 * **ServerSideEncryptionConfiguration**: [ServerSideEncryptionConfiguration](#serversideencryptionconfiguration): Server side encryption configuration

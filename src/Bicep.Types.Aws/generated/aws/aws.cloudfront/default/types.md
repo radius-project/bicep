@@ -3,61 +3,52 @@
 ## Resource AWS.CloudFront/CachePolicy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/CachePolicyProperties](#awscloudfrontcachepolicyproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/CloudFrontOriginAccessIdentity@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/CloudFrontOriginAccessIdentityProperties](#awscloudfrontcloudfrontoriginaccessidentityproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/Distribution@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/DistributionProperties](#awscloudfrontdistributionproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/Function@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/FunctionProperties](#awscloudfrontfunctionproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/KeyGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/KeyGroupProperties](#awscloudfrontkeygroupproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/OriginRequestPolicy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/OriginRequestPolicyProperties](#awscloudfrontoriginrequestpolicyproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/PublicKey@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/PublicKeyProperties](#awscloudfrontpublickeyproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/RealtimeLogConfig@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/RealtimeLogConfigProperties](#awscloudfrontrealtimelogconfigproperties) (Required): properties of the resource
 
 ## Resource AWS.CloudFront/ResponseHeadersPolicy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.CloudFront/ResponseHeadersPolicyProperties](#awscloudfrontresponseheaderspolicyproperties) (Required): properties of the resource
 
 ## AWS.CloudFront/CachePolicyProperties
 ### Properties
 * **CachePolicyConfig**: [CachePolicyConfig](#cachepolicyconfig) (Required)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **LastModifiedTime**: string (ReadOnly)
 
 ## CachePolicyConfig
@@ -95,7 +86,7 @@
 ## AWS.CloudFront/CloudFrontOriginAccessIdentityProperties
 ### Properties
 * **CloudFrontOriginAccessIdentityConfig**: [CloudFrontOriginAccessIdentityConfig](#cloudfrontoriginaccessidentityconfig) (Required)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **S3CanonicalUserId**: string (ReadOnly)
 
 ## CloudFrontOriginAccessIdentityConfig
@@ -106,7 +97,7 @@
 ### Properties
 * **DistributionConfig**: [DistributionConfig](#distributionconfig) (Required)
 * **DomainName**: string (ReadOnly)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **Tags**: [Tag](#tag)[]
 
 ## DistributionConfig
@@ -228,7 +219,7 @@
 ## OriginGroup
 ### Properties
 * **FailoverCriteria**: [OriginGroupFailoverCriteria](#origingroupfailovercriteria) (Required)
-* **Id**: string (Required)
+* **Id**: string (Required, Identifier)
 * **Members**: [OriginGroupMembers](#origingroupmembers) (Required)
 
 ## OriginGroupFailoverCriteria
@@ -255,7 +246,7 @@
 * **ConnectionTimeout**: int
 * **CustomOriginConfig**: [CustomOriginConfig](#customoriginconfig)
 * **DomainName**: string (Required)
-* **Id**: string (Required)
+* **Id**: string (Required, Identifier)
 * **OriginAccessControlId**: string
 * **OriginCustomHeaders**: [OriginCustomHeader](#origincustomheader)[]
 * **OriginPath**: string
@@ -315,7 +306,7 @@
 ## AWS.CloudFront/FunctionProperties
 ### Properties
 * **AutoPublish**: bool (WriteOnly)
-* **FunctionARN**: string (ReadOnly)
+* **FunctionARN**: string (ReadOnly, Identifier)
 * **FunctionCode**: string (WriteOnly)
 * **FunctionConfig**: [FunctionConfig](#functionconfig)
 * **FunctionMetadata**: [FunctionMetadata](#functionmetadata)
@@ -329,11 +320,11 @@
 
 ## FunctionMetadata
 ### Properties
-* **FunctionARN**: string (ReadOnly)
+* **FunctionARN**: string (ReadOnly, Identifier)
 
 ## AWS.CloudFront/KeyGroupProperties
 ### Properties
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **KeyGroupConfig**: [KeyGroupConfig](#keygroupconfig) (Required)
 * **LastModifiedTime**: string (ReadOnly)
 
@@ -345,7 +336,7 @@
 
 ## AWS.CloudFront/OriginRequestPolicyProperties
 ### Properties
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **LastModifiedTime**: string (ReadOnly)
 * **OriginRequestPolicyConfig**: [OriginRequestPolicyConfig](#originrequestpolicyconfig) (Required)
 
@@ -375,7 +366,7 @@
 ## AWS.CloudFront/PublicKeyProperties
 ### Properties
 * **CreatedTime**: string (ReadOnly)
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **PublicKeyConfig**: [PublicKeyConfig](#publickeyconfig) (Required)
 
 ## PublicKeyConfig
@@ -387,7 +378,7 @@
 
 ## AWS.CloudFront/RealtimeLogConfigProperties
 ### Properties
-* **Arn**: string (ReadOnly)
+* **Arn**: string (ReadOnly, Identifier)
 * **EndPoints**: [EndPoint](#endpoint)[] (Required)
 * **Fields**: string[] (Required)
 * **Name**: string (Required)
@@ -405,7 +396,7 @@
 
 ## AWS.CloudFront/ResponseHeadersPolicyProperties
 ### Properties
-* **Id**: string (ReadOnly)
+* **Id**: string (ReadOnly, Identifier)
 * **LastModifiedTime**: string (ReadOnly)
 * **ResponseHeadersPolicyConfig**: [ResponseHeadersPolicyConfig](#responseheaderspolicyconfig) (Required)
 

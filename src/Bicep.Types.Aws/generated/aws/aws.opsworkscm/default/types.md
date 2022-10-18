@@ -3,7 +3,6 @@
 ## Resource AWS.OpsWorksCM/Server@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.OpsWorksCM/ServerProperties](#awsopsworkscmserverproperties) (Required): properties of the resource
 
 ## AWS.OpsWorksCM/ServerProperties
@@ -28,7 +27,7 @@
 * **PreferredBackupWindow**: string
 * **PreferredMaintenanceWindow**: string
 * **SecurityGroupIds**: string[]
-* **ServerName**: string
+* **ServerName**: string (Identifier)
 * **ServiceRoleArn**: string (Required)
 * **SubnetIds**: string[]
 * **Tags**: [Tag](#tag)[]

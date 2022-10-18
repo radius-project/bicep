@@ -3,32 +3,28 @@
 ## Resource AWS.Logs/LogGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Logs/LogGroupProperties](#awslogsloggroupproperties): properties of the resource
 
 ## Resource AWS.Logs/MetricFilter@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Logs/MetricFilterProperties](#awslogsmetricfilterproperties) (Required): properties of the resource
 
 ## Resource AWS.Logs/QueryDefinition@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Logs/QueryDefinitionProperties](#awslogsquerydefinitionproperties) (Required): properties of the resource
 
 ## Resource AWS.Logs/ResourcePolicy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **name**: string (Required): the resource name
 * **properties**: [AWS.Logs/ResourcePolicyProperties](#awslogsresourcepolicyproperties) (Required): properties of the resource
 
 ## AWS.Logs/LogGroupProperties
 ### Properties
 * **Arn**: string (ReadOnly): The CloudWatch log group ARN.
 * **KmsKeyId**: string: The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
-* **LogGroupName**: string: The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.
+* **LogGroupName**: string (Identifier): The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.
 * **RetentionInDays**: int: The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
@@ -39,9 +35,9 @@
 
 ## AWS.Logs/MetricFilterProperties
 ### Properties
-* **FilterName**: string: A name for the metric filter.
+* **FilterName**: string (Identifier): A name for the metric filter.
 * **FilterPattern**: string (Required): Pattern that Logs follows to interpret each entry in a log.
-* **LogGroupName**: string (Required): Existing log group that you want to associate with this filter.
+* **LogGroupName**: string (Required, Identifier): Existing log group that you want to associate with this filter.
 * **MetricTransformations**: [MetricTransformation](#metrictransformation)[] (Required): A collection of information that defines how metric data gets emitted.
 
 ## MetricTransformation
@@ -62,7 +58,7 @@
 ### Properties
 * **LogGroupNames**: [LogGroup](#loggroup)[]: Optionally define specific log groups as part of your query definition
 * **Name**: string (Required): A name for the saved query definition
-* **QueryDefinitionId**: string (ReadOnly): Unique identifier of a query definition
+* **QueryDefinitionId**: string (ReadOnly, Identifier): Unique identifier of a query definition
 * **QueryString**: string (Required): The query string to use for this definition
 
 ## LogGroup
@@ -71,5 +67,5 @@
 ## AWS.Logs/ResourcePolicyProperties
 ### Properties
 * **PolicyDocument**: string (Required): The policy document
-* **PolicyName**: string (Required): A name for resource policy
+* **PolicyName**: string (Required, Identifier): A name for resource policy
 
