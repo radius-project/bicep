@@ -67,7 +67,7 @@
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
 * **location**: string (Required): The geo-location where the resource lives
 * **name**: string (Required, DeployTimeConstant): The resource name
-* **properties**: [MongoDatabaseProperties](#mongodatabaseproperties) (Required): MongoDatabase connector properties
+* **properties**: [MongoDatabaseRequestProperties](#mongodatabaserequestproperties) (Required): Mongo database connector create/update request properties
 * **systemData**: [SystemData](#systemdata) (ReadOnly): Metadata pertaining to creation and last modification of the resource.
 * **tags**: [TrackedResourceTags](#trackedresourcetags): Resource tags.
 * **type**: 'Applications.Connector/mongoDatabases' (ReadOnly, DeployTimeConstant): The resource type
@@ -139,8 +139,8 @@
 
 ## Recipe
 ### Properties
-* **name**: string (Required): The name of the recipe within the environment to use
-* **parameters**: any: Any object
+* **name**: string (ReadOnly): The name of the recipe within the environment to use
+* **parameters**: any (ReadOnly): Any object
 
 ## ResourceStatus
 ### Properties
@@ -260,18 +260,35 @@
 ### Additional Properties
 * **Additional Properties Type**: string
 
-## MongoDatabaseProperties
-### Properties
+## MongoDatabaseRequestProperties
+* **Discriminator**: mode
+
+### Base Properties
 * **application**: string: Fully qualified resource ID for the application that the connector is consumed by
 * **database**: string (ReadOnly): Database name of the target Mongo database
 * **environment**: string (Required): Fully qualified resource ID for the environment that the connector is linked to
-* **host**: string: Host name of the target Mongo database
-* **port**: int: Port value of the target Mongo database
+* **host**: string (ReadOnly): Host name of the target Mongo database
+* **port**: int (ReadOnly): Port value of the target Mongo database
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the connector at the time the operation was called
-* **recipe**: [Recipe](#recipe): The recipe used to automatically deploy underlying infrastructure for a connector
-* **resource**: string: Fully qualified resource ID of a supported resource with Mongo API to use for this connector
-* **secrets**: [MongoDatabaseSecrets](#mongodatabasesecrets) (WriteOnly): The secret values for the given MongoDatabase resource
+* **recipe**: [Recipe](#recipe) (ReadOnly): The recipe used to automatically deploy underlying infrastructure for a connector
+* **resource**: string (ReadOnly): Fully qualified resource ID of a supported resource with Mongo API to use for this connector
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
+### RecipeMongoDatabaseRequestProperties
+#### Properties
+* **mode**: 'recipe' (Required): How to build the connector. Options are to build automatically via 'recipe' or 'resource', or build manually via 'values'. Selection determines which set of fields to additionally require.
+* **recipe**: [Recipe](#recipe) (Required, WriteOnly): The recipe used to automatically deploy underlying infrastructure for a connector
+
+### ResourceMongoDatabaseRequestProperties
+#### Properties
+* **mode**: 'resource' (Required): How to build the connector. Options are to build automatically via 'recipe' or 'resource', or build manually via 'values'. Selection determines which set of fields to additionally require.
+* **resource**: string (Required, WriteOnly): Fully qualified resource ID of a supported resource with Mongo API to use for this connector
+* **secrets**: [MongoDatabaseSecrets](#mongodatabasesecrets) (WriteOnly): The secret values for the given Mongo database resource
+
+### ValuesMongoDatabaseRequestProperties
+#### Properties
+* **mode**: 'values' (Required): How to build the connector. Options are to build automatically via 'recipe' or 'resource', or build manually via 'values'. Selection determines which set of fields to additionally require.
+* **secrets**: [MongoDatabaseSecrets](#mongodatabasesecrets) (WriteOnly): The secret values for the given Mongo database resource
+
 
 ## MongoDatabaseSecrets
 ### Properties
