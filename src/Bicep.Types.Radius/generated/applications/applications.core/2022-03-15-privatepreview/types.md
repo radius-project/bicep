@@ -93,9 +93,10 @@
 
 ## ContainerProperties
 ### Properties
-* **application**: string (Required): Specifies resource id of the application
+* **application**: string (Required): Specifies the resource id of the application
 * **connections**: [ContainerPropertiesConnections](#containerpropertiesconnections): Dictionary of <ConnectionProperties>
 * **container**: [Container](#container) (Required): Definition of a container.
+* **environment**: string: The resource id of the environment linked to the resource
 * **extensions**: [Extension](#extension)[]: Extensions spec of the resource
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
@@ -137,6 +138,7 @@
 * **failureThreshold**: int: Threshold number of times the probe fails after which a failure would be reported
 * **initialDelaySeconds**: int: Initial delay in seconds before probing for readiness/liveness
 * **periodSeconds**: int: Interval for the readiness/liveness probe in seconds
+* **timeoutSeconds**: int: Number of seconds after which the readiness/liveness probe times out. Defaults to 5 second
 ### ExecHealthProbeProperties
 #### Properties
 * **command**: string (Required): Command to execute to probe readiness/liveness
@@ -224,7 +226,7 @@
 ## EnvironmentProperties
 ### Properties
 * **compute**: [EnvironmentCompute](#environmentcompute) (Required): Compute resource used by application environment resource.
-* **providers**: [ProviderProperties](#providerproperties): Cloud provider configuration
+* **providers**: [Providers](#providers): Cloud providers configuration
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
 * **recipes**: [EnvironmentPropertiesRecipes](#environmentpropertiesrecipes): Dictionary of <EnvironmentRecipeProperties>
 
@@ -239,11 +241,11 @@
 * **namespace**: string (Required): The namespace to use for the environment.
 
 
-## ProviderProperties
+## Providers
 ### Properties
-* **azure**: [ProviderPropertiesAzure](#providerpropertiesazure): Azure cloud provider configuration
+* **azure**: [ProvidersAzure](#providersazure): Azure cloud provider configuration
 
-## ProviderPropertiesAzure
+## ProvidersAzure
 ### Properties
 * **scope**: string: Target scope for Azure resources to be deployed into.  For example: '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testGroup'
 
@@ -264,7 +266,8 @@
 
 ## GatewayProperties
 ### Properties
-* **application**: string (Required): The resource id of the application linked to Gateway resource.
+* **application**: string (Required): Specifies the resource id of the application
+* **environment**: string: The resource id of the environment linked to the resource
 * **hostname**: [GatewayPropertiesHostname](#gatewaypropertieshostname): Declare hostname information for the Gateway. Leaving the hostname empty auto-assigns one: mygateway.myapp.PUBLICHOSTNAMEORIP.nip.io.
 * **internal**: bool: Sets Gateway to not be exposed externally (no public IP address associated). Defaults to false (exposed to internet).
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
@@ -290,7 +293,8 @@
 
 ## HttpRouteProperties
 ### Properties
-* **application**: string (Required): The resource id of the application linked to HTTP Route resource.
+* **application**: string (Required): Specifies the resource id of the application
+* **environment**: string: The resource id of the environment linked to the resource
 * **hostname**: string: The internal hostname accepting traffic for the HTTP Route. Readonly.
 * **port**: int: The port number for the HTTP Route. Defaults to 80. Readonly.
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
@@ -307,13 +311,14 @@
 * **Discriminator**: kind
 
 ### Base Properties
-* **application**: string: Fully qualified resource ID for the application that the volume is connected to.
+* **application**: string (Required): Specifies the resource id of the application
+* **environment**: string: The resource id of the environment linked to the resource
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the resource at the time the operation was called.
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
 ### AzureKeyVaultVolumeProperties
 #### Properties
 * **certificates**: [AzureKeyVaultVolumePropertiesCertificates](#azurekeyvaultvolumepropertiescertificates): The KeyVault certificates that this volume exposes
-* **identity**: [AzureIdentity](#azureidentity) (Required)
+* **identity**: [IdentitySettings](#identitysettings) (Required)
 * **keys**: [AzureKeyVaultVolumePropertiesKeys](#azurekeyvaultvolumepropertieskeys): The KeyVault keys that this volume exposes
 * **kind**: 'azure.com.keyvault' (Required): The volume kind
 * **resource**: string (Required): The ID of the keyvault to use for this volume resource
@@ -334,11 +339,11 @@
 * **name**: string (Required): The name of the certificate
 * **version**: string: Certificate version
 
-## AzureIdentity
+## IdentitySettings
 ### Properties
-* **clientId**: string: The client ID for workload and user assigned managed identity
-* **kind**: 'SystemAssigned' | 'Workload' (Required): Identity Kind
-* **tenantId**: string: The tenant ID for workload identity.
+* **kind**: 'azure.com.systemassigned' | 'azure.com.workload' (Required): Identity Kind
+* **oidcIssuer**: string: The OIDC Issuer name
+* **resource**: string: The managed identity resource ID
 
 ## AzureKeyVaultVolumePropertiesKeys
 ### Properties
