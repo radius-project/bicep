@@ -49,7 +49,7 @@ namespace Bicep.Core.TypeSystem.Radius
         {
 
             {
-                "Applications.Connector/mongoDatabases", (string apiVersion) => new []
+                "Applications.Link/mongoDatabases", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
@@ -69,7 +69,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 }
             },
             {
-                "Applications.Connector/rabbitMQMessageQueues", (string apiVersion) => new []
+                "Applications.Link/rabbitMQMessageQueues", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
@@ -80,7 +80,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 }
             },
             {
-                "Applications.Connector/redisCaches", (string apiVersion) => new []
+                "Applications.Link/redisCaches", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
@@ -95,7 +95,7 @@ namespace Bicep.Core.TypeSystem.Radius
                 }
             },
             {
-                "Applications.Connector/extenders", (string apiVersion) => new []
+                "Applications.Link/extenders", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder("secrets")
                         .WithReturnType(LanguageConstants.String)
@@ -242,7 +242,7 @@ namespace Bicep.Core.TypeSystem.Radius
             }
 
             // Get the type here
-            // Applications.Connector/mongoDatabase
+            // Applications.Link/mongoDatabase
 
             return new ObjectType(
                 objectType.Name,

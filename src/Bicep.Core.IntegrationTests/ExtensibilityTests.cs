@@ -400,7 +400,7 @@ resource blob 'bar:blob' = {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
-resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -442,7 +442,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
-resource redis 'Applications.Connector/redisCaches@2022-03-15-privatepreview' = {
+resource redis 'Applications.Link/redisCaches@2022-03-15-privatepreview' = {
   name: 'my-redis'
   location: 'global'
   properties: {
@@ -482,7 +482,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
-resource rabbitmq 'Applications.Connector/rabbitMQMessageQueues@2022-03-15-privatepreview' = {
+resource rabbitmq 'Applications.Link/rabbitMQMessageQueues@2022-03-15-privatepreview' = {
   name: 'my-rabbitmq'
   location: 'global'
   properties: {
@@ -521,7 +521,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
-resource twilio 'Applications.Connector/extenders@2022-03-15-privatepreview' = {
+resource twilio 'Applications.Link/extenders@2022-03-15-privatepreview' = {
   name: 'my-extender'
   location: 'global'
   properties: {
@@ -571,7 +571,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(GetCompilationContext(), @"
 import radius as radius
 
-resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -614,7 +614,7 @@ import kubernetes as kubernetes {
   namespace: 'default'
 }
 
-resource mongo 'Applications.Connector/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
