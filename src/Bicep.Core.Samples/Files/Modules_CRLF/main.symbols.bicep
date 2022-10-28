@@ -147,7 +147,7 @@ output modCalculatedNameOutput object = moduleWithCalculatedName.outputs.outputO
 
 /*
   valid loop cases
-*/ 
+*/
 
 @sys.description('this is myModules')
 var myModules = [
@@ -237,9 +237,9 @@ module duplicateInGlobalAndOneLoop 'modulea.bicep' = [for duplicateAcrossScopes 
 }]
 
 var someDuplicate = true
-//@[04:17) Variable someDuplicate. Type: bool. Declaration start char: 0, length: 24
+//@[04:17) Variable someDuplicate. Type: true. Declaration start char: 0, length: 24
 var otherDuplicate = false
-//@[04:18) Variable otherDuplicate. Type: bool. Declaration start char: 0, length: 26
+//@[04:18) Variable otherDuplicate. Type: false. Declaration start char: 0, length: 26
 module duplicatesEverywhere 'modulea.bicep' = [for someDuplicate in []: {
 //@[51:64) Local someDuplicate. Type: any. Declaration start char: 51, length: 13
 //@[07:27) Module duplicatesEverywhere. Type: module[]. Declaration start char: 0, length: 263
@@ -429,5 +429,10 @@ module withSpace 'module with space.bicep' = {
 module folderWithSpace 'child/folder with space/child with space.bicep' = {
 //@[07:22) Module folderWithSpace. Type: module. Declaration start char: 0, length: 104
   name: 'childWithSpace'
+}
+
+module withSeparateConfig './child/folder with separate config/moduleWithAzImport.bicep' = {
+//@[07:25) Module withSeparateConfig. Type: module. Declaration start char: 0, length: 125
+  name: 'withSeparateConfig'
 }
 

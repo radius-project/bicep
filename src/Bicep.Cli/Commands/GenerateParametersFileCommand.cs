@@ -4,6 +4,8 @@
 using Bicep.Cli.Arguments;
 using Bicep.Cli.Logging;
 using Bicep.Cli.Services;
+using Bicep.Core.Emit;
+using Bicep.Core.Features;
 using Bicep.Core.FileSystem;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -14,34 +16,39 @@ namespace Bicep.Cli.Commands
     {
         private readonly ILogger logger;
         private readonly IDiagnosticLogger diagnosticLogger;
-        private readonly InvocationContext invocationContext;
+        private readonly IOContext io;
         private readonly CompilationService compilationService;
         private readonly PlaceholderParametersWriter writer;
+        private readonly IFeatureProviderFactory featureProviderFactory;
 
         public GenerateParametersFileCommand(
             ILogger logger,
             IDiagnosticLogger diagnosticLogger,
-            InvocationContext invocationContext,
+            IOContext io,
             CompilationService compilationService,
-            PlaceholderParametersWriter writer)
+            PlaceholderParametersWriter writer,
+            IFeatureProviderFactory featureProviderFactory)
         {
             this.logger = logger;
             this.diagnosticLogger = diagnosticLogger;
-            this.invocationContext = invocationContext;
+            this.io = io;
             this.compilationService = compilationService;
             this.writer = writer;
+            this.featureProviderFactory = featureProviderFactory;
         }
 
         public async Task<int> RunAsync(GenerateParametersFileArguments args)
         {
             var inputPath = PathHelper.ResolvePath(args.InputFile);
+            var features = featureProviderFactory.GetFeatureProvider(PathHelper.FilePathToFileUrl(inputPath));
+            var emitterSettings = new EmitterSettings(features);
 
-            if (invocationContext.EmitterSettings.EnableSymbolicNames)
+            if (emitterSettings.EnableSymbolicNames)
             {
                 logger.LogWarning(CliResources.SymbolicNamesDisclaimerMessage);
             }
 
-            if (invocationContext.Features.ResourceTypedParamsAndOutputsEnabled)
+            if (features.ResourceTypedParamsAndOutputsEnabled)
             {
                 logger.LogWarning(CliResources.ResourceTypesDisclaimerMessage);
             }

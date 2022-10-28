@@ -111,11 +111,11 @@ resource resWithDependencies 'Mock.Rp/mockResource@2020-01-01' = {
   properties: {
 //@[62:66]       "properties": {
     modADep: modATest.outputs.stringOutputA
-//@[63:63]         "modADep": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest')).outputs.stringOutputA.value]",
+//@[63:63]         "modADep": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.stringOutputA.value]",
     modBDep: modB.outputs.myResourceId
-//@[64:64]         "modBDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modB')).outputs.myResourceId.value]",
+//@[64:64]         "modBDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modB'), '2020-10-01').outputs.myResourceId.value]",
     modCDep: modC.outputs.myResourceId
-//@[65:65]         "modCDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modC')).outputs.myResourceId.value]"
+//@[65:65]         "modCDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modC'), '2020-10-01').outputs.myResourceId.value]"
   }
 }
 
@@ -177,24 +177,24 @@ resource resWithCalculatedNameDependencies 'Mock.Rp/mockResource@2020-01-01' = {
   properties: {
 //@[77:79]       "properties": {
     modADep: moduleWithCalculatedName.outputs.outputObj
-//@[78:78]         "modADep": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix')))).outputs.outputObj.value]"
+//@[78:78]         "modADep": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix'))), '2020-10-01').outputs.outputObj.value]"
   }
 }
 
 output stringOutputA string = modATest.outputs.stringOutputA
-//@[1950:1953]     "stringOutputA": {
+//@[1985:1988]     "stringOutputA": {
 output stringOutputB string = modATest.outputs.stringOutputB
-//@[1954:1957]     "stringOutputB": {
+//@[1989:1992]     "stringOutputB": {
 output objOutput object = modATest.outputs.objOutput
-//@[1958:1961]     "objOutput": {
+//@[1993:1996]     "objOutput": {
 output arrayOutput array = modATest.outputs.arrayOutput
-//@[1962:1965]     "arrayOutput": {
+//@[1997:2000]     "arrayOutput": {
 output modCalculatedNameOutput object = moduleWithCalculatedName.outputs.outputObj
-//@[1966:1969]     "modCalculatedNameOutput": {
+//@[2001:2004]     "modCalculatedNameOutput": {
 
 /*
   valid loop cases
-*/ 
+*/
 
 @sys.description('this is myModules')
 var myModules = [
@@ -520,5 +520,11 @@ module folderWithSpace 'child/folder with space/child with space.bicep' = {
 //@[1913:1947]       "type": "Microsoft.Resources/deployments",
   name: 'childWithSpace'
 //@[1916:1916]       "name": "childWithSpace",
+}
+
+module withSeparateConfig './child/folder with separate config/moduleWithAzImport.bicep' = {
+//@[1948:1982]       "type": "Microsoft.Resources/deployments",
+  name: 'withSeparateConfig'
+//@[1951:1951]       "name": "withSeparateConfig",
 }
 

@@ -21,7 +21,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             docUri: new Uri($"https://aka.ms/bicep/linter/{Code}"))
         { }
 
-        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
             var defaultValueSyntaxes = model.Root.ParameterDeclarations.Where(p => p.IsSecure())
                 .Select(p => p.DeclaringParameter.Modifier as ParameterDefaultValueSyntax)
@@ -48,7 +48,8 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                     continue;
                 }
 
-                yield return CreateFixableDiagnosticForSpan(defaultValueSyntax.Span,
+                yield return CreateFixableDiagnosticForSpan(diagnosticLevel,
+                    defaultValueSyntax.Span,
                     new CodeFix(CoreResources.SecureParameterDefaultFixTitle, true, CodeFixKind.QuickFix,
                             new CodeReplacement(defaultValueSyntax.Span, string.Empty)));
             }

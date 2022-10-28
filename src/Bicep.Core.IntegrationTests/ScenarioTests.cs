@@ -6,11 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography;
 using Bicep.Core.Diagnostics;
-using Bicep.Core.FileSystem;
 using Bicep.Core.Resources;
-using Bicep.Core.Semantics;
 using Bicep.Core.TypeSystem;
-using Bicep.Core.UnitTests;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
@@ -23,6 +20,8 @@ namespace Bicep.Core.IntegrationTests
     [TestClass]
     public class ScenarioTests
     {
+        private static ServiceBuilder Services => new ServiceBuilder();
+
         [NotNull] public TestContext? TestContext { get; set; }
 
         [TestMethod]
@@ -141,8 +140,8 @@ output vnetstate string = vnet.properties.provisioningState
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             // ensure we're generating the correct expression with 'subscriptionResourceId', and using the correct name for the module
-            result.Template.Should().HaveValueAtPath("$.outputs['vnetid'].value", "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'vnet-rg'), 'Microsoft.Resources/deployments', 'network-module')).outputs.vnetId.value]");
-            result.Template.Should().HaveValueAtPath("$.outputs['vnetstate'].value", "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'vnet-rg'), 'Microsoft.Resources/deployments', 'network-module')).outputs.vnetstate.value]");
+            result.Template.Should().HaveValueAtPath("$.outputs['vnetid'].value", "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'vnet-rg'), 'Microsoft.Resources/deployments', 'network-module'), '2020-10-01').outputs.vnetId.value]");
+            result.Template.Should().HaveValueAtPath("$.outputs['vnetstate'].value", "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'vnet-rg'), 'Microsoft.Resources/deployments', 'network-module'), '2020-10-01').outputs.vnetstate.value]");
         }
 
         [TestMethod]
@@ -920,7 +919,7 @@ output test string = 'hello'
 
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             result.Template.Should().HaveValueAtPath("$.outputs['fooName'].value", "[format('{0}-test', parameters('someParam'))]");
-            result.Template.Should().HaveValueAtPath("$.outputs['fooOutput'].value", "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-test', parameters('someParam')))).outputs.test.value]");
+            result.Template.Should().HaveValueAtPath("$.outputs['fooOutput'].value", "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-test', parameters('someParam'))), '2020-10-01').outputs.test.value]");
         }
 
         [TestMethod]
@@ -1989,7 +1988,7 @@ var primaryFoo = foos[0]
 ");
             result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
             {
-                ("BCP076", DiagnosticLevel.Error, "Cannot index over expression of type \"array | bool\". Arrays or objects are required.")
+                ("BCP076", DiagnosticLevel.Error, "Cannot index over expression of type \"array | true\". Arrays or objects are required.")
             });
         }
 
@@ -2862,10 +2861,9 @@ output contentVersion string = deployment().properties.template.contentVersion
         [TestMethod]
         public void Test_Issue6044()
         {
-            var context = new CompilationHelper.CompilationHelperContext(
-                Features: BicepTestConstants.CreateFeatureProvider(TestContext, symbolicNameCodegenEnabled: true));
+            var services = new ServiceBuilder().WithFeatureOverrides(new(TestContext, SymbolicNameCodegenEnabled: true));
 
-            var result = CompilationHelper.Compile(context, @"
+            var result = CompilationHelper.Compile(services, @"
 var adminUsername = 'cooluser'
 
 resource server 'Microsoft.Sql/servers@2021-02-01-preview' = {
@@ -3012,13 +3010,9 @@ module test './con'
 module test './con.txt'
 
 ");
-            var fileResolver = new FileResolver();
-            var configuration = BicepTestConstants.BuiltInConfiguration;
-            var features = BicepTestConstants.Features;
-            var sourceFileGrouping = SourceFileGroupingFactory.CreateForFiles(ImmutableDictionary.Create<Uri, string>(), new Uri(inputFile), fileResolver, configuration, features);
 
             // the bug was that the compilation would not complete
-            var compilation = new Compilation(features, BicepTestConstants.NamespaceProvider, sourceFileGrouping, configuration,BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
+            var compilation = Services.BuildCompilation(ImmutableDictionary.Create<Uri, string>(), new Uri(inputFile));
             compilation.GetEntrypointSemanticModel().GetAllDiagnostics().Should().NotBeEmpty();
         }
 
@@ -3309,13 +3303,13 @@ output fooBadIdProps object = {
             result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[]
             {
                 ("BCP081", DiagnosticLevel.Warning, "Resource type \"Microsoft.Storage/storageAccounts@2021-09-00\" does not have types available."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"name\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP036", DiagnosticLevel.Warning, "The property \"name\" expected a value of type \"string\" but the provided value is of type \"123\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"capacity\" expected a value of type \"int\" but the provided value is of type \"'1'\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"type\" expected a value of type \"'ArcZone' | 'CustomLocation' | 'EdgeZone' | 'NotSpecified' | string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP036", DiagnosticLevel.Warning, "The property \"type\" expected a value of type \"'ArcZone' | 'CustomLocation' | 'EdgeZone' | 'NotSpecified' | string\" but the provided value is of type \"1\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP036", DiagnosticLevel.Warning, "The property \"capacity\" expected a value of type \"int\" but the provided value is of type \"'2'\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"tenantId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"clientId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                ("BCP036", DiagnosticLevel.Warning, "The property \"principalId\" expected a value of type \"string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP036", DiagnosticLevel.Warning, "The property \"tenantId\" expected a value of type \"string\" but the provided value is of type \"3\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP036", DiagnosticLevel.Warning, "The property \"clientId\" expected a value of type \"string\" but the provided value is of type \"1\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                ("BCP036", DiagnosticLevel.Warning, "The property \"principalId\" expected a value of type \"string\" but the provided value is of type \"2\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 ("BCP053", DiagnosticLevel.Error, "The type \"userAssignedIdentityProperties\" does not contain property \"hello\". Available properties include \"clientId\", \"principalId\"."),
             });
         }
@@ -3464,81 +3458,6 @@ var " + copy + @" = {}
                 });
                 result.Template.Should().BeNull();
             }
-        }
-
-        /// <summary>
-        /// https://github.com/Azure/bicep/issues/7367
-        /// </summary>
-        [TestMethod]
-        public void Test_Issue_7367()
-        {
-            var result = CompilationHelper.Compile(@"
-@description('App service plan resource group name. Can be empty if app service plan is in the same resource group as the service itself.')
-param appServicePlanResourceGroupName string = ''
-
-var appServicePlanName = 'test-svcplan'
-
-// This is not working.
-resource servicePlanWithCondition 'Microsoft.Web/serverfarms@2021-03-01' existing = {
-  name: appServicePlanName
-  scope: empty(appServicePlanResourceGroupName) ? resourceGroup() : resourceGroup(appServicePlanResourceGroupName)
-}
-
-// Using local variable works.
-var _appServicePlanResourceGroupName = empty(appServicePlanResourceGroupName) ? resourceGroup().name : appServicePlanResourceGroupName
-
-resource servicePlanWithoutCondition 'Microsoft.Web/serverfarms@2021-03-01' existing = {
-  name: appServicePlanName
-  scope: resourceGroup(_appServicePlanResourceGroupName)
-}
-
-output idScopeWithCondition string = servicePlanWithCondition.id
-output idScopeWithoutCondition string = servicePlanWithoutCondition.id
-");
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
-                ("BCP270", DiagnosticLevel.Error, "The scope used for this declaration is ambiguous. A resource or module must only reference a single scope.")
-            });
-        }
-
-        [TestMethod]
-        // https://github.com/azure/bicep/issues/7367
-        public void Test_Issue7367_2()
-        {
-            var result = CompilationHelper.Compile(
-                ("main.bicep", @"
-param keyVaultName string
-param principalId string
-param roleDefinitionId string
-param secretName string = ''
-
-var hasSecret = secretName != null && secretName != ''
-
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
-  resource secret 'secrets' existing = if (hasSecret) {
-    name: secretName
-  }
-}
-
-resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: subscription()
-  name: roleDefinitionId
-}
-
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: hasSecret ? keyVault::secret : keyVault
-  name: hasSecret ? guid(resourceGroup().id, keyVaultName, secretName, principalId, roleDefinition.id) : guid(resourceGroup().id, keyVaultName, principalId, roleDefinition.id)
-  properties: {
-    roleDefinitionId: roleDefinition.id
-    principalId: principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-"));
-
-            result.ExcludingLinterDiagnostics().Should().HaveDiagnostics(new[] {
-                ("BCP270", DiagnosticLevel.Error, "The scope used for this declaration is ambiguous. A resource or module must only reference a single scope.")
-            });
         }
 
         /// <summary>

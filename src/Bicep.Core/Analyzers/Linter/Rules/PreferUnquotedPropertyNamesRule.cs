@@ -24,13 +24,13 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             docUri: new Uri($"https://aka.ms/bicep/linter/{Code}"))
         { }
 
-        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
             var spanFixes = new Dictionary<TextSpan, CodeFix>();
             var visitor = new Visitor(spanFixes);
             visitor.Visit(model.SourceFile.ProgramSyntax);
 
-            return spanFixes.Select(kvp => CreateFixableDiagnosticForSpan(kvp.Key, kvp.Value));
+            return spanFixes.Select(kvp => CreateFixableDiagnosticForSpan(diagnosticLevel, kvp.Key, kvp.Value));
         }
 
         private sealed class Visitor : SyntaxVisitor
@@ -83,7 +83,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                     }
                 }
 
-                validToken = default;
+                validToken = null;
                 return false;
             }
         }

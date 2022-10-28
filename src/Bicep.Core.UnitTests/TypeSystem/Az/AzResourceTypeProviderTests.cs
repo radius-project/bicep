@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bicep.Core.Configuration;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Semantics;
 using Bicep.Core.TypeSystem;
@@ -24,6 +25,8 @@ namespace Bicep.Core.UnitTests.TypeSystem.Az
     [TestClass]
     public class AzResourceTypeProviderTests
     {
+        private static ServiceBuilder Services => new ServiceBuilder();
+
         private static readonly ImmutableHashSet<string> ExpectedLoopVariantProperties = new[]
         {
             AzResourceTypeProvider.ResourceNamePropertyName,
@@ -33,13 +36,24 @@ namespace Bicep.Core.UnitTests.TypeSystem.Az
 
         private static NamespaceType GetAzNamespaceType()
         {
-            var nsProvider = new DefaultNamespaceProvider(new AzResourceTypeLoader(), BicepTestConstants.Features);
+            var nsProvider = new DefaultNamespaceProvider(new AzResourceTypeLoader());
 
-            return nsProvider.TryGetNamespace("az", "az", ResourceScope.ResourceGroup)!;
+            return nsProvider.TryGetNamespace("az", "az", ResourceScope.ResourceGroup, BicepTestConstants.Features)!;
         }
 
         private static IEnumerable<object[]> GetDeserializeTestData()
         {
+            var typesToTest = new[]
+            {
+                // it's too expensive to test all permutations.
+                // keep this list short, but updated with a set of important providers.
+                "microsoft.network/2022-05-01",
+                "microsoft.compute/2022-08-01",
+                "microsoft.documentdb/2022-08-15",
+                "microsoft.storage/2022-05-01",
+                "microsoft.web/2022-03-01",
+            }.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             var flagPermutationsToTest = new [] {
                 ResourceTypeGenerationFlags.None,
                 ResourceTypeGenerationFlags.ExistingResource,
@@ -50,15 +64,23 @@ namespace Bicep.Core.UnitTests.TypeSystem.Az
 
             foreach (var providerGrouping in GetAzNamespaceType().ResourceTypeProvider.GetAvailableTypes().GroupBy(x => x.TypeSegments[0])) {
                 foreach (var apiVersionGrouping in providerGrouping.GroupBy(x => x.ApiVersion)) {
+                    var providerName = providerGrouping.Key;
+                    var apiVersion = apiVersionGrouping.Key!;
+
+                    if (!typesToTest.Remove($"{providerName}/{apiVersion}"))
+                    {
+                        continue;
+                    }
+
                     foreach (var flags in flagPermutationsToTest) {
-                        var providerName = providerGrouping.Key;
-                        var apiVersion = apiVersionGrouping.Key!;
                         var resourceTypes = apiVersionGrouping.Select(x => x.FormatName()).ToList();
 
                         yield return new object[] { providerName, apiVersion, flags, resourceTypes };
                     }
                 }
             }
+
+            typesToTest.Should().BeEmpty();
         }
 
         public static string GetDeserializeTestDisplayName(MethodInfo info, object[] values)
@@ -140,12 +162,8 @@ namespace Bicep.Core.UnitTests.TypeSystem.Az
         [TestMethod]
         public void AzResourceTypeProvider_should_warn_for_missing_resource_types()
         {
-            var configuration = BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled;
-            Compilation createCompilation(string program)
-                    => new Compilation(BicepTestConstants.Features, new DefaultNamespaceProvider(new AzResourceTypeLoader(), BicepTestConstants.Features), SourceFileGroupingFactory.CreateFromText(program, new Mock<IFileResolver>(MockBehavior.Strict).Object), configuration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
-
             // Missing top-level properties - should be an error
-            var compilation = createCompilation(@"
+            var compilation = Services.BuildCompilation(@"
 resource missingResource 'Mock.Rp/madeUpResourceType@2020-01-01' = {
   name: 'missingResource'
 }
@@ -158,8 +176,9 @@ resource missingResource 'Mock.Rp/madeUpResourceType@2020-01-01' = {
         [TestMethod]
         public void AzResourceTypeProvider_should_error_for_top_level_system_properties_and_warn_for_rest()
         {
-            Compilation createCompilation(string program)
-                => new Compilation(BicepTestConstants.Features, BuiltInTestTypes.Create(), SourceFileGroupingFactory.CreateFromText(program, new Mock<IFileResolver>(MockBehavior.Strict).Object), BicepTestConstants.BuiltInConfiguration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
+            Compilation createCompilation(string program) => Services
+                .WithAzResources(BuiltInTestTypes.Types)
+                .BuildCompilation(program);
 
             // Missing top-level properties - should be an error
             var compilation = createCompilation(@"

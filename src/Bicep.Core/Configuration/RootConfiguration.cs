@@ -2,28 +2,49 @@
 // Licensed under the MIT License.
 
 using System.Buffers;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
+using Bicep.Core.Diagnostics;
 
 namespace Bicep.Core.Configuration
 {
     public class RootConfiguration
     {
-        public RootConfiguration(CloudConfiguration cloud, ModuleAliasesConfiguration moduleAliases, AnalyzersConfiguration analyzers, string? configurationPath)
+        private const string CloudKey = "cloud";
+        private const string ModuleAliasesKey = "moduleAliases";
+        private const string AnalyzersKey = "analyzers";
+        private const string CacheRootDirectoryKey = "cacheRootDirectory";
+        private const string ExperimentalFeaturesEnabledKey = "experimentalFeaturesEnabled";
+
+        public RootConfiguration(
+            CloudConfiguration cloud,
+            ModuleAliasesConfiguration moduleAliases,
+            AnalyzersConfiguration analyzers,
+            string? cacheRootDirectory,
+            ExperimentalFeaturesEnabled experimentalFeaturesEnabled,
+            string? configurationPath,
+            IEnumerable<DiagnosticBuilder.DiagnosticBuilderDelegate>? diagnosticBuilders)
         {
             this.Cloud = cloud;
             this.ModuleAliases = moduleAliases;
             this.Analyzers = analyzers;
+            this.CacheRootDirectory = cacheRootDirectory;
+            this.ExperimentalFeaturesEnabled = experimentalFeaturesEnabled;
             this.ConfigurationPath = configurationPath;
+            this.DiagnosticBuilders = diagnosticBuilders?.ToImmutableArray() ?? ImmutableArray<DiagnosticBuilder.DiagnosticBuilderDelegate>.Empty;
         }
 
-        public static RootConfiguration Bind(JsonElement element, string? configurationPath = null)
+        public static RootConfiguration Bind(JsonElement element, string? configurationPath = null, IEnumerable<DiagnosticBuilder.DiagnosticBuilderDelegate>? diagnosticBuilders = null)
         {
-            var cloud = CloudConfiguration.Bind(element.GetProperty("cloud"), configurationPath);
-            var moduleAliases = ModuleAliasesConfiguration.Bind(element.GetProperty("moduleAliases"), configurationPath);
-            var analyzers = new AnalyzersConfiguration(element.GetProperty("analyzers"));
+            var cloud = CloudConfiguration.Bind(element.GetProperty(CloudKey), configurationPath);
+            var moduleAliases = ModuleAliasesConfiguration.Bind(element.GetProperty(ModuleAliasesKey), configurationPath);
+            var analyzers = new AnalyzersConfiguration(element.GetProperty(AnalyzersKey));
+            var cacheRootDirectory = element.TryGetProperty(CacheRootDirectoryKey, out var e) ? e.GetString() : default;
+            var experimentalFeaturesEnabled = ExperimentalFeaturesEnabled.Bind(element.GetProperty(ExperimentalFeaturesEnabledKey), configurationPath);
 
-            return new(cloud, moduleAliases, analyzers, configurationPath);
+            return new(cloud, moduleAliases, analyzers, cacheRootDirectory, experimentalFeaturesEnabled, configurationPath, diagnosticBuilders);
         }
 
         public CloudConfiguration Cloud { get; }
@@ -32,7 +53,13 @@ namespace Bicep.Core.Configuration
 
         public AnalyzersConfiguration Analyzers { get; }
 
+        public string? CacheRootDirectory { get; }
+
+        public ExperimentalFeaturesEnabled ExperimentalFeaturesEnabled { get; }
+
         public string? ConfigurationPath { get; }
+
+        public ImmutableArray<DiagnosticBuilder.DiagnosticBuilderDelegate> DiagnosticBuilders { get; }
 
         public bool IsBuiltIn => ConfigurationPath is null;
 
@@ -43,14 +70,22 @@ namespace Bicep.Core.Configuration
             {
                 writer.WriteStartObject();
 
-                writer.WritePropertyName("cloud");
+                writer.WritePropertyName(CloudKey);
                 this.Cloud.WriteTo(writer);
 
-                writer.WritePropertyName("moduleAliases");
+                writer.WritePropertyName(ModuleAliasesKey);
                 this.ModuleAliases.WriteTo(writer);
 
-                writer.WritePropertyName("analyzers");
+                writer.WritePropertyName(AnalyzersKey);
                 this.Analyzers.WriteTo(writer);
+
+                if (CacheRootDirectory is string cacheRootDir)
+                {
+                    writer.WriteString(CacheRootDirectoryKey, cacheRootDir);
+                }
+
+                writer.WritePropertyName(ExperimentalFeaturesEnabledKey);
+                this.ExperimentalFeaturesEnabled.WriteTo(writer);
 
                 writer.WriteEndObject();
             }

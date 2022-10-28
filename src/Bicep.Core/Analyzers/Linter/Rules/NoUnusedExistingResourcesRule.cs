@@ -27,7 +27,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             return string.Format(CoreResources.UnusedExistingResourceRuleMessageFormat, values);
         }
 
-        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
             // TODO: Performance: Use a visitor to visit VariableAccesssyntax and collects the non-error symbols into a list.
             // Then do a symbol visitor to go through all the symbols that exist and compare.
@@ -40,7 +40,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                 .Where(sym => !(sym.DeclaringResource.TryGetBody()?.Resources ?? Enumerable.Empty<ResourceDeclarationSyntax>()).Any());
             foreach (var sym in unreferencedResources)
             {
-                yield return CreateRemoveUnusedDiagnosticForSpan(sym.Name, sym.NameSyntax, sym.DeclaringSyntax, model.SourceFile.ProgramSyntax);
+                yield return CreateRemoveUnusedDiagnosticForSpan(diagnosticLevel, sym.Name, sym.NameSyntax, sym.DeclaringSyntax, model.SourceFile.ProgramSyntax);
             }
         }
 

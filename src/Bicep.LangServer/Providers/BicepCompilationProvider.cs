@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using System.Collections.Immutable;
-using Bicep.Core.Analyzers.Linter;
+using Bicep.Core.Analyzers.Interfaces;
 using Bicep.Core.Analyzers.Linter.ApiVersions;
 using Bicep.Core.Configuration;
 using Bicep.Core.Features;
@@ -21,36 +21,38 @@ namespace Bicep.LanguageServer.Providers
     /// <remarks>This class exists only so we can mock fatal exceptions in tests.</remarks>
     public class BicepCompilationProvider : ICompilationProvider
     {
-        private readonly IFeatureProvider features;
-        private readonly ApiVersionProvider apiVersionProvider;
+        private readonly IConfigurationManager configurationManager;
+        private readonly IFeatureProviderFactory featureProviderFactory;
+        private readonly IApiVersionProviderFactory apiVersionProviderFactory;
         private readonly INamespaceProvider namespaceProvider;
         private readonly IFileResolver fileResolver;
         private readonly IModuleDispatcher moduleDispatcher;
 
-        public BicepCompilationProvider(IFeatureProvider features, INamespaceProvider namespaceProvider, IFileResolver fileResolver, IModuleDispatcher moduleDispatcher, ApiVersionProvider apiVersionProvider)
+        public BicepCompilationProvider(IFeatureProviderFactory featureProviderFactory, INamespaceProvider namespaceProvider, IFileResolver fileResolver, IModuleDispatcher moduleDispatcher, IApiVersionProviderFactory apiVersionProviderFactory, IConfigurationManager configurationManager)
         {
-            this.features = features;
-            this.apiVersionProvider = apiVersionProvider;
+            this.featureProviderFactory = featureProviderFactory;
+            this.apiVersionProviderFactory = apiVersionProviderFactory;
             this.namespaceProvider = namespaceProvider;
             this.fileResolver = fileResolver;
             this.moduleDispatcher = moduleDispatcher;
+            this.configurationManager = configurationManager;
         }
 
-        public CompilationContext Create(IReadOnlyWorkspace workspace, DocumentUri documentUri, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, RootConfiguration configuration, LinterAnalyzer linterAnalyzer)
+        public CompilationContext Create(IReadOnlyWorkspace workspace, DocumentUri documentUri, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, IBicepAnalyzer bicepAnalyzer)
         {
-            var syntaxTreeGrouping = SourceFileGroupingBuilder.Build(fileResolver, moduleDispatcher, workspace, documentUri.ToUri(), configuration);
-            return this.CreateContext(syntaxTreeGrouping, modelLookup, configuration, linterAnalyzer);
+            var sourceFileGrouping = SourceFileGroupingBuilder.Build(fileResolver, moduleDispatcher, workspace, documentUri.ToUri());
+            return this.CreateContext(sourceFileGrouping, modelLookup, bicepAnalyzer);
         }
 
-        public CompilationContext Update(IReadOnlyWorkspace workspace, CompilationContext current, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, RootConfiguration configuration, LinterAnalyzer linterAnalyzer)
+        public CompilationContext Update(IReadOnlyWorkspace workspace, CompilationContext current, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, IBicepAnalyzer bicepAnalyzer)
         {
-            var syntaxTreeGrouping = SourceFileGroupingBuilder.Rebuild(moduleDispatcher, workspace, current.Compilation.SourceFileGrouping, configuration);
-            return this.CreateContext(syntaxTreeGrouping, modelLookup, configuration, linterAnalyzer);
+            var sourceFileGrouping = SourceFileGroupingBuilder.Rebuild(moduleDispatcher, workspace, current.Compilation.SourceFileGrouping);
+            return this.CreateContext(sourceFileGrouping, modelLookup, bicepAnalyzer);
         }
 
-        private CompilationContext CreateContext(SourceFileGrouping syntaxTreeGrouping, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, RootConfiguration configuration, LinterAnalyzer linterAnalyzer)
+        private CompilationContext CreateContext(SourceFileGrouping syntaxTreeGrouping, ImmutableDictionary<ISourceFile, ISemanticModel> modelLookup, IBicepAnalyzer bicepAnalyzer)
         {
-            var compilation = new Compilation(this.features, namespaceProvider, syntaxTreeGrouping, configuration, apiVersionProvider, linterAnalyzer, modelLookup);
+            var compilation = new Compilation(featureProviderFactory, namespaceProvider, syntaxTreeGrouping, configurationManager, apiVersionProviderFactory, bicepAnalyzer, modelLookup);
             return new CompilationContext(compilation);
         }
     }

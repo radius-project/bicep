@@ -14,11 +14,11 @@ using Bicep.Core.Extensions;
 using Bicep.Core.FileSystem;
 using Bicep.Core.Parsing;
 using Bicep.Core.Samples;
-using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.Text;
 using Bicep.Core.UnitTests;
 using Bicep.Core.UnitTests.Assertions;
+using Bicep.Core.UnitTests.FileSystem;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.Core.Workspaces;
 using Bicep.LangServer.IntegrationTests.Completions;
@@ -40,6 +40,8 @@ namespace Bicep.LangServer.IntegrationTests
     [TestClass]
     public class CompletionTests
     {
+        private static ServiceBuilder Services => new ServiceBuilder();
+
         public static readonly INamespaceProvider NamespaceProvider = BicepTestConstants.NamespaceProvider;
 
         private static readonly SharedLanguageHelperManager ServerWithNamespaceProvider = new();
@@ -68,27 +70,21 @@ namespace Bicep.LangServer.IntegrationTests
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            ServerWithNamespaceProvider.Initialize(
-                async () => await MultiFileLanguageServerHelper.StartLanguageServer(
-                    testContext,
-                    creationOptions: new LanguageServer.Server.CreationOptions(NamespaceProvider: NamespaceProvider)));
+            ServerWithNamespaceProvider.Initialize(async () => await MultiFileLanguageServerHelper.StartLanguageServer(testContext));
 
-            ServerWithNamespaceAndTestResolver.Initialize(
-                async () => await MultiFileLanguageServerHelper.StartLanguageServer(
-                    testContext,
-                    creationOptions: new LanguageServer.Server.CreationOptions(NamespaceProvider: NamespaceProvider, FileResolver: BicepTestConstants.FileResolver)));
+            ServerWithNamespaceAndTestResolver.Initialize(async () => await MultiFileLanguageServerHelper.StartLanguageServer(testContext));
 
             DefaultServer.Initialize(async () => await MultiFileLanguageServerHelper.StartLanguageServer(testContext));
 
             ServerWithImportsEnabled.Initialize(
                 async () => await MultiFileLanguageServerHelper.StartLanguageServer(
                     testContext,
-                    new LanguageServer.Server.CreationOptions(Features: BicepTestConstants.CreateFeatureProvider(testContext, importsEnabled: true))));
+                    services => services.WithFeatureOverrides(new(testContext, ImportsEnabled: true))));
 
             ServerWithBuiltInTypes.Initialize(
                 async () => await MultiFileLanguageServerHelper.StartLanguageServer(
                     testContext,
-                    new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create())));
+                    services => services.WithNamespaceProvider(BuiltInTestTypes.Create())));
         }
 
         [ClassCleanup]
@@ -158,11 +154,10 @@ namespace Bicep.LangServer.IntegrationTests
                 File.Exists(combinedFileName).Should().BeTrue($"Combined snippet file \"{combinedSourceFileName}\" should be checked in");
 
                 var combinedFileUri = PathHelper.FilePathToFileUrl(combinedFileName);
-                var sourceFileGrouping = SourceFileGroupingFactory.CreateForFiles(new Dictionary<Uri, string>
+                var compilation = Services.BuildCompilation(new Dictionary<Uri, string>
                 {
                     [combinedFileUri] = bicepContentsReplaced,
-                }, combinedFileUri, BicepTestConstants.FileResolver, BicepTestConstants.BuiltInConfiguration);
-                var compilation = new Compilation(BicepTestConstants.Features, NamespaceProvider, sourceFileGrouping, BicepTestConstants.BuiltInConfiguration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
+                }, combinedFileUri);
                 var diagnostics = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();
 
                 var sourceTextWithDiags = OutputHelper.AddDiagsToSourceText(bicepContentsReplaced, "\n", diagnostics, diag => OutputHelper.GetDiagLoggingString(bicepContentsReplaced, outputDirectory, diag));
@@ -941,15 +936,14 @@ module bar2 'test.bicep' = [for item in list: |  ]
 
             var (text, cursors) = ParserHelper.GetFileWithCursors(fileWithCursors);
             Uri mainUri = new Uri("file:///main.bicep");
-            var fileResolver = new InMemoryFileResolver(new Dictionary<Uri, string>
+            var files = new Dictionary<Uri, string>
             {
                 [new Uri("file:///test.bicep")] = @"param foo string",
                 [mainUri] = text
-            });
+            };
 
             var bicepFile = SourceFileFactory.CreateBicepFile(mainUri, text);
-            var creationOptions = new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver);
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(this.TestContext, text, bicepFile.FileUri, creationOptions: creationOptions);
+            using var helper = await LanguageServerHelper.StartServerWithText(this.TestContext, files, bicepFile.FileUri, services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
 
             var file = new FileRequestHelper(helper.Client, bicepFile);
             var completions = await file.RequestCompletions(cursors);
@@ -973,47 +967,35 @@ module bar2 'test.bicep' = [for item in list: |  ]
         [TestMethod]
         public async Task RequestModulePathCompletions_ArmTemplateFilesInDir_ReturnsCompletionsIncludingArmTemplatePaths()
         {
-            var mainUri = DocumentUri.FromFileSystemPath("/path/to/main.bicep");
-            var armTemplateUri1 = DocumentUri.FromFileSystemPath("/path/to/template1.arm");
-            var armTemplateUri2 = DocumentUri.FromFileSystemPath("/path/to/template2.json");
-            var armTemplateUri3 = DocumentUri.FromFileSystemPath("/path/to/template3.jsonc");
-            var armTemplateUri4 = DocumentUri.FromFileSystemPath("/path/to/template4.json");
-            var armTemplateUri5 = DocumentUri.FromFileSystemPath("/path/to/template5.json");
-            var jsonUri1 = DocumentUri.FromFileSystemPath("/path/to/json1.json");
-            var jsonUri2 = DocumentUri.FromFileSystemPath("/path/to/json2.json");
-            var bicepModuleUri1 = DocumentUri.FromFileSystemPath("/path/to/module1.txt");
-            var bicepModuleUri2 = DocumentUri.FromFileSystemPath("/path/to/module2.bicep");
-            var bicepModuleUri3 = DocumentUri.FromFileSystemPath("/path/to/module3.bicep");
-
+            var mainUri = InMemoryFileResolver.GetFileUri("/path/to/main.bicep");
             var (mainFileText, cursor) = ParserHelper.GetFileWithSingleCursor(@"
 module mod1 './module1.txt' = {}
 module mod2 './template3.jsonc' = {}
 module mod2 './|' = {}
 ");
-            var mainFile = SourceFileFactory.CreateBicepFile(mainUri.ToUri(), mainFileText);
+            var mainFile = SourceFileFactory.CreateBicepFile(mainUri, mainFileText);
             var schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#";
 
             var fileTextsByUri = new Dictionary<Uri, string>
             {
-                [mainUri.ToUri()] = mainFileText,
-                [armTemplateUri1.ToUri()] = "",
-                [armTemplateUri2.ToUri()] = @$"{{ ""schema"": ""{schema}"" }}",
-                [armTemplateUri3.ToUri()] = @"{}",
-                [armTemplateUri4.ToUri()] = new string('x', 2000 - schema.Length) + schema,
-                [armTemplateUri5.ToUri()] = new string('x', 2002 - schema.Length) + schema,
-                [jsonUri1.ToUri()] = "{}",
-                [jsonUri2.ToUri()] = @"[{ ""name"": ""value"" }]",
-                [bicepModuleUri1.ToUri()] = "param foo string",
-                [bicepModuleUri2.ToUri()] = "param bar bool",
-                [bicepModuleUri3.ToUri()] = "",
+                [mainUri] = mainFileText,
+                [InMemoryFileResolver.GetFileUri("/path/to/template1.arm")] = "",
+                [InMemoryFileResolver.GetFileUri("/path/to/template2.json")] = @$"{{ ""schema"": ""{schema}"" }}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template3.jsonc")] = @"{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template4.json")] = new string('x', 2000 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/template5.json")] = new string('x', 2002 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/json1.json")] = "{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/json2.json")] = @"[{ ""name"": ""value"" }]",
+                [InMemoryFileResolver.GetFileUri("/path/to/module1.txt")] = "param foo string",
+                [InMemoryFileResolver.GetFileUri("/path/to/module2.bicep")] = "param bar bool",
+                [InMemoryFileResolver.GetFileUri("/path/to/module3.bicep")] = "",
             };
 
-            var fileResolver = new InMemoryFileResolver(fileTextsByUri);
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(
+            using var helper = await LanguageServerHelper.StartServerWithText(
                 TestContext,
-                mainFileText,
+                fileTextsByUri,
                 mainUri,
-                creationOptions: new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver));
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
 
             var file = new FileRequestHelper(helper.Client, mainFile);
 
@@ -1024,7 +1006,14 @@ module mod2 './|' = {}
                 x => x.Label.Should().Be("template1.arm"),
                 x => x.Label.Should().Be("template2.json"),
                 x => x.Label.Should().Be("template3.jsonc"),
-                x => x.Label.Should().Be("template4.json"));
+                x => x.Label.Should().Be("template4.json"),
+                x => x.Label.Should().Be("../"));
+
+            file.ApplyCompletion(completions, "module2.bicep").Should().HaveSourceText(@"
+module mod1 './module1.txt' = {}
+module mod2 './template3.jsonc' = {}
+module mod2 './module2.bicep'| = {}
+");
         }
 
         [TestMethod]
@@ -1258,26 +1247,26 @@ module a '|' = {
 ";
 
             var (text, cursor) = ParserHelper.GetFileWithSingleCursor(fileWithCursors);
-            Uri mainUri = new Uri("file:///main.bicep");
-            var fileResolver = new InMemoryFileResolver(new Dictionary<Uri, string>
+            Uri mainUri = InMemoryFileResolver.GetFileUri("/dir/main.bicep");
+            var files = new Dictionary<Uri, string>
             {
-                [new Uri("file:///folder with space/mod with space.bicep")] = @"param foo string",
-                [new Uri("file:///percentage%file.bicep")] = @"param foo string",
-                [new Uri("file:///already%20escaped.bicep")] = @"param foo string",
+                [InMemoryFileResolver.GetFileUri("/dir/folder with space/mod with space.bicep")] = @"param foo string",
+                [InMemoryFileResolver.GetFileUri("/dir/percentage%file.bicep")] = @"param foo string",
+                [InMemoryFileResolver.GetFileUri("/dir/already%20escaped.bicep")] = @"param foo string",
                 [mainUri] = text
-            });
+            };
 
             var bicepFile = SourceFileFactory.CreateBicepFile(mainUri, text);
-            var creationOptions = new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver);
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(this.TestContext, text, bicepFile.FileUri, creationOptions: creationOptions);
+            using var helper = await LanguageServerHelper.StartServerWithText(this.TestContext, files, bicepFile.FileUri, services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
 
             var file = new FileRequestHelper(helper.Client, bicepFile);
             var completions = await file.RequestCompletion(cursor);
 
             completions.Should().SatisfyRespectively(
                 x => x.Label.Should().Be("percentage%file.bicep"),
-                x => x.Label.Should().Be("already escaped.bicep"),
-                x => x.Label.Should().Be("folder with space"));
+                x => x.Label.Should().Be("already%20escaped.bicep"),
+                x => x.Label.Should().Be("folder with space/"),
+                x => x.Label.Should().Be("../"));
         }
 
         [TestMethod]
@@ -1305,20 +1294,18 @@ var modOut = m.outputs.inputTi|
 
             var (text, cursors) = ParserHelper.GetFileWithCursors(mainContent);
             Uri mainUri = new Uri("file:///main.bicep");
-            var fileResolver = new InMemoryFileResolver(new Dictionary<Uri, string>
+            var files = new Dictionary<Uri, string>
             {
                 [new Uri("file:///mod.bicep")] = moduleContent,
                 [mainUri] = text
-            });
+            };
 
             var bicepFile = SourceFileFactory.CreateBicepFile(mainUri, text);
-            var creationOptions = new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver);
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(
+            using var helper = await LanguageServerHelper.StartServerWithText(
                 this.TestContext,
-                text,
+                files,
                 bicepFile.FileUri,
-                null,
-                creationOptions);
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
 
             var file = new FileRequestHelper(helper.Client, bicepFile);
             var completions = await file.RequestCompletions(cursors);
@@ -2315,46 +2302,34 @@ Returns the unique identifier of a resource. You use this function when the reso
         [DataRow("loadJsonContent", true)]
         public async Task LoadFunctionsPathArgument_returnsFilesInCompletions(string functionName, bool jsonOnTop = false)
         {
-            var mainUri = DocumentUri.FromFileSystemPath("/path/to/main.bicep");
-            var armTemplateUri1 = DocumentUri.FromFileSystemPath("/path/to/template1.arm");
-            var armTemplateUri2 = DocumentUri.FromFileSystemPath("/path/to/template2.json");
-            var armTemplateUri3 = DocumentUri.FromFileSystemPath("/path/to/template3.jsonc");
-            var armTemplateUri4 = DocumentUri.FromFileSystemPath("/path/to/template4.json");
-            var armTemplateUri5 = DocumentUri.FromFileSystemPath("/path/to/template5.json");
-            var jsonUri1 = DocumentUri.FromFileSystemPath("/path/to/json1.json");
-            var jsonUri2 = DocumentUri.FromFileSystemPath("/path/to/json2.json");
-            var bicepModuleUri1 = DocumentUri.FromFileSystemPath("/path/to/module1.txt");
-            var bicepModuleUri2 = DocumentUri.FromFileSystemPath("/path/to/module2.bicep");
-            var bicepModuleUri3 = DocumentUri.FromFileSystemPath("/path/to/module3.bicep");
+            var mainUri = InMemoryFileResolver.GetFileUri("/path/to/main.bicep");
 
             var (mainFileText, cursor) = ParserHelper.GetFileWithSingleCursor(@"
 var file = " + functionName + @"('|')
 ");
-            var mainFile = SourceFileFactory.CreateBicepFile(mainUri.ToUri(), mainFileText);
+            var mainFile = SourceFileFactory.CreateBicepFile(mainUri, mainFileText);
             var schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#";
 
             var fileTextsByUri = new Dictionary<Uri, string>
             {
-                [mainUri.ToUri()] = mainFileText,
-                [armTemplateUri1.ToUri()] = "",
-                [armTemplateUri2.ToUri()] = @$"{{ ""schema"": ""{schema}"" }}",
-                [armTemplateUri3.ToUri()] = @"{}",
-                [armTemplateUri4.ToUri()] = new string('x', 2000 - schema.Length) + schema,
-                [armTemplateUri5.ToUri()] = new string('x', 2002 - schema.Length) + schema,
-                [jsonUri1.ToUri()] = "{}",
-                [jsonUri2.ToUri()] = @"[{ ""name"": ""value"" }]",
-                [bicepModuleUri1.ToUri()] = "param foo string",
-                [bicepModuleUri2.ToUri()] = "param bar bool",
-                [bicepModuleUri3.ToUri()] = "",
+                [mainUri] = mainFileText,
+                [InMemoryFileResolver.GetFileUri("/path/to/template1.arm")] = "",
+                [InMemoryFileResolver.GetFileUri("/path/to/template2.json")] = @$"{{ ""schema"": ""{schema}"" }}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template3.jsonc")] = @"{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template4.json")] = new string('x', 2000 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/template5.json")] = new string('x', 2002 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/json1.json")] = "{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/json2.json")] = @"[{ ""name"": ""value"" }]",
+                [InMemoryFileResolver.GetFileUri("/path/to/module1.txt")] = "param foo string",
+                [InMemoryFileResolver.GetFileUri("/path/to/module2.bicep")] = "param bar bool",
+                [InMemoryFileResolver.GetFileUri("/path/to/module3.bicep")] = "",
             };
 
-            var fileResolver = new InMemoryFileResolver(fileTextsByUri);
-
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(
+            using var helper = await LanguageServerHelper.StartServerWithText(
                 TestContext,
-                mainFileText,
+                fileTextsByUri,
                 mainUri,
-                creationOptions: new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver));
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
 
             var file = new FileRequestHelper(helper.Client, mainFile);
 
@@ -2399,47 +2374,35 @@ var file = " + functionName + @"('|')
         [DataRow("loadJsonContent", true)]
         public async Task LoadFunctionsPathArgument_returnsSymbolsAndFilePathsInCompletions(string functionName, bool jsonOnTop = false)
         {
-            var mainUri = DocumentUri.FromFileSystemPath("/path/to/main.bicep");
-            var armTemplateUri1 = DocumentUri.FromFileSystemPath("/path/to/template1.arm");
-            var armTemplateUri2 = DocumentUri.FromFileSystemPath("/path/to/template2.json");
-            var armTemplateUri3 = DocumentUri.FromFileSystemPath("/path/to/template3.jsonc");
-            var armTemplateUri4 = DocumentUri.FromFileSystemPath("/path/to/template4.json");
-            var armTemplateUri5 = DocumentUri.FromFileSystemPath("/path/to/template5.json");
-            var jsonUri1 = DocumentUri.FromFileSystemPath("/path/to/json1.json");
-            var jsonUri2 = DocumentUri.FromFileSystemPath("/path/to/json2.json");
-            var bicepModuleUri1 = DocumentUri.FromFileSystemPath("/path/to/module1.txt");
-            var bicepModuleUri2 = DocumentUri.FromFileSystemPath("/path/to/module2.bicep");
-            var bicepModuleUri3 = DocumentUri.FromFileSystemPath("/path/to/module3.bicep");
+            var mainUri = InMemoryFileResolver.GetFileUri("/path/to/main.bicep");
 
             var (mainFileText, cursor) = ParserHelper.GetFileWithSingleCursor(@"
 var template = 'template1.json'
 var file = " + functionName + @"(templ|)
 ");
-            var mainFile = SourceFileFactory.CreateBicepFile(mainUri.ToUri(), mainFileText);
+            var mainFile = SourceFileFactory.CreateBicepFile(mainUri, mainFileText);
             var schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#";
 
             var fileTextsByUri = new Dictionary<Uri, string>
             {
-                [mainUri.ToUri()] = mainFileText,
-                [armTemplateUri1.ToUri()] = "",
-                [armTemplateUri2.ToUri()] = @$"{{ ""schema"": ""{schema}"" }}",
-                [armTemplateUri3.ToUri()] = @"{}",
-                [armTemplateUri4.ToUri()] = new string('x', 2000 - schema.Length) + schema,
-                [armTemplateUri5.ToUri()] = new string('x', 2002 - schema.Length) + schema,
-                [jsonUri1.ToUri()] = "{}",
-                [jsonUri2.ToUri()] = @"[{ ""name"": ""value"" }]",
-                [bicepModuleUri1.ToUri()] = "param foo string",
-                [bicepModuleUri2.ToUri()] = "param bar bool",
-                [bicepModuleUri3.ToUri()] = "",
+                [mainUri] = mainFileText,
+                [InMemoryFileResolver.GetFileUri("/path/to/template1.arm")] = "",
+                [InMemoryFileResolver.GetFileUri("/path/to/template2.json")] = @$"{{ ""schema"": ""{schema}"" }}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template3.jsonc")] = @"{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/template4.json")] = new string('x', 2000 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/template5.json")] = new string('x', 2002 - schema.Length) + schema,
+                [InMemoryFileResolver.GetFileUri("/path/to/json1.json")] = "{}",
+                [InMemoryFileResolver.GetFileUri("/path/to/json2.json")] = @"[{ ""name"": ""value"" }]",
+                [InMemoryFileResolver.GetFileUri("/path/to/module1.txt")] = "param foo string",
+                [InMemoryFileResolver.GetFileUri("/path/to/module2.bicep")] = "param bar bool",
+                [InMemoryFileResolver.GetFileUri("/path/to/module3.bicep")] = "",
             };
 
-            var fileResolver = new InMemoryFileResolver(fileTextsByUri);
-
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(
+            using var helper = await LanguageServerHelper.StartServerWithText(
                 TestContext,
-                mainFileText,
+                fileTextsByUri,
                 mainUri,
-                creationOptions: new LanguageServer.Server.CreationOptions(NamespaceProvider: BuiltInTestTypes.Create(), FileResolver: fileResolver));
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()));
             var file = new FileRequestHelper(helper.Client, mainFile);
 
             var completions = await file.RequestCompletion(cursor);
@@ -2467,6 +2430,44 @@ var file = " + functionName + @"(templ|)
                     x => x.Label.Should().Be("template")
                 );
             }
+        }
+
+        [DataTestMethod]
+        [DataRow("module foo |", "../", "module foo '../|'")]
+        [DataRow("module foo |", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo .|", "../", "module foo '../|'")]
+        [DataRow("module foo '.'|", "../", "module foo '../|'")]
+        [DataRow("module foo ./|", "../", "module foo '../|'")]
+        [DataRow("module foo ./|", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo './|'", "other.bicep", "module foo './other.bicep'|")]
+        [DataRow("module foo ../|", "../", "module foo '../|'")]
+        [DataRow("module foo '../'|", "../", "module foo '../../|'")]
+        [DataRow("module foo '../../|'", "path2/", "module foo '../../path2/|'")]
+        [DataRow("module foo '../../../|'", "path2/", "module foo '../../path2/|'")]
+        [DataRow("module foo ot|h", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo |oth", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo oth|", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo 'ot|h'", "other.bicep", "module foo 'other.bicep'|")]
+        [DataRow("module foo '../to2/|'", "main.bicep", "module foo '../to2/main.bicep'|")]
+        public async Task Module_path_completions_are_offered(string fileWithCursors, string expectedLabel, string expectedResult)
+        {
+            var fileUri = InMemoryFileResolver.GetFileUri("/path/to/main.bicep");
+            var fileResolver = new InMemoryFileResolver(new Dictionary<Uri, string> {
+                [InMemoryFileResolver.GetFileUri("/path/to/other.bicep")] = "",
+                [InMemoryFileResolver.GetFileUri("/path/to2/main.bicep")] = "",
+                [InMemoryFileResolver.GetFileUri("/path2/to/main.bicep")] = "",
+            });
+
+            using var helper = await MultiFileLanguageServerHelper.StartLanguageServer(TestContext, services => services.WithFileResolver(fileResolver));
+
+            var (text, cursor) = ParserHelper.GetFileWithSingleCursor(fileWithCursors);
+            var file = await new ServerRequestHelper(TestContext, helper).OpenFile(fileUri, text);
+
+            var completions = await file.RequestCompletion(cursor);
+
+            completions.Should().Contain(x => x.Label == expectedLabel, $"\"{fileWithCursors}\" should have completion");
+            var updatedFile = file.ApplyCompletion(completions, expectedLabel);
+            updatedFile.Should().HaveSourceText(expectedResult);
         }
     }
 }

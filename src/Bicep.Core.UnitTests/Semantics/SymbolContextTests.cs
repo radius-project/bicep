@@ -14,12 +14,14 @@ namespace Bicep.Core.UnitTests.Semantics
     [TestClass]
     public class SymbolContextTests
     {
+        private static ServiceBuilder Services => new ServiceBuilder().WithEmptyAzResources();
+
         [TestMethod]
         public void LockedModeShouldBlockAccess()
         {
             const string expectedMessage = "Properties of the symbol context should not be accessed until name binding is completed.";
 
-            var compilation = new Compilation(BicepTestConstants.Features, TestTypeHelper.CreateEmptyProvider(), SourceFileGroupingFactory.CreateFromText("", BicepTestConstants.FileResolver), BicepTestConstants.BuiltInConfiguration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
+            var compilation = Services.BuildCompilation("");
             var bindings = new Dictionary<SyntaxBase, Symbol>();
             var cyclesBySymbol = new Dictionary<DeclaredSymbol, ImmutableArray<DeclaredSymbol>>();
             var context = new SymbolContext(compilation, compilation.GetEntrypointSemanticModel());

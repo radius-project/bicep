@@ -26,9 +26,9 @@ namespace Bicep.Core.Analyzers.Linter.Rules
         public override string FormatMessage(params object[] values)
             => string.Format((string)values[0]);
 
-        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
-            Visitor visitor = new(this, model);
+            Visitor visitor = new(this, model, diagnosticLevel);
             visitor.Visit(model.SourceFile.ProgramSyntax);
             return visitor.diagnostics;
         }
@@ -40,11 +40,13 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             private readonly Dictionary<ISourceFile, ImmutableArray<ParameterSymbol>> _cachedParamsUsedInLocationPropsForFile = new();
             private readonly ExplicitValuesForLocationParamsRule parent;
             private readonly SemanticModel model;
+            private readonly DiagnosticLevel diagnosticLevel;
 
-            public Visitor(ExplicitValuesForLocationParamsRule parent, SemanticModel model)
+            public Visitor(ExplicitValuesForLocationParamsRule parent, SemanticModel model, DiagnosticLevel diagnosticLevel)
             {
                 this.parent = parent;
                 this.model = model;
+                this.diagnosticLevel = diagnosticLevel;
             }
 
             public override void VisitModuleDeclarationSyntax(ModuleDeclarationSyntax moduleDeclarationSyntax)
@@ -65,7 +67,8 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                         // No value being passed in - this is a failure
                         string moduleName = moduleDeclarationSyntax.Name.IdentifierName;
                         diagnostics.Add(
-                            parent.CreateDiagnosticForSpan(errorSpan,
+                            parent.CreateDiagnosticForSpan(diagnosticLevel,
+                                errorSpan,
                                 String.Format(
                                     CoreResources.NoHardcodedLocation_ModuleLocationNeedsExplicitValue,
                                     parameterName,

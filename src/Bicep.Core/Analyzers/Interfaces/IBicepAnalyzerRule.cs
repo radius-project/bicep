@@ -25,13 +25,11 @@ namespace Bicep.Core.Analyzers.Interfaces
 
         string Description { get; }
 
-        DiagnosticLevel DiagnosticLevel { get; }
+        DiagnosticLevel DefaultDiagnosticLevel { get; }
 
         DiagnosticStyling DiagnosticStyling { get; }
 
         Uri? Uri { get; }
-
-        void Configure(AnalyzersConfiguration configuration);
 
         IEnumerable<IDiagnostic> Analyze(SemanticModel model);
     }

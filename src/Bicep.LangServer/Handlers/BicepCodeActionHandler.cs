@@ -120,7 +120,7 @@ namespace Bicep.LanguageServer.Handlers
                         analyzerDiagnostic.Span.ContainsInclusive(requestEndOffset) ||
                         (requestStartOffset <= analyzerDiagnostic.Span.Position && analyzerDiagnostic.GetEndPosition() <= requestEndOffset))
                     .OfType<AnalyzerDiagnostic>()
-                    .Select(analyzerDiagnostic => CreateEditLinterRuleAction(documentUri, analyzerDiagnostic.Code, compilation.Configuration.ConfigurationPath));
+                    .Select(analyzerDiagnostic => CreateEditLinterRuleAction(documentUri, analyzerDiagnostic.Code, semanticModel.Configuration.ConfigurationPath));
                 commandOrCodeActions.AddRange(editLinterRuleActions);
             }
 
@@ -135,7 +135,7 @@ namespace Bicep.LanguageServer.Handlers
 
         private static CommandOrCodeAction? DisableDiagnostic(DocumentUri documentUri,
             DiagnosticCode diagnosticCode,
-            BicepFile bicepFile,
+            BicepSourceFile bicepFile,
             TextSpan span,
             ImmutableArray<int> lineStarts)
         {

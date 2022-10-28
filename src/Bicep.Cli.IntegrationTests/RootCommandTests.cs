@@ -47,10 +47,7 @@ namespace Bicep.Cli.IntegrationTests
         [TestMethod]
         public async Task BicepHelpShouldPrintHelp()
         {
-            var featuresMock = Repository.Create<IFeatureProvider>();
-            featuresMock.Setup(m => m.RegistryEnabled).Returns(true);
-
-            var settings = CreateDefaultSettings() with { Features = featuresMock.Object };
+            var settings = CreateDefaultSettings() with { FeatureOverrides = new(RegistryEnabled: true) };
 
             var (output, error, result) = await Bicep(settings, "--help");
 
@@ -128,12 +125,11 @@ namespace Bicep.Cli.IntegrationTests
         }
 
         [TestMethod]
-        public async Task BicepHelpShouldIncludePublishWhenRegistryEnabled()
+        public async Task BicepHelpShouldAlwaysIncludePublish()
         {
-            var featuresMock = Repository.Create<IFeatureProvider>();
-            featuresMock.Setup(m => m.RegistryEnabled).Returns(true);
-
-            var settings = CreateDefaultSettings() with { Features = featuresMock.Object };
+            // disable registry to ensure `bicep --help` is not consulting the feature provider before
+            // preparing the help text (as features can only be determined when an input file is specified)
+            var settings = CreateDefaultSettings() with { FeatureOverrides = new(RegistryEnabled: false) };
 
             var (output, error, result) = await Bicep(settings, "--help");
 
@@ -150,30 +146,5 @@ namespace Bicep.Cli.IntegrationTests
                 "br",
                 "--target");
         }
-
-        [TestMethod]
-        public async Task BicepHelpShouldNotIncludePublishWhenRegistryDisabled()
-        {
-            var featuresMock = Repository.Create<IFeatureProvider>();
-            featuresMock.Setup(m => m.RegistryEnabled).Returns(false);
-
-            var settings = CreateDefaultSettings() with { Features = featuresMock.Object };
-
-            var (output, error, result) = await Bicep(settings, "--help");
-
-            result.Should().Be(0);
-            error.Should().BeEmpty();
-
-            output.Should().NotBeEmpty();
-            output.Should().NotContainAny(
-                "publish",
-                "Publishes",
-                "registry",
-                "reference",
-                "azurecr.io",
-                "br",
-                "--target");
-        }
     }
 }
-

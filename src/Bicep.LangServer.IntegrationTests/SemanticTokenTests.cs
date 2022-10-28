@@ -20,9 +20,9 @@ using Bicep.Core.Workspaces;
 using Bicep.LangServer.IntegrationTests.Helpers;
 using System;
 using System.Collections.Immutable;
-using Bicep.Core.FileSystem;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.Core.UnitTests;
+using Bicep.Core.UnitTests.FileSystem;
 
 namespace Bicep.LangServer.IntegrationTests
 {
@@ -87,7 +87,7 @@ namespace Bicep.LangServer.IntegrationTests
         [DynamicData(nameof(GetParamsData), DynamicDataSourceType.Method)]
         public async Task Correct_semantic_tokens_are_returned_for_params_file(string paramFileText, TextSpan[] spans, SemanticTokenType[] tokenType)
         {
-            var baseFilePath = $"file://{TestContext.TestName}_{Guid.NewGuid():D}";
+            var baseFilePath = $"file:///{TestContext.TestName}_{Guid.NewGuid():D}";
             var paramFileUri = new Uri($"{baseFilePath}/main.bicepparam");
             var bicepFileUri = new Uri($"{baseFilePath}/main.bicep");
 
@@ -97,16 +97,13 @@ namespace Bicep.LangServer.IntegrationTests
                 [bicepFileUri] = ""
             };
 
-            var fileResolver = new InMemoryFileResolver(fileTextsByUri);
-
-            using var helper = await LanguageServerHelper.StartServerWithTextAsync(
+            using var helper = await LanguageServerHelper.StartServerWithText(
                 TestContext,
-                paramFileText,
+                fileTextsByUri,
                 paramFileUri,
-                creationOptions: new LanguageServer.Server.CreationOptions(
-                    NamespaceProvider: BuiltInTestTypes.Create(),
-                    FileResolver: fileResolver,
-                    Features: BicepTestConstants.CreateFeatureProvider(TestContext, paramsFilesEnabled: true)));
+                services => services
+                    .WithNamespaceProvider(BuiltInTestTypes.Create())
+                    .WithFeatureOverrides(new(TestContext, ParamsFilesEnabled: true)));
 
             var semanticTokens = await helper.Client.TextDocument.RequestSemanticTokens(new SemanticTokensParams
             {

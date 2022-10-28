@@ -19,6 +19,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Window;
 using Bicep.LangServer.IntegrationTests.Assertions;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using Newtonsoft.Json.Linq;
+using Bicep.Core;
 
 namespace Bicep.LangServer.IntegrationTests
 {
@@ -45,13 +46,10 @@ namespace Bicep.LangServer.IntegrationTests
             var yamlFile = baselineFolder.EntryFile;
             var bicepFile = baselineFolder.GetFileOrEnsureCheckedIn(Path.ChangeExtension(embeddedYml.FileName, ".bicep"));
 
-            var features = BicepTestConstants.Features with { ImportsEnabled = true, };
-
-            using var helper = await LanguageServerHelper.StartServerWithClientConnectionAsync(
+            using var helper = await LanguageServerHelper.StartServer(
                 this.TestContext,
-                options => options
-                    .OnTelemetryEvent(telemetryEventsListener.AddMessage),
-                new LanguageServer.Server.CreationOptions(Features: features));
+                options => options.OnTelemetryEvent(telemetryEventsListener.AddMessage),
+                services => services.WithFeatureOverrides(new(TestContext, ImportsEnabled: true)));
             var client = helper.Client;
 
             var response = await client.SendRequest(new ImportKubernetesManifestRequest(yamlFile.OutputFilePath), default);
@@ -64,8 +62,7 @@ namespace Bicep.LangServer.IntegrationTests
 
             bicepFile.ShouldHaveExpectedValue();
 
-            var context = new CompilationHelper.CompilationHelperContext(Features: features);
-            CompilationHelper.Compile(context, bicepFile.ReadFromOutputFolder()).Should().GenerateATemplate();
+            CompilationHelper.Compile(new ServiceBuilder().WithFeatureOverrides(new(ImportsEnabled: true)), bicepFile.ReadFromOutputFolder()).Should().GenerateATemplate();
         }
 
         [TestMethod]
@@ -78,7 +75,7 @@ namespace Bicep.LangServer.IntegrationTests
 ");
             var bicepFile = Path.ChangeExtension(manifestFile, ".bicep");
 
-            using var helper = await LanguageServerHelper.StartServerWithClientConnectionAsync(
+            using var helper = await LanguageServerHelper.StartServer(
                 this.TestContext,
                 options => options
                     .OnShowMessage(messageListener.AddMessage)
@@ -96,7 +93,7 @@ namespace Bicep.LangServer.IntegrationTests
 
             var message = await messageListener.WaitNext();
             message.Should().HaveMessageAndType(
-                "Failed to deserialize kubernetes manifest YAML.",
+                "Failed to deserialize kubernetes manifest YAML: (Lin: 1, Col: 4, Chr: 5) - (Lin: 1, Col: 25, Chr: 26): Expected dictionary node.",
                 MessageType.Error);
         }
     }
