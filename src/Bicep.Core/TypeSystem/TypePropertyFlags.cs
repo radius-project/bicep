@@ -67,6 +67,11 @@ namespace Bicep.Core.TypeSystem
         /// <summary>
         /// Language system property, i.e. id, type, api-version
         /// </summary>
-        SystemProperty = 1 << 10
+        SystemProperty = 1 << 10,
+
+        /// <summary>
+        /// An identifier flags this property so it's not converted to read-only when used with the 'existing' qualifier.
+        /// </summary>
+        Identifier = 1 << 11
     }
 }

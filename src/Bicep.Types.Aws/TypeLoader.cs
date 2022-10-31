@@ -3,51 +3,20 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using Azure.Bicep.Types.Aws.Index;
-using Azure.Bicep.Types.Concrete;
 
-namespace Azure.Bicep.Types.Aws
+namespace Azure.Bicep.Types.Aws;
+
+public class AwsTypeLoader : TypeLoader
 {
-    public class TypeLoader : ITypeLoader
+
+    protected override Stream GetContentStreamAtPath(string path)
     {
-        private const string TypeIndexResourceName = "index.json";
-
-        public ResourceType LoadResourceType(TypeLocation typeLocation)
+        var fileStream = typeof(AwsTypeLoader).Assembly.GetManifestResourceStream($"{path}.deflated");
+        if (fileStream is null)
         {
-            var content = GetContentAtPath(typeLocation.RelativePath);
-
-            var types = TypeSerializer.Deserialize(content);
-            if (typeLocation.Index is not int intIndex || types[intIndex] is not ResourceType resourceType)
-            {
-                throw new ArgumentException($"Unable to locate resource type at index {typeLocation.Index} in \"{typeLocation.RelativePath}\" resource");
-            }
-
-            return resourceType;
+            throw new ArgumentException($"Unable to locate manifest resource at path {path}", nameof(path));
         }
 
-        public string GetContentAtPath(string? path)
-        {
-            _ = path ?? throw new ArgumentNullException(nameof(path));
-
-            var fileStream = typeof(TypeLoader).Assembly.GetManifestResourceStream($"{path}.deflated");
-            if (fileStream is null)
-            {
-                throw new ArgumentException($"Unable to locate manifest resource at path {path}", nameof(path));
-            }
-
-            using (fileStream)
-            using (var decompressStream = new DeflateStream(fileStream, CompressionMode.Decompress))
-            using (var streamReader = new StreamReader(decompressStream))
-            {
-                return streamReader.ReadToEnd();
-            }
-        }
-
-        public TypeIndex GetIndexedTypes()
-        {
-            var content = GetContentAtPath(TypeIndexResourceName);
-
-            return TypeIndexer.DeserializeIndex(content);
-        }
+        return new DeflateStream(fileStream, CompressionMode.Decompress);
     }
 }

@@ -151,8 +151,7 @@ namespace Bicep.Core.TypeSystem.Aws
         {
             foreach (var property in properties)
             {
-                // "name", "scope" & "parent" can be set for existing resources - everything else should be read-only
-                if (UniqueIdentifierProperties.Contains(property.Name))
+                if (property.Flags.HasFlag(TypePropertyFlags.Identifier))
                 {
                     yield return property;
                 }

@@ -88,8 +88,8 @@
       },
       "Azure.Bicep.Types": {
         "type": "Transitive",
-        "resolved": "0.3.28",
-        "contentHash": "aiVvJsSf449vhBhVkfWVVMuT4RMhPYbwKxGcEFt6x0YHMWG3Hbcf2kt0JAPpdEc2XMP79dYdIJcQLKXCg5oWDQ==",
+        "resolved": "0.3.29",
+        "contentHash": "+zdebR/QIFnRU8c+CofLmbfDx8vvp+e/cnjHAdJiMFESe8+BrkYjLri7tzb7obLaiJ9+EV3vTWtDRqHfFRopIg==",
         "dependencies": {
           "System.Text.Json": "6.0.6"
         }
@@ -2017,7 +2017,7 @@
       "Azure.Bicep.Core": {
         "type": "Project",
         "dependencies": {
-          "Azure.Bicep.Types": "[0.3.28, )",
+          "Azure.Bicep.Types": "[0.3.29, )",
           "Azure.Bicep.Types.Aws": "[1.0.0, )",
           "Azure.Bicep.Types.Az": "[0.2.170, )",
           "Azure.Bicep.Types.K8s": "[0.1.186, )",
@@ -2050,13 +2050,13 @@
       "Azure.Bicep.Types.Aws": {
         "type": "Project",
         "dependencies": {
-          "Azure.Bicep.Types": "[0.1.538, )"
+          "Azure.Bicep.Types": "[0.3.29, )"
         }
       },
       "Azure.Bicep.Types.Radius": {
         "type": "Project",
         "dependencies": {
-          "Azure.Bicep.Types": "[0.1.449, )"
+          "Azure.Bicep.Types": "[0.3.29, )"
         }
       },
       "bicep.core.samples": {
