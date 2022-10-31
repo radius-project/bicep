@@ -147,11 +147,12 @@ namespace Bicep.Core.TypeSystem.Aws
                 functions: null);
         }
 
-        private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
+          private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
         {
             foreach (var property in properties)
             {
-                if (property.Flags.HasFlag(TypePropertyFlags.Identifier))
+                // "name", "scope" & "parent" can be set for existing resources - everything else should be read-only
+                if (UniqueIdentifierProperties.Contains(property.Name))
                 {
                     yield return property;
                 }
