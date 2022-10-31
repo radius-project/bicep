@@ -56,6 +56,10 @@ namespace Bicep.Core.TypeSystem.Aws
             {
                 flags |= TypePropertyFlags.DeployTimeConstant;
             }
+            if (input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Identifier))
+            {
+                flags |= TypePropertyFlags.Identifier;
+            }
             if(!input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Required) && !input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.ReadOnly))
             {
                 // for non-required and non-readonly resource properties, we allow null assignment

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Azure.Bicep.Types;
 using Azure.Bicep.Types.Radius;
 using Bicep.Core.Resources;
 
@@ -15,9 +16,10 @@ namespace Bicep.Core.TypeSystem.Radius
 
         public RadiusResourceTypeLoader()
         {
-            this.typeLoader = new TypeLoader();
+            this.typeLoader = new RadiusTypeLoader();
             this.resourceTypeFactory = new RadiusResourceTypeFactory();
-            this.availableTypes = typeLoader.GetIndexedTypes().Resources.ToImmutableDictionary(
+            var indexedTypes = typeLoader.LoadTypeIndex();
+            this.availableTypes = indexedTypes.Resources.ToImmutableDictionary(
                 kvp => ResourceTypeReference.Parse(kvp.Key),
                 kvp => kvp.Value,
                 ResourceTypeReferenceComparer.Instance);
