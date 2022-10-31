@@ -147,7 +147,7 @@ namespace Bicep.Core.TypeSystem.Aws
                 functions: null);
         }
 
-          private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
+        private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
         {
             foreach (var property in properties)
             {
