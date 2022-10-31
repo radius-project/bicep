@@ -43,10 +43,10 @@ namespace Bicep.Cli.Commands
             var features = featureProviderFactory.GetFeatureProvider(PathHelper.FilePathToFileUrl(inputPath));
             var emitterSettings = new EmitterSettings(features);
 
-            if (emitterSettings.EnableSymbolicNames)
-            {
-                logger.LogWarning(CliResources.SymbolicNamesDisclaimerMessage);
-            }
+            // if (emitterSettings.EnableSymbolicNames)
+            // {
+            //     logger.LogWarning(CliResources.SymbolicNamesDisclaimerMessage);
+            // }
 
             if (features.ResourceTypedParamsAndOutputsEnabled)
             {
