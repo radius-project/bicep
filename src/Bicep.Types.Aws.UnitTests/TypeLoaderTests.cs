@@ -10,7 +10,7 @@ namespace Azure.Bicep.Types.Aws.UnitTests
     public class K8sTypeLoaderTests
     {
         [TestMethod]
-        public void K8sTypeLoader_can_load_all_types_without_throwing()
+        public void AWSTypeLoader_can_load_all_types_without_throwing()
         {
             var typeLoader = new AwsTypeLoader();
             var index = typeLoader.LoadTypeIndex();
