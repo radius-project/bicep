@@ -113,7 +113,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             IEnumerable<DeclaredSymbol> PathToExpression
         );
 
-        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
             foreach (var resource in model.DeclaredResources)
             {
@@ -143,6 +143,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                             Enumerable.Empty<string>();
                         var path = string.Join(" -> ", paths);
                         yield return CreateDiagnosticForSpan(
+                            diagnosticLevel,
                             failure.Property.Key.Span,
                             failure.Property.Key.ToText(),
                             path);
@@ -236,7 +237,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             private static Failure? AnalyzeIdProperty(SemanticModel model, ObjectPropertySyntax propertySyntax)
             {
                 var type = model.GetTypeInfo(propertySyntax.Value);
-                if (type.IsStrictlyAssignableToString())
+                if (type.IsString())
                 {
                     return AnalyzeIdPropertyValue(model, propertySyntax, propertySyntax.Value, Array.Empty<DeclaredSymbol>());
                 }

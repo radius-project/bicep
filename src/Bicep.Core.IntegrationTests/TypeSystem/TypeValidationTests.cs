@@ -2,12 +2,10 @@
 // Licensed under the MIT License.
 using System.Collections.Generic;
 using System.Linq;
-using Bicep.Core.Analyzers.Linter;
+using Bicep.Core.Configuration;
 using Bicep.Core.Diagnostics;
 using Bicep.Core.Semantics;
-using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.TypeSystem;
-using Bicep.Core.UnitTests;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
@@ -18,16 +16,17 @@ namespace Bicep.Core.IntegrationTests
     [TestClass]
     public class TypeValidationTests
     {
-        private static SemanticModel GetSemanticModelForTest(string programText, INamespaceProvider nsProvider)
+        private static ServiceBuilder Services => new ServiceBuilder();
+
+        private static SemanticModel GetSemanticModelForTest(string programText, IEnumerable<ResourceTypeComponents> definedTypes)
         {
-            var configuration = BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled;
-            var compilation = new Compilation(BicepTestConstants.Features, nsProvider, SourceFileGroupingFactory.CreateFromText(programText, BicepTestConstants.FileResolver), configuration, BicepTestConstants.ApiVersionProvider, new LinterAnalyzer(configuration));
+            var compilation = Services
+                .WithAzResources(definedTypes)
+                .WithConfigurationPatch(c => c.WithAllAnalyzersDisabled())
+                .BuildCompilation(programText);
 
             return compilation.GetEntrypointSemanticModel();
         }
-
-        private static SemanticModel GetSemanticModelForTest(string programText, IEnumerable<ResourceTypeComponents> definedTypes)
-            => GetSemanticModelForTest(programText, TestTypeHelper.CreateProviderWithTypes(definedTypes));
 
         [DataTestMethod]
         [DataRow(TypeSymbolValidationFlags.Default, DiagnosticLevel.Error)]
@@ -115,12 +114,12 @@ output incorrectTypeOutput2 int = myRes.properties.nestedObj.readOnlyProp
                 x => x.Should().HaveCodeAndSeverity("BCP073", DiagnosticLevel.Warning).And.HaveMessage("The property \"readOnlyTopLevelProp\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP035", DiagnosticLevel.Warning).And.HaveMessage("The specified \"object\" declaration is missing the following required properties: \"requiredProp\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP073", DiagnosticLevel.Warning).And.HaveMessage("The property \"readOnlyProp\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"writeOnlyProp\" expected a value of type \"null | string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"writeOnlyProp\" expected a value of type \"null | string\" but the provided value is of type \"456\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP035", DiagnosticLevel.Warning).And.HaveMessage("The specified \"object\" declaration is missing the following required properties: \"propA\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"propB\" expected a value of type \"null | string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"propB\" expected a value of type \"null | string\" but the provided value is of type \"123\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP035", DiagnosticLevel.Warning).And.HaveMessage("The specified \"object\" declaration is missing the following required properties: \"requiredNestedProp\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP073", DiagnosticLevel.Warning).And.HaveMessage("The property \"readOnlyNestedProp\" is read-only. Expressions cannot be assigned to read-only properties. If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
-                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"writeOnlyNestedProp\" expected a value of type \"null | string\" but the provided value is of type \"int\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
+                x => x.Should().HaveCodeAndSeverity("BCP036", DiagnosticLevel.Warning).And.HaveMessage("The property \"writeOnlyNestedProp\" expected a value of type \"null | string\" but the provided value is of type \"456\". If this is an inaccuracy in the documentation, please report it to the Bicep Team."),
                 x => x.Should().HaveCodeAndSeverity("BCP077", expectedDiagnosticLevel).And.HaveMessage("The property \"writeOnlyProp\" on type \"properties\" is write-only. Write-only properties cannot be accessed."),
                 x => x.Should().HaveCodeAndSeverity("BCP053", expectedDiagnosticLevel).And.HaveMessage("The type \"nestedObj\" does not contain property \"writeOnlyProp\". Available properties include \"readOnlyNestedProp\", \"requiredNestedProp\"."),
                 x => x.Should().HaveCodeAndSeverity("BCP053", expectedDiagnosticLevel).And.HaveMessage("The type \"properties\" does not contain property \"missingOutput\". Available properties include \"additionalProps\", \"nestedObj\", \"readOnlyProp\", \"requiredProp\"."),
@@ -472,7 +471,7 @@ var singleItemKey = itemsOutput[0].key
 var singleItemValue = itemsOutput[0].value
 ";
 
-            var model = GetSemanticModelForTest(program, BuiltInTestTypes.Create());
+            var model = GetSemanticModelForTest(program, BuiltInTestTypes.Types);
 
             GetTypeForNamedSymbol(model, "itemsOutput").Name.Should().Be("object[]");
             GetTypeForNamedSymbol(model, "singleItemKey").Name.Should().Be("'readonly' | 'readwrite' | 'required'");
@@ -488,7 +487,7 @@ resource testRes 'Test.Rp/readOnlyTests@2020-01-01' = {
 }
 ";
 
-            var model = GetSemanticModelForTest(program, BuiltInTestTypes.Create());
+            var model = GetSemanticModelForTest(program, BuiltInTestTypes.Types);
             model.GetAllDiagnostics().Should().SatisfyRespectively(
                 x => x.Should().HaveCodeAndSeverity("BCP245", DiagnosticLevel.Warning).And.HaveMessage(@"Resource type ""Test.Rp/readOnlyTests@2020-01-01"" can only be used with the 'existing' keyword.")
             );

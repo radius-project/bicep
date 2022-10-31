@@ -5,10 +5,8 @@ using Bicep.Core.Analyzers.Interfaces;
 using Bicep.Core.CodeAction;
 using Bicep.Core.Configuration;
 using Bicep.Core.Diagnostics;
-using Bicep.Core.Extensions;
 using Bicep.Core.Parsing;
 using Bicep.Core.Semantics;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +15,6 @@ namespace Bicep.Core.Analyzers.Linter
 {
     public abstract class LinterRuleBase : IBicepAnalyzerRule
     {
-        private AnalyzersConfiguration configuration = AnalyzersConfiguration.Empty;
-
         public LinterRuleBase(
             string code,
             string description,
@@ -30,7 +26,7 @@ namespace Bicep.Core.Analyzers.Linter
             this.Code = code;
             this.Description = description;
             this.Uri = docUri;
-            this.DiagnosticLevel = diagnosticLevel;
+            this.DefaultDiagnosticLevel = diagnosticLevel;
             this.DiagnosticStyling = diagnosticStyling;
         }
 
@@ -40,7 +36,7 @@ namespace Bicep.Core.Analyzers.Linter
 
         public readonly string RuleConfigSection = $"{LinterAnalyzer.AnalyzerName}.rules";
 
-        public DiagnosticLevel DiagnosticLevel { get; private set; }
+        public DiagnosticLevel DefaultDiagnosticLevel { get; }
 
         public string Description { get; }
 
@@ -58,18 +54,6 @@ namespace Bicep.Core.Analyzers.Linter
         /// <returns></returns>
         public virtual string FormatMessage(params object[] values) => this.Description;
 
-        public virtual void Configure(AnalyzersConfiguration configuration)
-        {
-            this.configuration = configuration;
-
-            var levelValue = this.GetConfigurationValue("level", this.DiagnosticLevel.ToString());
-
-            if (Enum.TryParse<DiagnosticLevel>(levelValue, true, out var level))
-            {
-                this.DiagnosticLevel = level;
-            }
-        }
-
         /// <summary>
         /// Gets a message using the supplied parameter values (if any).
         /// Otherwise returns the rule description
@@ -81,7 +65,12 @@ namespace Bicep.Core.Analyzers.Linter
 
         public IEnumerable<IDiagnostic> Analyze(SemanticModel model)
         {
-            return AnalyzeInternal(model);
+            if (GetDiagnosticLevel(model) == DiagnosticLevel.Off)
+            {
+                return Enumerable.Empty<IDiagnostic>();
+            }
+
+            return AnalyzeInternal(model, GetDiagnosticLevel(model));
         }
 
         /// <summary>
@@ -90,29 +79,43 @@ namespace Bicep.Core.Analyzers.Linter
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public abstract IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model);
+        public abstract IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel);
+
+        protected DiagnosticLevel GetDiagnosticLevel(SemanticModel model) => GetDiagnosticLevel(model.Configuration.Analyzers);
+
+        protected DiagnosticLevel GetDiagnosticLevel(AnalyzersConfiguration configuration)
+        {
+            if (GetConfigurationValue(configuration, "level", DefaultDiagnosticLevel.ToString()) is string configuredLevel && Enum.TryParse<DiagnosticLevel>(configuredLevel, true, out var parsed))
+            {
+                return parsed;
+            }
+
+            return DefaultDiagnosticLevel;
+        }
 
         /// <summary>
         /// Get a setting from defaults or local override
         /// Expectation: key names for settings are lower case
         /// </summary>
         /// <typeparam name="T">The type of the value to convert to.</typeparam>
+        /// <param name="configuration">The configuration of the model being analyzed.</param>
         /// <param name="key">The linter configuration key.</param>
         /// <param name="defaultValue">The default value to use if no value is found.</param>
         /// <returns></returns>
-        protected T GetConfigurationValue<T>(string key, T defaultValue) =>
-            this.configuration.GetValue($"{RuleConfigSection}.{Code}.{key}", defaultValue);
+        protected T GetConfigurationValue<T>(AnalyzersConfiguration configuration, string key, T defaultValue) =>
+            configuration.GetValue($"{RuleConfigSection}.{Code}.{key}", defaultValue);
 
         /// <summary>
         ///  Create a simple diagnostic that displays the defined Description
         ///  of the derived rule.
         /// </summary>
+        /// <param name="level"></param>
         /// <param name="span"></param>
         /// <returns></returns>
-        protected virtual AnalyzerDiagnostic CreateDiagnosticForSpan(TextSpan span) =>
+        protected virtual AnalyzerDiagnostic CreateDiagnosticForSpan(DiagnosticLevel level, TextSpan span) =>
             new(analyzerName: this.AnalyzerName,
                 span: span,
-                level: this.DiagnosticLevel,
+                level: level,
                 code: this.Code,
                 message: this.GetMessage(),
                 documentationUri: this.Uri,
@@ -122,25 +125,26 @@ namespace Bicep.Core.Analyzers.Linter
         /// Create a diagnostic message for a span that has a customized string
         /// formatter defined in the deriving class.
         /// </summary>
+        /// <param name="level"></param>
         /// <param name="span"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        protected virtual AnalyzerDiagnostic CreateDiagnosticForSpan(TextSpan span, params object[] values) =>
+        protected virtual AnalyzerDiagnostic CreateDiagnosticForSpan(DiagnosticLevel level, TextSpan span, params object[] values) =>
             new(analyzerName: this.AnalyzerName,
                 span: span,
-                level: this.DiagnosticLevel,
+                level: level,
                 code: this.Code,
                 message: this.GetMessage(values),
                 documentationUri: this.Uri,
                 styling: this.DiagnosticStyling);
 
-        protected virtual AnalyzerFixableDiagnostic CreateFixableDiagnosticForSpan(TextSpan span, CodeFix fix, params object[] values) =>
-            CreateFixableDiagnosticForSpan(span, new[] { fix }, values);
+        protected virtual AnalyzerFixableDiagnostic CreateFixableDiagnosticForSpan(DiagnosticLevel level, TextSpan span, CodeFix fix, params object[] values) =>
+            CreateFixableDiagnosticForSpan(level, span, new[] { fix }, values);
 
-        protected virtual AnalyzerFixableDiagnostic CreateFixableDiagnosticForSpan(TextSpan span, CodeFix[] fixes, params object[] values) =>
+        protected virtual AnalyzerFixableDiagnostic CreateFixableDiagnosticForSpan(DiagnosticLevel level, TextSpan span, CodeFix[] fixes, params object[] values) =>
             new(analyzerName: this.AnalyzerName,
                 span: span,
-                level: this.DiagnosticLevel,
+                level: level,
                 code: this.Code,
                 message: this.GetMessage(values),
                 documentationUri: this.Uri,

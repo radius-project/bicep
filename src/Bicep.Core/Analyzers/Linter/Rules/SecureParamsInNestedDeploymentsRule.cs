@@ -37,7 +37,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             return $"{problem} {CoreResources.SecureParamsInNestedDeployRule_Solution}";
         }
 
-        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        override public IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
             foreach (ResourceSymbol resource in model.Root.ResourceDeclarations)
             {
@@ -55,7 +55,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                                 CoreResources.SecureParamsInNestedDeployRule_Message_SecureParams,
                                 resource.Name,
                                 secureParamsAsString);
-                            yield return CreateDiagnosticForSpan(resource.NameSyntax.Span, message);
+                            yield return CreateDiagnosticForSpan(diagnosticLevel, resource.NameSyntax.Span, message);
                         }
 
                         // Look for list* functions
@@ -66,7 +66,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                                 CoreResources.SecureParamsInNestedDeployRule_Message_ListFunction,
                                 resource.Name,
                                 listFunctionReference.ToText());
-                            yield return CreateDiagnosticForSpan(resource.NameSyntax.Span, message);
+                            yield return CreateDiagnosticForSpan(diagnosticLevel, resource.NameSyntax.Span, message);
                         }
                     }
                 }

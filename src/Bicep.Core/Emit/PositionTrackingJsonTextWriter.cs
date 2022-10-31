@@ -22,7 +22,7 @@ namespace Bicep.Core.Emit
         IList<RawSourceMapFileEntry> Entries);
 
     public record RawSourceMapFileEntry(
-        BicepFile SourceFile,
+        BicepSourceFile SourceFile,
         IList<SourceMapRawEntry> SourceMap);
 
     public record SourceMapRawEntry(
@@ -63,18 +63,20 @@ namespace Bicep.Core.Emit
 
         private static readonly Regex JsonWhitespaceStrippingRegex = new(@"(""(?:[^""\\]|\\.)*"")|\s+", RegexOptions.Compiled);
 
+        private readonly IFileResolver fileResolver;
         private readonly RawSourceMap rawSourceMap;
-        private readonly BicepFile? sourceFile;
+        private readonly BicepSourceFile? sourceFile;
         private readonly PositionTrackingTextWriter trackingWriter;
 
-        public static PositionTrackingJsonTextWriter Create(TextWriter textWriter, BicepFile? sourceFile = null)
+        public PositionTrackingJsonTextWriter(IFileResolver fileResolver, TextWriter textWriter, BicepSourceFile? sourceFile = null)
+            : this(fileResolver, new(textWriter), sourceFile)
         {
-            var trackingWriter = new PositionTrackingTextWriter(textWriter);
-            return new PositionTrackingJsonTextWriter(trackingWriter, sourceFile);
         }
 
-        private PositionTrackingJsonTextWriter(PositionTrackingTextWriter trackingWriter, BicepFile? sourceFile) : base(trackingWriter)
+        private PositionTrackingJsonTextWriter(IFileResolver fileResolver, PositionTrackingTextWriter trackingWriter, BicepSourceFile? sourceFile)
+            : base(trackingWriter)
         {
+            this.fileResolver = fileResolver;
             this.sourceFile = sourceFile;
             this.rawSourceMap = new RawSourceMap(new List<RawSourceMapFileEntry>());
             this.trackingWriter = trackingWriter;
@@ -163,7 +165,7 @@ namespace Bicep.Core.Emit
             AddRawMapping(this.sourceFile, bicepPosition, jsonPosition);
         }
 
-        private void AddRawMapping(BicepFile bicepFile, TextSpan bicepPosition, TextSpan jsonPosition)
+        private void AddRawMapping(BicepSourceFile bicepFile, TextSpan bicepPosition, TextSpan jsonPosition)
         {
             var fileEntry = this.rawSourceMap.Entries.FirstOrDefault(entry => entry.SourceFile.Equals(bicepFile));
             if (fileEntry is null)
@@ -225,7 +227,6 @@ namespace Bicep.Core.Emit
             var sourceMapFileEntries = new List<SourceMapFileEntry>();
             var entrypointFileName = System.IO.Path.GetFileName(sourceFile.FileUri.AbsolutePath);
             var entrypointAbsolutePath = System.IO.Path.GetDirectoryName(sourceFile.FileUri.AbsolutePath)!;
-            var fileResolver = new FileResolver();
 
             foreach (var bicepFileEntry in this.rawSourceMap.Entries)
             {

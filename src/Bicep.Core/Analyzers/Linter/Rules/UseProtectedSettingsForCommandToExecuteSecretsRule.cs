@@ -35,7 +35,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
         public override string FormatMessage(params object[] values)
             => string.Format(CoreResources.ProtectCommandToExecuteSecretsRuleMessage, (string)values[0]);
 
-        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel semanticModel)
+        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel semanticModel, DiagnosticLevel diagnosticLevel)
         {
             List<IDiagnostic> diagnostics = new();
 
@@ -84,7 +84,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                                     var secrets = FindPossibleSecretsVisitor.FindPossibleSecretsInExpression(semanticModel, commandToExecuteSyntax.Value);
                                     if (secrets.Any())
                                     {
-                                        diagnostics.Add(CreateDiagnosticForSpan(commandToExecuteSyntax.Key.Span, secrets[0].FoundMessage));
+                                        diagnostics.Add(CreateDiagnosticForSpan(diagnosticLevel, commandToExecuteSyntax.Key.Span, secrets[0].FoundMessage));
                                     }
                                 }
                             }
@@ -97,4 +97,3 @@ namespace Bicep.Core.Analyzers.Linter.Rules
         }
     }
 }
-

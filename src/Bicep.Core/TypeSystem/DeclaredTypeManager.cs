@@ -44,12 +44,15 @@ namespace Bicep.Core.TypeSystem
             {
                 case ImportDeclarationSyntax import:
                     return GetImportType(import);
-                
+
                 case MetadataDeclarationSyntax metadata:
                     return new DeclaredTypeAssignment(this.typeManager.GetTypeInfo(metadata.Value), metadata);
 
                 case ParameterDeclarationSyntax parameter:
                     return GetParameterType(parameter);
+
+                case ParameterAssignmentSyntax parameterAssignment:
+                    return GetParameterAssignmentType(parameterAssignment);
 
                 case ResourceDeclarationSyntax resource:
                     return GetResourceType(resource);
@@ -121,6 +124,40 @@ namespace Bicep.Core.TypeSystem
             declaredType ??= ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.Type).InvalidParameterType());
 
             return new(declaredType, syntax);
+        }
+
+        private DeclaredTypeAssignment? GetParameterAssignmentType(ParameterAssignmentSyntax syntax)
+        {
+            if(GetDeclaredParameterAssignmentType(syntax) is { } declaredParamAssignmentType)
+            {
+                return new(declaredParamAssignmentType, syntax);
+            }
+
+            return null;
+        }
+
+        private TypeSymbol? GetDeclaredParameterAssignmentType(ParameterAssignmentSyntax syntax)
+        {
+            if (this.binder.GetSymbolInfo(syntax) is not ParameterAssignmentSymbol parameterAssignmentSymbol)
+            {
+                // no access to the compilation to get something better
+                return null;
+            }
+
+            if(!parameterAssignmentSymbol.Context.Compilation.GetEntrypointSemanticModel().Root.TryGetBicepFileSemanticModelViaUsing(out var bicepSemanticModel, out var failureDiagnostic))
+            {
+                // failed to resolve using
+                return failureDiagnostic is ErrorDiagnostic error
+                    ? ErrorType.Create(error)
+                    : null;
+            }
+
+            if(bicepSemanticModel.Parameters.TryGetValue(parameterAssignmentSymbol.Name, out var parameterMetadata))
+            {
+                return parameterMetadata.TypeReference.Type;
+            }
+
+            return null;
         }
 
         private DeclaredTypeAssignment GetOutputType(OutputDeclarationSyntax syntax)
@@ -821,7 +858,8 @@ namespace Bicep.Core.TypeSystem
             // within the context of this type manager. This will surface any issues where the type declared by
             // a module is not understood inside this compilation unit.
             var parameters = new List<TypeProperty>();
-            foreach (var parameter in moduleSemanticModel.Parameters)
+
+            foreach (var parameter in moduleSemanticModel.Parameters.Values)
             {
                 var type = parameter.TypeReference.Type;
                 if (type is UnboundResourceType unboundType)

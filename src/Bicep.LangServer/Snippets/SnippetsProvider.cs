@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Bicep.Core;
-using Bicep.Core.Analyzers.Linter;
+using Bicep.Core.Analyzers.Interfaces;
 using Bicep.Core.Analyzers.Linter.ApiVersions;
 using Bicep.Core.Configuration;
 using Bicep.Core.Emit;
@@ -65,28 +65,23 @@ namespace Bicep.LanguageServer.Snippets
             "properties",
             "dependsOn");
 
-        private readonly IFeatureProvider features;
-        private readonly ApiVersionProvider apiVersionProvider;
+        private readonly IFeatureProviderFactory featureProviderFactory;
+        private readonly IApiVersionProviderFactory apiVersionProviderFactory;
         private readonly INamespaceProvider namespaceProvider;
         private readonly IFileResolver fileResolver;
-        private readonly RootConfiguration configuration;
-        private readonly LinterAnalyzer linterAnalyzer;
+        private readonly IBicepAnalyzer bicepAnalyzer;
         private readonly IConfigurationManager configurationManager;
         private readonly IModuleDispatcher moduleDispatcher;
 
-        public SnippetsProvider(IFeatureProvider features, INamespaceProvider namespaceProvider, IFileResolver fileResolver, IConfigurationManager configurationManager, ApiVersionProvider apiVersionProvider, IModuleDispatcher moduleDispatcher)
+        public SnippetsProvider(IFeatureProviderFactory featureProviderFactory, INamespaceProvider namespaceProvider, IFileResolver fileResolver, IConfigurationManager configurationManager, IApiVersionProviderFactory apiVersionProviderFactory, IModuleDispatcher moduleDispatcher, IBicepAnalyzer bicepAnalyzer)
         {
-            this.features = features;
-            this.apiVersionProvider = apiVersionProvider;
+            this.featureProviderFactory = featureProviderFactory;
+            this.apiVersionProviderFactory = apiVersionProviderFactory;
             this.moduleDispatcher = moduleDispatcher;
             this.namespaceProvider = namespaceProvider;
             this.fileResolver = fileResolver;
             this.configurationManager = configurationManager;
-
-            // We'll use default bicepconfig.json settings during SnippetsProvider creation to avoid errors during language service initialization.
-            // We don't do any validation in SnippetsProvider. So using default settings shouldn't be a problem.
-            configuration = configurationManager.GetBuiltInConfiguration().WithAllAnalyzersDisabled();
-            linterAnalyzer = new LinterAnalyzer(configuration);
+            this.bicepAnalyzer = bicepAnalyzer;
 
             Initialize();
         }
@@ -224,16 +219,13 @@ namespace Bicep.LanguageServer.Snippets
 
             // We need to provide uri for syntax tree creation, but it's not used anywhere. In order to avoid
             // cross platform issues, we'll provide a placeholder uri.
-            var snippetConfiguration = this.configurationManager.GetBuiltInConfiguration().WithAllAnalyzersDisabled();
             var bicepFile = SourceFileFactory.CreateBicepFile(new Uri($"inmemory://{manifestResourceName}.bicep"), template);
             var workspace = new Workspace();
             workspace.UpsertSourceFiles(bicepFile.AsEnumerable());
 
-            var sourceFileGrouping = SourceFileGroupingBuilder.Build(fileResolver, moduleDispatcher, workspace, bicepFile.FileUri, snippetConfiguration, false);
+            var sourceFileGrouping = SourceFileGroupingBuilder.Build(fileResolver, moduleDispatcher, workspace, bicepFile.FileUri, false);
 
-            // We'll use default bicepconfig.json settings during SnippetsProvider creation to avoid errors during language service initialization.
-            // We don't do any validation in SnippetsProvider. So using default settings shouldn't be a problem.
-            Compilation compilation = new Compilation(features, namespaceProvider, sourceFileGrouping, snippetConfiguration, apiVersionProvider, linterAnalyzer);
+            Compilation compilation = new Compilation(featureProviderFactory, namespaceProvider, sourceFileGrouping, configurationManager, apiVersionProviderFactory, bicepAnalyzer);
 
             SemanticModel semanticModel = compilation.GetEntrypointSemanticModel();
 

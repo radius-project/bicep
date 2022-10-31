@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+using Bicep.Core.Configuration;
 using Bicep.Core.FileSystem;
 using Bicep.Core.Samples;
 using Bicep.Core.Semantics;
@@ -18,22 +19,18 @@ namespace Bicep.Core.IntegrationTests.Semantics
     [TestClass]
     public class ParamsSemanticModelTests
     {
+        private static ServiceBuilder Services => new ServiceBuilder().WithEmptyAzResources();
+
         [NotNull]
         public TestContext? TestContext { get; set; }
 
-        private ParamsSemanticModel CreateSemanticModel(string paramsFilePath)
+        private SemanticModel CreateSemanticModel(string paramsFilePath)
         {
-            var dispatcher = BicepTestConstants.ModuleDispatcher;
             var configuration = BicepTestConstants.BuiltInConfiguration;
-            var sourceFileGrouping = SourceFileGroupingBuilder.Build(BicepTestConstants.FileResolver, dispatcher, new Workspace(), PathHelper.FilePathToFileUrl(paramsFilePath), configuration);
-            var compilation = new Compilation(BicepTestConstants.Features, TestTypeHelper.CreateEmptyProvider(), sourceFileGrouping, configuration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
+            var sourceFileGrouping = Services.Build().BuildSourceFileGrouping(PathHelper.FilePathToFileUrl(paramsFilePath));
+            var compilation = Services.Build().BuildCompilation(sourceFileGrouping);
 
-            return new ParamsSemanticModel(sourceFileGrouping, file => {
-                var compilationGrouping = new SourceFileGrouping(BicepTestConstants.FileResolver, file.FileUri, sourceFileGrouping.FileResultByUri, sourceFileGrouping.UriResultByModule, sourceFileGrouping.SourceFileParentLookup);
-
-
-                return new Compilation(BicepTestConstants.Features, BicepTestConstants.NamespaceProvider, compilationGrouping, configuration, BicepTestConstants.ApiVersionProvider, BicepTestConstants.LinterAnalyzer);
-            });
+            return compilation.GetEntrypointSemanticModel();
         }
 
         [DataTestMethod]
@@ -73,9 +70,9 @@ namespace Bicep.Core.IntegrationTests.Semantics
 
             string getLoggingString(ParameterAssignmentSymbol symbol)
             {
-                (_, var startChar) = TextCoordinateConverter.GetPosition(model.BicepParamFile.LineStarts, symbol.AssigningSyntax.Span.Position);
+                (_, var startChar) = TextCoordinateConverter.GetPosition(model.SourceFile.LineStarts, symbol.DeclaringParameterAssignment.Span.Position);
 
-                return $"{symbol.Kind} {symbol.Name}. Type: {symbol.Type}. Declaration start char: {startChar}, length: {symbol.AssigningSyntax.Span.Length}";
+                return $"{symbol.Kind} {symbol.Name}. Type: {symbol.Type}. Declaration start char: {startChar}, length: {symbol.DeclaringParameterAssignment.Span.Length}";
             }
 
             var sourceTextWithDiags = OutputHelper.AddDiagsToSourceText(data.Parameters.EmbeddedFile.Contents, "\n", symbols, symb => symb.NameSyntax.Span, getLoggingString);

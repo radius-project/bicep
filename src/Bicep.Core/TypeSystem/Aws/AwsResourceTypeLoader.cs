@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Azure.Bicep.Types;
 using Azure.Bicep.Types.Aws;
 using Bicep.Core.Resources;
 
@@ -15,9 +16,10 @@ namespace Bicep.Core.TypeSystem.Aws
 
         public AwsResourceTypeLoader()
         {
-            this.typeLoader = new TypeLoader();
+            this.typeLoader = new AwsTypeLoader();
             this.resourceTypeFactory = new AwsResourceTypeFactory();
-            this.availableTypes = typeLoader.GetIndexedTypes().Types.ToImmutableDictionary(
+            var indexedTypes = typeLoader.LoadTypeIndex();
+            this.availableTypes = indexedTypes.Resources.ToImmutableDictionary(
                 kvp => ResourceTypeReference.Parse(kvp.Key),
                 kvp => kvp.Value,
                 ResourceTypeReferenceComparer.Instance);

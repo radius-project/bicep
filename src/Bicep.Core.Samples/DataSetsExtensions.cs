@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bicep.Core.Analyzers.Linter;
 using Bicep.Core.Configuration;
+using Bicep.Core.Features;
 using Bicep.Core.FileSystem;
 using Bicep.Core.Modules;
 using Bicep.Core.Registry;
@@ -16,6 +16,8 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Semantics.Namespaces;
 using Bicep.Core.TypeSystem.Az;
 using Bicep.Core.UnitTests;
+using Bicep.Core.UnitTests.Configuration;
+using Bicep.Core.UnitTests.Features;
 using Bicep.Core.UnitTests.Mock;
 using Bicep.Core.UnitTests.Registry;
 using Bicep.Core.UnitTests.Utils;
@@ -38,36 +40,40 @@ namespace Bicep.Core.Samples
         public static string SaveFilesToTestDirectory(this DataSet dataSet, TestContext testContext)
             => FileHelper.SaveEmbeddedResourcesWithPathPrefix(testContext, typeof(DataSet).Assembly, dataSet.GetStreamPrefix());
 
-        public static async Task<(Compilation compilation, string outputDirectory, Uri fileUri)> SetupPrerequisitesAndCreateCompilation(this DataSet dataSet, TestContext testContext)
+        public static async Task<(Compilation compilation, string outputDirectory, Uri fileUri)> SetupPrerequisitesAndCreateCompilation(this DataSet dataSet, TestContext testContext, FeatureProviderOverrides? features = null)
         {
-            var features = BicepTestConstants.CreateFeatureProvider(testContext, registryEnabled: dataSet.HasExternalModules);
+            features ??= new(testContext, RegistryEnabled: dataSet.HasExternalModules);
             var outputDirectory = dataSet.SaveFilesToTestDirectory(testContext);
             var clientFactory = dataSet.CreateMockRegistryClients(testContext);
             await dataSet.PublishModulesToRegistryAsync(clientFactory, testContext);
             var templateSpecRepositoryFactory = dataSet.CreateMockTemplateSpecRepositoryFactory(testContext);
             var fileUri = PathHelper.FilePathToFileUrl(Path.Combine(outputDirectory, DataSet.TestFileMain));
-            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, clientFactory, templateSpecRepositoryFactory, features));
+            var configManager = new PatchingConfigurationManager(BicepTestConstants.ConfigurationManager,
+                config => config.WithAnalyzersDisabled(BicepTestConstants.AnalyzerRulesToDisableInTests));
+            var featuresFactory = new OverriddenFeatureProviderFactory(new FeatureProviderFactory(configManager), features);
+            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, clientFactory, templateSpecRepositoryFactory, featuresFactory, configManager), configManager);
             var workspace = new Workspace();
-            var namespaceProvider = new DefaultNamespaceProvider(new AzResourceTypeLoader(), features);
-            var configuration = BicepTestConstants.ConfigurationManager.GetConfiguration(fileUri).WithAnalyzersDisabled(BicepTestConstants.AnalyzerRulesToDisableInTests);
-            var sourceFileGrouping = SourceFileGroupingBuilder.Build(BicepTestConstants.FileResolver, dispatcher, workspace, fileUri, configuration);
-            if (await dispatcher.RestoreModules(configuration, dispatcher.GetValidModuleReferences(sourceFileGrouping.GetModulesToRestore(), configuration)))
+            var namespaceProvider = new DefaultNamespaceProvider(new AzResourceTypeLoader());
+            var sourceFileGrouping = SourceFileGroupingBuilder.Build(BicepTestConstants.FileResolver, dispatcher, workspace, fileUri);
+            if (await dispatcher.RestoreModules(dispatcher.GetValidModuleReferences(sourceFileGrouping.GetModulesToRestore())))
             {
-                sourceFileGrouping = SourceFileGroupingBuilder.Rebuild(dispatcher, workspace, sourceFileGrouping, configuration);
+                sourceFileGrouping = SourceFileGroupingBuilder.Rebuild(dispatcher, workspace, sourceFileGrouping);
             }
 
-            return (new Compilation(features, namespaceProvider, sourceFileGrouping, configuration, BicepTestConstants.ApiVersionProvider, new LinterAnalyzer(configuration)), outputDirectory, fileUri);
+            return (new Compilation(featuresFactory, namespaceProvider, sourceFileGrouping, configManager, BicepTestConstants.ApiVersionProviderFactory, BicepTestConstants.LinterAnalyzer), outputDirectory, fileUri);
         }
 
         public static IContainerRegistryClientFactory CreateMockRegistryClients(this DataSet dataSet, TestContext testContext, params (Uri registryUri, string repository)[] additionalClients)
         {
             var clientsBuilder = ImmutableDictionary.CreateBuilder<(Uri registryUri, string repository), MockRegistryBlobClient>();
+            var configManager = BicepTestConstants.CreateConfigurationManager(c => c.WithAllAnalyzersDisabled());
+            var featuresFactory = BicepTestConstants.CreateFeatureProviderFactory(new(testContext, RegistryEnabled: dataSet.HasRegistryModules), configManager);
 
-            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, BicepTestConstants.CreateFeatureProvider(testContext, registryEnabled: dataSet.HasRegistryModules)));
+            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, featuresFactory, configManager), configManager);
 
             foreach (var (moduleName, publishInfo) in dataSet.RegistryModules)
             {
-                if (dispatcher.TryGetModuleReference(publishInfo.Metadata.Target, BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled, out _) is not OciArtifactModuleReference targetReference)
+                if (!dispatcher.TryGetModuleReference(publishInfo.Metadata.Target, RandomFileUri(), out var @ref, out _) || @ref is not OciArtifactModuleReference targetReference)
                 {
                     throw new InvalidOperationException($"Module '{moduleName}' has an invalid target reference '{publishInfo.Metadata.Target}'. Specify a reference to an OCI artifact.");
                 }
@@ -101,12 +107,14 @@ namespace Bicep.Core.Samples
 
         public static ITemplateSpecRepositoryFactory CreateMockTemplateSpecRepositoryFactory(this DataSet dataSet, TestContext testContext)
         {
-            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, BicepTestConstants.CreateFeatureProvider(testContext, registryEnabled: dataSet.HasTemplateSpecs)));
+            var configManager = BicepTestConstants.CreateConfigurationManager(c => c.WithAllAnalyzersDisabled());
+            var featuresFactory = BicepTestConstants.CreateFeatureProviderFactory(new(testContext, RegistryEnabled: dataSet.HasRegistryModules), configManager);
+            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, BicepTestConstants.ClientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, featuresFactory, configManager), configManager);
             var repositoryMocksBySubscription = new Dictionary<string, Mock<ITemplateSpecRepository>>();
 
             foreach (var (moduleName, templateSpecInfo) in dataSet.TemplateSpecs)
             {
-                if (dispatcher.TryGetModuleReference(templateSpecInfo.Metadata.Target, BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled, out _) is not TemplateSpecModuleReference reference)
+                if (!dispatcher.TryGetModuleReference(templateSpecInfo.Metadata.Target, RandomFileUri(), out var @ref, out _) || @ref is not TemplateSpecModuleReference reference)
                 {
                     throw new InvalidOperationException($"Module '{moduleName}' has an invalid target reference '{templateSpecInfo.Metadata.Target}'. Specify a reference to a template spec.");
                 }
@@ -130,11 +138,13 @@ namespace Bicep.Core.Samples
 
         public static async Task PublishModulesToRegistryAsync(this DataSet dataSet, IContainerRegistryClientFactory clientFactory, TestContext testContext)
         {
-            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, clientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, BicepTestConstants.CreateFeatureProvider(testContext, registryEnabled: dataSet.HasRegistryModules)));
+            var configManager = BicepTestConstants.CreateConfigurationManager(c => c.WithAllAnalyzersDisabled());
+            var featuresFactory = BicepTestConstants.CreateFeatureProviderFactory(new(testContext, RegistryEnabled: dataSet.HasRegistryModules), configManager);
+            var dispatcher = new ModuleDispatcher(new DefaultModuleRegistryProvider(BicepTestConstants.FileResolver, clientFactory, BicepTestConstants.TemplateSpecRepositoryFactory, featuresFactory, configManager), configManager);
 
             foreach (var (moduleName, publishInfo) in dataSet.RegistryModules)
             {
-                var targetReference = dispatcher.TryGetModuleReference(publishInfo.Metadata.Target, BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled, out _) ?? throw new InvalidOperationException($"Module '{moduleName}' has an invalid target reference '{publishInfo.Metadata.Target}'. Specify a reference to an OCI artifact.");
+                var targetReference = dispatcher.TryGetModuleReference(publishInfo.Metadata.Target, RandomFileUri(), out var @ref, out _) ? @ref : throw new InvalidOperationException($"Module '{moduleName}' has an invalid target reference '{publishInfo.Metadata.Target}'. Specify a reference to an OCI artifact.");
 
                 var result = CompilationHelper.Compile(publishInfo.ModuleSource);
                 if (result.Template is null)
@@ -150,9 +160,10 @@ namespace Bicep.Core.Samples
                 }
 
                 stream.Position = 0;
-                await dispatcher.PublishModule(BicepTestConstants.BuiltInConfiguration, targetReference, stream);
+                await dispatcher.PublishModule(targetReference, stream);
             }
         }
+
+        private static Uri RandomFileUri() => PathHelper.FilePathToFileUrl(Path.GetTempFileName());
     }
 }
-

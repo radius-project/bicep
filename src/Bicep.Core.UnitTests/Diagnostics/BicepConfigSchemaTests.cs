@@ -18,7 +18,7 @@ using IOFileSystem = System.IO.Abstractions.FileSystem;
 
 namespace Bicep.Core.UnitTests.Diagnostics
 {
-    // Tests the bicepconfig.schema.json file
+    // Tests the src/vscode-bicep/schemas/bicepconfig.schema.json file
 
     [TestClass]
     public class BicepConfigSchemaTests
@@ -28,7 +28,7 @@ namespace Bicep.Core.UnitTests.Diagnostics
 
         private (IBicepAnalyzerRule[] rules, JObject configSchema) GetRulesAndSchema()
         {
-            var linter = new LinterAnalyzer(BicepTestConstants.BuiltInConfiguration);
+            var linter = new LinterAnalyzer();
             var ruleSet = linter.GetRuleSet();
             ruleSet.Should().NotBeEmpty();
 
@@ -125,6 +125,15 @@ namespace Bicep.Core.UnitTests.Diagnostics
         }
 
         [TestMethod]
+        public void RuleConfigs_RulesShouldBeAlphabetizedForEasierMaintenance()
+        {
+            var (rules, schema) = GetRulesAndSchema();
+            var ruleConfigs = schema.SelectToken("properties.analyzers.properties.core.properties.rules.properties")!.ToArray();
+            var ruleNames = ruleConfigs.Select(c => ((JProperty)c).Name);
+            var alphabetizedNames = ruleNames.OrderBy(n => n);
+        }
+
+        [TestMethod]
         public void NoHardCodedEnvUrls_DefaultsShouldMatchInConfigAndSchema()
         {
             const string configPath = "src/Bicep.Core/Configuration/bicepconfig.json";
@@ -138,8 +147,7 @@ namespace Bicep.Core.UnitTests.Diagnostics
             string[] excludedHostsInSchema = ruleConfigs["no-hardcoded-env-urls"].SelectToken("allOf[0].properties.excludedhosts.default")!.Values().Select(v => v.ToString()).ToArray();
 
             // From config
-            ConfigurationManager sut = new ConfigurationManager(new IOFileSystem());
-            RootConfiguration builtinConfig = sut.GetBuiltInConfiguration();
+            RootConfiguration builtinConfig = IConfigurationManager.GetBuiltInConfiguration();
             string[]? disallowedHostsInConfig = builtinConfig.Analyzers.GetValue<string[]?>("core.rules.no-hardcoded-env-urls.disallowedhosts", null);
             disallowedHostsInConfig.Should().NotBeNull();
             string[]? excludedHostsInConfig = builtinConfig.Analyzers.GetValue<string[]?>("core.rules.no-hardcoded-env-urls.excludedhosts", null);

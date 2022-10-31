@@ -28,16 +28,11 @@ namespace Bicep.LangServer.IntegrationTests
         public async Task Build_command_should_generate_template()
         {
             var diagnosticsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
-            var features = BicepTestConstants.CreateFeatureProvider(
-                TestContext,
-                assemblyFileVersion: BicepTestConstants.DevAssemblyFileVersion);
 
-            using var helper = await LanguageServerHelper.StartServerWithClientConnectionAsync(
+            using var helper = await LanguageServerHelper.StartServer(
                 this.TestContext,
-                options => options.OnPublishDiagnostics(diagnosticsParams => diagnosticsListener.AddMessage(diagnosticsParams)),
-                new LanguageServer.Server.CreationOptions(
-                    NamespaceProvider: BuiltInTestTypes.Create(),
-                    Features: features));
+                options => options.OnPublishDiagnostics(diagnosticsListener.AddMessage),
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()).WithFeatureOverrides(new(TestContext)));
             var client = helper.Client;
 
             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(
@@ -67,17 +62,11 @@ namespace Bicep.LangServer.IntegrationTests
         public async Task Build_command_should_generate_template_with_symbolic_names_if_enabled()
         {
             var diagnosticsListener = new MultipleMessageListener<PublishDiagnosticsParams>();
-            var features = BicepTestConstants.CreateFeatureProvider(
-                TestContext,
-                symbolicNameCodegenEnabled: true,
-                assemblyFileVersion: BicepTestConstants.DevAssemblyFileVersion);
 
-            using var helper = await LanguageServerHelper.StartServerWithClientConnectionAsync(
+            using var helper = await LanguageServerHelper.StartServer(
                 this.TestContext,
-                options => options.OnPublishDiagnostics(diagnosticsParams => diagnosticsListener.AddMessage(diagnosticsParams)),
-                new LanguageServer.Server.CreationOptions(
-                    NamespaceProvider: BuiltInTestTypes.Create(),
-                    Features: features));
+                options => options.OnPublishDiagnostics(diagnosticsListener.AddMessage),
+                services => services.WithNamespaceProvider(BuiltInTestTypes.Create()).WithFeatureOverrides(new(TestContext, SymbolicNameCodegenEnabled: true)));
             var client = helper.Client;
 
             var outputDirectory = FileHelper.SaveEmbeddedResourcesWithPathPrefix(

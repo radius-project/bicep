@@ -24,9 +24,9 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             docUri: new Uri($"https://aka.ms/bicep/linter/{Code}"))
         { }
 
-        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model)
+        public override IEnumerable<IDiagnostic> AnalyzeInternal(SemanticModel model, DiagnosticLevel diagnosticLevel)
         {
-            var visitor = new Visitor(this, model);
+            var visitor = new Visitor(this, model, diagnosticLevel);
             visitor.Visit(model.SourceFile.ProgramSyntax);
             return visitor.diagnostics;
         }
@@ -38,11 +38,13 @@ namespace Bicep.Core.Analyzers.Linter.Rules
             private const string concatFunction = "concat";
             private readonly PreferInterpolationRule parent;
             private readonly SemanticModel model;
+            private readonly DiagnosticLevel diagnosticLevel;
 
-            public Visitor(PreferInterpolationRule parent, SemanticModel model)
+            public Visitor(PreferInterpolationRule parent, SemanticModel model, DiagnosticLevel diagnosticLevel)
             {
                 this.parent = parent;
                 this.model = model;
+                this.diagnosticLevel = diagnosticLevel;
             }
 
             public override void VisitFunctionCallSyntax(FunctionCallSyntax syntax)
@@ -59,7 +61,7 @@ namespace Bicep.Core.Analyzers.Linter.Rules
                     {
                         if (CreateFix(syntax) is CodeFix fix)
                         {
-                            this.diagnostics.Add(parent.CreateFixableDiagnosticForSpan(syntax.Span, fix));
+                            this.diagnostics.Add(parent.CreateFixableDiagnosticForSpan(diagnosticLevel, syntax.Span, fix));
 
                             // Only report on the top-most string-valued concat call
                             return;
