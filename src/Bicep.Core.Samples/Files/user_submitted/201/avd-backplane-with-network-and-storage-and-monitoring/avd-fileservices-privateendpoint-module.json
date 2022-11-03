@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "2260198603101712361"
+      "templateHash": "9001760369221735716"
     }
   },
   "parameters": {
@@ -34,8 +36,8 @@
       "defaultValue": "privatelink.file.core.windows.net"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "privateEndpoint::privateDNSZoneGroup": {
       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
       "apiVersion": "2020-06-01",
       "name": "[format('{0}/{1}', parameters('privateEndpointName'), 'dnsgroupname')]",
@@ -44,20 +46,20 @@
           {
             "name": "config1",
             "properties": {
-              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDNSZoneName'))]"
+              "privateDnsZoneId": "[resourceInfo('privateDNSZone').id]"
             }
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDNSZoneName'))]",
-        "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+        "privateDNSZone",
+        "privateEndpoint"
       ]
     },
-    {
+    "privateDNSZone::virtualNetworkLink": {
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', parameters('privateDNSZoneName'), format('{0}-link', parameters('privateDNSZoneName')))]",
+      "name": "[format('{0}/{1}', parameters('privateDNSZoneName'), format('{0}-link', resourceInfo('privateDNSZone').name))]",
       "location": "global",
       "properties": {
         "registrationEnabled": false,
@@ -66,10 +68,10 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDNSZoneName'))]"
+        "privateDNSZone"
       ]
     },
-    {
+    "privateEndpoint": {
       "type": "Microsoft.Network/privateEndpoints",
       "apiVersion": "2020-06-01",
       "name": "[parameters('privateEndpointName')]",
@@ -91,11 +93,11 @@
         ]
       }
     },
-    {
+    "privateDNSZone": {
       "type": "Microsoft.Network/privateDnsZones",
       "apiVersion": "2020-06-01",
       "name": "[parameters('privateDNSZoneName')]",
       "location": "global"
     }
-  ]
+  }
 }

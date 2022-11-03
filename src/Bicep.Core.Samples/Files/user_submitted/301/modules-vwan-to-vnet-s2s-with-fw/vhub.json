@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "15694398023338821197"
+      "templateHash": "55639183118113648"
     }
   },
   "parameters": {
@@ -30,8 +32,8 @@
       }
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "hub": {
       "type": "Microsoft.Network/virtualHubs",
       "apiVersion": "2020-06-01",
       "name": "[parameters('hubname')]",
@@ -43,19 +45,19 @@
         }
       }
     }
-  ],
+  },
   "outputs": {
     "id": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualHubs', parameters('hubname'))]"
+      "value": "[resourceInfo('hub').id]"
     },
     "name": {
       "type": "string",
-      "value": "[parameters('hubname')]"
+      "value": "[resourceInfo('hub').name]"
     },
     "vhubaddress": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/virtualHubs', parameters('hubname')), '2020-06-01').addressPrefix]"
+      "value": "[reference('hub').addressPrefix]"
     }
   }
 }

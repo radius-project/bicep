@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "838009304435023175"
+      "templateHash": "989816019903503296"
     }
   },
   "parameters": {
@@ -26,8 +28,8 @@
       "type": "string"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "as": {
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2020-06-01",
       "name": "as",
@@ -43,7 +45,7 @@
         "name": "Aligned"
       }
     },
-    {
+    "nic": {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}-nic', parameters('vmName'))]",
@@ -62,14 +64,14 @@
         ]
       }
     },
-    {
+    "vm": {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2020-06-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', 'as')]"
+          "id": "[resourceInfo('as').id]"
         },
         "hardwareProfile": {
           "vmSize": "Standard_B4ms"
@@ -77,7 +79,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+              "id": "[resourceInfo('nic').id]"
             }
           ]
         },
@@ -113,9 +115,9 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', 'as')]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+        "as",
+        "nic"
       ]
     }
-  ]
+  }
 }

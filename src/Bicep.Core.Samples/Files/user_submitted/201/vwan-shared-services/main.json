@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "8365477725660382052"
+      "templateHash": "7047555310483283564"
     }
   },
   "parameters": {
@@ -42,8 +44,8 @@
       "subnetPrefix": "10.0.20.0/24"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "vwan": {
       "type": "Microsoft.Network/virtualWans",
       "apiVersion": "2020-05-01",
       "name": "[variables('vwan_cfg').name]",
@@ -54,7 +56,7 @@
         "type": "[variables('vwan_cfg').type]"
       }
     },
-    {
+    "virtual_hub": {
       "type": "Microsoft.Network/virtualHubs",
       "apiVersion": "2020-05-01",
       "name": "[variables('virtual_hub_cfg').name]",
@@ -62,14 +64,14 @@
       "properties": {
         "addressPrefix": "[variables('virtual_hub_cfg').addressSpacePrefix]",
         "virtualWan": {
-          "id": "[resourceId('Microsoft.Network/virtualWans', variables('vwan_cfg').name)]"
+          "id": "[resourceInfo('vwan').id]"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualWans', variables('vwan_cfg').name)]"
+        "vwan"
       ]
     },
-    {
+    "rt_shared": {
       "type": "Microsoft.Network/virtualHubs/hubRouteTables",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/RT_SHARED', variables('virtual_hub_cfg').name)]",
@@ -82,15 +84,15 @@
               "[variables('vnet_shared_services_cfg').addressSpacePrefix]"
             ],
             "nextHopType": "ResourceId",
-            "nextHop": "[format('{0}/hubVirtualNetworkConnections/{1}_connection', resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name), variables('vnet_shared_services_cfg').name)]"
+            "nextHop": "[format('{0}/hubVirtualNetworkConnections/{1}_connection', resourceInfo('virtual_hub').id, variables('vnet_shared_services_cfg').name)]"
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name)]"
+        "virtual_hub"
       ]
     },
-    {
+    "vnet_shared_services": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[variables('vnet_shared_services_cfg').name]",
@@ -131,7 +133,7 @@
         ]
       }
     },
-    {
+    "vnet_isolated_1": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[variables('vnet_isolated_1_cfg').name]",
@@ -172,7 +174,7 @@
         ]
       }
     },
-    {
+    "vnet_isolated_2": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[variables('vnet_isolated_2_cfg').name]",
@@ -213,25 +215,25 @@
         ]
       }
     },
-    {
+    "vnet_shared_services_connection": {
       "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_shared_services_cfg').name)]",
       "properties": {
         "remoteVirtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_shared_services_cfg').name)]"
+          "id": "[resourceInfo('vnet_shared_services').id]"
         },
         "routingConfiguration": {
           "associatedRouteTable": {
-            "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name))]"
+            "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceInfo('virtual_hub').id)]"
           },
           "propagatedRouteTables": {
             "ids": [
               {
-                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name))]"
+                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceInfo('virtual_hub').id)]"
               },
               {
-                "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]"
+                "id": "[resourceInfo('rt_shared').id]"
               }
             ]
           }
@@ -241,27 +243,27 @@
         "enableInternetSecurity": true
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name)]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_shared_services_cfg').name)]"
+        "rt_shared",
+        "virtual_hub",
+        "vnet_shared_services"
       ]
     },
-    {
+    "vnet_isolated_1_connection": {
       "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_isolated_1_cfg').name)]",
       "properties": {
         "remoteVirtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_isolated_1_cfg').name)]"
+          "id": "[resourceInfo('vnet_isolated_1').id]"
         },
         "routingConfiguration": {
           "associatedRouteTable": {
-            "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]"
+            "id": "[resourceInfo('rt_shared').id]"
           },
           "propagatedRouteTables": {
             "ids": [
               {
-                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name))]"
+                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceInfo('virtual_hub').id)]"
               }
             ]
           }
@@ -271,28 +273,28 @@
         "enableInternetSecurity": true
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name)]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_isolated_1_cfg').name)]",
-        "[resourceId('Microsoft.Network/virtualHubs/hubVirtualNetworkConnections', split(format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_shared_services_cfg').name), '/')[0], split(format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_shared_services_cfg').name), '/')[1])]"
+        "rt_shared",
+        "virtual_hub",
+        "vnet_isolated_1",
+        "vnet_shared_services_connection"
       ]
     },
-    {
+    "vnet_isolated_2_connection": {
       "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_isolated_2_cfg').name)]",
       "properties": {
         "remoteVirtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_isolated_2_cfg').name)]"
+          "id": "[resourceInfo('vnet_isolated_2').id]"
         },
         "routingConfiguration": {
           "associatedRouteTable": {
-            "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]"
+            "id": "[resourceInfo('rt_shared').id]"
           },
           "propagatedRouteTables": {
             "ids": [
               {
-                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name))]"
+                "id": "[format('{0}/hubRouteTables/defaultRouteTable', resourceInfo('virtual_hub').id)]"
               }
             ]
           }
@@ -302,11 +304,11 @@
         "enableInternetSecurity": true
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[0], split(format('{0}/RT_SHARED', variables('virtual_hub_cfg').name), '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualHubs', variables('virtual_hub_cfg').name)]",
-        "[resourceId('Microsoft.Network/virtualHubs/hubVirtualNetworkConnections', split(format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_isolated_1_cfg').name), '/')[0], split(format('{0}/{1}_connection', variables('virtual_hub_cfg').name, variables('vnet_isolated_1_cfg').name), '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet_isolated_2_cfg').name)]"
+        "rt_shared",
+        "virtual_hub",
+        "vnet_isolated_1_connection",
+        "vnet_isolated_2"
       ]
     }
-  ]
+  }
 }

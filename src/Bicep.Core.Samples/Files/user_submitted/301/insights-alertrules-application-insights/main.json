@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "18221291617889272327"
+      "templateHash": "761625557707370289"
     }
   },
   "parameters": {
@@ -43,8 +45,8 @@
   "variables": {
     "responseAlertName": "[format('ResponseTime-{0}', toLower(parameters('applicationInsightsName')))]"
   },
-  "resources": [
-    {
+  "resources": {
+    "workspace": {
       "type": "Microsoft.OperationalInsights/workspaces",
       "apiVersion": "2020-10-01",
       "name": "[parameters('workspaceName')]",
@@ -55,7 +57,7 @@
         }
       }
     },
-    {
+    "applicationInsights": {
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02-preview",
       "name": "[parameters('applicationInsightsName')]",
@@ -63,13 +65,13 @@
       "kind": "web",
       "properties": {
         "Application_Type": "web",
-        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+        "WorkspaceResourceId": "[resourceInfo('workspace').id]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+        "workspace"
       ]
     },
-    {
+    "metricAlert": {
       "type": "Microsoft.Insights/metricAlerts",
       "apiVersion": "2018-03-01",
       "name": "[variables('responseAlertName')]",
@@ -79,7 +81,7 @@
         "severity": 0,
         "enabled": true,
         "scopes": [
-          "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+          "[resourceInfo('applicationInsights').id]"
         ],
         "evaluationFrequency": "PT1M",
         "windowSize": "PT5M",
@@ -98,16 +100,16 @@
         },
         "actions": [
           {
-            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', 'emailActionGroup')]"
+            "actionGroupId": "[resourceInfo('emailActionGroup').id]"
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "[resourceId('microsoft.insights/actionGroups', 'emailActionGroup')]"
+        "applicationInsights",
+        "emailActionGroup"
       ]
     },
-    {
+    "emailActionGroup": {
       "type": "microsoft.insights/actionGroups",
       "apiVersion": "2019-06-01",
       "name": "emailActionGroup",
@@ -124,5 +126,5 @@
         ]
       }
     }
-  ]
+  }
 }

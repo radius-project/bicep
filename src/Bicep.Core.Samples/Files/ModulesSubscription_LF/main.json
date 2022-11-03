@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "11368937387853847504"
+      "templateHash": "15609958145766540384"
     }
   },
   "parameters": {
@@ -23,8 +25,8 @@
     ],
     "scripts": "[take(variables('groups'), 2)]"
   },
-  "resources": [
-    {
+  "resources": {
+    "resourceGroups": {
       "copy": {
         "name": "resourceGroups",
         "count": "[length(variables('groups'))]"
@@ -34,7 +36,7 @@
       "name": "[format('{0}-{1}', parameters('prefix'), variables('groups')[copyIndex()])]",
       "location": "westus"
     },
-    {
+    "scopedToSymbolicName": {
       "copy": {
         "name": "scopedToSymbolicName",
         "count": "[length(variables('scripts'))]"
@@ -55,12 +57,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "9518912405470532169"
+              "templateHash": "12958598028270938496"
             }
           },
           "parameters": {
@@ -68,8 +72,8 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "script": {
               "type": "Microsoft.Resources/deploymentScripts",
               "apiVersion": "2020-10-01",
               "name": "[parameters('scriptName')]",
@@ -81,7 +85,7 @@
                 "scriptContent": "      Write-Output 'Hello World!'\n"
               }
             }
-          ],
+          },
           "outputs": {
             "myOutput": {
               "type": "string",
@@ -91,10 +95,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('{0}-{1}', parameters('prefix'), variables('groups')[copyIndex()]))]"
+        "[format('resourceGroups[{0}]', copyIndex())]"
       ]
     },
-    {
+    "scopedToResourceGroupFunction": {
       "copy": {
         "name": "scopedToResourceGroupFunction",
         "count": "[length(variables('scripts'))]"
@@ -115,12 +119,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "9518912405470532169"
+              "templateHash": "12958598028270938496"
             }
           },
           "parameters": {
@@ -128,8 +134,8 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "script": {
               "type": "Microsoft.Resources/deploymentScripts",
               "apiVersion": "2020-10-01",
               "name": "[parameters('scriptName')]",
@@ -141,7 +147,7 @@
                 "scriptContent": "      Write-Output 'Hello World!'\n"
               }
             }
-          ],
+          },
           "outputs": {
             "myOutput": {
               "type": "string",
@@ -151,5 +157,5 @@
         }
       }
     }
-  ]
+  }
 }

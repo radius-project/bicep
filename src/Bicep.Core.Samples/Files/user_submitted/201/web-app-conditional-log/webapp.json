@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "7041487136027912103"
+      "templateHash": "16045524616618900290"
     }
   },
   "parameters": {
@@ -29,8 +31,8 @@
     "appServicePlanName": "[toLower(format('asp-{0}', parameters('appName')))]",
     "webSiteName": "[toLower(format('wapp-{0}', parameters('appName')))]"
   },
-  "resources": [
-    {
+  "resources": {
+    "appServicePlan": {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2020-06-01",
       "name": "[variables('appServicePlanName')]",
@@ -44,7 +46,7 @@
         "ProjectName": "[parameters('appName')]"
       }
     },
-    {
+    "appService": {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2020-06-01",
       "name": "[variables('webSiteName')]",
@@ -57,20 +59,20 @@
         "ProjectName": "[parameters('appName')]"
       },
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "serverFarmId": "[resourceInfo('appServicePlan').id]",
         "httpsOnly": true,
         "siteConfig": {
           "minTlsVersion": "1.2"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+        "appServicePlan"
       ]
     },
-    {
+    "appServiceLogging": {
       "type": "Microsoft.Web/sites/config",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/logs', variables('webSiteName'))]",
+      "name": "[format('{0}/logs', resourceInfo('appService').name)]",
       "properties": {
         "applicationLogs": {
           "fileSystem": {
@@ -91,14 +93,14 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+        "appService"
       ]
     }
-  ],
+  },
   "outputs": {
     "appServiceName": {
       "type": "string",
-      "value": "[variables('webSiteName')]"
+      "value": "[resourceInfo('appService').name]"
     }
   }
 }

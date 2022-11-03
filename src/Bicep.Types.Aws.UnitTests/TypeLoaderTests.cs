@@ -19,17 +19,6 @@ namespace Azure.Bicep.Types.Aws.UnitTests
             {
                 var resourceType = typeLoader.LoadResourceType(kvp.Value);
             }
-
-            foreach (var (resourceType, functionsByApiVersion) in index.Functions)
-            {
-                foreach (var (apiVersion, functions) in functionsByApiVersion)
-                {
-                    foreach (var functionLocation in functions)
-                    {
-                        var resourceFunctionType = typeLoader.LoadResourceFunctionType(functionLocation);
-                    }
-                }
-            }
         }
 
         [TestMethod]
@@ -39,11 +28,6 @@ namespace Azure.Bicep.Types.Aws.UnitTests
             var index = typeLoader.LoadTypeIndex();
 
             index.Resources.Keys.Select(x => x.ToLowerInvariant()).Should().OnlyHaveUniqueItems();
-            index.Functions.Keys.Select(x => x.ToLowerInvariant()).Should().OnlyHaveUniqueItems();
-            foreach (var functionsByApiVersion in index.Functions.Values)
-            {
-                functionsByApiVersion.Keys.Select(x => x.ToLowerInvariant()).Should().OnlyHaveUniqueItems();
-            }
         }
     }
 }

@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "6817604326916833649"
+      "templateHash": "11614669036025593162"
     }
   },
   "parameters": {
@@ -22,8 +24,8 @@
     "vmExtensionTypeHandlerVersion": "1.0",
     "dcrAssociationName": "association1"
   },
-  "resources": [
-    {
+  "resources": {
+    "deployAzureMonitorAgentWindowsDCR": {
       "type": "Microsoft.Authorization/policyDefinitions",
       "apiVersion": "2020-09-01",
       "name": "deployAzureMonitorAgentWindowsDCR",
@@ -311,7 +313,7 @@
         }
       }
     },
-    {
+    "monitoringGovernance": {
       "type": "Microsoft.Authorization/policySetDefinitions",
       "apiVersion": "2020-09-01",
       "name": "monitoringGovernance",
@@ -327,20 +329,20 @@
         "parameters": {},
         "policyDefinitions": [
           {
-            "policyDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/policyDefinitions', 'deployAzureMonitorAgentWindowsDCR')]",
+            "policyDefinitionId": "[resourceInfo('deployAzureMonitorAgentWindowsDCR').id]",
             "parameters": {}
           }
         ]
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Authorization/policyDefinitions', 'deployAzureMonitorAgentWindowsDCR')]"
+        "deployAzureMonitorAgentWindowsDCR"
       ]
     }
-  ],
+  },
   "outputs": {
     "monitoringGovernanceId": {
       "type": "string",
-      "value": "[subscriptionResourceId('Microsoft.Authorization/policySetDefinitions', 'monitoringGovernance')]"
+      "value": "[resourceInfo('monitoringGovernance').id]"
     }
   }
 }

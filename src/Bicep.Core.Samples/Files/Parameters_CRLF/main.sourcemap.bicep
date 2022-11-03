@@ -4,295 +4,295 @@
 
 // parameters without default value
 param myString string
-//@[11:13]     "myString": {
+//@[13:15]     "myString": {
 param myInt int
-//@[14:16]     "myInt": {
+//@[16:18]     "myInt": {
 param myBool bool
-//@[17:19]     "myBool": {
+//@[19:21]     "myBool": {
 
 // parameters with default value
 param myString2 string = 'string value'
-//@[20:23]     "myString2": {
+//@[22:25]     "myString2": {
 param myInt2 int = 42
-//@[24:27]     "myInt2": {
+//@[26:29]     "myInt2": {
 param myTruth bool = true
-//@[28:31]     "myTruth": {
+//@[30:33]     "myTruth": {
 param myFalsehood bool = false
-//@[32:35]     "myFalsehood": {
+//@[34:37]     "myFalsehood": {
 param myEscapedString string = 'First line\r\nSecond\ttabbed\tline'
-//@[36:39]     "myEscapedString": {
+//@[38:41]     "myEscapedString": {
 
 // object default value
 param foo object = {
-//@[40:63]     "foo": {
+//@[42:65]     "foo": {
   enabled: true
-//@[43:43]         "enabled": true,
+//@[45:45]         "enabled": true,
   name: 'this is my object'
-//@[44:44]         "name": "this is my object",
+//@[46:46]         "name": "this is my object",
   priority: 3
-//@[45:45]         "priority": 3,
+//@[47:47]         "priority": 3,
   info: {
-//@[46:48]         "info": {
+//@[48:50]         "info": {
     a: 'b'
-//@[47:47]           "a": "b"
+//@[49:49]           "a": "b"
   }
   empty: {
-//@[49:49]         "empty": {},
+//@[51:51]         "empty": {},
   }
   array: [
-//@[50:61]         "array": [
+//@[52:63]         "array": [
     'string item'
-//@[51:51]           "string item",
+//@[53:53]           "string item",
     12
-//@[52:52]           12,
+//@[54:54]           12,
     true
-//@[53:53]           true,
+//@[55:55]           true,
     [
       'inner'
-//@[55:55]             "inner",
+//@[57:57]             "inner",
       false
-//@[56:56]             false
+//@[58:58]             false
     ]
     {
       a: 'b'
-//@[59:59]             "a": "b"
+//@[61:61]             "a": "b"
     }
   ]
 }
 
 // array default value
 param myArrayParam array = [
-//@[64:71]     "myArrayParam": {
+//@[66:73]     "myArrayParam": {
   'a'
-//@[67:67]         "a",
+//@[69:69]         "a",
   'b'
-//@[68:68]         "b",
+//@[70:70]         "b",
   'c'
-//@[69:69]         "c"
+//@[71:71]         "c"
 ]
 
 // secure string
 @secure()
 param password string
-//@[72:74]     "password": {
+//@[74:76]     "password": {
 
 // secure object
 @secure()
 param secretObject object
-//@[75:77]     "secretObject": {
+//@[77:79]     "secretObject": {
 
 // enum parameter
 @allowed([
-//@[80:83]       "allowedValues": [
+//@[82:85]       "allowedValues": [
   'Standard_LRS'
-//@[81:81]         "Standard_LRS",
+//@[83:83]         "Standard_LRS",
   'Standard_GRS'
-//@[82:82]         "Standard_GRS"
+//@[84:84]         "Standard_GRS"
 ])
 param storageSku string
-//@[78:84]     "storageSku": {
+//@[80:86]     "storageSku": {
 
 // length constraint on a string
 @minLength(3)
-//@[88:88]       "minLength": 3
+//@[90:90]       "minLength": 3
 @maxLength(24)
-//@[87:87]       "maxLength": 24,
+//@[89:89]       "maxLength": 24,
 param storageName string
-//@[85:89]     "storageName": {
+//@[87:91]     "storageName": {
 
 // length constraint on an array
 @minLength(3)
-//@[93:93]       "minLength": 3
+//@[95:95]       "minLength": 3
 @maxLength(24)
-//@[92:92]       "maxLength": 24,
+//@[94:94]       "maxLength": 24,
 param someArray array
-//@[90:94]     "someArray": {
+//@[92:96]     "someArray": {
 
 // empty metadata
 @metadata({})
-//@[97:97]       "metadata": {}
+//@[99:99]       "metadata": {}
 param emptyMetadata string
-//@[95:98]     "emptyMetadata": {
+//@[97:100]     "emptyMetadata": {
 
 // description
 @metadata({
-//@[101:103]       "metadata": {
+//@[103:105]       "metadata": {
   description: 'my description'
-//@[102:102]         "description": "my description"
+//@[104:104]         "description": "my description"
 })
 param description string
-//@[99:104]     "description": {
+//@[101:106]     "description": {
 
 @sys.description('my description')
-//@[108:108]         "description": "my description"
+//@[110:110]         "description": "my description"
 param description2 string
-//@[105:110]     "description2": {
+//@[107:112]     "description2": {
 
 // random extra metadata
 @metadata({
-//@[113:121]       "metadata": {
+//@[115:123]       "metadata": {
   description: 'my description'
-//@[114:114]         "description": "my description",
+//@[116:116]         "description": "my description",
   a: 1
-//@[115:115]         "a": 1,
+//@[117:117]         "a": 1,
   b: true
-//@[116:116]         "b": true,
+//@[118:118]         "b": true,
   c: [
-//@[117:117]         "c": [],
+//@[119:119]         "c": [],
   ]
   d: {
-//@[118:120]         "d": {
+//@[120:122]         "d": {
     test: 'abc'
-//@[119:119]           "test": "abc"
+//@[121:121]           "test": "abc"
   }
 })
 param additionalMetadata string
-//@[111:122]     "additionalMetadata": {
+//@[113:124]     "additionalMetadata": {
 
 // all modifiers together
 @secure()
 @minLength(3)
-//@[134:134]       "minLength": 3
+//@[136:136]       "minLength": 3
 @maxLength(24)
-//@[133:133]       "maxLength": 24,
+//@[135:135]       "maxLength": 24,
 @allowed([
-//@[128:132]       "allowedValues": [
+//@[130:134]       "allowedValues": [
   'one'
-//@[129:129]         "one",
+//@[131:131]         "one",
   'two'
-//@[130:130]         "two",
+//@[132:132]         "two",
   'three'
-//@[131:131]         "three"
+//@[133:133]         "three"
 ])
 @metadata({
-//@[125:127]       "metadata": {
+//@[127:129]       "metadata": {
   description: 'Name of the storage account'
-//@[126:126]         "description": "Name of the storage account"
+//@[128:128]         "description": "Name of the storage account"
 })
 param someParameter string
-//@[123:135]     "someParameter": {
+//@[125:137]     "someParameter": {
 
 param defaultExpression bool = 18 != (true || false)
-//@[136:139]     "defaultExpression": {
+//@[138:141]     "defaultExpression": {
 
 @allowed([
-//@[142:145]       "allowedValues": [
+//@[144:147]       "allowedValues": [
   'abc'
-//@[143:143]         "abc",
+//@[145:145]         "abc",
   'def'
-//@[144:144]         "def"
+//@[146:146]         "def"
 ])
 param stringLiteral string
-//@[140:146]     "stringLiteral": {
+//@[142:148]     "stringLiteral": {
 
 @allowed([
-//@[150:154]       "allowedValues": [
+//@[152:156]       "allowedValues": [
   'abc'
-//@[151:151]         "abc",
+//@[153:153]         "abc",
   'def'
-//@[152:152]         "def",
+//@[154:154]         "def",
   'ghi'
-//@[153:153]         "ghi"
+//@[155:155]         "ghi"
 ])
 param stringLiteralWithAllowedValuesSuperset string = stringLiteral
-//@[147:155]     "stringLiteralWithAllowedValuesSuperset": {
+//@[149:157]     "stringLiteralWithAllowedValuesSuperset": {
 
 @secure()
 @minLength(2)
-//@[163:163]       "minLength": 2
+//@[165:165]       "minLength": 2
   @maxLength(10)
-//@[162:162]       "maxLength": 10,
+//@[164:164]       "maxLength": 10,
 @allowed([
-//@[158:161]       "allowedValues": [
+//@[160:163]       "allowedValues": [
   'Apple'
-//@[159:159]         "Apple",
+//@[161:161]         "Apple",
   'Banana'
-//@[160:160]         "Banana"
+//@[162:162]         "Banana"
 ])
 param decoratedString string
-//@[156:164]     "decoratedString": {
+//@[158:166]     "decoratedString": {
 
 @minValue(200)
-//@[168:168]       "minValue": 200
+//@[170:170]       "minValue": 200
 param decoratedInt int = 123
-//@[165:169]     "decoratedInt": {
+//@[167:171]     "decoratedInt": {
 
 // negative integer literals are allowed as decorator values
 @minValue(-10)
-//@[173:173]       "minValue": -10
+//@[175:175]       "minValue": -10
 @maxValue(-3)
-//@[172:172]       "maxValue": -3,
+//@[174:174]       "maxValue": -3,
 param negativeValues int
-//@[170:174]     "negativeValues": {
+//@[172:176]     "negativeValues": {
 
 @sys.description('A boolean.')
-//@[179:179]         "description": "A boolean.",
+//@[181:181]         "description": "A boolean.",
 @metadata({
     description: 'I will be overrode.'
     foo: 'something'
-//@[180:180]         "foo": "something",
+//@[182:182]         "foo": "something",
     bar: [
-//@[181:185]         "bar": [
+//@[183:187]         "bar": [
         {          }
         true
-//@[183:183]           true,
+//@[185:185]           true,
         123
-//@[184:184]           123
+//@[186:186]           123
     ]
 })
 param decoratedBool bool = (true && false) != true
-//@[175:187]     "decoratedBool": {
+//@[177:189]     "decoratedBool": {
 
 @secure()
 param decoratedObject object = {
-//@[188:211]     "decoratedObject": {
+//@[190:213]     "decoratedObject": {
   enabled: true
-//@[191:191]         "enabled": true,
+//@[193:193]         "enabled": true,
   name: 'this is my object'
-//@[192:192]         "name": "this is my object",
+//@[194:194]         "name": "this is my object",
   priority: 3
-//@[193:193]         "priority": 3,
+//@[195:195]         "priority": 3,
   info: {
-//@[194:196]         "info": {
+//@[196:198]         "info": {
     a: 'b'
-//@[195:195]           "a": "b"
+//@[197:197]           "a": "b"
   }
   empty: {
-//@[197:197]         "empty": {},
+//@[199:199]         "empty": {},
   }
   array: [
-//@[198:209]         "array": [
+//@[200:211]         "array": [
     'string item'
-//@[199:199]           "string item",
+//@[201:201]           "string item",
     12
-//@[200:200]           12,
+//@[202:202]           12,
     true
-//@[201:201]           true,
+//@[203:203]           true,
     [
       'inner'
-//@[203:203]             "inner",
+//@[205:205]             "inner",
       false
-//@[204:204]             false
+//@[206:206]             false
     ]
     {
       a: 'b'
-//@[207:207]             "a": "b"
+//@[209:209]             "a": "b"
     }
   ]
 }
 
 @sys.metadata({
     description: 'An array.'
-//@[219:219]         "description": "An array."
+//@[221:221]         "description": "An array."
 })
 @sys.maxLength(20)
-//@[221:221]       "maxLength": 20
+//@[223:223]       "maxLength": 20
 @sys.description('I will be overrode.')
 param decoratedArray array = [
-//@[212:222]     "decoratedArray": {
+//@[214:224]     "decoratedArray": {
     utcNow()
-//@[215:215]         "[utcNow()]",
+//@[217:217]         "[utcNow()]",
     newGuid()
-//@[216:216]         "[newGuid()]"
+//@[218:218]         "[newGuid()]"
 ]
 

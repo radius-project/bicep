@@ -52,9 +52,9 @@ public class FeatureProviderTests
         var fpm = new FeatureProviderFactory(configManager);
 
         var control = fpm.GetFeatureProvider(new Uri("inmemory:///main.bicp"));
-        control.ImportsEnabled.Should().BeFalse();
+        control.ImportsEnabled.Should().BeTrue();
         var mainDirFeatures = fpm.GetFeatureProvider(new Uri(this.CreatePath("repo/main.bicep")));
-        mainDirFeatures.ImportsEnabled.Should().BeFalse();
+        mainDirFeatures.ImportsEnabled.Should().BeTrue();
         var subDirFeatures = fpm.GetFeatureProvider(new Uri(this.CreatePath("repo/subdir/module.bicep")));
         subDirFeatures.ImportsEnabled.Should().BeTrue();
     }

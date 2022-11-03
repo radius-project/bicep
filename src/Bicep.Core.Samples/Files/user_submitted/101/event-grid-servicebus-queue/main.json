@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "14460997394831118971"
+      "templateHash": "9724077181442966594"
     }
   },
   "parameters": {
@@ -26,8 +28,8 @@
       "defaultValue": "[resourceGroup().location]"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "serviceBusNamespace": {
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2018-01-01-preview",
       "name": "[parameters('serviceBusNamespaceName')]",
@@ -36,10 +38,10 @@
         "name": "Standard"
       }
     },
-    {
+    "queue": {
       "type": "Microsoft.ServiceBus/namespaces/queues",
       "apiVersion": "2017-04-01",
-      "name": "[format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName'))]",
+      "name": "[format('{0}/{1}', resourceInfo('serviceBusNamespace').name, parameters('serviceBusQueueName'))]",
       "properties": {
         "lockDuration": "PT5M",
         "maxSizeInMegabytes": 1024,
@@ -54,16 +56,16 @@
         "enableExpress": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+        "serviceBusNamespace"
       ]
     },
-    {
+    "eventGridTopic": {
       "type": "Microsoft.EventGrid/topics",
       "apiVersion": "2020-06-01",
       "name": "[parameters('eventGridTopicName')]",
       "location": "[parameters('location')]"
     },
-    {
+    "eventGridSubscription": {
       "type": "Microsoft.EventGrid/eventSubscriptions",
       "apiVersion": "2020-06-01",
       "scope": "[format('Microsoft.EventGrid/topics/{0}', parameters('eventGridTopicName'))]",
@@ -72,7 +74,7 @@
         "destination": {
           "endpointType": "ServiceBusQueue",
           "properties": {
-            "resourceId": "[resourceId('Microsoft.ServiceBus/namespaces/queues', split(format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName')), '/')[0], split(format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName')), '/')[1])]"
+            "resourceId": "[resourceInfo('queue').id]"
           }
         },
         "eventDeliverySchema": "EventGridSchema",
@@ -81,9 +83,9 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName'))]",
-        "[resourceId('Microsoft.ServiceBus/namespaces/queues', split(format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName')), '/')[0], split(format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName')), '/')[1])]"
+        "eventGridTopic",
+        "queue"
       ]
     }
-  ]
+  }
 }

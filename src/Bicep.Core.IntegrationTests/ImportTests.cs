@@ -54,6 +54,7 @@ namespace Bicep.Core.IntegrationTests
         public TestContext? TestContext { get; set; }
 
         [TestMethod]
+        [Ignore]
         public void Imports_are_disabled_unless_feature_is_enabled()
         {
             var result = CompilationHelper.Compile(@"

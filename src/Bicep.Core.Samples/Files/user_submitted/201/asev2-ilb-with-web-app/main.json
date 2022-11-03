@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "812777055705081661"
+      "templateHash": "8732730911566083409"
     }
   },
   "parameters": {
@@ -49,8 +51,8 @@
       ]
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "virtualNetwork": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-06-01",
       "name": "vnet-01",
@@ -63,10 +65,10 @@
         }
       }
     },
-    {
+    "subnet": {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/subnet-01', 'vnet-01')]",
+      "name": "[format('{0}/subnet-01', resourceInfo('virtualNetwork').name)]",
       "properties": {
         "addressPrefix": "10.0.1.0/24",
         "networkSecurityGroup": {
@@ -91,10 +93,10 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-01')]"
+        "virtualNetwork"
       ]
     },
-    {
+    "hostingEnvironment": {
       "type": "Microsoft.Web/hostingEnvironments",
       "apiVersion": "2020-06-01",
       "name": "[parameters('aseName')]",
@@ -107,24 +109,24 @@
         "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
         "dnsSuffix": "[parameters('dnsSuffix')]",
         "virtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-01')]",
-          "subnet": "[format('{0}/subnet-01', 'vnet-01')]"
+          "id": "[resourceInfo('virtualNetwork').id]",
+          "subnet": "[resourceInfo('subnet').name]"
         },
         "workerPools": []
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/subnet-01', 'vnet-01'), '/')[0], split(format('{0}/subnet-01', 'vnet-01'), '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-01')]"
+        "subnet",
+        "virtualNetwork"
       ]
     },
-    {
+    "serverFarm": {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2020-06-01",
       "name": "[parameters('appServicePlanName')]",
       "location": "[parameters('location')]",
       "properties": {
         "hostingEnvironmentProfile": {
-          "id": "[resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))]"
+          "id": "[resourceInfo('hostingEnvironment').id]"
         }
       },
       "sku": {
@@ -135,24 +137,24 @@
         "capacity": "[parameters('numberOfWorkers')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))]"
+        "hostingEnvironment"
       ]
     },
-    {
+    "website": {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2020-06-01",
       "name": "[parameters('websiteName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "serverFarmId": "[resourceInfo('serverFarm').id]",
         "hostingEnvironmentProfile": {
-          "id": "[resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))]"
+          "id": "[resourceInfo('hostingEnvironment').id]"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))]",
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+        "hostingEnvironment",
+        "serverFarm"
       ]
     }
-  ]
+  }
 }

@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "16180156588841123709"
+      "templateHash": "15926167857864613760"
     }
   },
   "parameters": {
@@ -43,8 +45,8 @@
       "subnetPrefix": "192.168.0.0/24"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "vnet1": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[parameters('vnet1Name')]",
@@ -85,7 +87,7 @@
         ]
       }
     },
-    {
+    "VnetPeering1": {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/{1}', parameters('vnet1Name'), format('{0}-{1}', parameters('vnet1Name'), parameters('vnet2Name')))]",
@@ -95,15 +97,15 @@
         "allowGatewayTransit": false,
         "useRemoteGateways": false,
         "remoteVirtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet2Name'))]"
+          "id": "[resourceInfo('vnet2').id]"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1Name'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet2Name'))]"
+        "vnet1",
+        "vnet2"
       ]
     },
-    {
+    "vnet2": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[parameters('vnet2Name')]",
@@ -144,7 +146,7 @@
         ]
       }
     },
-    {
+    "vnetPeering2": {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
       "apiVersion": "2020-05-01",
       "name": "[format('{0}/{1}', parameters('vnet2Name'), format('{0}-{1}', parameters('vnet2Name'), parameters('vnet1Name')))]",
@@ -154,13 +156,13 @@
         "allowGatewayTransit": false,
         "useRemoteGateways": false,
         "remoteVirtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1Name'))]"
+          "id": "[resourceInfo('vnet1').id]"
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1Name'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet2Name'))]"
+        "vnet1",
+        "vnet2"
       ]
     }
-  ]
+  }
 }

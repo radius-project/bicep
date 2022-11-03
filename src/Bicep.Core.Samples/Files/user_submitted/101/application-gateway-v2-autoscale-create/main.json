@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "6105399184206539846"
+      "templateHash": "10975496065499567677"
     }
   },
   "parameters": {
@@ -109,8 +111,8 @@
     "appGwPublicIpName": "[format('{0}-pip', parameters('applicationGatewayName'))]",
     "appGwSize": "Standard_v2"
   },
-  "resources": [
-    {
+  "resources": {
+    "virtualNetwork": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-06-01",
       "name": "[parameters('virtualNetworkName')]",
@@ -151,7 +153,7 @@
         ]
       }
     },
-    {
+    "publicIP": {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-06-01",
       "name": "[variables('appGwPublicIpName')]",
@@ -163,7 +165,7 @@
         "publicIPAllocationMethod": "Static"
       }
     },
-    {
+    "applicationGateway": {
       "type": "Microsoft.Network/applicationGateways",
       "apiVersion": "2020-06-01",
       "name": "[parameters('applicationGatewayName')]",
@@ -182,7 +184,7 @@
             "name": "appGatewayIpConfig",
             "properties": {
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', resourceInfo('virtualNetwork').name, parameters('subnetName'))]"
               }
             }
           }
@@ -192,7 +194,7 @@
             "name": "appGatewayFrontendIP",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appGwPublicIpName'))]"
+                "id": "[resourceInfo('publicIP').id]"
               }
             }
           }
@@ -256,9 +258,9 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('appGwPublicIpName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+        "publicIP",
+        "virtualNetwork"
       ]
     }
-  ]
+  }
 }

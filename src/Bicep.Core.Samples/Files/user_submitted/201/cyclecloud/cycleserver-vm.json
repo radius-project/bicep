@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "4861645218776431507"
+      "templateHash": "17171045321904482363"
     }
   },
   "parameters": {
@@ -27,8 +29,8 @@
       "type": "string"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "pip": {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-05-01",
       "name": "cycleserver-pip",
@@ -37,7 +39,7 @@
         "publicIPAllocationMethod": "Dynamic"
       }
     },
-    {
+    "nic": {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-05-01",
       "name": "cycleserver-nic",
@@ -52,17 +54,17 @@
                 "id": "[parameters('subnetId')]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'cycleserver-pip')]"
+                "id": "[resourceInfo('pip').id]"
               }
             }
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', 'cycleserver-pip')]"
+        "pip"
       ]
     },
-    {
+    "vm": {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2020-06-01",
       "name": "cycleserver",
@@ -111,14 +113,14 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'cycleserver-nic')]"
+              "id": "[resourceInfo('nic').id]"
             }
           ]
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'cycleserver-nic')]"
+        "nic"
       ]
     }
-  ]
+  }
 }

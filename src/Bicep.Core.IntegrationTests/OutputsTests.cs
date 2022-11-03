@@ -107,7 +107,7 @@ output out resource 'Microsoft.Storage/storageAccounts@2019-06-01' = resource
         [DataRow(false)]
         public void Output_can_have_object_type(bool enableResourceTypeParameters)
         {
-            var services = enableResourceTypeParameters ? ServicesWithResourceTyped : new ServiceBuilder();
+            var services = enableResourceTypeParameters ? ServicesWithResourceTyped : new ServiceBuilder().WithFeatureOverrides(new(ImportsEnabled: false));
             var result = CompilationHelper.Compile(services, @"
 resource resource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: 'test'
