@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: Bicep.TestResults.${{ matrix.rid }}
+          name: Bicep.TestResults.${{ matrix.runtime.name }}
           path: ./TestResults/**/*.trx
           if-no-files-found: error
 
@@ -149,7 +149,6 @@ jobs:
     needs: ["build"]
     runs-on: ubuntu-latest
     strategy:
-      # should be the full list of supported RIDs with customizations expressed via the parameters under each item
       matrix:
         runtime-name: [windows-x64, linux-x64, macos-x64]
     steps:
@@ -173,25 +172,9 @@ jobs:
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
+          source_dir: ./artifacts/bicep/${{ matrix.runtime-name }}/
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime-name }}/ --pattern rad-bicep --overwrite true"
           sync: true
-      # - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-      #   name: Upload rad-bicep (MacOS)
-      #   with:
-      #     container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-      #     connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-      #     source_dir: ./artifacts/bicep/macos-x64/
-      #     extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep --overwrite true"
-      #     sync: true
-      # - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-      #   name: Upload rad-bicep (Windows)
-      #   with:
-      #     container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-      #     connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-      #     source_dir: ./artifacts/bicep/windows-x64/
-      #     extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe --overwrite true"
-      #     sync: true
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (channel)
         with:
