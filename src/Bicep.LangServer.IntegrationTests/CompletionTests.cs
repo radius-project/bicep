@@ -84,7 +84,7 @@ namespace Bicep.LangServer.IntegrationTests
             ServerWithBuiltInTypes.Initialize(
                 async () => await MultiFileLanguageServerHelper.StartLanguageServer(
                     testContext,
-                    services => services.WithNamespaceProvider(BuiltInTestTypes.Create())));
+                    services => services.WithNamespaceProvider(BuiltInTestTypes.Create()).WithFeatureOverrides(new(testContext, ImportsEnabled: false))));
         }
 
         [ClassCleanup]

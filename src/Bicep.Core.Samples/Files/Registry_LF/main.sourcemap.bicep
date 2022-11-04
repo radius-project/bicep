@@ -8,7 +8,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 }
 
 module appPlanDeploy 'br:mock-registry-one.invalid/demo/plan:v2' = {
-//@[41:103]     "appPlanDeploy": {
+//@[41:101]     "appPlanDeploy": {
   name: 'planDeploy'
 //@[44:44]       "name": "planDeploy",
   scope: rg
@@ -19,13 +19,13 @@ module appPlanDeploy 'br:mock-registry-one.invalid/demo/plan:v2' = {
 }
 
 module appPlanDeploy2 'br/mock-registry-one:demo/plan:v2' = {
-//@[104:166]     "appPlanDeploy2": {
+//@[102:162]     "appPlanDeploy2": {
   name: 'planDeploy2'
-//@[107:107]       "name": "planDeploy2",
+//@[105:105]       "name": "planDeploy2",
   scope: rg
   params: {
     namePrefix: 'hello'
-//@[116:116]             "value": "hello"
+//@[114:114]             "value": "hello"
   }
 }
 
@@ -46,58 +46,58 @@ var websites = [
 ]
 
 module siteDeploy 'br:mock-registry-two.invalid/demo/site:v3' = [for site in websites: {
-//@[167:269]     "siteDeploy": {
+//@[163:263]     "siteDeploy": {
   name: '${site.name}siteDeploy'
-//@[174:174]       "name": "[format('{0}siteDeploy', variables('websites')[copyIndex()].name)]",
+//@[170:170]       "name": "[format('{0}siteDeploy', variables('websites')[copyIndex()].name)]",
   scope: rg
   params: {
     appPlanId: appPlanDeploy.outputs.planId
-//@[183:183]             "value": "[reference('appPlanDeploy').outputs.planId.value]"
+//@[179:179]             "value": "[reference('appPlanDeploy').outputs.planId.value]"
     namePrefix: site.name
-//@[186:186]             "value": "[variables('websites')[copyIndex()].name]"
+//@[182:182]             "value": "[variables('websites')[copyIndex()].name]"
     dockerImage: 'nginxdemos/hello'
-//@[189:189]             "value": "nginxdemos/hello"
+//@[185:185]             "value": "nginxdemos/hello"
     dockerImageTag: site.tag
-//@[192:192]             "value": "[variables('websites')[copyIndex()].tag]"
+//@[188:188]             "value": "[variables('websites')[copyIndex()].tag]"
   }
 }]
 
 module siteDeploy2 'br/demo-two:site:v3' = [for site in websites: {
-//@[270:372]     "siteDeploy2": {
+//@[264:364]     "siteDeploy2": {
   name: '${site.name}siteDeploy2'
-//@[277:277]       "name": "[format('{0}siteDeploy2', variables('websites')[copyIndex()].name)]",
+//@[271:271]       "name": "[format('{0}siteDeploy2', variables('websites')[copyIndex()].name)]",
   scope: rg
   params: {
     appPlanId: appPlanDeploy.outputs.planId
-//@[286:286]             "value": "[reference('appPlanDeploy').outputs.planId.value]"
+//@[280:280]             "value": "[reference('appPlanDeploy').outputs.planId.value]"
     namePrefix: site.name
-//@[289:289]             "value": "[variables('websites')[copyIndex()].name]"
+//@[283:283]             "value": "[variables('websites')[copyIndex()].name]"
     dockerImage: 'nginxdemos/hello'
-//@[292:292]             "value": "nginxdemos/hello"
+//@[286:286]             "value": "nginxdemos/hello"
     dockerImageTag: site.tag
-//@[295:295]             "value": "[variables('websites')[copyIndex()].tag]"
+//@[289:289]             "value": "[variables('websites')[copyIndex()].tag]"
   }
 }]
 
 module storageDeploy 'ts:00000000-0000-0000-0000-000000000000/test-rg/storage-spec:1.0' = {
-//@[373:395]     "storageDeploy": {
+//@[365:387]     "storageDeploy": {
   name: 'storageDeploy'
-//@[376:376]       "name": "storageDeploy",
+//@[368:368]       "name": "storageDeploy",
   scope: rg
   params: {
     location: 'eastus'
-//@[385:385]             "value": "eastus"
+//@[377:377]             "value": "eastus"
   }
 }
 
 module storageDeploy2 'ts/mySpecRG:storage-spec:1.0' = {
-//@[396:418]     "storageDeploy2": {
+//@[388:410]     "storageDeploy2": {
   name: 'storageDeploy2'
-//@[399:399]       "name": "storageDeploy2",
+//@[391:391]       "name": "storageDeploy2",
   scope: rg
   params: {
     location: 'eastus'
-//@[408:408]             "value": "eastus"
+//@[400:400]             "value": "eastus"
   }
 }
 
@@ -118,72 +118,72 @@ var vnets = [
 ]
 
 module vnetDeploy 'ts:11111111-1111-1111-1111-111111111111/prod-rg/vnet-spec:v2' = [for vnet in vnets: {
-//@[419:448]     "vnetDeploy": {
+//@[411:440]     "vnetDeploy": {
   name: '${vnet.name}Deploy'
-//@[426:426]       "name": "[format('{0}Deploy', variables('vnets')[copyIndex()].name)]",
+//@[418:418]       "name": "[format('{0}Deploy', variables('vnets')[copyIndex()].name)]",
   scope: rg
   params: {
     vnetName: vnet.name
-//@[435:435]             "value": "[variables('vnets')[copyIndex()].name]"
+//@[427:427]             "value": "[variables('vnets')[copyIndex()].name]"
     subnetName: vnet.subnetName
-//@[438:438]             "value": "[variables('vnets')[copyIndex()].subnetName]"
+//@[430:430]             "value": "[variables('vnets')[copyIndex()].subnetName]"
   }
 }]
 
 output siteUrls array = [for (site, i) in websites: siteDeploy[i].outputs.siteUrl]
-//@[676:682]     "siteUrls": {
+//@[658:664]     "siteUrls": {
 
 module passthroughPort 'br:localhost:5000/passthrough/port:v1' = {
-//@[449:493]     "passthroughPort": {
+//@[441:483]     "passthroughPort": {
   scope: rg
   name: 'port'
-//@[452:452]       "name": "port",
+//@[444:444]       "name": "port",
   params: {
     port: 'test'
-//@[461:461]             "value": "test"
+//@[453:453]             "value": "test"
   }
 }
 
 module ipv4 'br:127.0.0.1/passthrough/ipv4:v1' = {
-//@[494:538]     "ipv4": {
+//@[484:526]     "ipv4": {
   scope: rg
   name: 'ipv4'
-//@[497:497]       "name": "ipv4",
+//@[487:487]       "name": "ipv4",
   params: {
     ipv4: 'test'
-//@[506:506]             "value": "test"
+//@[496:496]             "value": "test"
   }
 }
 
 module ipv4port 'br:127.0.0.1:5000/passthrough/ipv4port:v1' = {
-//@[539:583]     "ipv4port": {
+//@[527:569]     "ipv4port": {
   scope: rg
   name: 'ipv4port'
-//@[542:542]       "name": "ipv4port",
+//@[530:530]       "name": "ipv4port",
   params: {
     ipv4port: 'test'
-//@[551:551]             "value": "test"
+//@[539:539]             "value": "test"
   }
 }
 
 module ipv6 'br:[::1]/passthrough/ipv6:v1' = {
-//@[584:628]     "ipv6": {
+//@[570:612]     "ipv6": {
   scope: rg
   name: 'ipv6'
-//@[587:587]       "name": "ipv6",
+//@[573:573]       "name": "ipv6",
   params: {
     ipv6: 'test'
-//@[596:596]             "value": "test"
+//@[582:582]             "value": "test"
   }
 }
 
 module ipv6port 'br:[::1]:5000/passthrough/ipv6port:v1' = {
-//@[629:673]     "ipv6port": {
+//@[613:655]     "ipv6port": {
   scope: rg
   name: 'ipv6port'
-//@[632:632]       "name": "ipv6port",
+//@[616:616]       "name": "ipv6port",
   params: {
     ipv6port: 'test'
-//@[641:641]             "value": "test"
+//@[625:625]             "value": "test"
   }
 }

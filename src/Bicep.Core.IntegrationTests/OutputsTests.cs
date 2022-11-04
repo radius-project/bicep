@@ -16,7 +16,7 @@ namespace Bicep.Core.IntegrationTests
     [TestClass]
     public class OutputsTests
     {
-        private ServiceBuilder ServicesWithResourceTyped => new ServiceBuilder().WithFeatureOverrides(new(TestContext, ResourceTypedParamsAndOutputsEnabled: true));
+        private ServiceBuilder ServicesWithResourceTyped => new ServiceBuilder().WithFeatureOverrides(new(TestContext, ResourceTypedParamsAndOutputsEnabled: true, ImportsEnabled: false));
 
         [NotNull]
         public TestContext? TestContext { get; set; }

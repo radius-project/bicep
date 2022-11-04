@@ -63,10 +63,10 @@ namespace Bicep.Core.UnitTests.Utils
         }
 
         public static CompilationResult Compile(IAzResourceTypeLoader resourceTypeLoader, params (string fileName, string fileContents)[] files)
-            => Compile(new ServiceBuilder().WithFeatureOverrides(BicepTestConstants.FeatureOverrides).WithAzResourceTypeLoader(resourceTypeLoader), files);
+            => Compile(new ServiceBuilder().WithFeatureOverrides(BicepTestConstants.FeatureOverrides with { ImportsEnabled = false}).WithAzResourceTypeLoader(resourceTypeLoader), files);
 
         public static CompilationResult Compile(params (string fileName, string fileContents)[] files)
-            => Compile(new ServiceBuilder().WithFeatureOverrides(BicepTestConstants.FeatureOverrides), files);
+            => Compile(new ServiceBuilder().WithFeatureOverrides(BicepTestConstants.FeatureOverrides with { ImportsEnabled = false}), files);
 
         public static CompilationResult Compile(string fileContents)
             => Compile(("main.bicep", fileContents));
@@ -76,7 +76,7 @@ namespace Bicep.Core.UnitTests.Utils
 
         public static ParamsCompilationResult CompileParams(params (string fileName, string fileContents)[] files)
         {
-            var features = BicepTestConstants.FeatureOverrides;
+            var features = BicepTestConstants.FeatureOverrides with { ImportsEnabled = false };
             var configuration = BicepTestConstants.BuiltInConfiguration;
             var services = new ServiceBuilder().WithFeatureOverrides(features).WithConfigurationPatch(c => configuration);
 
