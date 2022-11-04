@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "12592264116281642941"
+      "templateHash": "6446857309320902390"
     }
   },
   "parameters": {
@@ -17,8 +19,8 @@
       "defaultValue": "[resourceGroup().location]"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "workspace": {
       "type": "Microsoft.OperationalInsights/workspaces",
       "apiVersion": "2020-08-01",
       "name": "[parameters('workspaceName')]",
@@ -30,23 +32,23 @@
         }
       }
     },
-    {
+    "solution": {
       "type": "Microsoft.OperationsManagement/solutions",
       "apiVersion": "2015-11-01-preview",
-      "name": "[format('SecurityInsights({0})', parameters('workspaceName'))]",
+      "name": "[format('SecurityInsights({0})', resourceInfo('workspace').name)]",
       "location": "[parameters('location')]",
       "properties": {
-        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+        "workspaceResourceId": "[resourceInfo('workspace').id]"
       },
       "plan": {
-        "name": "[format('SecurityInsights({0})', parameters('workspaceName'))]",
+        "name": "[format('SecurityInsights({0})', resourceInfo('workspace').name)]",
         "product": "OMSGallery/SecurityInsights",
         "publisher": "Microsoft",
         "promotionCode": ""
       },
       "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+        "workspace"
       ]
     }
-  ]
+  }
 }

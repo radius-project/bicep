@@ -84,7 +84,7 @@ namespace Bicep.LangServer.IntegrationTests
             ServerWithBuiltInTypes.Initialize(
                 async () => await MultiFileLanguageServerHelper.StartLanguageServer(
                     testContext,
-                    services => services.WithNamespaceProvider(BuiltInTestTypes.Create())));
+                    services => services.WithNamespaceProvider(BuiltInTestTypes.Create()).WithFeatureOverrides(new(testContext, ImportsEnabled: false))));
         }
 
         [ClassCleanup]
@@ -1163,8 +1163,8 @@ import a|
                 c => c!.Select(x => x.Label).Should().Equal("as"),
                 c => c!.Select(x => x.Label).Should().Equal("as"),
                 c => c!.Select(x => x.Label).Should().BeEmpty(),
-                c => c!.Select(x => x.Label).Should().Equal("az", "kubernetes", "sys"),
-                c => c!.Select(x => x.Label).Should().Equal("az", "kubernetes", "sys")
+                c => c!.Select(x => x.Label).Should().Equal("aws", "az", "kubernetes", "radius", "sys"),
+                c => c!.Select(x => x.Label).Should().Equal("aws", "az", "kubernetes", "radius", "sys")
             ));
 
             await RunCompletionScenarioTest(this.TestContext, ServerWithBuiltInTypes, fileWithCursors, completions => completions.Should().SatisfyRespectively(

@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "13942422277694370627"
+      "templateHash": "8037191791834011397"
     }
   },
   "variables": {
@@ -30,14 +32,14 @@
       }
     ]
   },
-  "resources": [
-    {
+  "resources": {
+    "rg": {
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2020-06-01",
       "name": "adotfrank-rg",
       "location": "[deployment().location]"
     },
-    {
+    "appPlanDeploy": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "planDeploy",
@@ -95,10 +97,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "appPlanDeploy2": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "planDeploy2",
@@ -156,10 +158,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "siteDeploy": {
       "copy": {
         "name": "siteDeploy",
         "count": "[length(variables('websites'))]"
@@ -175,7 +177,7 @@
         "mode": "Incremental",
         "parameters": {
           "appPlanId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'adotfrank-rg'), 'Microsoft.Resources/deployments', 'planDeploy'), '2020-10-01').outputs.planId.value]"
+            "value": "[reference('appPlanDeploy').outputs.planId.value]"
           },
           "namePrefix": {
             "value": "[variables('websites')[copyIndex()].name]"
@@ -256,11 +258,11 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'adotfrank-rg'), 'Microsoft.Resources/deployments', 'planDeploy')]",
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "appPlanDeploy",
+        "rg"
       ]
     },
-    {
+    "siteDeploy2": {
       "copy": {
         "name": "siteDeploy2",
         "count": "[length(variables('websites'))]"
@@ -276,7 +278,7 @@
         "mode": "Incremental",
         "parameters": {
           "appPlanId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'adotfrank-rg'), 'Microsoft.Resources/deployments', 'planDeploy'), '2020-10-01').outputs.planId.value]"
+            "value": "[reference('appPlanDeploy').outputs.planId.value]"
           },
           "namePrefix": {
             "value": "[variables('websites')[copyIndex()].name]"
@@ -357,11 +359,11 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'adotfrank-rg'), 'Microsoft.Resources/deployments', 'planDeploy')]",
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "appPlanDeploy",
+        "rg"
       ]
     },
-    {
+    "storageDeploy": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "storageDeploy",
@@ -381,10 +383,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "storageDeploy2": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "storageDeploy2",
@@ -404,10 +406,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "vnetDeploy": {
       "copy": {
         "name": "vnetDeploy",
         "count": "[length(variables('vnets'))]"
@@ -434,10 +436,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "passthroughPort": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "port",
@@ -477,10 +479,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "ipv4": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "ipv4",
@@ -520,10 +522,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "ipv4port": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "ipv4port",
@@ -563,10 +565,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "ipv6": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "ipv6",
@@ -606,10 +608,10 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     },
-    {
+    "ipv6port": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "ipv6port",
@@ -649,16 +651,16 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', 'adotfrank-rg')]"
+        "rg"
       ]
     }
-  ],
+  },
   "outputs": {
     "siteUrls": {
       "type": "array",
       "copy": {
         "count": "[length(variables('websites'))]",
-        "input": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, 'adotfrank-rg'), 'Microsoft.Resources/deployments', format('{0}siteDeploy', variables('websites')[copyIndex()].name)), '2020-10-01').outputs.siteUrl.value]"
+        "input": "[reference(format('siteDeploy[{0}]', copyIndex())).outputs.siteUrl.value]"
       }
     }
   }

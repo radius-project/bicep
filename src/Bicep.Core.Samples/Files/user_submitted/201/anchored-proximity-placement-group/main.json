@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "10568221366411196576"
+      "templateHash": "11302662662938524665"
     }
   },
   "parameters": {
@@ -22,8 +24,8 @@
       "defaultValue": "20.49.199.4"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "ppg1": {
       "type": "Microsoft.Compute/proximityPlacementGroups",
       "apiVersion": "2020-06-01",
       "name": "Zone1",
@@ -32,7 +34,7 @@
         "proximityPlacementGroupType": "Standard"
       }
     },
-    {
+    "as1": {
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2020-06-01",
       "name": "as1",
@@ -41,17 +43,17 @@
         "platformFaultDomainCount": 2,
         "platformUpdateDomainCount": 5,
         "proximityPlacementGroup": {
-          "id": "[resourceId('Microsoft.Compute/proximityPlacementGroups', 'Zone1')]"
+          "id": "[resourceInfo('ppg1').id]"
         }
       },
       "sku": {
         "name": "Aligned"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/proximityPlacementGroups', 'Zone1')]"
+        "ppg1"
       ]
     },
-    {
+    "network": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "network",
@@ -67,12 +69,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "10154278416046209142"
+              "templateHash": "2380358959994836781"
             }
           },
           "parameters": {
@@ -85,8 +89,8 @@
               "defaultValue": "1.1.1.1"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "nsg": {
               "type": "Microsoft.Network/networkSecurityGroups",
               "apiVersion": "2020-06-01",
               "name": "demo-nsg",
@@ -135,7 +139,7 @@
                 ]
               }
             },
-            {
+            "vnet": {
               "type": "Microsoft.Network/virtualNetworks",
               "apiVersion": "2020-05-01",
               "name": "demo-vnet",
@@ -152,27 +156,27 @@
                     "properties": {
                       "addressPrefix": "10.0.0.0/24",
                       "networkSecurityGroup": {
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'demo-nsg')]"
+                        "id": "[resourceInfo('nsg').id]"
                       }
                     }
                   }
                 ]
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'demo-nsg')]"
+                "nsg"
               ]
             }
-          ],
+          },
           "outputs": {
             "vnetId": {
               "type": "string",
-              "value": "[resourceId('Microsoft.Network/virtualNetworks', 'demo-vnet')]"
+              "value": "[resourceInfo('vnet').id]"
             }
           }
         }
       }
     },
-    {
+    "vmA": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "anchor",
@@ -186,10 +190,10 @@
             "value": "[parameters('adminSshKey')]"
           },
           "proximityPlacementGroupId": {
-            "value": "[resourceId('Microsoft.Compute/proximityPlacementGroups', 'Zone1')]"
+            "value": "[resourceInfo('ppg1').id]"
           },
           "subnetId": {
-            "value": "[format('{0}/subnets/Default', reference(resourceId('Microsoft.Resources/deployments', 'network'), '2020-10-01').outputs.vnetId.value)]"
+            "value": "[format('{0}/subnets/Default', reference('network').outputs.vnetId.value)]"
           },
           "vmName": {
             "value": "anchor"
@@ -200,12 +204,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "3088228858602383667"
+              "templateHash": "17704202260590793698"
             }
           },
           "parameters": {
@@ -234,8 +240,8 @@
               ]
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "pip": {
               "type": "Microsoft.Network/publicIPAddresses",
               "apiVersion": "2020-05-01",
               "name": "[format('{0}-pip', parameters('vmName'))]",
@@ -250,7 +256,7 @@
                 "[format('{0}', parameters('zone'))]"
               ]
             },
-            {
+            "nic": {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2020-05-01",
               "name": "[format('{0}-nic', parameters('vmName'))]",
@@ -265,17 +271,17 @@
                         "id": "[parameters('subnetId')]"
                       },
                       "publicIPAddress": {
-                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-pip', parameters('vmName')))]"
+                        "id": "[resourceInfo('pip').id]"
                       }
                     }
                   }
                 ]
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-pip', parameters('vmName')))]"
+                "pip"
               ]
             },
-            {
+            "vm": {
               "type": "Microsoft.Compute/virtualMachines",
               "apiVersion": "2020-06-01",
               "name": "[parameters('vmName')]",
@@ -287,7 +293,7 @@
                 "networkProfile": {
                   "networkInterfaces": [
                     {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                      "id": "[resourceInfo('nic').id]"
                     }
                   ]
                 },
@@ -329,18 +335,18 @@
                 "[format('{0}', parameters('zone'))]"
               ],
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                "nic"
               ]
             }
-          ]
+          }
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'network')]",
-        "[resourceId('Microsoft.Compute/proximityPlacementGroups', 'Zone1')]"
+        "network",
+        "ppg1"
       ]
     },
-    {
+    "vm01": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "vm01",
@@ -354,10 +360,10 @@
             "value": "[parameters('adminSshKey')]"
           },
           "availabilitySetId": {
-            "value": "[resourceId('Microsoft.Compute/availabilitySets', 'as1')]"
+            "value": "[resourceInfo('as1').id]"
           },
           "subnetId": {
-            "value": "[format('{0}/subnets/Default', reference(resourceId('Microsoft.Resources/deployments', 'network'), '2020-10-01').outputs.vnetId.value)]"
+            "value": "[format('{0}/subnets/Default', reference('network').outputs.vnetId.value)]"
           },
           "vmName": {
             "value": "vm01"
@@ -365,12 +371,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "902766231246252587"
+              "templateHash": "5655803872329537180"
             }
           },
           "parameters": {
@@ -391,8 +399,8 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "nic": {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2020-05-01",
               "name": "[format('{0}-nic', parameters('vmName'))]",
@@ -411,7 +419,7 @@
                 ]
               }
             },
-            {
+            "vm": {
               "type": "Microsoft.Compute/virtualMachines",
               "apiVersion": "2020-06-01",
               "name": "[parameters('vmName')]",
@@ -426,7 +434,7 @@
                 "networkProfile": {
                   "networkInterfaces": [
                     {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                      "id": "[resourceInfo('nic').id]"
                     }
                   ]
                 },
@@ -462,18 +470,18 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                "nic"
               ]
             }
-          ]
+          }
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', 'as1')]",
-        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+        "as1",
+        "network"
       ]
     },
-    {
+    "vm02": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "vm02",
@@ -487,10 +495,10 @@
             "value": "[parameters('adminSshKey')]"
           },
           "availabilitySetId": {
-            "value": "[resourceId('Microsoft.Compute/availabilitySets', 'as1')]"
+            "value": "[resourceInfo('as1').id]"
           },
           "subnetId": {
-            "value": "[format('{0}/subnets/Default', reference(resourceId('Microsoft.Resources/deployments', 'network'), '2020-10-01').outputs.vnetId.value)]"
+            "value": "[format('{0}/subnets/Default', reference('network').outputs.vnetId.value)]"
           },
           "vmName": {
             "value": "vm02"
@@ -498,12 +506,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "902766231246252587"
+              "templateHash": "5655803872329537180"
             }
           },
           "parameters": {
@@ -524,8 +534,8 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "nic": {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2020-05-01",
               "name": "[format('{0}-nic', parameters('vmName'))]",
@@ -544,7 +554,7 @@
                 ]
               }
             },
-            {
+            "vm": {
               "type": "Microsoft.Compute/virtualMachines",
               "apiVersion": "2020-06-01",
               "name": "[parameters('vmName')]",
@@ -559,7 +569,7 @@
                 "networkProfile": {
                   "networkInterfaces": [
                     {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                      "id": "[resourceInfo('nic').id]"
                     }
                   ]
                 },
@@ -595,16 +605,16 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('vmName')))]"
+                "nic"
               ]
             }
-          ]
+          }
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/availabilitySets', 'as1')]",
-        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+        "as1",
+        "network"
       ]
     }
-  ]
+  }
 }

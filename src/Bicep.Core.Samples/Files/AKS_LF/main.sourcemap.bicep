@@ -1,88 +1,88 @@
 // mandatory params
 param dnsPrefix string
-//@[11:13]     "dnsPrefix": {
+//@[13:15]     "dnsPrefix": {
 param linuxAdminUsername string
-//@[14:16]     "linuxAdminUsername": {
+//@[16:18]     "linuxAdminUsername": {
 param sshRSAPublicKey string
-//@[17:19]     "sshRSAPublicKey": {
+//@[19:21]     "sshRSAPublicKey": {
 
 @secure()
 param servcePrincipalClientId string
-//@[20:22]     "servcePrincipalClientId": {
+//@[22:24]     "servcePrincipalClientId": {
 
 @secure()
 param servicePrincipalClientSecret string
-//@[23:25]     "servicePrincipalClientSecret": {
+//@[25:27]     "servicePrincipalClientSecret": {
 
 // optional params
 param clusterName string = 'aks101cluster'
-//@[26:29]     "clusterName": {
+//@[28:31]     "clusterName": {
 param location string = resourceGroup().location
-//@[30:33]     "location": {
+//@[32:35]     "location": {
 
 @minValue(0)
-//@[38:38]       "minValue": 0
+//@[40:40]       "minValue": 0
 @maxValue(1023)
-//@[37:37]       "maxValue": 1023,
+//@[39:39]       "maxValue": 1023,
 param osDiskSizeGB int = 0
-//@[34:39]     "osDiskSizeGB": {
+//@[36:41]     "osDiskSizeGB": {
 
 @minValue(1)
-//@[44:44]       "minValue": 1
+//@[46:46]       "minValue": 1
 @maxValue(50)
-//@[43:43]       "maxValue": 50,
+//@[45:45]       "maxValue": 50,
 param agentCount int = 3
-//@[40:45]     "agentCount": {
+//@[42:47]     "agentCount": {
 
 param agentVMSize string = 'Standard_DS2_v2'
-//@[46:49]     "agentVMSize": {
+//@[48:51]     "agentVMSize": {
 // osType was a defaultValue with only one allowedValue, which seems strange?, could be a good TTK test
 
 resource aks 'Microsoft.ContainerService/managedClusters@2020-03-01' = {
-//@[52:83]       "type": "Microsoft.ContainerService/managedClusters",
+//@[54:85]     "aks": {
     name: clusterName
     location: location
-//@[56:56]       "location": "[parameters('location')]",
+//@[58:58]       "location": "[parameters('location')]",
     properties: {
-//@[57:82]       "properties": {
+//@[59:84]       "properties": {
         dnsPrefix: dnsPrefix
-//@[58:58]         "dnsPrefix": "[parameters('dnsPrefix')]",
+//@[60:60]         "dnsPrefix": "[parameters('dnsPrefix')]",
         agentPoolProfiles: [
-//@[59:67]         "agentPoolProfiles": [
+//@[61:69]         "agentPoolProfiles": [
             {
                 name: 'agentpool'
-//@[61:61]             "name": "agentpool",
+//@[63:63]             "name": "agentpool",
                 osDiskSizeGB: osDiskSizeGB
-//@[62:62]             "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
+//@[64:64]             "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
                 vmSize: agentVMSize
-//@[63:63]             "vmSize": "[parameters('agentVMSize')]",
+//@[65:65]             "vmSize": "[parameters('agentVMSize')]",
                 osType: 'Linux'
-//@[64:64]             "osType": "Linux",
+//@[66:66]             "osType": "Linux",
                 storageProfile: 'ManagedDisks'
-//@[65:65]             "storageProfile": "ManagedDisks"
+//@[67:67]             "storageProfile": "ManagedDisks"
             }
         ]
         linuxProfile: {
-//@[68:77]         "linuxProfile": {
+//@[70:79]         "linuxProfile": {
             adminUsername: linuxAdminUsername
-//@[69:69]           "adminUsername": "[parameters('linuxAdminUsername')]",
+//@[71:71]           "adminUsername": "[parameters('linuxAdminUsername')]",
             ssh: {
-//@[70:76]           "ssh": {
+//@[72:78]           "ssh": {
                 publicKeys: [
-//@[71:75]             "publicKeys": [
+//@[73:77]             "publicKeys": [
                     {
                         keyData: sshRSAPublicKey
-//@[73:73]                 "keyData": "[parameters('sshRSAPublicKey')]"
+//@[75:75]                 "keyData": "[parameters('sshRSAPublicKey')]"
                     }
                 ]
             }
         }
         servicePrincipalProfile: {
-//@[78:81]         "servicePrincipalProfile": {
+//@[80:83]         "servicePrincipalProfile": {
             clientId: servcePrincipalClientId
-//@[79:79]           "clientId": "[parameters('servcePrincipalClientId')]",
+//@[81:81]           "clientId": "[parameters('servcePrincipalClientId')]",
             secret: servicePrincipalClientSecret
-//@[80:80]           "secret": "[parameters('servicePrincipalClientSecret')]"
+//@[82:82]           "secret": "[parameters('servicePrincipalClientSecret')]"
         }
     }
 }

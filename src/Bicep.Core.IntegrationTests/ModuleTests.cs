@@ -31,12 +31,12 @@ namespace Bicep.Core.IntegrationTests
     [TestClass]
     public class ModuleTests
     {
-        private static ServiceBuilder Services => new ServiceBuilder().WithEmptyAzResources();
+        private static ServiceBuilder Services => new ServiceBuilder().WithEmptyAzResources().WithFeatureOverrides(new(ImportsEnabled: false));
 
         private static readonly MockRepository Repository = new MockRepository(MockBehavior.Strict);
         private static readonly IConfigurationManager ConfigurationManager = IConfigurationManager.WithStaticConfiguration(BicepTestConstants.BuiltInConfigurationWithAllAnalyzersDisabled);
 
-        private ServiceBuilder ServicesWithResourceTyped => new ServiceBuilder().WithFeatureOverrides(new(TestContext, ResourceTypedParamsAndOutputsEnabled: true));
+        private ServiceBuilder ServicesWithResourceTyped => new ServiceBuilder().WithFeatureOverrides(new(TestContext, ResourceTypedParamsAndOutputsEnabled: true, ImportsEnabled: false));
 
         [NotNull]
         public TestContext? TestContext { get; set; }
@@ -391,7 +391,7 @@ module modulea 'modulea.bicep' = {
         [TestMethod]
         public void External_module_reference_with_unknown_scheme_should_be_rejected()
         {
-            var services = new ServiceBuilder().WithFeatureOverrides(new(TestContext, RegistryEnabled: true));
+            var services = new ServiceBuilder().WithFeatureOverrides(new(TestContext, RegistryEnabled: true, ImportsEnabled: false));
             var result = CompilationHelper.Compile(services, @"module test 'fake:totally-fake' = {}");
 
             result.Should().HaveDiagnostics(new[]
@@ -403,7 +403,7 @@ module modulea 'modulea.bicep' = {
         [TestMethod]
         public void External_module_reference_with_oci_scheme_should_be_rejected_if_registry_disabled()
         {
-            var services = new ServiceBuilder().WithFeatureOverrides(new(TestContext, RegistryEnabled: false));
+            var services = new ServiceBuilder().WithFeatureOverrides(new(TestContext, RegistryEnabled: false, ImportsEnabled: false));
             var result = CompilationHelper.Compile(services, @"module test 'br:totally-fake' = {}");
 
             result.Should().HaveDiagnostics(new[]
@@ -531,7 +531,7 @@ output out string = p.properties.accessTier
         [DataRow(false)]
         public void Module_can_pass_resource_body_as_object_typed_parameter(bool enableResourceTypeParameters)
         {
-            var services = enableResourceTypeParameters ? ServicesWithResourceTyped : new ServiceBuilder();
+            var services = enableResourceTypeParameters ? ServicesWithResourceTyped : new ServiceBuilder().WithFeatureOverrides(new(ImportsEnabled: false));
             var result = CompilationHelper.Compile(
                 services,
 ("main.bicep", @"

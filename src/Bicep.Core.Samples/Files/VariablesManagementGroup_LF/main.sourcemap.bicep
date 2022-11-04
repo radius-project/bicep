@@ -1,13 +1,13 @@
 targetScope='managementGroup'
 
 var deploymentLocation = deployment().location
-//@[11:11]     "deploymentLocation": "[deployment().location]",
+//@[13:13]     "deploymentLocation": "[deployment().location]",
 
 var scopesWithArmRepresentation = {
-//@[12:15]     "scopesWithArmRepresentation": {
+//@[14:17]     "scopesWithArmRepresentation": {
   tenant: tenant()
-//@[13:13]       "tenant": "[tenant()]",
+//@[15:15]       "tenant": "[tenant()]",
   managementGroup: managementGroup()
-//@[14:14]       "managementGroup": "[managementGroup()]"
+//@[16:16]       "managementGroup": "[managementGroup()]"
 }
 

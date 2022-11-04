@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "11460263666974607466"
+      "templateHash": "6551787062035757687"
     }
   },
   "parameters": {
@@ -49,8 +51,8 @@
     },
     "privateIPAllocationMethod": "Dynamic"
   },
-  "resources": [
-    {
+  "resources": {
+    "vnet": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-05-01",
       "name": "[parameters('vnetName')]",
@@ -91,7 +93,7 @@
         ]
       }
     },
-    {
+    "vmNic": {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2017-06-01",
       "name": "[variables('defaultVmNicName')]",
@@ -102,7 +104,7 @@
             "name": "ipconfig1",
             "properties": {
               "subnet": {
-                "id": "[format('{0}/subnets/{1}', resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), variables('vnetConfig').subnet.name)]"
+                "id": "[format('{0}/subnets/{1}', resourceInfo('vnet').id, variables('vnetConfig').subnet.name)]"
               },
               "privateIPAllocationMethod": "[variables('privateIPAllocationMethod')]"
             }
@@ -110,10 +112,10 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        "vnet"
       ]
     },
-    {
+    "vm": {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
       "name": "[parameters('vmName')]",
@@ -145,20 +147,20 @@
               "properties": {
                 "primary": true
               },
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('defaultVmNicName'))]"
+              "id": "[resourceInfo('vmNic').id]"
             }
           ]
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('defaultVmNicName'))]"
+        "vmNic"
       ]
     },
-    {
+    "vmgpu": {
       "condition": "[parameters('installNVidiaGPUDriver')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/NvidiaGpuDriverWindows', parameters('vmName'))]",
+      "name": "[format('{0}/NvidiaGpuDriverWindows', resourceInfo('vm').name)]",
       "location": "[variables('defaultLocation')]",
       "properties": {
         "publisher": "Microsoft.HpcCompute",
@@ -168,8 +170,8 @@
         "settings": {}
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+        "vm"
       ]
     }
-  ]
+  }
 }

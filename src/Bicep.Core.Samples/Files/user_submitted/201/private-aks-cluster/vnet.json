@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "14784418504334794988"
+      "templateHash": "14960226424976816995"
     }
   },
   "parameters": {
@@ -68,13 +70,13 @@
   "variables": {
     "bastionSubnetName": "AzureBastionSubnet",
     "bastionSubnetNsgName": "[format('{0}Nsg', variables('bastionSubnetName'))]",
-    "bastionSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('bastionSubnetName'))]",
+    "bastionSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', resourceInfo('virtualNetwork').name, variables('bastionSubnetName'))]",
     "vmSubnetNsgName": "[format('{0}Nsg', parameters('vmSubnetName'))]",
-    "vmSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('vmSubnetName'))]",
-    "aksSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('aksSubnetName'))]"
+    "vmSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', resourceInfo('virtualNetwork').name, parameters('vmSubnetName'))]",
+    "aksSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', resourceInfo('virtualNetwork').name, parameters('aksSubnetName'))]"
   },
-  "resources": [
-    {
+  "resources": {
+    "vmSubnetNsg": {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-08-01",
       "name": "[variables('vmSubnetNsgName')]",
@@ -97,7 +99,7 @@
         ]
       }
     },
-    {
+    "bastionSubnetNsg": {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-08-01",
       "name": "[variables('bastionSubnetNsgName')]",
@@ -207,7 +209,7 @@
         ]
       }
     },
-    {
+    "virtualNetwork": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-08-01",
       "name": "[parameters('virtualNetworkName')]",
@@ -252,7 +254,7 @@
             "properties": {
               "addressPrefix": "[parameters('vmSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('vmSubnetNsgName'))]"
+                "id": "[resourceInfo('vmSubnetNsg').id]"
               },
               "privateEndpointNetworkPolicies": "Disabled",
               "privateLinkServiceNetworkPolicies": "Enabled"
@@ -263,7 +265,7 @@
             "properties": {
               "addressPrefix": "[parameters('bastionSubnetAddressPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionSubnetNsgName'))]"
+                "id": "[resourceInfo('bastionSubnetNsg').id]"
               }
             }
           }
@@ -272,27 +274,54 @@
         "enableVmProtection": false
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionSubnetNsgName'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('vmSubnetNsgName'))]"
+        "bastionSubnetNsg",
+        "vmSubnetNsg"
+      ]
+    },
+    "bastionSubnet": {
+      "existing": true,
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', parameters('virtualNetworkName'), variables('bastionSubnetName'))]",
+      "dependsOn": [
+        "virtualNetwork"
+      ]
+    },
+    "aksSubnet": {
+      "existing": true,
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', parameters('virtualNetworkName'), parameters('aksSubnetName'))]",
+      "dependsOn": [
+        "virtualNetwork"
+      ]
+    },
+    "vmSubnet": {
+      "existing": true,
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2020-08-01",
+      "name": "[format('{0}/{1}', parameters('virtualNetworkName'), parameters('vmSubnetName'))]",
+      "dependsOn": [
+        "virtualNetwork"
       ]
     }
-  ],
+  },
   "outputs": {
     "virtualNetworkResourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+      "value": "[resourceInfo('virtualNetwork').id]"
     },
     "bastionSubnetId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('bastionSubnetName'))]"
+      "value": "[resourceInfo('bastionSubnet').id]"
     },
     "aksSubnetId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('aksSubnetName'))]"
+      "value": "[resourceInfo('aksSubnet').id]"
     },
     "vmSubnetId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('vmSubnetName'))]"
+      "value": "[resourceInfo('vmSubnet').id]"
     }
   }
 }

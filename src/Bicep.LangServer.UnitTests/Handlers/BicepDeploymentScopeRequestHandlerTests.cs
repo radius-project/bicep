@@ -137,22 +137,24 @@ namespace Bicep.LangServer.UnitTests.Handlers
             result.scope.Should().Be(LanguageConstants.TargetScopeTypeResourceGroup);
             result.template.Should().BeEquivalentToIgnoringNewlines(@"{
   ""$schema"": ""https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"",
+  ""languageVersion"": ""1.9-experimental"",
   ""contentVersion"": ""1.0.0.0"",
   ""metadata"": {
+    ""_EXPERIMENTAL_WARNING"": ""Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!"",
     ""_generator"": {
       ""name"": ""bicep"",
       ""version"": ""dev"",
-      ""templateHash"": ""9722914539529618239""
+      ""templateHash"": ""11184843227093611433""
     }
   },
-  ""resources"": [
-    {
+  ""resources"": {
+    ""dnsZone"": {
       ""type"": ""Microsoft.Network/dnsZones"",
       ""apiVersion"": ""2018-05-01"",
       ""name"": ""name"",
       ""location"": ""global""
     }
-  ]
+  }
 }");
             result.errorMessage.Should().BeNull();
         }

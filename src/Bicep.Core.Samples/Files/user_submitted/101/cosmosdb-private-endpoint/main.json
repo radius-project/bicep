@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "141923850895735968"
+      "templateHash": "3031609877127756967"
     }
   },
   "parameters": {
@@ -32,8 +34,8 @@
       "type": "string"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "virtualNetwork": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-06-01",
       "name": "[parameters('virtualNetworkName')]",
@@ -46,10 +48,10 @@
         }
       }
     },
-    {
+    "subNet": {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/default', parameters('virtualNetworkName'))]",
+      "name": "[format('{0}/default', resourceInfo('virtualNetwork').name)]",
       "properties": {
         "addressPrefix": "172.20.0.0/24",
         "privateEndpointNetworkPolicies": "Disabled",
@@ -75,10 +77,10 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+        "virtualNetwork"
       ]
     },
-    {
+    "databaseAccount": {
       "type": "Microsoft.DocumentDB/databaseAccounts",
       "apiVersion": "2020-06-01-preview",
       "name": "[parameters('accountName')]",
@@ -102,20 +104,20 @@
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
       }
     },
-    {
+    "privateEndpoint": {
       "type": "Microsoft.Network/privateEndpoints",
       "apiVersion": "2020-06-01",
       "name": "[parameters('privateEndpointName')]",
       "location": "[parameters('location')]",
       "properties": {
         "subnet": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/default', parameters('virtualNetworkName')), '/')[0], split(format('{0}/default', parameters('virtualNetworkName')), '/')[1])]"
+          "id": "[resourceInfo('subNet').id]"
         },
         "privateLinkServiceConnections": [
           {
             "name": "MyConnection",
             "properties": {
-              "privateLinkServiceId": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]",
+              "privateLinkServiceId": "[resourceInfo('databaseAccount').id]",
               "groupIds": [
                 "Sql"
               ]
@@ -124,9 +126,9 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/default', parameters('virtualNetworkName')), '/')[0], split(format('{0}/default', parameters('virtualNetworkName')), '/')[1])]"
+        "databaseAccount",
+        "subNet"
       ]
     }
-  ]
+  }
 }

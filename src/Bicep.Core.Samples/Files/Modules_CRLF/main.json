@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "2843855100478136215"
+      "templateHash": "14693010240916279941"
     }
   },
   "parameters": {
@@ -55,35 +57,60 @@
       }
     ]
   },
-  "resources": [
-    {
+  "resources": {
+    "resWithDependencies": {
       "type": "Mock.Rp/mockResource",
       "apiVersion": "2020-01-01",
       "name": "harry",
       "properties": {
-        "modADep": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.stringOutputA.value]",
-        "modBDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modB'), '2020-10-01').outputs.myResourceId.value]",
-        "modCDep": "[reference(resourceId('Microsoft.Resources/deployments', 'modC'), '2020-10-01').outputs.myResourceId.value]"
+        "modADep": "[reference('modATest').outputs.stringOutputA.value]",
+        "modBDep": "[reference('modB').outputs.myResourceId.value]",
+        "modCDep": "[reference('modC').outputs.myResourceId.value]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'modATest')]",
-        "[resourceId('Microsoft.Resources/deployments', 'modB')]",
-        "[resourceId('Microsoft.Resources/deployments', 'modC')]"
+        "modATest",
+        "modB",
+        "modC"
       ]
     },
-    {
+    "resWithCalculatedNameDependencies": {
       "type": "Mock.Rp/mockResource",
       "apiVersion": "2020-01-01",
       "name": "[format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix'))]",
       "properties": {
-        "modADep": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix'))), '2020-10-01').outputs.outputObj.value]"
+        "modADep": "[reference('moduleWithCalculatedName').outputs.outputObj.value]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix')))]",
-        "[resourceId('Microsoft.Resources/deployments', 'optionalWithAllParamsAndManualDependency')]"
+        "moduleWithCalculatedName",
+        "optionalWithAllParamsAndManualDependency"
       ]
     },
-    {
+    "kv": {
+      "existing": true,
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2019-09-01",
+      "name": "testkeyvault"
+    },
+    "scopedKv": {
+      "existing": true,
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2019-09-01",
+      "resourceGroup": "otherGroup",
+      "name": "testkeyvault"
+    },
+    "loopedKv": {
+      "copy": {
+        "name": "loopedKv",
+        "count": "[length(variables('vaults'))]"
+      },
+      "existing": true,
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2019-09-01",
+      "subscriptionId": "[variables('vaults')[copyIndex()].vaultSub]",
+      "resourceGroup": "[variables('vaults')[copyIndex()].vaultRG]",
+      "name": "[variables('vaults')[copyIndex()].vaultName]"
+    },
+    "modATest": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "modATest",
@@ -112,12 +139,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -135,20 +164,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -160,13 +189,13 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
@@ -176,7 +205,7 @@
         "description": "this module a"
       }
     },
-    {
+    "modB": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "modB",
@@ -192,12 +221,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "13693869390953445824"
+              "templateHash": "8343348345038017633"
             }
           },
           "parameters": {
@@ -205,18 +236,18 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "myResource": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "mockResource",
               "location": "[parameters('location')]"
             }
-          ],
+          },
           "outputs": {
             "myResourceId": {
               "type": "string",
-              "value": "[resourceId('Mock.Rp/mockResource', 'mockResource')]"
+              "value": "[resourceInfo('myResource').id]"
             }
           }
         }
@@ -225,7 +256,7 @@
         "description": "this module b"
       }
     },
-    {
+    "modBWithCondition": {
       "condition": "[equals(add(1, 1), 2)]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
@@ -242,12 +273,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "13693869390953445824"
+              "templateHash": "8343348345038017633"
             }
           },
           "parameters": {
@@ -255,18 +288,18 @@
               "type": "string"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "myResource": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "mockResource",
               "location": "[parameters('location')]"
             }
-          ],
+          },
           "outputs": {
             "myResourceId": {
               "type": "string",
-              "value": "[resourceId('Mock.Rp/mockResource', 'mockResource')]"
+              "value": "[resourceInfo('myResource').id]"
             }
           }
         }
@@ -275,7 +308,7 @@
         "description": "this is just module b with a condition"
       }
     },
-    {
+    "modC": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "modC",
@@ -315,7 +348,7 @@
         }
       }
     },
-    {
+    "modCWithCondition": {
       "condition": "[equals(sub(2, 1), 1)]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
@@ -356,7 +389,7 @@
         }
       }
     },
-    {
+    "optionalWithNoParams1": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "optionalWithNoParams1",
@@ -367,12 +400,14 @@
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -399,7 +434,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -414,7 +449,7 @@
         }
       }
     },
-    {
+    "optionalWithNoParams2": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "optionalWithNoParams2",
@@ -426,12 +461,14 @@
         "parameters": {},
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -458,7 +495,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -473,7 +510,7 @@
         }
       }
     },
-    {
+    "optionalWithAllParams": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "optionalWithNoParams3",
@@ -498,12 +535,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -530,7 +569,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -545,7 +584,7 @@
         }
       }
     },
-    {
+    "optionalWithAllParamsAndManualDependency": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "optionalWithAllParamsAndManualDependency",
@@ -570,12 +609,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -602,7 +643,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -617,11 +658,11 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'optionalWithNoParams3')]",
-        "[resourceId('Mock.Rp/mockResource', 'harry')]"
+        "optionalWithAllParams",
+        "resWithDependencies"
       ]
     },
-    {
+    "optionalWithImplicitDependency": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "optionalWithImplicitDependency",
@@ -632,7 +673,7 @@
         "mode": "Incremental",
         "parameters": {
           "optionalString": {
-            "value": "[concat(resourceId('Mock.Rp/mockResource', 'harry'), 'optionalWithAllParamsAndManualDependency')]"
+            "value": "[concat(resourceInfo('resWithDependencies').id, 'optionalWithAllParamsAndManualDependency')]"
           },
           "optionalInt": {
             "value": 42
@@ -646,12 +687,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -678,7 +721,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -693,11 +736,11 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'optionalWithAllParamsAndManualDependency')]",
-        "[resourceId('Mock.Rp/mockResource', 'harry')]"
+        "optionalWithAllParamsAndManualDependency",
+        "resWithDependencies"
       ]
     },
-    {
+    "moduleWithCalculatedName": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "[format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix'))]",
@@ -708,7 +751,7 @@
         "mode": "Incremental",
         "parameters": {
           "optionalString": {
-            "value": "[concat(resourceId('Mock.Rp/mockResource', 'harry'), 'optionalWithAllParamsAndManualDependency')]"
+            "value": "[concat(resourceInfo('resWithDependencies').id, 'optionalWithAllParamsAndManualDependency')]"
           },
           "optionalInt": {
             "value": 42
@@ -722,12 +765,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "4191259681487754679"
+              "templateHash": "1084155647324873124"
             }
           },
           "parameters": {
@@ -754,7 +799,7 @@
               ]
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "outputObj": {
               "type": "object",
@@ -769,11 +814,11 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'optionalWithAllParamsAndManualDependency')]",
-        "[resourceId('Mock.Rp/mockResource', 'harry')]"
+        "optionalWithAllParamsAndManualDependency",
+        "resWithDependencies"
       ]
     },
-    {
+    "storageResources": {
       "copy": {
         "name": "storageResources",
         "count": "[length(variables('myModules'))]"
@@ -799,12 +844,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -822,20 +869,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -847,20 +894,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "storageResourcesWithIndex": {
       "copy": {
         "name": "storageResourcesWithIndex",
         "count": "[length(variables('myModules'))]"
@@ -891,12 +938,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -914,20 +963,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -939,20 +988,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "nestedModuleLoop": {
       "copy": {
         "name": "nestedModuleLoop",
         "count": "[length(variables('myModules'))]"
@@ -984,12 +1033,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1007,20 +1058,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1032,20 +1083,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "duplicateIdentifiersWithinLoop": {
       "copy": {
         "name": "duplicateIdentifiersWithinLoop",
         "count": "[length(variables('emptyArray'))]"
@@ -1080,12 +1131,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1103,20 +1156,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1128,20 +1181,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "duplicateInGlobalAndOneLoop": {
       "copy": {
         "name": "duplicateInGlobalAndOneLoop",
         "count": "[length(createArray())]"
@@ -1176,12 +1229,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1199,20 +1254,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1224,20 +1279,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "duplicatesEverywhere": {
       "copy": {
         "name": "duplicatesEverywhere",
         "count": "[length(createArray())]"
@@ -1269,12 +1324,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1292,20 +1349,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1317,20 +1374,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "propertyLoopInsideParameterValue": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "propertyLoopInsideParameterValue",
@@ -1391,12 +1448,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1414,20 +1473,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1439,20 +1498,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "propertyLoopInsideParameterValueWithIndexes": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "propertyLoopInsideParameterValueWithIndexes",
@@ -1514,12 +1573,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1537,20 +1598,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1562,20 +1623,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "propertyLoopInsideParameterValueInsideModuleLoop": {
       "copy": {
         "name": "propertyLoopInsideParameterValueInsideModuleLoop",
         "count": "[length(range(0, 1))]"
@@ -1640,12 +1701,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "8300391961099598421"
+              "templateHash": "13974283364562914389"
             }
           },
           "parameters": {
@@ -1663,20 +1726,20 @@
               "type": "array"
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "basicStorage": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "basicblobs",
               "location": "[parameters('stringParamA')]"
             },
-            {
+            "dnsZone": {
               "type": "Mock.Rp/mockResource",
               "apiVersion": "2020-01-01",
               "name": "myZone",
               "location": "[parameters('stringParamB')]"
             }
-          ],
+          },
           "outputs": {
             "stringOutputA": {
               "type": "string",
@@ -1688,20 +1751,20 @@
             },
             "objOutput": {
               "type": "object",
-              "value": "[reference(resourceId('Mock.Rp/mockResource', 'basicblobs'), '2020-01-01')]"
+              "value": "[reference('basicStorage')]"
             },
             "arrayOutput": {
               "type": "array",
               "value": [
-                "[resourceId('Mock.Rp/mockResource', 'basicblobs')]",
-                "[resourceId('Mock.Rp/mockResource', 'myZone')]"
+                "[resourceInfo('basicStorage').id]",
+                "[resourceInfo('dnsZone').id]"
               ]
             }
           }
         }
       }
     },
-    {
+    "secureModule1": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "secureModule1",
@@ -1731,12 +1794,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "15522334618541518671"
+              "templateHash": "13161254382262042692"
             }
           },
           "parameters": {
@@ -1748,7 +1813,7 @@
               "defaultValue": ""
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "exposedSecureString": {
               "type": "string",
@@ -1758,7 +1823,7 @@
         }
       }
     },
-    {
+    "secureModule2": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "secureModule2",
@@ -1788,12 +1853,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "15522334618541518671"
+              "templateHash": "13161254382262042692"
             }
           },
           "parameters": {
@@ -1805,7 +1872,7 @@
               "defaultValue": ""
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "exposedSecureString": {
               "type": "string",
@@ -1815,7 +1882,7 @@
         }
       }
     },
-    {
+    "secureModuleLooped": {
       "copy": {
         "name": "secureModuleLooped",
         "count": "[length(variables('secrets'))]"
@@ -1849,12 +1916,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "15522334618541518671"
+              "templateHash": "13161254382262042692"
             }
           },
           "parameters": {
@@ -1866,7 +1935,7 @@
               "defaultValue": ""
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "exposedSecureString": {
               "type": "string",
@@ -1876,7 +1945,7 @@
         }
       }
     },
-    {
+    "withSpace": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "withSpace",
@@ -1887,12 +1956,14 @@
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "1347091426241151379"
+              "templateHash": "1928781339383374895"
             }
           },
           "parameters": {
@@ -1901,7 +1972,7 @@
               "defaultValue": "westus"
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "loc": {
               "type": "string",
@@ -1911,7 +1982,7 @@
         }
       }
     },
-    {
+    "folderWithSpace": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "childWithSpace",
@@ -1922,12 +1993,14 @@
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "1347091426241151379"
+              "templateHash": "1928781339383374895"
             }
           },
           "parameters": {
@@ -1936,7 +2009,7 @@
               "defaultValue": "westus"
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "loc": {
               "type": "string",
@@ -1946,7 +2019,7 @@
         }
       }
     },
-    {
+    "withSeparateConfig": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "withSeparateConfig",
@@ -1957,12 +2030,14 @@
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "dev",
-              "templateHash": "11355552435760822103"
+              "templateHash": "14053067768961449790"
             }
           },
           "imports": {
@@ -1971,7 +2046,7 @@
               "version": "1.0"
             }
           },
-          "resources": [],
+          "resources": {},
           "outputs": {
             "str": {
               "type": "string",
@@ -1981,27 +2056,27 @@
         }
       }
     }
-  ],
+  },
   "outputs": {
     "stringOutputA": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.stringOutputA.value]"
+      "value": "[reference('modATest').outputs.stringOutputA.value]"
     },
     "stringOutputB": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.stringOutputB.value]"
+      "value": "[reference('modATest').outputs.stringOutputB.value]"
     },
     "objOutput": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.objOutput.value]"
+      "value": "[reference('modATest').outputs.objOutput.value]"
     },
     "arrayOutput": {
       "type": "array",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'modATest'), '2020-10-01').outputs.arrayOutput.value]"
+      "value": "[reference('modATest').outputs.arrayOutput.value]"
     },
     "modCalculatedNameOutput": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', 'optionalWithAllParamsAndManualDependency', parameters('deployTimeSuffix'))), '2020-10-01').outputs.outputObj.value]"
+      "value": "[reference('moduleWithCalculatedName').outputs.outputObj.value]"
     }
   }
 }

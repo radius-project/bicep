@@ -354,7 +354,7 @@ resource thing 'Microsoft.Network/virtualNetworks/subnets/things@2021-05-01' = [
 
         private CompilationHelper.CompilationResult Compile(string bicep, bool symbolicNameCodegenEnabled)
         {
-            var services = new ServiceBuilder().WithFeatureOverrides(new(this.TestContext, SymbolicNameCodegenEnabled: symbolicNameCodegenEnabled));
+            var services = new ServiceBuilder().WithFeatureOverrides(new(this.TestContext, SymbolicNameCodegenEnabled: symbolicNameCodegenEnabled, ImportsEnabled: false));
 
             return CompilationHelper.Compile(services, bicep);
         }

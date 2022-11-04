@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "12683546045009937644"
+      "templateHash": "14373867120325425096"
     }
   },
   "parameters": {
@@ -42,8 +44,8 @@
       "defaultValue": "[resourceGroup().location]"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "virtualNetwork": {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2020-06-01",
       "name": "[parameters('virtualNetworkName')]",
@@ -56,10 +58,10 @@
         }
       }
     },
-    {
+    "subnet": {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', parameters('virtualNetworkName'), parameters('subnetName'))]",
+      "name": "[format('{0}/{1}', resourceInfo('virtualNetwork').name, parameters('subnetName'))]",
       "properties": {
         "addressPrefix": "[parameters('subnetPrefix')]",
         "networkSecurityGroup": {
@@ -84,13 +86,13 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+        "virtualNetwork"
       ]
     },
-    {
+    "gatewaySubnet": {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/GatewaySubnet', parameters('virtualNetworkName'))]",
+      "name": "[format('{0}/GatewaySubnet', resourceInfo('virtualNetwork').name)]",
       "properties": {
         "addressPrefix": "[parameters('gatewaySubnetPrefix')]",
         "networkSecurityGroup": {
@@ -115,10 +117,10 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+        "virtualNetwork"
       ]
     },
-    {
+    "publicIP": {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-06-01",
       "name": "[parameters('gatewayPublicIPName')]",
@@ -127,7 +129,7 @@
         "publicIPAllocationMethod": "Dynamic"
       }
     },
-    {
+    "virtualNetworkGateway": {
       "type": "Microsoft.Network/virtualNetworkGateways",
       "apiVersion": "2020-06-01",
       "name": "[parameters('gatewayName')]",
@@ -139,10 +141,10 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/GatewaySubnet', parameters('virtualNetworkName')), '/')[0], split(format('{0}/GatewaySubnet', parameters('virtualNetworkName')), '/')[1])]"
+                "id": "[resourceInfo('gatewaySubnet').id]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('gatewayPublicIPName'))]"
+                "id": "[resourceInfo('publicIP').id]"
               }
             }
           }
@@ -150,18 +152,18 @@
         "gatewayType": "ExpressRoute"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/GatewaySubnet', parameters('virtualNetworkName')), '/')[0], split(format('{0}/GatewaySubnet', parameters('virtualNetworkName')), '/')[1])]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('gatewayPublicIPName'))]"
+        "gatewaySubnet",
+        "publicIP"
       ]
     },
-    {
+    "connection": {
       "type": "Microsoft.Network/connections",
       "apiVersion": "2020-06-01",
       "name": "[parameters('connectionName')]",
       "location": "[parameters('location')]",
       "properties": {
         "virtualNetworkGateway1": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('gatewayName'))]",
+          "id": "[resourceInfo('virtualNetworkGateway').id]",
           "properties": {}
         },
         "peer": {
@@ -171,8 +173,8 @@
         "routingWeight": 3
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('gatewayName'))]"
+        "virtualNetworkGateway"
       ]
     }
-  ]
+  }
 }

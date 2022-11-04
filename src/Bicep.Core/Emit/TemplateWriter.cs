@@ -909,10 +909,10 @@ namespace Bicep.Core.Emit
             jsonWriter.WritePropertyName("metadata");
             jsonWriter.WriteStartObject();
             {
-                // if (context.Settings.EnableSymbolicNames)
-                // {
-                //     emitter.EmitProperty("EXPERIMENTAL_WARNING", "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!");
-                // }
+                if (context.Settings.EnableSymbolicNames)
+                {
+                    emitter.EmitProperty("_EXPERIMENTAL_WARNING", "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!");
+                }
 
                 jsonWriter.WritePropertyName("_generator");
                 jsonWriter.WriteStartObject();

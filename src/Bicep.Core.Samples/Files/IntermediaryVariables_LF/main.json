@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "11118299664848190018"
+      "templateHash": "3836420531154098891"
     }
   },
   "variables": {
@@ -35,15 +37,15 @@
       "evictionPolicy": "[variables('boolVal')]"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "vm": {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2020-12-01",
       "name": "vm",
       "location": "West US",
       "properties": "[variables('vmProperties')]"
     },
-    {
+    "nic": {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "abc",
@@ -51,7 +53,7 @@
         "ipConfigurations": "[variables('ipConfigurations')]"
       }
     },
-    {
+    "nicLoop": {
       "copy": {
         "name": "nicLoop",
         "count": "[length(range(0, 2))]"
@@ -65,7 +67,7 @@
         ]
       }
     },
-    {
+    "nicLoop2": {
       "copy": {
         "name": "nicLoop2",
         "count": "[length(variables('ipConfigurations'))]"
@@ -79,5 +81,5 @@
         ]
       }
     }
-  ]
+  }
 }

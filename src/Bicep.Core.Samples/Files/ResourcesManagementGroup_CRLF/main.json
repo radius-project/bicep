@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "7073737674999620234"
+      "templateHash": "1423609413283331771"
     }
   },
   "parameters": {
@@ -19,8 +21,8 @@
       "type": "array"
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "owner": {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
       "name": "[guid('owner', parameters('ownerPrincipalId'))]",
@@ -29,7 +31,7 @@
         "roleDefinitionId": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
       }
     },
-    {
+    "contributors": {
       "copy": {
         "name": "contributors",
         "count": "[length(parameters('contributorPrincipals'))]"
@@ -42,10 +44,10 @@
         "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
       },
       "dependsOn": [
-        "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/roleAssignments', guid('owner', parameters('ownerPrincipalId')))]"
+        "owner"
       ]
     },
-    {
+    "readers": {
       "copy": {
         "name": "readers",
         "count": "[length(parameters('readerPrincipals'))]"
@@ -58,28 +60,28 @@
         "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
       },
       "dependsOn": [
-        "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/roleAssignments', guid('contributor', parameters('contributorPrincipals')[0]))]",
-        "[extensionResourceId(managementGroup().id, 'Microsoft.Authorization/roleAssignments', guid('owner', parameters('ownerPrincipalId')))]"
+        "[format('contributors[{0}]', 0)]",
+        "owner"
       ]
     },
-    {
+    "single_mg": {
       "type": "Microsoft.Management/managementGroups",
       "apiVersion": "2020-05-01",
       "scope": "/",
       "name": "one-mg"
     },
-    {
+    "tenant_blueprint": {
       "type": "Microsoft.Blueprint/blueprints",
       "apiVersion": "2018-11-01-preview",
       "scope": "/",
       "name": "tenant-blueprint",
       "properties": {}
     },
-    {
+    "mg_blueprint": {
       "type": "Microsoft.Blueprint/blueprints",
       "apiVersion": "2018-11-01-preview",
       "name": "mg-blueprint",
       "properties": {}
     }
-  ]
+  }
 }

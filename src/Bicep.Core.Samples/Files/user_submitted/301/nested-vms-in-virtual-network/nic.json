@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "9277618774445059994"
+      "templateHash": "3322466845026343883"
     }
   },
   "parameters": {
@@ -40,8 +42,8 @@
       "defaultValue": false
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "nic": {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-06-01",
       "name": "[parameters('nicName')]",
@@ -64,15 +66,15 @@
         "enableIPForwarding": "[parameters('enableIPForwarding')]"
       }
     }
-  ],
+  },
   "outputs": {
     "nicId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
+      "value": "[resourceInfo('nic').id]"
     },
     "assignedIp": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2020-06-01').ipConfigurations[0].properties.privateIPAddress]"
+      "value": "[reference('nic').ipConfigurations[0].properties.privateIPAddress]"
     }
   }
 }

@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "dev",
-      "templateHash": "16725308854916544444"
+      "templateHash": "14234582424103721348"
     }
   },
   "parameters": {
@@ -36,8 +38,8 @@
   "variables": {
     "initiativeDefinitionName": "BICEP Example Initiative"
   },
-  "resources": [
-    {
+  "resources": {
+    "initiativeDefinition": {
       "type": "Microsoft.Authorization/policySetDefinitions",
       "apiVersion": "2019-09-01",
       "name": "[variables('initiativeDefinitionName')]",
@@ -94,14 +96,14 @@
         ]
       }
     },
-    {
+    "initiativeDefinitionPolicyAssignment": {
       "type": "Microsoft.Authorization/policyAssignments",
       "apiVersion": "2019-09-01",
       "name": "[variables('initiativeDefinitionName')]",
       "properties": {
         "scope": "[subscription().id]",
         "enforcementMode": "Default",
-        "policyDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/policySetDefinitions', variables('initiativeDefinitionName'))]",
+        "policyDefinitionId": "[resourceInfo('initiativeDefinition').id]",
         "parameters": {
           "listOfAllowedLocations": {
             "value": "[parameters('listOfAllowedLocations')]"
@@ -112,8 +114,8 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Authorization/policySetDefinitions', variables('initiativeDefinitionName'))]"
+        "initiativeDefinition"
       ]
     }
-  ]
+  }
 }

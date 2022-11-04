@@ -18,36 +18,36 @@ metadata myMultiLineString = '''
 // object value
 metadata foo = {
   enabled: true
-//@[16:16]       "enabled": true,
+//@[18:18]       "enabled": true,
   name: 'this is my object'
-//@[17:17]       "name": "this is my object",
+//@[19:19]       "name": "this is my object",
   priority: 3
-//@[18:18]       "priority": 3,
+//@[20:20]       "priority": 3,
   info: {
-//@[19:21]       "info": {
+//@[21:23]       "info": {
     a: 'b'
-//@[20:20]         "a": "b"
+//@[22:22]         "a": "b"
   }
   empty: {
-//@[22:22]       "empty": {},
+//@[24:24]       "empty": {},
   }
   array: [
-//@[23:34]       "array": [
+//@[25:36]       "array": [
     'string item'
-//@[24:24]         "string item",
+//@[26:26]         "string item",
     12
-//@[25:25]         12,
+//@[27:27]         12,
     true
-//@[26:26]         true,
+//@[28:28]         true,
     [
       'inner'
-//@[28:28]           "inner",
+//@[30:30]           "inner",
       false
-//@[29:29]           false
+//@[31:31]           false
     ]
     {
       a: 'b'
-//@[32:32]           "a": "b"
+//@[34:34]           "a": "b"
     }
   ]
 }
@@ -55,11 +55,11 @@ metadata foo = {
 // array value
 metadata myArrayMetadata = [
   'a'
-//@[37:37]       "a",
+//@[39:39]       "a",
   'b'
-//@[38:38]       "b",
+//@[40:40]       "b",
   'c'
-//@[39:39]       "c"
+//@[41:41]       "c"
 ]
 
 // emtpy object and array
@@ -68,5 +68,5 @@ metadata myEmptyArray = [ ]
 
 // param with same name as metadata is permitted
 param foo string
-//@[45:47]     "foo": {
+//@[47:49]     "foo": {
 

@@ -7,55 +7,150 @@ on:
       - v*
   pull_request:
     branches: [bicep-extensibility]
+  workflow_dispatch:
+
+env:
+  CI: true
+  # don't print dotnet logo
+  DOTNET_NOLOGO: true
+  # disable telemetry (reduces dotnet tool output in logs)
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   build:
-    name: Build
+    name: Build (${{ matrix.runtime.name }})
     runs-on: ubuntu-latest
-    env:
-      CI: true
+    strategy:
+      # let us get failures from other jobs even if one fails
+      fail-fast: false
+      # should be the full list of supported RIDs with customizations expressed via the parameters under each item
+      matrix:
+        runtime:
+          - name: windows-x64
+            id: win-x64
+          - name: linux-x64
+            id: linux-x64
+          - name: macos-x64
+            id: osx-x64
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
           submodules: true
       - name: Parse release version and set environment variables
         run: python ./.github/scripts/get_release_version.py\
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
 
-      - name: Dotnet Publish Bicep (Linux)
-        run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'linux-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/linux-x64
-      - name: Dotnet Publish Bicep (MacOS)
-        run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'osx-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/macos-x64
-      - name: Dotnet Publish Bicep (Windows)
-        run: dotnet publish --configuration Release --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true -p:TrimmerDefaultAction=copyused -p:SuppressTrimAnalysisWarnings=true -r 'win-x64' ./src/Bicep.Cli/Bicep.Cli.csproj -o ./artifacts/bicep/windows-x64
-      - name: Dotnet Publish Language Server
-        run: dotnet publish "./../Bicep.LangServer" -o "./bicepLanguageServer"
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+
+      - name: Build Bicep.sln
+        run: dotnet build --configuration release
+
+      - name: Publish Bicep (${{ matrix.runtime.name }})
+        run: >
+          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
+          --configuration Release 
+          --self-contained true 
+          -p:PublishTrimmed=true 
+          -p:PublishSingleFile=true 
+          -p:TrimmerDefaultAction=copyused 
+          -p:SuppressTrimAnalysisWarnings=true 
+          -r ${{ matrix.runtime.id }} 
+          -o ./artifacts/bicep/${{ matrix.runtime.name }}
+
+      - name: Publish Language Server
+        run: >
+          dotnet publish --configuration release 
+          ./src/Bicep.LangServer/Bicep.LangServer.csproj 
+          -o "./src/vscode-bicep/bicepLanguageServer"
+
+      - name: Test
+        run: dotnet test --configuration release --logger "trx;LogFilePrefix=${{ matrix.runtime.name }}" --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Bicep.TestResults.${{ matrix.runtime.name }}
+          path: ./TestResults/**/*.trx
+          if-no-files-found: error
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: npm ci
+        run: npm ci
         working-directory: ./src/vscode-bicep
-      - name: Dotnet Publish VSIX
-        run: npm ci && npm run package
+
+      - name: Enable params
+        run: npm run params
         working-directory: ./src/vscode-bicep
+
+      - name: Run lint
+        run: npm run lint
+        working-directory: ./src/vscode-bicep
+
+      - name: Run unit tests
+        run: npm run test:unit
+        working-directory: ./src/vscode-bicep
+
+      - name: Run snapshot tests
+        run: npm run test:snapshot
+        working-directory: ./src/vscode-bicep
+
+      - name: Build prod
+        run: npm run build:prod
+        working-directory: ./src/vscode-bicep
+
+      # Comment out while we troubleshoot the root cause of e2e errors
+      # - name: Build E2E tests
+      #   run: npm run build:e2e
+      #   working-directory: ./src/vscode-bicep
+
+      # - name: Run E2E tests
+      #   run: xvfb-run -a npm run test:e2e
+      #   working-directory: ./src/vscode-bicep
+
+      # - name: Show extension logs of E2E tests
+      #   run: cat ./bicep.log
+      #   if: always()
+      #   working-directory: ./src/vscode-bicep
+
+      - name: Create VSIX
+        run: npm run package
+        working-directory: ./src/vscode-bicep
+
       - name: Copy VSIX
-        run: mkdir -p ./artifacts/vscode && cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
+        run: >
+         mkdir -p ./artifacts/vscode && 
+         cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
           name: artifacts
           path: ./artifacts
+          if-no-files-found: error
 
   publish:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build"]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runtime-name: [windows-x64, linux-x64, macos-x64]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -73,28 +168,12 @@ jobs:
         run: ls -R
         working-directory: ./artifacts
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (Linux)
+        name: Upload rad-bicep (${{ matrix.runtime-name }})
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/linux-x64/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/linux-x64/ --pattern rad-bicep --overwrite true"
-          sync: true
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (MacOS)
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/macos-x64/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/macos-x64/ --pattern rad-bicep --overwrite true"
-          sync: true
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (Windows)
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/windows-x64/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/windows-x64/ --pattern rad-bicep.exe --overwrite true"
+          source_dir: ./artifacts/bicep/${{ matrix.runtime-name }}/
+          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime-name }}/ --pattern rad-bicep --overwrite true"
           sync: true
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (channel)
