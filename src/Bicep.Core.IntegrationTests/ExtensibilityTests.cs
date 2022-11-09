@@ -394,6 +394,8 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
+    mode: 'resource'
+    resource: '12345'
   }
 }
 
@@ -476,6 +478,7 @@ resource rabbitmq 'Applications.Link/rabbitMQMessageQueues@2022-03-15-privatepre
   location: 'global'
   properties: {
     environment: 'test'
+    mode: 'values'
     queue: 'my-queue'
   }
 }
@@ -565,6 +568,8 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
+    mode: 'resource'
+    resource: '12345'
   }
 }
 
@@ -608,6 +613,8 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
+    mode: 'resource'
+    resource: '12345'
   }
 }
 
