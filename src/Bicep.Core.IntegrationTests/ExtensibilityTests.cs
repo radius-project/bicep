@@ -438,6 +438,8 @@ resource redis 'Applications.Link/redisCaches@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
+    mode: 'resource'
+    resource: '12345'
   }
 }
 
