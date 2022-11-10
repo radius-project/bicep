@@ -48,7 +48,7 @@ namespace Bicep.Core.TypeSystem.Aws
         private readonly ResourceTypeCache generatedTypeCache;
 
         public static readonly ImmutableHashSet<string> UniqueIdentifierProperties = new[]
-       {
+        {
             ResourceNamePropertyName,
         }.ToImmutableHashSet();
 

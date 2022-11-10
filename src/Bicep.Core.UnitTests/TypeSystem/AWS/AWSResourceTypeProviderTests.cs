@@ -1,25 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Bicep.Core.Configuration;
-using Bicep.Core.Diagnostics;
-using Bicep.Core.Semantics;
-using Bicep.Core.TypeSystem;
-using Bicep.Core.TypeSystem.Aws;
-using Bicep.Core.TypeSystem.Az;
 using Bicep.Core.UnitTests.Assertions;
 using Bicep.Core.UnitTests.Utils;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Bicep.Core.Extensions;
-using Moq;
-using Bicep.Core.FileSystem;
-using Bicep.Core.Semantics.Namespaces;
-using System.Reflection;
-using Bicep.Core.Resources;
 
 namespace Bicep.Core.UnitTests.TypeSystem.Aws
 {
