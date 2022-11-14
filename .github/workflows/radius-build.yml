@@ -28,7 +28,6 @@ jobs:
         runtime:
           - name: windows-x64
             id: win-x64
-            extension: .exe
           - name: linux-x64
             id: linux-x64
           - name: macos-x64
@@ -151,7 +150,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        runtime-name: [windows-x64, linux-x64, macos-x64]
+        runtime:
+          - name: windows-x64
+            id: win-x64
+            extension: .exe
+          - name: linux-x64
+            id: linux-x64
+          - name: macos-x64
+            id: osx-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
