@@ -28,6 +28,7 @@ jobs:
         runtime:
           - name: windows-x64
             id: win-x64
+            extension: .exe
           - name: linux-x64
             id: linux-x64
           - name: macos-x64
@@ -169,12 +170,15 @@ jobs:
         working-directory: ./artifacts
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload rad-bicep (${{ matrix.runtime-name }})
+        id: upload-rad-bicep
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
           source_dir: ./artifacts/bicep/${{ matrix.runtime-name }}/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime-name }}/ --pattern rad-bicep --overwrite true"
+          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime-name }}/ --pattern rad-bicep${{ matrix.extension }} --overwrite true"
           sync: true
+      - name: Confirm artifact uploaded
+        run: echo ${{ steps.upload-rad-bicep.outputs }}
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (channel)
         with:
