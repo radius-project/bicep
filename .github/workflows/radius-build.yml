@@ -154,10 +154,10 @@ jobs:
           - name: windows-x64
             id: win-x64
             extension: .exe
-          # - name: linux-x64
-          #   id: linux-x64
-          # - name: macos-x64
-          #   id: osx-x64
+          - name: linux-x64
+            id: linux-x64
+          - name: macos-x64
+            id: osx-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -175,13 +175,13 @@ jobs:
         run: ls -R
         working-directory: ./artifacts
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (${{ matrix.runtime-name }})
+        name: Upload rad-bicep (${{ matrix.runtime.name }})
         id: upload-rad-bicep
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/${{ matrix.runtime-name }}/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime-name }}/ --pattern rad-bicep${{ matrix.extension }} --overwrite true"
+          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
+          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
           sync: true
       - name: Confirm artifact uploaded
         run: echo ${{ steps.upload-rad-bicep.outputs }}
