@@ -73,16 +73,16 @@ jobs:
           ./src/Bicep.LangServer/Bicep.LangServer.csproj 
           -o "./src/vscode-bicep/bicepLanguageServer"
 
-      - name: Test
-        run: dotnet test --configuration release --logger "trx;LogFilePrefix=${{ matrix.runtime.name }}" --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
+      # - name: Test
+      #   run: dotnet test --configuration release --logger "trx;LogFilePrefix=${{ matrix.runtime.name }}" --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: Bicep.TestResults.${{ matrix.runtime.name }}
-          path: ./TestResults/**/*.trx
-          if-no-files-found: error
+      # - name: Upload Test Results
+      #   uses: actions/upload-artifact@v3
+      #   if: always()
+      #   with:
+      #     name: Bicep.TestResults.${{ matrix.runtime.name }}
+      #     path: ./TestResults/**/*.trx
+      #     if-no-files-found: error
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -144,7 +144,7 @@ jobs:
           if-no-files-found: error
 
   publish:
-    if: ${{ github.event_name == 'push' }}
+    # if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build"]
     runs-on: ubuntu-latest
@@ -154,10 +154,10 @@ jobs:
           - name: windows-x64
             id: win-x64
             extension: .exe
-          - name: linux-x64
-            id: linux-x64
-          - name: macos-x64
-            id: osx-x64
+          # - name: linux-x64
+          #   id: linux-x64
+          # - name: macos-x64
+          #   id: osx-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
