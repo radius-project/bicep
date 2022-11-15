@@ -193,7 +193,7 @@ jobs:
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
           sync: true
       - name: Confirm artifact uploaded
-        run: echo ${{join(steps.run_tests.outputs.*, '\n')}}
+        run: echo ${{join(steps.upload-rad-bicep.outputs.*, '\n')}}
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (channel)
         with:
