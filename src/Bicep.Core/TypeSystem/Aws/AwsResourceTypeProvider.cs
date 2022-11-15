@@ -151,15 +151,10 @@ namespace Bicep.Core.TypeSystem.Aws
         {
             foreach (var property in properties)
             {
-                // "name", "scope" & "parent" can be set for existing resources - everything else should be read-only
-                if (UniqueIdentifierProperties.Contains(property.Name))
-                {
-                    yield return property;
-                }
-                else
-                {
-                    yield return new TypeProperty(property.Name, property.TypeReference, ConvertToReadOnly(property.Flags));
-                }
+                // Allow any existing property on AWS resources
+                // See https://github.com/project-radius/radius/issues/4495 for how we will use flag information to
+                // only have primary identifiers here.
+                yield return property;
             }
         }
 
