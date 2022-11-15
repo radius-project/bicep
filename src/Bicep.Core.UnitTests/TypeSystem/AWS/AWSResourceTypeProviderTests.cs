@@ -40,12 +40,13 @@ output foo string = s3.name
         {
             var compilation = Services.BuildCompilation(@"
 import aws as aws
+param eksClusterName string
 
-resource s3 'AWS.S3/Bucket@default' existing = {
-  name: 'foo'
+resource eksCluster 'AWS.EKS/Cluster@default' existing = {
+  name: eksClusterName
 }
 
-output foo string = s3.name
+output foo string = eksCluster.name
 ");
 
             var diag = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();

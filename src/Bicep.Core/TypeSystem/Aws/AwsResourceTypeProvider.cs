@@ -158,13 +158,14 @@ namespace Bicep.Core.TypeSystem.Aws
                 }
                 else
                 {
+                    // Remove required from all properties on existing resources
                     yield return new TypeProperty(property.Name, property.TypeReference, ConvertToReadOnly(property.Flags));
                 }
             }
         }
 
         private static TypePropertyFlags ConvertToReadOnly(TypePropertyFlags typePropertyFlags)
-            => (typePropertyFlags | TypePropertyFlags.ReadOnly) & ~TypePropertyFlags.Required;
+            => (typePropertyFlags & ~TypePropertyFlags.Required);
 
         public ResourceType? TryGetDefinedType(NamespaceType declaringNamespace, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
         {
