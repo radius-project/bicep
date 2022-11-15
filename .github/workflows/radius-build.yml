@@ -18,20 +18,8 @@ env:
 
 jobs:
   build:
-    name: Build (${{ matrix.runtime.name }})
+    name: Build
     runs-on: ubuntu-latest
-    strategy:
-      # let us get failures from other jobs even if one fails
-      fail-fast: false
-      # should be the full list of supported RIDs with customizations expressed via the parameters under each item
-      matrix:
-        runtime:
-          - name: windows-x64
-            id: win-x64
-          - name: linux-x64
-            id: linux-x64
-          - name: macos-x64
-            id: osx-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -55,7 +43,7 @@ jobs:
       - name: Build Bicep.sln
         run: dotnet build --configuration release
 
-      - name: Publish Bicep (${{ matrix.runtime.name }})
+      - name: Publish Bicep windows-x64
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
@@ -64,8 +52,30 @@ jobs:
           -p:PublishSingleFile=true 
           -p:TrimmerDefaultAction=copyused 
           -p:SuppressTrimAnalysisWarnings=true 
-          -r ${{ matrix.runtime.id }} 
-          -o ./artifacts/bicep/${{ matrix.runtime.name }}
+          -r win-x64
+          -o ./artifacts/bicep/windows-x64
+      - name: Publish Bicep linux-x64
+        run: >
+          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
+          --configuration Release 
+          --self-contained true 
+          -p:PublishTrimmed=true 
+          -p:PublishSingleFile=true 
+          -p:TrimmerDefaultAction=copyused 
+          -p:SuppressTrimAnalysisWarnings=true 
+          -r linux-x64
+          -o ./artifacts/bicep/linux-x64
+      - name: Publish Bicep osx-x64
+        run: >
+          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
+          --configuration Release 
+          --self-contained true 
+          -p:PublishTrimmed=true 
+          -p:PublishSingleFile=true 
+          -p:TrimmerDefaultAction=copyused 
+          -p:SuppressTrimAnalysisWarnings=true 
+          -r osx-x64
+          -o ./artifacts/bicep/macos-x64
 
       - name: Publish Language Server
         run: >
@@ -73,16 +83,15 @@ jobs:
           ./src/Bicep.LangServer/Bicep.LangServer.csproj 
           -o "./src/vscode-bicep/bicepLanguageServer"
 
-      # - name: Test
-      #   run: dotnet test --configuration release --logger "trx;LogFilePrefix=${{ matrix.runtime.name }}" --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
+      - name: Test
+        run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
-      # - name: Upload Test Results
-      #   uses: actions/upload-artifact@v3
-      #   if: always()
-      #   with:
-      #     name: Bicep.TestResults.${{ matrix.runtime.name }}
-      #     path: ./TestResults/**/*.trx
-      #     if-no-files-found: error
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always() 
+        with:
+          name: Bicep.TestResults
+          path: ./TestResults/**/*.trx
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -184,7 +193,7 @@ jobs:
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
           sync: true
       - name: Confirm artifact uploaded
-        run: echo ${{ steps.upload-rad-bicep.outputs }}
+        run: echo ${{join(steps.run_tests.outputs.*, '\n')}}
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload VS Code (channel)
         with:
