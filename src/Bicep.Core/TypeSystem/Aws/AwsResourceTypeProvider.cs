@@ -131,7 +131,7 @@ namespace Bicep.Core.TypeSystem.Aws
                     objectType.ValidationFlags,
                     isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                     objectType.AdditionalPropertiesType,
-                    isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                    isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                     functions: functions);
             }
 
@@ -143,7 +143,7 @@ namespace Bicep.Core.TypeSystem.Aws
                 objectType.ValidationFlags,
                 isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
-                isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                 functions: null);
         }
 
@@ -159,12 +159,12 @@ namespace Bicep.Core.TypeSystem.Aws
                 else
                 {
                     // Remove required from all properties on existing resources
-                    yield return new TypeProperty(property.Name, property.TypeReference, ConvertToReadOnly(property.Flags));
+                    yield return new TypeProperty(property.Name, property.TypeReference, RemoveRequired(property.Flags));
                 }
             }
         }
 
-        private static TypePropertyFlags ConvertToReadOnly(TypePropertyFlags typePropertyFlags)
+        private static TypePropertyFlags RemoveRequired(TypePropertyFlags typePropertyFlags)
             => (typePropertyFlags & ~TypePropertyFlags.Required);
 
         public ResourceType? TryGetDefinedType(NamespaceType declaringNamespace, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
