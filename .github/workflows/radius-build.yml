@@ -193,7 +193,8 @@ jobs:
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
           sync: true
       - name: Check uploaded
-        run: curl https://radiuspublic.blob.core.windows.net/assets/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v
+        run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
+
       # Only upload it once
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         if: ${{ matrix.runtime.name == 'linux-x64' }}
