@@ -83,15 +83,15 @@ jobs:
           ./src/Bicep.LangServer/Bicep.LangServer.csproj 
           -o "./src/vscode-bicep/bicepLanguageServer"
 
-      - name: Test
-        run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
+      # - name: Test
+      #   run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v3
-        if: always() 
-        with:
-          name: Bicep.TestResults
-          path: ./TestResults/**/*.trx
+      # - name: Upload Test Results
+      #   uses: actions/upload-artifact@v3
+      #   if: always() 
+      #   with:
+      #     name: Bicep.TestResults
+      #     path: ./TestResults/**/*.trx
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -153,7 +153,7 @@ jobs:
           if-no-files-found: error
 
   publish:
-    # if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build"]
     runs-on: ubuntu-latest
@@ -192,9 +192,11 @@ jobs:
           source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
           extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
           sync: true
-      - name: Confirm artifact uploaded
-        run: echo ${{join(steps.upload-rad-bicep.outputs.*, '\n')}}
+      - name: Check uploaded
+        run: curl https://radiuspublic.blob.core.windows.net/assets/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v
+      # Only upload it once
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+        if: ${{ matrix.runtime.name == 'linux-x64' }}
         name: Upload VS Code (channel)
         with:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
