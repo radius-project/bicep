@@ -83,15 +83,15 @@ jobs:
           ./src/Bicep.LangServer/Bicep.LangServer.csproj 
           -o "./src/vscode-bicep/bicepLanguageServer"
 
-      # - name: Test
-      #   run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
+      - name: Test
+        run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
-      # - name: Upload Test Results
-      #   uses: actions/upload-artifact@v3
-      #   if: always() 
-      #   with:
-      #     name: Bicep.TestResults
-      #     path: ./TestResults/**/*.trx
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always() 
+        with:
+          name: Bicep.TestResults
+          path: ./TestResults/**/*.trx
 
       - name: Setup Node
         uses: actions/setup-node@v3
