@@ -36,6 +36,28 @@ output foo string = s3.name
         }
 
         [TestMethod]
+        public void AWSResourceTypeProvider_nowarn_for_existing_no_name()
+        {
+            var compilation = Services.BuildCompilation(@"
+import aws as aws
+
+resource s3 'AWS.S3/Bucket@default' existing = {
+  properties: {
+    BucketName: 'my-bucket-asdfasdfdfzzaasda2afq1'
+    AccessControl: 'PublicRead'
+  }
+}
+
+output foo string = s3.properties.BucketName
+");
+
+            var diag = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();
+
+            compilation.Should().NotHaveAnyDiagnostics();
+        }
+
+
+        [TestMethod]
         public void AWSResourceTypeProvider_nowarn_for_existing_without_properties()
         {
             var compilation = Services.BuildCompilation(@"
