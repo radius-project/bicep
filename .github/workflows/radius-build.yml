@@ -19,7 +19,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -156,7 +156,7 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build"]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         runtime:
