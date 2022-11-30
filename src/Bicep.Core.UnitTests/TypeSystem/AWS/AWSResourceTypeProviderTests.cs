@@ -75,5 +75,25 @@ output foo string = eksCluster.name
 
             compilation.Should().NotHaveAnyDiagnostics();
         }
+
+        [TestMethod]
+        public void AWSResourceTypeProvider_nowarn_without_name()
+        {
+            var compilation = Services.BuildCompilation(@"
+import aws as aws
+
+resource s3 'AWS.S3/Bucket@default' = {
+  properties: {
+    BucketName: 'bucket'
+  }
+}
+
+output foo string = s3.properties.BucketName
+");
+
+            var diag = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();
+
+            compilation.Should().NotHaveAnyDiagnostics();
+        }
     }
 }

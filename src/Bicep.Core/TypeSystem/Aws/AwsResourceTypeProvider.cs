@@ -124,6 +124,7 @@ namespace Bicep.Core.TypeSystem.Aws
             {
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
+                properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, RemoveRequired(nameProperty.Flags)));
 
                 var functions = Array.Empty<Semantics.FunctionOverload>();
                 return new ObjectType(
