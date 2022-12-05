@@ -128,7 +128,7 @@ namespace Bicep.Core.TypeSystem.Aws
                 return new ObjectType(
                     objectType.Name,
                     objectType.ValidationFlags,
-                    isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
+                    isExistingResource ? HandleExistingResource(properties.Values) : properties.Values,
                     objectType.AdditionalPropertiesType,
                     isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                     functions: functions);
@@ -140,20 +140,20 @@ namespace Bicep.Core.TypeSystem.Aws
             return new ObjectType(
                 objectType.Name,
                 objectType.ValidationFlags,
-                isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
+                isExistingResource ? HandleExistingResource(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
                 isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                 functions: null);
         }
 
-        private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
+        private static IEnumerable<TypeProperty> HandleExistingResource(IEnumerable<TypeProperty> properties)
         {
             foreach (var property in properties)
             {
                 // We want to mark only identifier properties are required, everything else should be optional and readonly
                 if (property.TypeReference.Type is ObjectType curObj)
                 {
-                    var visited = ConvertToReadOnly(curObj.Properties.Values);
+                    var visited = HandleExistingResource(curObj.Properties.Values);
                     var propsWithIdentifier = visited.Where(p => p.Flags.HasFlag(TypePropertyFlags.Identifier)).Count();
                     var curPropFlags = propsWithIdentifier > 0 ? MakeRequired(curObj.AdditionalPropertiesFlags) : curObj.AdditionalPropertiesFlags;
 
