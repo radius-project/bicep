@@ -155,7 +155,7 @@ namespace Bicep.Core.TypeSystem.Aws
                 {
                     var visited = ConvertToReadOnly(curObj.Properties.Values);
                     var propsWithIdentifier = visited.Where(p => p.Flags.HasFlag(TypePropertyFlags.Identifier)).Count();
-                    var curPropFlags = propsWithIdentifier > 0 ? curObj.AdditionalPropertiesFlags | TypePropertyFlags.Required : curObj.AdditionalPropertiesFlags;
+                    var curPropFlags = propsWithIdentifier > 0 ? MakeRequired(curObj.AdditionalPropertiesFlags) : curObj.AdditionalPropertiesFlags;
 
                     yield return new TypeProperty(property.Name, new ObjectType(curObj.Name, curObj.ValidationFlags, visited, curObj.AdditionalPropertiesType), curPropFlags);
                 }
