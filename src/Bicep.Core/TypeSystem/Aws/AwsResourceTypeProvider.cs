@@ -131,7 +131,7 @@ namespace Bicep.Core.TypeSystem.Aws
                     objectType.ValidationFlags,
                     isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                     objectType.AdditionalPropertiesType,
-                    isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                    isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                     functions: functions);
             }
 
@@ -143,21 +143,44 @@ namespace Bicep.Core.TypeSystem.Aws
                 objectType.ValidationFlags,
                 isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
-                isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                 functions: null);
         }
 
         private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
         {
+
+
             foreach (var property in properties)
             {
-                // Remove required from all properties on existing resources
-                yield return new TypeProperty(property.Name, property.TypeReference, RemoveRequired(property.Flags));
+                // We want to mark only identifier properties are required, everything else should be optional and readonly
+                if (property.TypeReference.Type is ObjectType curObj)
+                {
+                    var visited = ConvertToReadOnly(curObj.Properties.Values);
+                    var propsWithIdentifier = visited.Where(p => p.Flags.HasFlag(TypePropertyFlags.Identifier)).Count();
+                    var curPropFlags = propsWithIdentifier > 0 ? curObj.AdditionalPropertiesFlags | TypePropertyFlags.Required : curObj.AdditionalPropertiesFlags;
+
+                    yield return new TypeProperty(property.Name, new ObjectType(curObj.Name, curObj.ValidationFlags, visited, curObj.AdditionalPropertiesType), curPropFlags);
+                }
+                else
+                {
+                    yield return new TypeProperty(property.Name, property.TypeReference, HandleIdentifierProperty(property.Flags));
+                }
+
+
             }
         }
 
-        private static TypePropertyFlags RemoveRequired(TypePropertyFlags typePropertyFlags)
-            => (typePropertyFlags & ~TypePropertyFlags.Required);
+        private static TypePropertyFlags HandleIdentifierProperty(TypePropertyFlags typePropertyFlags)
+        {
+            return typePropertyFlags.HasFlag(TypePropertyFlags.Identifier) ? MakeRequired(typePropertyFlags) : ConvertToReadOnly(typePropertyFlags);
+        }
+
+        private static TypePropertyFlags MakeRequired(TypePropertyFlags typePropertyFlags)
+            => (typePropertyFlags | TypePropertyFlags.Required) & ~TypePropertyFlags.ReadOnly;
+
+        private static TypePropertyFlags ConvertToReadOnly(TypePropertyFlags typePropertyFlags)
+            => (typePropertyFlags | TypePropertyFlags.ReadOnly) & ~TypePropertyFlags.Required;
 
         public ResourceType? TryGetDefinedType(NamespaceType declaringNamespace, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
         {
