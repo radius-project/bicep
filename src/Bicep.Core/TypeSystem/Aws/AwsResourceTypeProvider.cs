@@ -92,7 +92,6 @@ namespace Bicep.Core.TypeSystem.Aws
                     // so this exception should never occur in the released product
                     throw new ArgumentException($"Resource {resourceType.TypeReference.FormatName()} has unexpected body type {bodyType.GetType()}");
             }
-
             return resourceType with { Body = bodyType };
         }
 
@@ -149,8 +148,6 @@ namespace Bicep.Core.TypeSystem.Aws
 
         private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
         {
-
-
             foreach (var property in properties)
             {
                 // We want to mark only identifier properties are required, everything else should be optional and readonly
