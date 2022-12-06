@@ -155,7 +155,7 @@ namespace Bicep.Core.TypeSystem.Aws
                 {
                     var visited = HandleExistingResource(curObj.Properties.Values);
                     var propsWithIdentifier = visited.Where(p => p.Flags.HasFlag(TypePropertyFlags.Identifier)).Count();
-                    var curPropFlags = propsWithIdentifier > 0 ? MakeRequired(curObj.AdditionalPropertiesFlags) : curObj.AdditionalPropertiesFlags;
+                    var curPropFlags = propsWithIdentifier > 0 || property.Flags.HasFlag(TypePropertyFlags.Required) ? MakeRequired(curObj.AdditionalPropertiesFlags) : curObj.AdditionalPropertiesFlags;
 
                     yield return new TypeProperty(property.Name, new ObjectType(curObj.Name, curObj.ValidationFlags, visited, curObj.AdditionalPropertiesType), curPropFlags);
                 }
