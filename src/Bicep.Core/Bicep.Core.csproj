@@ -37,7 +37,6 @@
     <PackageReference Include="Azure.Bicep.Types" Version="0.3.29" />
     <PackageReference Include="Azure.Bicep.Types.Az" Version="0.2.170" />
     <PackageReference Include="Azure.Bicep.Types.K8s" Version="0.1.186" />
-    <ProjectReference Include="../Bicep.Types.Radius/Bicep.Types.Radius.csproj" />
     <ProjectReference Include="../Bicep.Types.Aws/Bicep.Types.Aws.csproj" />
     <ProjectReference Include="../Bicep.Types.Radius/Bicep.Types.Radius.csproj" />
     <PackageReference Include="System.IO.Abstractions" Version="17.2.3" />

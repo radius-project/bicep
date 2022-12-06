@@ -72,6 +72,6 @@ namespace Bicep.Core.TypeSystem
         // /// <summary>
         // /// An identifier flags this property so it's not converted to read-only when used with the 'existing' qualifier.
         // /// </summary>
-        // Identifier = 1 << 11
+        Identifier = 1 << 11
     }
 }

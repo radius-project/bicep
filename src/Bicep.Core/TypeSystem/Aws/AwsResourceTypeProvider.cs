@@ -92,7 +92,6 @@ namespace Bicep.Core.TypeSystem.Aws
                     // so this exception should never occur in the released product
                     throw new ArgumentException($"Resource {resourceType.TypeReference.FormatName()} has unexpected body type {bodyType.GetType()}");
             }
-
             return resourceType with { Body = bodyType };
         }
 
@@ -129,9 +128,9 @@ namespace Bicep.Core.TypeSystem.Aws
                 return new ObjectType(
                     objectType.Name,
                     objectType.ValidationFlags,
-                    isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
+                    isExistingResource ? HandleExistingResource(properties.Values) : properties.Values,
                     objectType.AdditionalPropertiesType,
-                    isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                    isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                     functions: functions);
             }
 
@@ -141,23 +140,44 @@ namespace Bicep.Core.TypeSystem.Aws
             return new ObjectType(
                 objectType.Name,
                 objectType.ValidationFlags,
-                isExistingResource ? ConvertToReadOnly(properties.Values) : properties.Values,
+                isExistingResource ? HandleExistingResource(properties.Values) : properties.Values,
                 objectType.AdditionalPropertiesType,
-                isExistingResource ? RemoveRequired(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
+                isExistingResource ? ConvertToReadOnly(objectType.AdditionalPropertiesFlags) : objectType.AdditionalPropertiesFlags,
                 functions: null);
         }
 
-        private static IEnumerable<TypeProperty> ConvertToReadOnly(IEnumerable<TypeProperty> properties)
+        private static IEnumerable<TypeProperty> HandleExistingResource(IEnumerable<TypeProperty> properties)
         {
             foreach (var property in properties)
             {
-                // Remove required from all properties on existing resources
-                yield return new TypeProperty(property.Name, property.TypeReference, RemoveRequired(property.Flags));
+                // We want to mark only identifier properties are required, everything else should be optional and readonly
+                if (property.TypeReference.Type is ObjectType curObj)
+                {
+                    var visited = HandleExistingResource(curObj.Properties.Values);
+                    var propsWithIdentifier = visited.Where(p => p.Flags.HasFlag(TypePropertyFlags.Identifier)).Count();
+                    var curPropFlags = propsWithIdentifier > 0 ? MakeRequired(curObj.AdditionalPropertiesFlags) : curObj.AdditionalPropertiesFlags;
+
+                    yield return new TypeProperty(property.Name, new ObjectType(curObj.Name, curObj.ValidationFlags, visited, curObj.AdditionalPropertiesType), curPropFlags);
+                }
+                else
+                {
+                    yield return new TypeProperty(property.Name, property.TypeReference, HandleIdentifierProperty(property.Flags));
+                }
+
+
             }
         }
 
-        private static TypePropertyFlags RemoveRequired(TypePropertyFlags typePropertyFlags)
-            => (typePropertyFlags & ~TypePropertyFlags.Required);
+        private static TypePropertyFlags HandleIdentifierProperty(TypePropertyFlags typePropertyFlags)
+        {
+            return typePropertyFlags.HasFlag(TypePropertyFlags.Identifier) ? MakeRequired(typePropertyFlags) : ConvertToReadOnly(typePropertyFlags);
+        }
+
+        private static TypePropertyFlags MakeRequired(TypePropertyFlags typePropertyFlags)
+            => (typePropertyFlags | TypePropertyFlags.Required) & ~TypePropertyFlags.ReadOnly;
+
+        private static TypePropertyFlags ConvertToReadOnly(TypePropertyFlags typePropertyFlags)
+            => (typePropertyFlags | TypePropertyFlags.ReadOnly) & ~TypePropertyFlags.Required;
 
         public ResourceType? TryGetDefinedType(NamespaceType declaringNamespace, ResourceTypeReference typeReference, ResourceTypeGenerationFlags flags)
         {

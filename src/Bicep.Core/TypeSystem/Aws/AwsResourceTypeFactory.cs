@@ -56,11 +56,11 @@ namespace Bicep.Core.TypeSystem.Aws
             {
                 flags |= TypePropertyFlags.DeployTimeConstant;
             }
-            // if (input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Identifier))
-            // {
-            //     flags |= TypePropertyFlags.Identifier;
-            // }
-            if(!input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Required) && !input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.ReadOnly))
+            if (input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Identifier))
+            {
+                flags |= TypePropertyFlags.Identifier;
+            }
+            if (!input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.Required) && !input.Flags.HasFlag(Azure.Bicep.Types.Concrete.ObjectPropertyFlags.ReadOnly))
             {
                 // for non-required and non-readonly resource properties, we allow null assignment
                 flags |= TypePropertyFlags.AllowImplicitNull;
@@ -74,7 +74,8 @@ namespace Bicep.Core.TypeSystem.Aws
             switch (typeBase)
             {
                 case Azure.Bicep.Types.Concrete.BuiltInType builtInType:
-                    return builtInType.Kind switch {
+                    return builtInType.Kind switch
+                    {
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Any => LanguageConstants.Any,
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Null => LanguageConstants.Null,
                         Azure.Bicep.Types.Concrete.BuiltInTypeKind.Bool => LanguageConstants.Bool,
@@ -88,8 +89,11 @@ namespace Bicep.Core.TypeSystem.Aws
                 case Azure.Bicep.Types.Concrete.ObjectType objectType:
                     {
                         var additionalProperties = objectType.AdditionalProperties != null ? GetTypeReference(objectType.AdditionalProperties) : null;
-                        var properties = objectType.Properties.Select(kvp => GetTypeProperty(kvp.Key, kvp.Value));
-
+                        IEnumerable<TypeProperty>? properties = objectType.Properties?.Select(kvp => GetTypeProperty(kvp.Key, kvp.Value));
+                        if (properties is null)
+                        {
+                            properties = Enumerable.Empty<TypeProperty>();
+                        }
                         return new ObjectType(objectType.Name, GetValidationFlags(isResourceBodyType), properties, additionalProperties, TypePropertyFlags.None);
                     }
                 case Azure.Bicep.Types.Concrete.ArrayType arrayType:
@@ -146,7 +150,8 @@ namespace Bicep.Core.TypeSystem.Aws
         private static ResourceFlags ToResourceFlags(Azure.Bicep.Types.Concrete.ResourceFlags input)
         {
             var output = ResourceFlags.None;
-            if (input.HasFlag(Azure.Bicep.Types.Concrete.ResourceFlags.ReadOnly)) {
+            if (input.HasFlag(Azure.Bicep.Types.Concrete.ResourceFlags.ReadOnly))
+            {
                 output |= ResourceFlags.ReadOnly;
             }
 
