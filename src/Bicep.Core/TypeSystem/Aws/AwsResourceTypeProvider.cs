@@ -163,8 +163,6 @@ namespace Bicep.Core.TypeSystem.Aws
                 {
                     yield return new TypeProperty(property.Name, property.TypeReference, HandleIdentifierProperty(property.Flags));
                 }
-
-
             }
         }
 
