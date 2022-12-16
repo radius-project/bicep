@@ -412,9 +412,9 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
     container: {
       image: 'test'
       env: {
-        DBCONNECTION: mongo.connectionString()
-        DBCONNECTION2: mongo.username()
-        DBCONNECTION3: mongo.password()
+        DBCONNECTION: mongo.listSecrets().connectionString
+        DBCONNECTION2: mongo.listSecrets().username
+        DBCONNECTION3: mongo.listSecrets().password
       }
     }
   }
@@ -456,8 +456,8 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
     container: {
       image: 'test'
       env: {
-        DBCONNECTION: redis.connectionString()
-        DBCONNECTION2: redis.password()
+        DBCONNECTION: redis.listSecrets().connectionString
+        DBCONNECTION2: redis.listSecrets().password
       }
     }
   }
@@ -498,7 +498,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
     container: {
       image: 'test'
       env: {
-        DBCONNECTION: rabbitmq.connectionString()
+        DBCONNECTION: rabbitmq.listSecrets().connectionString
       }
     }
   }
@@ -540,8 +540,8 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
     container: {
       image: 'test'
       env: {
-        'TWILIO_SID': twilio.secrets('accountSid')
-        'TWILIO_ACCOUNT': twilio.secrets('authToken')
+        'TWILIO_SID': twilio.listSecrets().accountSid
+        'TWILIO_ACCOUNT': twilio.listSecrets().authToken
       }
     }
   }
@@ -584,12 +584,12 @@ resource account 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   }
   properties: {
     customDomain: {
-        name: mongo.connectionString()
+        name: mongo.listSecrets().connectionString
     }
   }
 }
 
-output connectionString string = mongo.connectionString()
+output connectionString string = mongo.listSecrets().connectionString
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
@@ -630,11 +630,11 @@ resource secret 'core/Secret@v1' = {
   }
 
   stringData: {
-    connectionString: '${mongo.connectionString()}'
+    connectionString: '${mongo.listSecrets().connectionString}'
   }
 }
 
-output connectionString string = mongo.connectionString()
+output connectionString string = mongo.listSecrets().connectionString
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
