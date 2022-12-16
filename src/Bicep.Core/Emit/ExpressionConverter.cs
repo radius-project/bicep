@@ -730,13 +730,17 @@ namespace Bicep.Core.Emit
             }
             else if (resource is DeclaredResourceMetadata declared)
             {
-                var nameSegments = GetResourceNameSegments(declared);
-                return ScopeHelper.FormatFullyQualifiedResourceId(
-                    context,
-                    this,
-                    context.ResourceScopeData[declared],
-                    resource.TypeReference.FormatType(),
-                    nameSegments);
+                if (declared.IsAzResource)
+                {
+                    var nameSegments = GetResourceNameSegments(declared);
+                    return ScopeHelper.FormatFullyQualifiedResourceId(
+                        context,
+                        this,
+                        context.ResourceScopeData[declared],
+                        resource.TypeReference.FormatType(),
+                        nameSegments);
+                }
+                return  new JTokenExpression(declared.Symbol.Name);
             }
             else
             {
@@ -840,7 +844,8 @@ namespace Bicep.Core.Emit
             }
 
             var enclosingSyntax = GetEnclosingDeclaringSyntax(localVariableSymbol);
-            switch (enclosingSyntax) {
+            switch (enclosingSyntax)
+            {
                 case ForSyntax @for:
                     return GetLoopVariableExpression(localVariableSymbol, @for, CreateCopyIndexFunction(@for));
                 case LambdaSyntax lambda:
