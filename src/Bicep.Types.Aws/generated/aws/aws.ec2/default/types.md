@@ -84,12 +84,6 @@
 * **name**: string: the resource name
 * **properties**: [AWS.EC2/IPAMScopeProperties](#awsec2ipamscopeproperties) (Required): properties of the resource
 
-## Resource AWS.EC2/LocalGatewayRoute@default
-* **Valid Scope(s)**: Unknown
-### Properties
-* **name**: string: the resource name
-* **properties**: [AWS.EC2/LocalGatewayRouteProperties](#awsec2localgatewayrouteproperties): properties of the resource
-
 ## Resource AWS.EC2/LocalGatewayRouteTableVPCAssociation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
@@ -198,6 +192,12 @@
 * **name**: string: the resource name
 * **properties**: [AWS.EC2/TransitGatewayVpcAttachmentProperties](#awsec2transitgatewayvpcattachmentproperties) (Required): properties of the resource
 
+## Resource AWS.EC2/Volume@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **name**: string: the resource name
+* **properties**: [AWS.EC2/VolumeProperties](#awsec2volumeproperties) (Required): properties of the resource
+
 ## Resource AWS.EC2/VPC@default
 * **Valid Scope(s)**: Unknown
 ### Properties
@@ -295,11 +295,13 @@
 * **CarrierGatewayId**: string (ReadOnly, Identifier): The ID of the carrier gateway.
 * **OwnerId**: string (ReadOnly): The ID of the owner.
 * **State**: string (ReadOnly): The state of the carrier gateway.
-* **Tags**: [Tags](#tags): The tags for the carrier gateway.
+* **Tags**: [Tag](#tag)[]: The tags for the carrier gateway.
 * **VpcId**: string (Required): The ID of the VPC.
 
-## Tags
+## Tag
 ### Properties
+* **Key**: string
+* **Value**: string
 
 ## AWS.EC2/CustomerGatewayProperties
 ### Properties
@@ -529,7 +531,7 @@
 * **ResourceId**: string (Required): The ID of the subnet, network interface, or VPC for which you want to create a flow log.
 * **ResourceType**: string (Required): The type of resource for which to create the flow log. For example, if you specified a VPC ID for the ResourceId property, specify VPC for this property.
 * **Tags**: [Tag](#tag)[]: The tags to apply to the flow logs.
-* **TrafficType**: string: The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
+* **TrafficType**: string (Required): The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
 
 ## FlowLog_DestinationOptions
 ### Properties
@@ -620,10 +622,7 @@
 
 ## ProvisionedCidr
 ### Properties
-* **Cidr**: [Cidr](#cidr) (Required)
-
-## Cidr
-### Properties
+* **Cidr**: string (Required)
 
 ## AWS.EC2/IPAMScopeProperties
 ### Properties
@@ -642,33 +641,25 @@
 * **Key**: string (Required): The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
 * **Value**: string (Required): The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
 
-## AWS.EC2/LocalGatewayRouteProperties
-### Properties
-* **DestinationCidrBlock**: string (Identifier): The CIDR block used for destination matches.
-* **LocalGatewayRouteTableId**: string (Identifier): The ID of the local gateway route table.
-* **LocalGatewayVirtualInterfaceGroupId**: string: The ID of the virtual interface group.
-* **NetworkInterfaceId**: string: The ID of the network interface.
-* **State**: string (ReadOnly): The state of the route.
-* **Type**: string (ReadOnly): The route type.
-
 ## AWS.EC2/LocalGatewayRouteTableVPCAssociationProperties
 ### Properties
 * **LocalGatewayId**: string (ReadOnly): The ID of the local gateway.
 * **LocalGatewayRouteTableId**: string (Required): The ID of the local gateway route table.
 * **LocalGatewayRouteTableVpcAssociationId**: string (ReadOnly, Identifier): The ID of the association.
 * **State**: string (ReadOnly): The state of the association.
-* **Tags**: [Tags](#tags): The tags for the association.
+* **Tags**: [Tag](#tag)[]: The tags for the association.
 * **VpcId**: string (Required): The ID of the VPC.
 
-## Tags
+## Tag
 ### Properties
+* **Key**: string
+* **Value**: string
 
 ## AWS.EC2/NatGatewayProperties
 ### Properties
 * **AllocationId**: string
 * **ConnectivityType**: string
 * **NatGatewayId**: string (ReadOnly, Identifier)
-* **PrivateIpAddress**: string
 * **SubnetId**: string (Required)
 * **Tags**: [Tag](#tag)[]
 
@@ -714,13 +705,10 @@
 * **DestinationAddresses**: string[]
 * **DestinationPorts**: string[]
 * **DestinationPrefixLists**: string[]
-* **Protocols**: [Protocol](#protocol)[]
+* **Protocols**: string[]
 * **SourceAddresses**: string[]
 * **SourcePorts**: string[]
 * **SourcePrefixLists**: string[]
-
-## Protocol
-### Properties
 
 ## ResourceStatementRequest
 ### Properties
@@ -758,7 +746,7 @@
 ### Properties
 * **AlternatePathHints**: [AlternatePathHint](#alternatepathhint)[] (ReadOnly)
 * **Explanations**: [Explanation](#explanation)[] (ReadOnly)
-* **FilterInArns**: [ResourceArn](#resourcearn)[]
+* **FilterInArns**: string[]
 * **ForwardPathComponents**: [PathComponent](#pathcomponent)[] (ReadOnly)
 * **NetworkInsightsAnalysisArn**: string (ReadOnly)
 * **NetworkInsightsAnalysisId**: string (ReadOnly, Identifier)
@@ -779,8 +767,8 @@
 ### Properties
 * **Acl**: [AnalysisComponent](#analysiscomponent)
 * **AclRule**: [AnalysisAclRule](#analysisaclrule)
-* **Address**: [IpAddress](#ipaddress)
-* **Addresses**: [IpAddress](#ipaddress)[]
+* **Address**: string
+* **Addresses**: string[]
 * **AttachedTo**: [AnalysisComponent](#analysiscomponent)
 * **AvailabilityZones**: string[]
 * **Cidrs**: string[]
@@ -796,20 +784,20 @@
 * **ExplanationCode**: string
 * **IngressRouteTable**: [AnalysisComponent](#analysiscomponent)
 * **InternetGateway**: [AnalysisComponent](#analysiscomponent)
-* **LoadBalancerArn**: [ResourceArn](#resourcearn)
-* **LoadBalancerListenerPort**: [Port](#port)
+* **LoadBalancerArn**: string
+* **LoadBalancerListenerPort**: int
 * **LoadBalancerTarget**: [AnalysisLoadBalancerTarget](#analysisloadbalancertarget)
 * **LoadBalancerTargetGroup**: [AnalysisComponent](#analysiscomponent)
 * **LoadBalancerTargetGroups**: [AnalysisComponent](#analysiscomponent)[]
-* **LoadBalancerTargetPort**: [Port](#port)
+* **LoadBalancerTargetPort**: int
 * **MissingComponent**: string
 * **NatGateway**: [AnalysisComponent](#analysiscomponent)
 * **NetworkInterface**: [AnalysisComponent](#analysiscomponent)
 * **PacketField**: string
-* **Port**: [Port](#port)
+* **Port**: int
 * **PortRanges**: [PortRange](#portrange)[]
 * **PrefixList**: [AnalysisComponent](#analysiscomponent)
-* **Protocols**: [Protocol](#protocol)[]
+* **Protocols**: string[]
 * **RouteTable**: [AnalysisComponent](#analysiscomponent)
 * **RouteTableRoute**: [AnalysisRouteTableRoute](#analysisroutetableroute)
 * **SecurityGroup**: [AnalysisComponent](#analysiscomponent)
@@ -839,7 +827,7 @@
 * **Cidr**: string
 * **Egress**: bool
 * **PortRange**: [PortRange](#portrange)
-* **Protocol**: [Protocol](#protocol)
+* **Protocol**: string
 * **RuleAction**: string
 * **RuleNumber**: int
 
@@ -848,29 +836,17 @@
 * **From**: int
 * **To**: int
 
-## Protocol
-### Properties
-
-## IpAddress
-### Properties
-
 ## AnalysisLoadBalancerListener
 ### Properties
-* **InstancePort**: [Port](#port)
-* **LoadBalancerPort**: [Port](#port)
-
-## Port
-### Properties
-
-## ResourceArn
-### Properties
+* **InstancePort**: int
+* **LoadBalancerPort**: int
 
 ## AnalysisLoadBalancerTarget
 ### Properties
-* **Address**: [IpAddress](#ipaddress)
+* **Address**: string
 * **AvailabilityZone**: string
 * **Instance**: [AnalysisComponent](#analysiscomponent)
-* **Port**: [Port](#port)
+* **Port**: int
 
 ## AnalysisRouteTableRoute
 ### Properties
@@ -892,7 +868,7 @@
 * **Direction**: string
 * **PortRange**: [PortRange](#portrange)
 * **PrefixListId**: string
-* **Protocol**: [Protocol](#protocol)
+* **Protocol**: string
 * **SecurityGroupId**: string
 
 ## TransitGatewayRouteTableRoute
@@ -931,10 +907,10 @@
 
 ## AnalysisPacketHeader
 ### Properties
-* **DestinationAddresses**: [IpAddress](#ipaddress)[]
+* **DestinationAddresses**: string[]
 * **DestinationPortRanges**: [PortRange](#portrange)[]
-* **Protocol**: [Protocol](#protocol)
-* **SourceAddresses**: [IpAddress](#ipaddress)[]
+* **Protocol**: string
+* **SourceAddresses**: string[]
 * **SourcePortRanges**: [PortRange](#portrange)[]
 
 ## Tag
@@ -946,23 +922,14 @@
 ### Properties
 * **CreatedDate**: string (ReadOnly)
 * **Destination**: string (Required)
-* **DestinationIp**: [IpAddress](#ipaddress)
-* **DestinationPort**: [Port](#port)
+* **DestinationIp**: string
+* **DestinationPort**: int
 * **NetworkInsightsPathArn**: string (ReadOnly)
 * **NetworkInsightsPathId**: string (ReadOnly, Identifier)
-* **Protocol**: [Protocol](#protocol) (Required)
+* **Protocol**: string (Required)
 * **Source**: string (Required)
-* **SourceIp**: [IpAddress](#ipaddress)
+* **SourceIp**: string
 * **Tags**: [Tag](#tag)[]
-
-## IpAddress
-### Properties
-
-## Port
-### Properties
-
-## Protocol
-### Properties
 
 ## Tag
 ### Properties
@@ -1428,6 +1395,27 @@
 * **Key**: string (Required)
 * **Value**: string (Required)
 
+## AWS.EC2/VolumeProperties
+### Properties
+* **AutoEnableIO**: bool: The Availability Zone in which to create the volume.
+* **AvailabilityZone**: string (Required): The Availability Zone in which to create the volume.
+* **Encrypted**: bool: Specifies whether the volume should be encrypted. The effect of setting the encryption state to true depends on the volume origin (new or from a snapshot), starting encryption state, ownership, and whether encryption by default is enabled. For more information, see Encryption by default in the Amazon Elastic Compute Cloud User Guide. Encrypted Amazon EBS volumes must be attached to instances that support Amazon EBS encryption. For more information, see Supported instance types.
+* **Iops**: int: The number of I/O operations per second (IOPS) to provision for an io1 or io2 volume, with a maximum ratio of 50 IOPS/GiB for io1, and 500 IOPS/GiB for io2. Range is 100 to 64,000 IOPS for volumes in most Regions. Maximum IOPS of 64,000 is guaranteed only on Nitro-based instances. Other instance families guarantee performance up to 32,000 IOPS. For more information, see Amazon EBS volume types in the Amazon Elastic Compute Cloud User Guide. This parameter is valid only for Provisioned IOPS SSD (io1 and io2) volumes. 
+* **KmsKeyId**: string: The identifier of the AWS Key Management Service (AWS KMS) customer master key (CMK) to use for Amazon EBS encryption. If KmsKeyId is specified, the encrypted state must be true. If you omit this property and your account is enabled for encryption by default, or Encrypted is set to true, then the volume is encrypted using the default CMK specified for your account. If your account does not have a default CMK, then the volume is encrypted using the AWS managed CMK.  Alternatively, if you want to specify a different CMK, you can specify one of the following:  Key ID. For example, 1234abcd-12ab-34cd-56ef-1234567890ab. Key alias. Specify the alias for the CMK, prefixed with alias/. For example, for a CMK with the alias my_cmk, use alias/my_cmk. Or to specify the AWS managed CMK, use alias/aws/ebs. Key ARN. For example, arn:aws:kms:us-east-1:012345678910:key/1234abcd-12ab-34cd-56ef-1234567890ab. Alias ARN. For example, arn:aws:kms:us-east-1:012345678910:alias/ExampleAlias.
+* **MultiAttachEnabled**: bool: Indicates whether Amazon EBS Multi-Attach is enabled.
+* **OutpostArn**: string: The Amazon Resource Name (ARN) of the Outpost.
+* **Size**: int: The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.  Constraints: 1-16,384 for gp2, 4-16,384 for io1 and io2, 500-16,384 for st1, 500-16,384 for sc1, and 1-1,024 for standard. If you specify a snapshot, the volume size must be equal to or larger than the snapshot size. Default: If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size. 
+* **SnapshotId**: string: The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size. 
+* **Tags**: [Tag](#tag)[]: The tags to apply to the volume during creation.
+* **Throughput**: int: The throughput that the volume supports, in MiB/s.
+* **VolumeId**: string (ReadOnly, Identifier)
+* **VolumeType**: string: The volume type. This parameter can be one of the following values: General Purpose SSD: gp2 | gp3, Provisioned IOPS SSD: io1 | io2, Throughput Optimized HDD: st1, Cold HDD: sc1, Magnetic: standard
+
+## Tag
+### Properties
+* **Key**: string (Required): The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
+* **Value**: string (Required): The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -. 
+
 ## AWS.EC2/VPCProperties
 ### Properties
 * **CidrBlock**: string: The primary IPv4 CIDR block for the VPC.
@@ -1465,7 +1453,7 @@ Updating InstanceTenancy requires no replacement only if you are updating its va
 * **Id**: string (ReadOnly, Identifier)
 * **PeerOwnerId**: string: The AWS account ID of the owner of the accepter VPC.
 * **PeerRegion**: string: The Region code for the accepter VPC, if the accepter VPC is located in a Region other than the Region in which you make the request.
-* **PeerRoleArn**: string (WriteOnly): The Amazon Resource Name (ARN) of the VPC peer role for the peering connection in another AWS account.
+* **PeerRoleArn**: string: The Amazon Resource Name (ARN) of the VPC peer role for the peering connection in another AWS account.
 * **PeerVpcId**: string (Required): The ID of the VPC with which you are creating the VPC peering connection. You must specify this parameter in the request.
 * **Tags**: [Tag](#tag)[]
 * **VpcId**: string (Required): The ID of the VPC.

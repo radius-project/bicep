@@ -18,12 +18,6 @@
 * **name**: string: the resource name
 * **properties**: [AWS.SSM/ResourceDataSyncProperties](#awsssmresourcedatasyncproperties) (Required): properties of the resource
 
-## Resource AWS.SSM/ResourcePolicy@default
-* **Valid Scope(s)**: Unknown
-### Properties
-* **name**: string: the resource name
-* **properties**: [AWS.SSM/ResourcePolicyProperties](#awsssmresourcepolicyproperties) (Required): properties of the resource
-
 ## AWS.SSM/AssociationProperties
 ### Properties
 * **ApplyOnlyAtCronInterval**: bool
@@ -51,18 +45,9 @@
 
 ## S3OutputLocation
 ### Properties
-* **OutputS3BucketName**: [S3BucketName](#s3bucketname)
-* **OutputS3KeyPrefix**: [S3KeyPrefix](#s3keyprefix)
-* **OutputS3Region**: [S3Region](#s3region)
-
-## S3BucketName
-### Properties
-
-## S3KeyPrefix
-### Properties
-
-## S3Region
-### Properties
+* **OutputS3BucketName**: string
+* **OutputS3KeyPrefix**: string
+* **OutputS3Region**: string
 
 ## Association_Parameters
 ### Properties
@@ -132,11 +117,4 @@
 ### Properties
 * **OrganizationalUnits**: string[]
 * **OrganizationSourceType**: string (Required)
-
-## AWS.SSM/ResourcePolicyProperties
-### Properties
-* **Policy**: [ResourcePolicy_Policy](#resourcepolicypolicy) | string (Required): Actual policy statement.
-* **PolicyHash**: string (ReadOnly): A snapshot identifier for the policy over time.
-* **PolicyId**: string (ReadOnly, Identifier): An unique identifier within the policies of a resource. 
-* **ResourceArn**: string (Required, Identifier): Arn of OpsItemGroup etc.
 

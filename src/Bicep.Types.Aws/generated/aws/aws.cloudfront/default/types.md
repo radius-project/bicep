@@ -12,12 +12,6 @@
 * **name**: string: the resource name
 * **properties**: [AWS.CloudFront/CloudFrontOriginAccessIdentityProperties](#awscloudfrontcloudfrontoriginaccessidentityproperties) (Required): properties of the resource
 
-## Resource AWS.CloudFront/ContinuousDeploymentPolicy@default
-* **Valid Scope(s)**: Unknown
-### Properties
-* **name**: string: the resource name
-* **properties**: [AWS.CloudFront/ContinuousDeploymentPolicyProperties](#awscloudfrontcontinuousdeploymentpolicyproperties) (Required): properties of the resource
-
 ## Resource AWS.CloudFront/Distribution@default
 * **Valid Scope(s)**: Unknown
 ### Properties
@@ -114,39 +108,6 @@
 ### Properties
 * **Comment**: string (Required)
 
-## AWS.CloudFront/ContinuousDeploymentPolicyProperties
-### Properties
-* **ContinuousDeploymentPolicyConfig**: [ContinuousDeploymentPolicyConfig](#continuousdeploymentpolicyconfig) (Required)
-* **Id**: string (ReadOnly, Identifier)
-* **LastModifiedTime**: string (ReadOnly)
-
-## ContinuousDeploymentPolicyConfig
-### Properties
-* **Enabled**: bool (Required)
-* **StagingDistributionDnsNames**: string[] (Required)
-* **TrafficConfig**: [TrafficConfig](#trafficconfig)
-
-## TrafficConfig
-### Properties
-* **SingleHeaderConfig**: [SingleHeaderConfig](#singleheaderconfig)
-* **SingleWeightConfig**: [SingleWeightConfig](#singleweightconfig)
-* **Type**: string (Required)
-
-## SingleHeaderConfig
-### Properties
-* **Header**: string (Required)
-* **Value**: string (Required)
-
-## SingleWeightConfig
-### Properties
-* **SessionStickinessConfig**: [SessionStickinessConfig](#sessionstickinessconfig)
-* **Weight**: int (Required)
-
-## SessionStickinessConfig
-### Properties
-* **IdleTTL**: int (Required)
-* **MaximumTTL**: int (Required)
-
 ## AWS.CloudFront/DistributionProperties
 ### Properties
 * **DistributionConfig**: [DistributionConfig](#distributionconfig) (Required)
@@ -160,7 +121,6 @@
 * **CacheBehaviors**: [CacheBehavior](#cachebehavior)[]
 * **CNAMEs**: string[]
 * **Comment**: string
-* **ContinuousDeploymentPolicyId**: string
 * **CustomErrorResponses**: [CustomErrorResponse](#customerrorresponse)[]
 * **CustomOrigin**: [LegacyCustomOrigin](#legacycustomorigin)
 * **DefaultCacheBehavior**: [DefaultCacheBehavior](#defaultcachebehavior) (Required)
@@ -174,7 +134,6 @@
 * **PriceClass**: string
 * **Restrictions**: [Restrictions](#restrictions)
 * **S3Origin**: [LegacyS3Origin](#legacys3origin)
-* **Staging**: bool
 * **ViewerCertificate**: [ViewerCertificate](#viewercertificate)
 * **WebACLId**: string
 

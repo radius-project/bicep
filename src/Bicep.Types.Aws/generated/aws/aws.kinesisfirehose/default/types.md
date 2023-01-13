@@ -8,7 +8,6 @@
 
 ## AWS.KinesisFirehose/DeliveryStreamProperties
 ### Properties
-* **AmazonOpenSearchServerlessDestinationConfiguration**: [AmazonOpenSearchServerlessDestinationConfiguration](#amazonopensearchserverlessdestinationconfiguration)
 * **AmazonopensearchserviceDestinationConfiguration**: [AmazonopensearchserviceDestinationConfiguration](#amazonopensearchservicedestinationconfiguration)
 * **Arn**: string (ReadOnly)
 * **DeliveryStreamEncryptionConfigurationInput**: [DeliveryStreamEncryptionConfigurationInput](#deliverystreamencryptionconfigurationinput)
@@ -23,20 +22,23 @@
 * **SplunkDestinationConfiguration**: [SplunkDestinationConfiguration](#splunkdestinationconfiguration)
 * **Tags**: [Tag](#tag)[]
 
-## AmazonOpenSearchServerlessDestinationConfiguration
+## AmazonopensearchserviceDestinationConfiguration
 ### Properties
-* **BufferingHints**: [AmazonOpenSearchServerlessBufferingHints](#amazonopensearchserverlessbufferinghints)
+* **BufferingHints**: [AmazonopensearchserviceBufferingHints](#amazonopensearchservicebufferinghints)
 * **CloudWatchLoggingOptions**: [CloudWatchLoggingOptions](#cloudwatchloggingoptions)
-* **CollectionEndpoint**: string
+* **ClusterEndpoint**: string
+* **DomainARN**: string
 * **IndexName**: string (Required)
+* **IndexRotationPeriod**: string
 * **ProcessingConfiguration**: [ProcessingConfiguration](#processingconfiguration)
-* **RetryOptions**: [AmazonOpenSearchServerlessRetryOptions](#amazonopensearchserverlessretryoptions)
+* **RetryOptions**: [AmazonopensearchserviceRetryOptions](#amazonopensearchserviceretryoptions)
 * **RoleARN**: string (Required)
 * **S3BackupMode**: string
 * **S3Configuration**: [S3DestinationConfiguration](#s3destinationconfiguration) (Required)
+* **TypeName**: string
 * **VpcConfiguration**: [VpcConfiguration](#vpcconfiguration)
 
-## AmazonOpenSearchServerlessBufferingHints
+## AmazonopensearchserviceBufferingHints
 ### Properties
 * **IntervalInSeconds**: int
 * **SizeInMBs**: int
@@ -62,7 +64,7 @@
 * **ParameterName**: string (Required)
 * **ParameterValue**: string (Required)
 
-## AmazonOpenSearchServerlessRetryOptions
+## AmazonopensearchserviceRetryOptions
 ### Properties
 * **DurationInSeconds**: int
 
@@ -96,31 +98,6 @@
 * **RoleARN**: string (Required)
 * **SecurityGroupIds**: string[] (Required)
 * **SubnetIds**: string[] (Required)
-
-## AmazonopensearchserviceDestinationConfiguration
-### Properties
-* **BufferingHints**: [AmazonopensearchserviceBufferingHints](#amazonopensearchservicebufferinghints)
-* **CloudWatchLoggingOptions**: [CloudWatchLoggingOptions](#cloudwatchloggingoptions)
-* **ClusterEndpoint**: string
-* **DomainARN**: string
-* **IndexName**: string (Required)
-* **IndexRotationPeriod**: string
-* **ProcessingConfiguration**: [ProcessingConfiguration](#processingconfiguration)
-* **RetryOptions**: [AmazonopensearchserviceRetryOptions](#amazonopensearchserviceretryoptions)
-* **RoleARN**: string (Required)
-* **S3BackupMode**: string
-* **S3Configuration**: [S3DestinationConfiguration](#s3destinationconfiguration) (Required)
-* **TypeName**: string
-* **VpcConfiguration**: [VpcConfiguration](#vpcconfiguration)
-
-## AmazonopensearchserviceBufferingHints
-### Properties
-* **IntervalInSeconds**: int
-* **SizeInMBs**: int
-
-## AmazonopensearchserviceRetryOptions
-### Properties
-* **DurationInSeconds**: int
 
 ## DeliveryStreamEncryptionConfigurationInput
 ### Properties

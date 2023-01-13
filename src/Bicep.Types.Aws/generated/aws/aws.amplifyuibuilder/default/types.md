@@ -6,12 +6,6 @@
 * **name**: string: the resource name
 * **properties**: [AWS.AmplifyUIBuilder/ComponentProperties](#awsamplifyuibuildercomponentproperties) (Required): properties of the resource
 
-## Resource AWS.AmplifyUIBuilder/Form@default
-* **Valid Scope(s)**: Unknown
-### Properties
-* **name**: string: the resource name
-* **properties**: [AWS.AmplifyUIBuilder/FormProperties](#awsamplifyuibuilderformproperties) (Required): properties of the resource
-
 ## Resource AWS.AmplifyUIBuilder/Theme@default
 * **Valid Scope(s)**: Unknown
 ### Properties
@@ -68,69 +62,6 @@
 * **VariantValues**: [ComponentVariantValues](#componentvariantvalues)
 
 ## ComponentVariantValues
-### Properties
-
-## AWS.AmplifyUIBuilder/FormProperties
-### Properties
-* **AppId**: string (Identifier)
-* **Cta**: [FormCTA](#formcta)
-* **DataType**: [FormDataTypeConfig](#formdatatypeconfig) (Required)
-* **EnvironmentName**: string (Identifier)
-* **Fields**: [FieldsMap](#fieldsmap) (Required)
-* **FormActionType**: [FormActionType](#formactiontype) (Required)
-* **Id**: string (ReadOnly, Identifier)
-* **Name**: string (Required)
-* **SchemaVersion**: string (Required)
-* **SectionalElements**: [SectionalElementMap](#sectionalelementmap) (Required)
-* **Style**: [FormStyle](#formstyle) (Required)
-* **Tags**: [Tags](#tags)
-
-## FormCTA
-### Properties
-* **Cancel**: [FormButton](#formbutton)
-* **Clear**: [FormButton](#formbutton)
-* **Position**: [FormButtonsPosition](#formbuttonsposition)
-* **Submit**: [FormButton](#formbutton)
-
-## FormButton
-### Properties
-* **Children**: string
-* **Excluded**: bool
-* **Position**: [FieldPosition](#fieldposition)
-
-## FieldPosition
-### Properties
-
-## FormButtonsPosition
-### Properties
-
-## FormDataTypeConfig
-### Properties
-* **DataSourceType**: [FormDataSourceType](#formdatasourcetype) (Required)
-* **DataTypeName**: string (Required)
-
-## FormDataSourceType
-### Properties
-
-## FieldsMap
-### Properties
-
-## FormActionType
-### Properties
-
-## SectionalElementMap
-### Properties
-
-## FormStyle
-### Properties
-* **HorizontalGap**: [FormStyleConfig](#formstyleconfig)
-* **OuterPadding**: [FormStyleConfig](#formstyleconfig)
-* **VerticalGap**: [FormStyleConfig](#formstyleconfig)
-
-## FormStyleConfig
-### Properties
-
-## Tags
 ### Properties
 
 ## AWS.AmplifyUIBuilder/ThemeProperties

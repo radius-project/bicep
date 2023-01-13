@@ -85,20 +85,16 @@
 
 ## ClusterLogging
 ### Properties
-* **EnabledTypes**: [EnabledTypes](#enabledtypes)
+* **EnabledTypes**: [LoggingTypeConfig](#loggingtypeconfig)[]
 
-## EnabledTypes
+## LoggingTypeConfig
 ### Properties
+* **Type**: string: name of the log type
 
 ## OutpostConfig
 ### Properties
 * **ControlPlaneInstanceType**: string (Required): Specify the Instance type of the machines that should be used to create your cluster.
-* **ControlPlanePlacement**: [ControlPlanePlacement](#controlplaneplacement): Specify the placement group of the control plane machines for your cluster.
 * **OutpostArns**: string[] (Required): Specify one or more Arn(s) of Outpost(s) on which you would like to create your cluster.
-
-## ControlPlanePlacement
-### Properties
-* **GroupName**: string: Specify the placement group name of the control place machines for your cluster.
 
 ## ResourcesVpcConfig
 ### Properties

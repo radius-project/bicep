@@ -67,10 +67,7 @@
 
 ## AmazonManagedKafkaEventSourceConfig
 ### Properties
-* **ConsumerGroupId**: [ConsumerGroupId](#consumergroupid): The identifier for the Kafka Consumer Group to join.
-
-## ConsumerGroupId
-### Properties
+* **ConsumerGroupId**: string: The identifier for the Kafka Consumer Group to join.
 
 ## DestinationConfig
 ### Properties
@@ -98,7 +95,7 @@
 
 ## SelfManagedKafkaEventSourceConfig
 ### Properties
-* **ConsumerGroupId**: [ConsumerGroupId](#consumergroupid): The identifier for the Kafka Consumer Group to join.
+* **ConsumerGroupId**: string: The identifier for the Kafka Consumer Group to join.
 
 ## SourceAccessConfiguration
 ### Properties
@@ -126,8 +123,6 @@
 * **ReservedConcurrentExecutions**: int: The number of simultaneous executions to reserve for the function.
 * **Role**: string (Required): The Amazon Resource Name (ARN) of the function's execution role.
 * **Runtime**: string: The identifier of the function's runtime.
-* **SnapStart**: [SnapStart](#snapstart): The SnapStart setting of your function
-* **SnapStartResponse**: [SnapStartResponse](#snapstartresponse) (ReadOnly): The SnapStart response of your function
 * **Tags**: [Tag](#tag)[]: A list of tags to apply to the function.
 * **Timeout**: int: The amount of time that Lambda allows a function to run before stopping it. The default is 3 seconds. The maximum allowed value is 900 seconds.
 * **TracingConfig**: [TracingConfig](#tracingconfig): Set Mode to Active to sample and trace a subset of incoming requests with AWS X-Ray.
@@ -167,15 +162,6 @@
 * **EntryPoint**: string[]: EntryPoint.
 * **WorkingDirectory**: string: WorkingDirectory.
 
-## SnapStart
-### Properties
-* **ApplyOn**: string (Required): Applying SnapStart setting on function resource type.
-
-## SnapStartResponse
-### Properties
-* **ApplyOn**: string (ReadOnly): Applying SnapStart setting on function resource type.
-* **OptimizationStatus**: string (ReadOnly): Indicates whether SnapStart is activated for the specified function version.
-
 ## Tag
 ### Properties
 * **Key**: string (Required): The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
@@ -203,21 +189,9 @@
 ## Cors
 ### Properties
 * **AllowCredentials**: bool: Specifies whether credentials are included in the CORS request.
-* **AllowHeaders**: [AllowHeaders](#allowheaders): Represents a collection of allowed headers.
-* **AllowMethods**: [AllowMethods](#allowmethods): Represents a collection of allowed HTTP methods.
-* **AllowOrigins**: [AllowOrigins](#alloworigins): Represents a collection of allowed origins.
-* **ExposeHeaders**: [ExposeHeaders](#exposeheaders): Represents a collection of exposed headers.
+* **AllowHeaders**: string[]: Represents a collection of allowed headers.
+* **AllowMethods**: string[]: Represents a collection of allowed HTTP methods.
+* **AllowOrigins**: string[]: Represents a collection of allowed origins.
+* **ExposeHeaders**: string[]: Represents a collection of exposed headers.
 * **MaxAge**: int
-
-## AllowHeaders
-### Properties
-
-## AllowMethods
-### Properties
-
-## AllowOrigins
-### Properties
-
-## ExposeHeaders
-### Properties
 
