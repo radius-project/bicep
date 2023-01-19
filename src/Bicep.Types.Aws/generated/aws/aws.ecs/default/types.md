@@ -75,7 +75,6 @@
 * **ClusterSettings**: [ClusterSettings](#clustersettings)[]
 * **Configuration**: [ClusterConfiguration](#clusterconfiguration)
 * **DefaultCapacityProviderStrategy**: [CapacityProviderStrategyItem](#capacityproviderstrategyitem)[]
-* **ServiceConnectDefaults**: [ServiceConnectDefaults](#serviceconnectdefaults)
 * **Tags**: [Tag](#tag)[]
 
 ## ClusterSettings
@@ -107,10 +106,6 @@
 * **CapacityProvider**: string
 * **Weight**: int
 
-## ServiceConnectDefaults
-### Properties
-* **Namespace**: string: Service Connect Namespace Name or ARN default for all services or tasks within this cluster
-
 ## Tag
 ### Properties
 * **Key**: string
@@ -118,18 +113,15 @@
 
 ## AWS.ECS/ClusterCapacityProviderAssociationsProperties
 ### Properties
-* **CapacityProviders**: [CapacityProviders](#capacityproviders) (Required)
-* **Cluster**: [Cluster](#cluster) (Required, Identifier)
-* **DefaultCapacityProviderStrategy**: [DefaultCapacityProviderStrategy](#defaultcapacityproviderstrategy) (Required)
+* **CapacityProviders**: string[] (Required)
+* **Cluster**: string (Required, Identifier)
+* **DefaultCapacityProviderStrategy**: [CapacityProviderStrategy](#capacityproviderstrategy)[] (Required)
 
-## CapacityProviders
+## CapacityProviderStrategy
 ### Properties
-
-## Cluster
-### Properties
-
-## DefaultCapacityProviderStrategy
-### Properties
+* **Base**: int
+* **CapacityProvider**: string (Required)
+* **Weight**: int
 
 ## AWS.ECS/PrimaryTaskSetProperties
 ### Properties
@@ -158,7 +150,6 @@
 * **Role**: string
 * **SchedulingStrategy**: string
 * **ServiceArn**: string (ReadOnly, Identifier)
-* **ServiceConnectConfiguration**: [ServiceConnectConfiguration](#serviceconnectconfiguration) (WriteOnly)
 * **ServiceName**: string
 * **ServiceRegistries**: [ServiceRegistry](#serviceregistry)[]
 * **Tags**: [Tag](#tag)[]
@@ -211,39 +202,6 @@
 ### Properties
 * **Field**: string
 * **Type**: string (Required)
-
-## ServiceConnectConfiguration
-### Properties
-* **Enabled**: bool (Required)
-* **LogConfiguration**: [LogConfiguration](#logconfiguration)
-* **Namespace**: string
-* **Services**: [ServiceConnectService](#serviceconnectservice)[]
-
-## LogConfiguration
-### Properties
-* **LogDriver**: string
-* **Options**: [Service_Options](#serviceoptions)
-* **SecretOptions**: [Secret](#secret)[]
-
-## Service_Options
-### Properties
-
-## Secret
-### Properties
-* **Name**: string (Required)
-* **ValueFrom**: string (Required)
-
-## ServiceConnectService
-### Properties
-* **ClientAliases**: [ServiceConnectClientAlias](#serviceconnectclientalias)[]
-* **DiscoveryName**: string
-* **IngressPortOverride**: int
-* **PortName**: string (Required)
-
-## ServiceConnectClientAlias
-### Properties
-* **DnsName**: string
-* **Port**: int (Required)
 
 ## ServiceRegistry
 ### Properties
@@ -408,10 +366,8 @@
 
 ## PortMapping
 ### Properties
-* **AppProtocol**: string
 * **ContainerPort**: int
 * **HostPort**: int
-* **Name**: string
 * **Protocol**: string
 
 ## RepositoryCredentials

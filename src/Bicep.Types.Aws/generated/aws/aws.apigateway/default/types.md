@@ -129,6 +129,7 @@
 ### Properties
 * **BasePath**: string (Identifier): The base path name that callers of the API must provide in the URL after the domain name.
 * **DomainName**: string (Required, Identifier): The DomainName of an AWS::ApiGateway::DomainName resource.
+* **Id**: string
 * **RestApiId**: string: The ID of the API.
 * **Stage**: string: The name of the API's stage.
 

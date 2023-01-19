@@ -71,18 +71,12 @@
 ### Properties
 * **AccessString**: string (WriteOnly): Access permissions string used for this user account.
 * **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the user account.
-* **AuthenticationMode**: [User_AuthenticationMode](#userauthenticationmode) (WriteOnly)
 * **Engine**: string (Required): Must be redis.
 * **NoPasswordRequired**: bool (WriteOnly): Indicates a password is not required for this user account.
 * **Passwords**: string[] (WriteOnly): Passwords used for this user account. You can create up to two passwords for each user.
 * **Status**: string (ReadOnly): Indicates the user status. Can be "active", "modifying" or "deleting".
 * **UserId**: string (Required, Identifier): The ID of the user.
 * **UserName**: string (Required): The username of the user.
-
-## User_AuthenticationMode
-### Properties
-* **Passwords**: string[]: Passwords used for this user account. You can create up to two passwords for each user.
-* **Type**: string (Required): Authentication Type
 
 ## AWS.ElastiCache/UserGroupProperties
 ### Properties

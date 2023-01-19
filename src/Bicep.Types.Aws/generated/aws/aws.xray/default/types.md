@@ -6,12 +6,6 @@
 * **name**: string: the resource name
 * **properties**: [AWS.XRay/GroupProperties](#awsxraygroupproperties): properties of the resource
 
-## Resource AWS.XRay/ResourcePolicy@default
-* **Valid Scope(s)**: Unknown
-### Properties
-* **name**: string: the resource name
-* **properties**: [AWS.XRay/ResourcePolicyProperties](#awsxrayresourcepolicyproperties) (Required): properties of the resource
-
 ## Resource AWS.XRay/SamplingRule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
@@ -24,36 +18,26 @@
 * **GroupARN**: string (ReadOnly, Identifier): The ARN of the group that was generated on creation.
 * **GroupName**: string: The case-sensitive name of the new group. Names must be unique.
 * **InsightsConfiguration**: [InsightsConfiguration](#insightsconfiguration)
-* **Tags**: [Tags](#tags)
+* **Tags**: [Group_Tags](#grouptags)[]
 
 ## InsightsConfiguration
 ### Properties
 * **InsightsEnabled**: bool: Set the InsightsEnabled value to true to enable insights or false to disable insights.
 * **NotificationsEnabled**: bool: Set the NotificationsEnabled value to true to enable insights notifications. Notifications can only be enabled on a group with InsightsEnabled set to true.
 
-## Tags
+## Group_Tags
 ### Properties
-
-## AWS.XRay/ResourcePolicyProperties
-### Properties
-* **BypassPolicyLockoutCheck**: bool (WriteOnly): A flag to indicate whether to bypass the resource policy lockout safety check
-* **PolicyDocument**: string (Required): The resource policy document, which can be up to 5kb in size.
-* **PolicyName**: string (Required, Identifier): The name of the resource policy. Must be unique within a specific AWS account.
+* **Key**: string (Required)
+* **Value**: string (Required)
 
 ## AWS.XRay/SamplingRuleProperties
 ### Properties
-* **RuleARN**: [RuleARN](#rulearn) (ReadOnly, Identifier)
-* **RuleName**: [RuleName](#rulename)
+* **RuleARN**: string (ReadOnly, Identifier)
+* **RuleName**: string
 * **SamplingRule**: [SamplingRule](#samplingrule)
 * **SamplingRuleRecord**: [SamplingRuleRecord](#samplingrulerecord)
 * **SamplingRuleUpdate**: [SamplingRuleUpdate](#samplingruleupdate)
-* **Tags**: [Tags](#tags)
-
-## RuleARN
-### Properties
-
-## RuleName
-### Properties
+* **Tags**: [SamplingRule_Tags](#samplingruletags)[]
 
 ## SamplingRule
 ### Properties
@@ -64,8 +48,8 @@
 * **Priority**: int: The priority of the sampling rule.
 * **ReservoirSize**: int: A fixed number of matching requests to instrument per second, prior to applying the fixed rate. The reservoir is not used directly by services, but applies to all services using the rule collectively.
 * **ResourceARN**: string: Matches the ARN of the AWS resource on which the service runs.
-* **RuleARN**: [RuleARN](#rulearn) (Identifier)
-* **RuleName**: [RuleName](#rulename)
+* **RuleARN**: string (Identifier)
+* **RuleName**: string
 * **ServiceName**: string: Matches the name that the service uses to identify itself in segments.
 * **ServiceType**: string: Matches the origin that the service uses to identify its type in segments.
 * **URLPath**: string: Matches the path from a request URL.
@@ -89,8 +73,8 @@
 * **Priority**: int: The priority of the sampling rule.
 * **ReservoirSize**: int: A fixed number of matching requests to instrument per second, prior to applying the fixed rate. The reservoir is not used directly by services, but applies to all services using the rule collectively.
 * **ResourceARN**: string: Matches the ARN of the AWS resource on which the service runs.
-* **RuleARN**: [RuleARN](#rulearn) (Identifier)
-* **RuleName**: [RuleName](#rulename)
+* **RuleARN**: string (Identifier)
+* **RuleName**: string
 * **ServiceName**: string: Matches the name that the service uses to identify itself in segments.
 * **ServiceType**: string: Matches the origin that the service uses to identify its type in segments.
 * **URLPath**: string: Matches the path from a request URL.
@@ -98,6 +82,8 @@
 ## SamplingRule_Attributes
 ### Properties
 
-## Tags
+## SamplingRule_Tags
 ### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
 

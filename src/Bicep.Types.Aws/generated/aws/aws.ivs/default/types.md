@@ -59,7 +59,6 @@
 * **Arn**: string (ReadOnly, Identifier): Recording Configuration ARN is automatically generated on creation and assigned as the unique identifier.
 * **DestinationConfiguration**: [DestinationConfiguration](#destinationconfiguration) (Required)
 * **Name**: string: Recording Configuration Name.
-* **RecordingReconnectWindowSeconds**: int: Recording Reconnect Window Seconds. (0 means disabled)
 * **State**: string (ReadOnly): Recording Configuration State.
 * **Tags**: [Tag](#tag)[]: A list of key-value pairs that contain metadata for the asset model.
 * **ThumbnailConfiguration**: [ThumbnailConfiguration](#thumbnailconfiguration)

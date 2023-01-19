@@ -76,7 +76,6 @@
 * **BackupRetentionPeriod**: int: The number of days for which automated backups are retained.
 * **CopyTagsToSnapshot**: bool: A value that indicates whether to copy all tags from the DB cluster to snapshots of the DB cluster. The default is not to copy them.
 * **DatabaseName**: string: The name of your database. If you don't provide a name, then Amazon RDS won't create a database in this DB cluster. For naming constraints, see Naming Constraints in the Amazon RDS User Guide.
-* **DBClusterArn**: string (ReadOnly): The Amazon Resource Name (ARN) for the DB cluster.
 * **DBClusterIdentifier**: string (Identifier): The DB cluster identifier. This parameter is stored as a lowercase string.
 * **DBClusterInstanceClass**: string: The compute and memory capacity of each DB instance in the Multi-AZ DB cluster, for example db.m6g.xlarge.
 * **DBClusterParameterGroupName**: string: The name of the DB cluster parameter group to associate with this DB cluster.
@@ -155,11 +154,6 @@ For Aurora MySQL, valid capacity values are 1, 2, 4, 8, 16, 32, 64, 128, and 256
 For Aurora PostgreSQL, valid capacity values are 2, 4, 8, 16, 32, 64, 192, and 384.
 The minimum capacity must be less than or equal to the maximum capacity.
 * **SecondsUntilAutoPause**: int: The time, in seconds, before an Aurora DB cluster in serverless mode is paused.
-* **TimeoutAction**: string: The action to take when the timeout is reached, either ForceApplyCapacityChange or RollbackCapacityChange.
-ForceApplyCapacityChange sets the capacity to the specified value as soon as possible.
-RollbackCapacityChange, the default, ignores the capacity change if a scaling point isn't found in the timeout period.
-
-For more information, see Autoscaling for Aurora Serverless v1 in the Amazon Aurora User Guide.
 
 ## ServerlessV2ScalingConfiguration
 ### Properties
@@ -173,7 +167,7 @@ For more information, see Autoscaling for Aurora Serverless v1 in the Amazon Aur
 
 ## AWS.RDS/DBClusterParameterGroupProperties
 ### Properties
-* **DBClusterParameterGroupName**: string (Identifier)
+* **DBClusterParameterGroupName**: string (ReadOnly, Identifier)
 * **Description**: string (Required): A friendly description for this DB cluster parameter group.
 * **Family**: string (Required): The DB cluster parameter group family name. A DB cluster parameter group can be associated with one and only one DB cluster parameter group family, and can be applied only to a DB cluster running a DB engine and engine version compatible with that DB cluster parameter group family.
 * **Parameters**: [DBClusterParameterGroup_Parameters](#dbclusterparametergroupparameters) (Required, WriteOnly): An array of parameters to be modified. A maximum of 20 parameters can be modified in a single request.
@@ -206,10 +200,8 @@ For the list of permissions required for the IAM role, see Configure IAM and you
 
 This setting is required for RDS Custom.
 * **DBClusterIdentifier**: string: The identifier of the DB cluster that the instance will belong to.
-* **DBInstanceArn**: string (ReadOnly): The Amazon Resource Name (ARN) for the DB instance.
 * **DBInstanceClass**: string: The compute and memory capacity of the DB instance, for example, db.m4.large. Not all DB instance classes are available in all AWS Regions, or for all database engines.
 * **DBInstanceIdentifier**: string (Identifier): A name for the DB instance. If you specify a name, AWS CloudFormation converts it to lowercase. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the DB instance.
-* **DbiResourceId**: string (ReadOnly): The AWS Region-unique, immutable identifier for the DB instance. This identifier is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB instance is accessed.
 * **DBName**: string: The meaning of this parameter differs according to the database engine you use.
 * **DBParameterGroupName**: string: The name of an existing DB parameter group or a reference to an AWS::RDS::DBParameterGroup resource created in the template.
 * **DBSecurityGroups**: string[]: A list of the DB security groups to assign to the DB instance. The list can include both the name of existing DB security groups or references to AWS::RDS::DBSecurityGroup resources created in the template.
@@ -245,11 +237,9 @@ This setting is required for RDS Custom.
 * **ProcessorFeatures**: [ProcessorFeature](#processorfeature)[]: The number of CPU cores and the number of threads per core for the DB instance class of the DB instance.
 * **PromotionTier**: int: A value that specifies the order in which an Aurora Replica is promoted to the primary instance after a failure of the existing primary instance.
 * **PubliclyAccessible**: bool: Indicates whether the DB instance is an internet-facing instance. If you specify true, AWS CloudFormation creates an instance with a publicly resolvable DNS name, which resolves to a public IP address. If you specify false, AWS CloudFormation creates an internal instance with a DNS name that resolves to a private IP address.
-* **ReplicaMode**: string: The open mode of an Oracle read replica. The default is open-read-only.
 * **SourceDBInstanceIdentifier**: string (WriteOnly): If you want to create a Read Replica DB instance, specify the ID of the source DB instance. Each DB instance can have a limited number of Read Replicas.
 * **SourceRegion**: string (WriteOnly): The ID of the region that contains the source DB instance for the Read Replica.
 * **StorageEncrypted**: bool: A value that indicates whether the DB instance is encrypted. By default, it isn't encrypted.
-* **StorageThroughput**: int: Specifies the storage throughput for the DB instance.
 * **StorageType**: string: Specifies the storage type to be associated with the DB instance.
 * **Tags**: [Tag](#tag)[]: Tags to assign to the DB instance.
 * **TdeCredentialArn**: string: The ARN from the key store with which to associate the instance for TDE encryption.
@@ -281,7 +271,7 @@ This setting is required for RDS Custom.
 
 ## AWS.RDS/DBParameterGroupProperties
 ### Properties
-* **DBParameterGroupName**: string (Identifier): Specifies the name of the DB parameter group
+* **DBParameterGroupName**: string (ReadOnly, Identifier): Specifies the name of the DB parameter group
 * **Description**: string (Required): Provides the customer-specified description for this DB parameter group.
 * **Family**: string (Required): The DB parameter group family name.
 * **Parameters**: [DBParameterGroup_Parameters](#dbparametergroupparameters) (WriteOnly): An array of parameter names and values for the parameter update.
@@ -403,7 +393,7 @@ If you specify the SourceDBClusterIdentifier property, don't specify this proper
 * **MajorEngineVersion**: string (Required): Indicates the major engine version associated with this option group.
 * **OptionConfigurations**: [OptionConfiguration](#optionconfiguration)[]: Indicates what options are available in the option group.
 * **OptionGroupDescription**: string (Required): Provides a description of the option group.
-* **OptionGroupName**: string (Identifier): Specifies the name of the option group.
+* **OptionGroupName**: string (ReadOnly, Identifier): Specifies the name of the option group.
 * **Tags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
 
 ## OptionConfiguration

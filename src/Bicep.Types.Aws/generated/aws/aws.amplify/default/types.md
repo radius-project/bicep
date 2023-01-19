@@ -36,7 +36,6 @@
 * **IAMServiceRole**: string
 * **Name**: string (Required)
 * **OauthToken**: string (WriteOnly)
-* **Platform**: string
 * **Repository**: string
 * **Tags**: [Tag](#tag)[]
 
@@ -50,7 +49,6 @@
 * **EnablePerformanceMode**: bool
 * **EnablePullRequestPreview**: bool
 * **EnvironmentVariables**: [EnvironmentVariable](#environmentvariable)[]
-* **Framework**: string
 * **PullRequestEnvironmentName**: string
 * **Stage**: string
 
@@ -89,7 +87,6 @@
 * **EnablePerformanceMode**: bool
 * **EnablePullRequestPreview**: bool
 * **EnvironmentVariables**: [EnvironmentVariable](#environmentvariable)[]
-* **Framework**: string
 * **PullRequestEnvironmentName**: string
 * **Stage**: string
 * **Tags**: [Tag](#tag)[]

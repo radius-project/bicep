@@ -20,7 +20,7 @@
 * **ActionsSuppressorWaitPeriod**: int: Actions will be suppressed if ExtensionPeriod is active. The length of time that actions are suppressed is in seconds.
 * **AlarmActions**: string[]: The list of actions to execute when this alarm transitions into an ALARM state from any other state. Specify each action as an Amazon Resource Name (ARN).
 * **AlarmDescription**: string: The description of the alarm
-* **AlarmName**: string (Identifier): The name of the Composite Alarm
+* **AlarmName**: string (Required, Identifier): The name of the Composite Alarm
 * **AlarmRule**: string (Required): Expression which aggregates the state of other Alarms (Metric or Composite Alarms)
 * **Arn**: string (ReadOnly): Amazon Resource Name (ARN) of the alarm
 * **InsufficientDataActions**: string[]: The actions to execute when this alarm transitions to the INSUFFICIENT_DATA state from any other state. Each action is specified as an Amazon Resource Name (ARN).
