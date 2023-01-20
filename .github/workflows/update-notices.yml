@@ -2,10 +2,7 @@ name: Update Local Notice Files
 # This action can be run on-demand against a branch or scheduled every day.
 # It updates the checked-in TPN files and creates a PR with the changes.
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: 0 9 * * *
+on: workflow_dispatch
 
 jobs:
   main:
