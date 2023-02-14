@@ -821,7 +821,7 @@ Hello from Bicep!"));
 import aws as aws
 
 resource stream 'AWS.Kinesis/Stream@default' = {
-  name: 'stream'
+  alias: 'stream'
   properties: {
     ShardCount: 3
   }

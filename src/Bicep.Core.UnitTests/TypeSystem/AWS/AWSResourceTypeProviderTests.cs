@@ -20,6 +20,7 @@ namespace Bicep.Core.UnitTests.TypeSystem.Aws
 import aws as aws
 
 resource s3 'AWS.S3/Bucket@default' existing = {
+  alias: 'my-bucket-alias'
   properties: {
     BucketName: 'my-bucket-asdfasdfdfzzaasda2afq1'
   }
@@ -34,7 +35,7 @@ output foo string = s3.name
             compilation.Should().NotHaveAnyDiagnostics();
         }
 
-                [TestMethod]
+        [TestMethod]
         public void AWSResourceTypeProvider_warn_for_existing_with_non_identifier_properties()
         {
             // Only identifier properties can be specified when using the `existing`
@@ -42,10 +43,10 @@ output foo string = s3.name
 import aws as aws
 
 resource s3 'AWS.S3/Bucket@default' existing = {
+  alias: 'my-bucket-alias'
   properties: {
     BucketName: 'my-bucket-asdfasdfdfzzaasda2afq1'
     AccessControl: 'PublicRead'
-
   }
 }
 
@@ -61,5 +62,28 @@ output foo string = s3.name
             });
         }
 
+        [TestMethod]
+        public void AWSResourceTypeProvider_error_without_alias()
+        {
+            var compilation = Services.BuildCompilation(@"
+import aws as aws
+
+resource s3 'AWS.S3/Bucket@default' existing = {
+  properties: {
+    BucketName: 'my-bucket-asdfasdfdfzzaasda2afq1'
+  }
+}
+
+output foo string = s3.name
+
+");
+
+            var diag = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();
+
+            compilation.Should().HaveDiagnostics(new[]
+            {
+                ("BCP035", DiagnosticLevel.Warning, "The specified \"resource\" declaration is missing the following required properties: \"alias\". If this is an inaccuracy in the documentation, please report it to the Bicep Team.")
+            });
+        }
     }
 }
