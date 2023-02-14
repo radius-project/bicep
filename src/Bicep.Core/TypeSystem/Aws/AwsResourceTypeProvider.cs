@@ -39,6 +39,7 @@ namespace Bicep.Core.TypeSystem.Aws
         }
 
         private const string ResourceNamePropertyName = "name";
+        private const string ResourceAliasPropertyName = "alias";
 
         private static readonly TypeSymbol Tags = new ObjectType(nameof(Tags), TypeSymbolValidationFlags.Default, Enumerable.Empty<TypeProperty>(), LanguageConstants.String, TypePropertyFlags.None);
 
@@ -119,10 +120,11 @@ namespace Bicep.Core.TypeSystem.Aws
             }
 
             // add the loop variant flag to the name property (if it exists)
-            if (properties.TryGetValue(ResourceNamePropertyName, out var nameProperty))
+            if (properties.TryGetValue(ResourceNamePropertyName, out var nameProperty) && properties.TryGetValue(ResourceAliasPropertyName, out var aliasProperty))
             {
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
+                properties = properties.SetItem(ResourceAliasPropertyName, UpdateFlags(aliasProperty, aliasProperty.Flags | TypePropertyFlags.Required | TypePropertyFlags.LoopVariant));
 
                 var functions = Array.Empty<Semantics.FunctionOverload>();
                 return new ObjectType(
@@ -168,7 +170,17 @@ namespace Bicep.Core.TypeSystem.Aws
 
         private static TypePropertyFlags HandleIdentifierProperty(TypePropertyFlags typePropertyFlags)
         {
-            return typePropertyFlags.HasFlag(TypePropertyFlags.Identifier) ? MakeRequired(typePropertyFlags) : ConvertToReadOnly(typePropertyFlags);
+            if (typePropertyFlags.HasFlag(TypePropertyFlags.Required)) {
+                return typePropertyFlags;
+            }
+            else if (typePropertyFlags.HasFlag(TypePropertyFlags.Identifier)) 
+            {
+                return MakeRequired(typePropertyFlags);
+            }
+            else
+            {
+                return ConvertToReadOnly(typePropertyFlags);
+            }
         }
 
         private static TypePropertyFlags MakeRequired(TypePropertyFlags typePropertyFlags)
