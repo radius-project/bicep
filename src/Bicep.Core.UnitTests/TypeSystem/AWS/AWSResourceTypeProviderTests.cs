@@ -85,5 +85,27 @@ output foo string = s3.name
                 ("BCP035", DiagnosticLevel.Warning, "The specified \"resource\" declaration is missing the following required properties: \"alias\". If this is an inaccuracy in the documentation, please report it to the Bicep Team.")
             });
         }
+
+        [TestMethod]
+        public void AWSResourceTypeProvider_noerror_existing_resource()
+        {
+            var compilation = Services.BuildCompilation(@"
+import aws as aws
+
+resource eksCluster 'AWS.EKS/Cluster@default' existing = {
+  alias: 'test-eks-cluster'
+  properties: {
+    Name: 'test-eks-cluster'
+  }
+}
+
+output foo string = eksCluster.properties.Name
+
+");
+
+            var diag = compilation.GetEntrypointSemanticModel().GetAllDiagnostics();
+
+            compilation.Should().NotHaveAnyDiagnostics();
+        }
     }
 }

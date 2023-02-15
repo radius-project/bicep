@@ -124,7 +124,7 @@ namespace Bicep.Core.TypeSystem.Aws
             {
                 // TODO apply this to all unique properties
                 properties = properties.SetItem(ResourceNamePropertyName, UpdateFlags(nameProperty, nameProperty.Flags | TypePropertyFlags.LoopVariant));
-                properties = properties.SetItem(ResourceAliasPropertyName, UpdateFlags(aliasProperty, aliasProperty.Flags | TypePropertyFlags.Required | TypePropertyFlags.LoopVariant));
+                properties = properties.SetItem(ResourceAliasPropertyName, UpdateFlags(aliasProperty, aliasProperty.Flags | TypePropertyFlags.Identifier | TypePropertyFlags.Required | TypePropertyFlags.LoopVariant));
 
                 var functions = Array.Empty<Semantics.FunctionOverload>();
                 return new ObjectType(
@@ -170,10 +170,7 @@ namespace Bicep.Core.TypeSystem.Aws
 
         private static TypePropertyFlags HandleIdentifierProperty(TypePropertyFlags typePropertyFlags)
         {
-            if (typePropertyFlags.HasFlag(TypePropertyFlags.Required)) {
-                return typePropertyFlags;
-            }
-            else if (typePropertyFlags.HasFlag(TypePropertyFlags.Identifier)) 
+            if (typePropertyFlags.HasFlag(TypePropertyFlags.Identifier)) 
             {
                 return MakeRequired(typePropertyFlags);
             }
