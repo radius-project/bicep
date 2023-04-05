@@ -238,5 +238,5 @@ jobs:
           container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
           connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
           source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode/stable/ --overwrite true"
+          extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
           sync: true
