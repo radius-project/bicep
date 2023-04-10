@@ -3,12 +3,14 @@
 ## Resource AWS.Oam/Link@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Oam/LinkProperties](#awsoamlinkproperties) (Required): properties of the resource
 
 ## Resource AWS.Oam/Sink@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Oam/SinkProperties](#awsoamsinkproperties) (Required): properties of the resource
 
@@ -16,13 +18,10 @@
 ### Properties
 * **Arn**: string (ReadOnly, Identifier)
 * **Label**: string (ReadOnly)
-* **LabelTemplate**: string (Required, WriteOnly)
-* **ResourceTypes**: [ResourceType](#resourcetype)[] (Required)
+* **LabelTemplate**: string (WriteOnly)
+* **ResourceTypes**: string[] (Required)
 * **SinkIdentifier**: string (Required)
 * **Tags**: [Link_Tags](#linktags): Tags to apply to the link
-
-## ResourceType
-### Properties
 
 ## Link_Tags
 ### Properties

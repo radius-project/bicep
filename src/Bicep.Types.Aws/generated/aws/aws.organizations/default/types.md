@@ -3,20 +3,30 @@
 ## Resource AWS.Organizations/Account@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Organizations/AccountProperties](#awsorganizationsaccountproperties) (Required): properties of the resource
 
 ## Resource AWS.Organizations/OrganizationalUnit@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Organizations/OrganizationalUnitProperties](#awsorganizationsorganizationalunitproperties) (Required): properties of the resource
 
 ## Resource AWS.Organizations/Policy@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Organizations/PolicyProperties](#awsorganizationspolicyproperties) (Required): properties of the resource
+
+## Resource AWS.Organizations/ResourcePolicy@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Organizations/ResourcePolicyProperties](#awsorganizationsresourcepolicyproperties) (Required): properties of the resource
 
 ## AWS.Organizations/AccountProperties
 ### Properties
@@ -53,13 +63,25 @@
 ### Properties
 * **Arn**: string (ReadOnly): ARN of the Policy
 * **AwsManaged**: bool (ReadOnly): A boolean value that indicates whether the specified policy is an AWS managed policy. If true, then you can attach the policy to roots, OUs, or accounts, but you cannot edit it.
-* **Content**: string (Required): The Policy text content
+* **Content**: [Policy_Content](#policycontent) | string (Required): The Policy text content. For AWS CloudFormation templates formatted in YAML, you can provide the policy in JSON or YAML format. AWS CloudFormation always converts a YAML policy to JSON format before submitting it.
 * **Description**: string: Human readable description of the policy
 * **Id**: string (ReadOnly, Identifier): Id of the Policy
 * **Name**: string (Required): Name of the Policy
 * **Tags**: [Tag](#tag)[]: A list of tags that you want to attach to the newly created policy. For each tag in the list, you must specify both a tag key and a value. You can set the value to an empty string, but you can't set it to null.
 * **TargetIds**: string[]: List of unique identifiers (IDs) of the root, OU, or account that you want to attach the policy to
 * **Type**: string (Required): The type of policy to create. You can specify one of the following values: AISERVICES_OPT_OUT_POLICY, BACKUP_POLICY, SERVICE_CONTROL_POLICY, TAG_POLICY
+
+## Tag
+### Properties
+* **Key**: string (Required): The key identifier, or name, of the tag.
+* **Value**: string (Required): The string value that's associated with the key of the tag. You can set the value of a tag to an empty string, but you can't set the value of a tag to null.
+
+## AWS.Organizations/ResourcePolicyProperties
+### Properties
+* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the resource policy.
+* **Content**: [ResourcePolicy_Content](#resourcepolicycontent) | string (Required): The policy document. For AWS CloudFormation templates formatted in YAML, you can provide the policy in JSON or YAML format. AWS CloudFormation always converts a YAML policy to JSON format before submitting it.
+* **Id**: string (ReadOnly, Identifier): The unique identifier (ID) associated with this resource policy.
+* **Tags**: [Tag](#tag)[]: A list of tags that you want to attach to the resource policy
 
 ## Tag
 ### Properties
