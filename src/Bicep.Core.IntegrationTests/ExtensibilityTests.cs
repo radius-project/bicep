@@ -383,6 +383,27 @@ resource blob 'bar:blob' = {
             });
         }
 
+
+        [TestMethod]
+        public void Radius_location_can_be_optional()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+  name: 'mycontainer'
+  properties: {
+    application: 'myapp'
+    container: {
+      image: 'test'
+    }
+  }
+}
+");
+            // Just testing we can compile without error.
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+        }
+
         [TestMethod]
         public void Radius_function_call_mongo()
         {

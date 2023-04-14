@@ -224,6 +224,12 @@ namespace Bicep.Core.TypeSystem.Radius
                 properties = properties.SetItem(LanguageConstants.ResourceDependsOnPropertyName, new TypeProperty(LanguageConstants.ResourceDependsOnPropertyName, LanguageConstants.ResourceOrResourceCollectionRefArray, TypePropertyFlags.WriteOnly | TypePropertyFlags.DisallowAny));
             }
 
+            // For a Radius type location is optional **in Bicep**. The Deployment engine can add the property if needed.
+            if (properties.TryGetValue(LanguageConstants.ResourceLocationPropertyName, out var locationProperty))
+            {
+                properties = properties.SetItem(LanguageConstants.ResourceLocationPropertyName, UpdateFlags(locationProperty, locationProperty.Flags & ~TypePropertyFlags.Required));
+            }
+
             // add the loop variant flag to the name property (if it exists)
             if (properties.TryGetValue(ResourceNamePropertyName, out var nameProperty))
             {
