@@ -1,48 +1,48 @@
 # Bicep Types
 ## applications.core
 ### applications.core/applications
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscoreapplications2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscoreapplications2023-04-15-preview)
 
 ### applications.core/containers
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscorecontainers2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscorecontainers2023-04-15-preview)
 
 ### applications.core/environments
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscoreenvironments2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscoreenvironments2023-04-15-preview)
 
 ### applications.core/gateways
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscoregateways2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscoregateways2023-04-15-preview)
 
 ### applications.core/httproutes
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscorehttproutes2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscorehttproutes2023-04-15-preview)
 
 ### applications.core/volumes
-* [2022-03-15-privatepreview](applications/applications.core/2022-03-15-privatepreview/types.md#resource-applicationscorevolumes2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.core/2023-04-15-preview/types.md#resource-applicationscorevolumes2023-04-15-preview)
 
 ## applications.link
 ### applications.link/daprinvokehttproutes
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkdaprinvokehttproutes2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkdaprinvokehttproutes2023-04-15-preview)
 
 ### applications.link/daprpubsubbrokers
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkdaprpubsubbrokers2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkdaprpubsubbrokers2023-04-15-preview)
 
 ### applications.link/daprsecretstores
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkdaprsecretstores2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkdaprsecretstores2023-04-15-preview)
 
 ### applications.link/daprstatestores
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkdaprstatestores2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkdaprstatestores2023-04-15-preview)
 
 ### applications.link/extenders
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkextenders2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkextenders2023-04-15-preview)
 
 ### applications.link/mongodatabases
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkmongodatabases2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkmongodatabases2023-04-15-preview)
 
 ### applications.link/rabbitmqmessagequeues
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkrabbitmqmessagequeues2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkrabbitmqmessagequeues2023-04-15-preview)
 
 ### applications.link/rediscaches
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinkrediscaches2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinkrediscaches2023-04-15-preview)
 
 ### applications.link/sqldatabases
-* [2022-03-15-privatepreview](applications/applications.link/2022-03-15-privatepreview/types.md#resource-applicationslinksqldatabases2022-03-15-privatepreview)
+* [2023-04-15-preview](applications/applications.link/2023-04-15-preview/types.md#resource-applicationslinksqldatabases2023-04-15-preview)
 
