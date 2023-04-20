@@ -3,12 +3,14 @@
 ## Resource AWS.Scheduler/Schedule@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Scheduler/ScheduleProperties](#awsschedulerscheduleproperties) (Required): properties of the resource
 
 ## Resource AWS.Scheduler/ScheduleGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.Scheduler/ScheduleGroupProperties](#awsschedulerschedulegroupproperties): properties of the resource
 
@@ -24,19 +26,13 @@
 * **ScheduleExpression**: string (Required): The scheduling expression.
 * **ScheduleExpressionTimezone**: string: The timezone in which the scheduling expression is evaluated.
 * **StartDate**: string: The date, in UTC, after which the schedule can begin invoking its target. Depending on the schedule's recurrence expression, invocations might occur on, or after, the StartDate you specify.
-* **State**: [ScheduleState](#schedulestate)
+* **State**: string
 * **Target**: [Target](#target) (Required)
 
 ## FlexibleTimeWindow
 ### Properties
 * **MaximumWindowInMinutes**: int: The maximum time window during which a schedule can be invoked.
-* **Mode**: [FlexibleTimeWindowMode](#flexibletimewindowmode) (Required)
-
-## FlexibleTimeWindowMode
-### Properties
-
-## ScheduleState
-### Properties
+* **Mode**: string (Required)
 
 ## Target
 ### Properties
@@ -61,12 +57,12 @@
 * **EnableECSManagedTags**: bool: Specifies whether to enable Amazon ECS managed tags for the task. For more information, see Tagging Your Amazon ECS Resources in the Amazon Elastic Container Service Developer Guide.
 * **EnableExecuteCommand**: bool: Whether or not to enable the execute command functionality for the containers in this task. If true, this enables execute command functionality on all containers in the task.
 * **Group**: string: Specifies an ECS task group for the task. The maximum length is 255 characters.
-* **LaunchType**: [LaunchType](#launchtype)
+* **LaunchType**: string
 * **NetworkConfiguration**: [NetworkConfiguration](#networkconfiguration)
 * **PlacementConstraints**: [PlacementConstraint](#placementconstraint)[]: An array of placement constraint objects to use for the task. You can specify up to 10 constraints per task (including constraints in the task definition and those specified at runtime).
 * **PlacementStrategy**: [PlacementStrategy](#placementstrategy)[]: The placement strategy objects to use for the task. You can specify a maximum of five strategy rules per task.
 * **PlatformVersion**: string: Specifies the platform version for the task. Specify only the numeric portion of the platform version, such as 1.1.0.
-* **PropagateTags**: [PropagateTags](#propagatetags)
+* **PropagateTags**: string
 * **ReferenceId**: string: The reference ID to use for the task.
 * **Tags**: [TagMap](#tagmap)[]: The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define. To learn more, see RunTask in the Amazon ECS API Reference.
 * **TaskCount**: int: The number of tasks to create based on TaskDefinition. The default is 1.
@@ -78,40 +74,25 @@
 * **CapacityProvider**: string (Required): The short name of the capacity provider.
 * **Weight**: int: The weight value designates the relative percentage of the total number of tasks launched that should use the specified capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
 
-## LaunchType
-### Properties
-
 ## NetworkConfiguration
 ### Properties
 * **AwsvpcConfiguration**: [AwsVpcConfiguration](#awsvpcconfiguration)
 
 ## AwsVpcConfiguration
 ### Properties
-* **AssignPublicIp**: [AssignPublicIp](#assignpublicip)
+* **AssignPublicIp**: string
 * **SecurityGroups**: string[]: Specifies the security groups associated with the task. These security groups must all be in the same VPC. You can specify as many as five security groups. If you do not specify a security group, the default security group for the VPC is used.
 * **Subnets**: string[] (Required): Specifies the subnets associated with the task. These subnets must all be in the same VPC. You can specify as many as 16 subnets.
-
-## AssignPublicIp
-### Properties
 
 ## PlacementConstraint
 ### Properties
 * **Expression**: string: A cluster query language expression to apply to the constraint. You cannot specify an expression if the constraint type is distinctInstance. To learn more, see Cluster Query Language in the Amazon Elastic Container Service Developer Guide.
-* **Type**: [PlacementConstraintType](#placementconstrainttype)
-
-## PlacementConstraintType
-### Properties
+* **Type**: string
 
 ## PlacementStrategy
 ### Properties
 * **Field**: string: The field to apply the placement strategy against. For the spread placement strategy, valid values are instanceId (or host, which has the same effect), or any platform or custom attribute that is applied to a container instance, such as attribute:ecs.availability-zone. For the binpack placement strategy, valid values are cpu and memory. For the random placement strategy, this field is not used.
-* **Type**: [PlacementStrategyType](#placementstrategytype)
-
-## PlacementStrategyType
-### Properties
-
-## PropagateTags
-### Properties
+* **Type**: string
 
 ## TagMap
 ### Properties
@@ -149,11 +130,8 @@
 * **CreationDate**: string (ReadOnly): The time at which the schedule group was created.
 * **LastModificationDate**: string (ReadOnly): The time at which the schedule group was last modified.
 * **Name**: string (Identifier)
-* **State**: [ScheduleGroupState](#schedulegroupstate) (ReadOnly)
+* **State**: string (ReadOnly)
 * **Tags**: [Tag](#tag)[]: The list of tags to associate with the schedule group.
-
-## ScheduleGroupState
-### Properties
 
 ## Tag
 ### Properties

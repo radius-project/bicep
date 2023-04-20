@@ -48,7 +48,7 @@
 ### Properties
 * **DesiredChange**: string (Required)
 * **EntityIdKey**: string (Required): The JSON path to reference the entity id in the event.
-* **EventPattern**: string (Required): Event patterns have the same structure as the events they match. Rules use event patterns to select events. An event pattern either matches an event or it doesn't.
+* **EventPattern**: string: Event patterns have the same structure as the events they match. Rules use event patterns to select events. An event pattern either matches an event or it doesn't.
 * **MetricName**: string (Required)
 * **UnitLabel**: string
 * **ValueKey**: string (Required): The JSON path to reference the numerical metric value in the event.
@@ -68,7 +68,7 @@
 * **AnalysisCompleteTime**: string: Provide the analysis Completion time for an experiment
 * **DesiredState**: string: Provide CANCELLED or COMPLETED desired state when stopping an experiment
 * **Reason**: string: Reason is a required input for stopping the experiment
-* **Status**: string: Provide START or STOP action to apply on an experiment
+* **Status**: string (Required): Provide START or STOP action to apply on an experiment
 
 ## Tag
 ### Properties
@@ -110,7 +110,7 @@
 * **DoubleValue**: int
 * **LongValue**: int
 * **StringValue**: string
-* **VariationName**: string
+* **VariationName**: string (Required)
 
 ## AWS.Evidently/LaunchProperties
 ### Properties
@@ -141,7 +141,7 @@
 ## MetricDefinitionObject
 ### Properties
 * **EntityIdKey**: string (Required): The JSON path to reference the entity id in the event.
-* **EventPattern**: string (Required): Event patterns have the same structure as the events they match. Rules use event patterns to select events. An event pattern either matches an event or it doesn't.
+* **EventPattern**: string: Event patterns have the same structure as the events they match. Rules use event patterns to select events. An event pattern either matches an event or it doesn't.
 * **MetricName**: string (Required)
 * **UnitLabel**: string
 * **ValueKey**: string (Required): The JSON path to reference the numerical metric value in the event.

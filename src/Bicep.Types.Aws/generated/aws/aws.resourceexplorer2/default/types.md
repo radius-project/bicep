@@ -3,18 +3,21 @@
 ## Resource AWS.ResourceExplorer2/DefaultViewAssociation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.ResourceExplorer2/DefaultViewAssociationProperties](#awsresourceexplorer2defaultviewassociationproperties) (Required): properties of the resource
 
 ## Resource AWS.ResourceExplorer2/Index@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.ResourceExplorer2/IndexProperties](#awsresourceexplorer2indexproperties) (Required): properties of the resource
 
 ## Resource AWS.ResourceExplorer2/View@default
 * **Valid Scope(s)**: Unknown
 ### Properties
+* **alias**: string (Required): the resource alias
 * **name**: string: the resource name
 * **properties**: [AWS.ResourceExplorer2/ViewProperties](#awsresourceexplorer2viewproperties) (Required): properties of the resource
 
@@ -26,17 +29,11 @@
 ## AWS.ResourceExplorer2/IndexProperties
 ### Properties
 * **Arn**: string (ReadOnly, Identifier)
-* **IndexState**: [IndexState](#indexstate) (ReadOnly)
+* **IndexState**: string (ReadOnly)
 * **Tags**: [TagMap](#tagmap)
-* **Type**: [IndexType](#indextype) (Required)
-
-## IndexState
-### Properties
+* **Type**: string (Required)
 
 ## TagMap
-### Properties
-
-## IndexType
 ### Properties
 
 ## AWS.ResourceExplorer2/ViewProperties
