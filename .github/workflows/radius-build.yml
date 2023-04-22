@@ -58,14 +58,11 @@ jobs:
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          key: ${{ matrix.id }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-nuget
+            ${{ matrix.id }}-nuget
 
-      - name: Build Bicep.sln
-        run: dotnet build --configuration release
-
-      - name: Publish Bicep {{ matrix.id }}
+      - name: Publish Bicep ${{ matrix.id }}
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
@@ -74,8 +71,8 @@ jobs:
           -p:PublishSingleFile=true 
           -p:TrimmerDefaultAction=copyused 
           -p:SuppressTrimAnalysisWarnings=true 
-          -r {{ matrix.id }}
-          -o ./artifacts/bicep/{{ matrix.name }}
+          -r ${{ matrix.id }}
+          -o ./artifacts/bicep/${{ matrix.name }}
 
       - name: Publish Language Server
         if: matrix.id == 'linux-x64'
