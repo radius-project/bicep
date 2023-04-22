@@ -20,6 +20,28 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
+    strategy:
+      # let us get failures from other jobs even if one fails
+      fail-fast: true
+
+      # should be the full list of supported RIDs with customizations expressed via the parameters under each item
+      matrix:
+        include:
+          - name: windows-x64
+            id: win-x64
+          - name: windows-arm64
+            id: win-arm64
+          - name: linux-x64
+            id: linux-x64
+          - name: linux-arm
+            id: linux-arm
+          - name: linux-arm64
+            id: linux-arm64
+          - name: macos-x64
+            id: osx-x64
+          - name: macos-arm64
+            id: osx-arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,7 +65,7 @@ jobs:
       - name: Build Bicep.sln
         run: dotnet build --configuration release
 
-      - name: Publish Bicep windows-x64
+      - name: Publish Bicep {{ matrix.id }}
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
@@ -52,116 +74,60 @@ jobs:
           -p:PublishSingleFile=true 
           -p:TrimmerDefaultAction=copyused 
           -p:SuppressTrimAnalysisWarnings=true 
-          -r win-x64
-          -o ./artifacts/bicep/windows-x64
-      - name: Publish Bicep windows-arm64
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r win-arm64
-          -o ./artifacts/bicep/windows-arm64
-      - name: Publish Bicep linux-x64
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r linux-x64
-          -o ./artifacts/bicep/linux-x64
-      - name: Publish Bicep linux-arm
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r linux-arm
-          -o ./artifacts/bicep/linux-arm
-      - name: Publish Bicep linux-arm
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r linux-arm64
-          -o ./artifacts/bicep/linux-arm64
-      - name: Publish Bicep osx-x64
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r osx-x64
-          -o ./artifacts/bicep/macos-x64
-      - name: Publish Bicep osx-arm64
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r osx-arm64
-          -o ./artifacts/bicep/macos-arm64
+          -r {{ matrix.id }}
+          -o ./artifacts/bicep/{{ matrix.name }}
+
       - name: Publish Language Server
+        if: matrix.id == 'linux-x64'
         run: >
           dotnet publish --configuration release 
           ./src/Bicep.LangServer/Bicep.LangServer.csproj 
           -o "./src/vscode-bicep/bicepLanguageServer"
 
       - name: Test
+        if: matrix.id == 'linux-x64'
         run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
       - name: Upload Test Results
+        if: matrix.id == 'linux-x64'
         uses: actions/upload-artifact@v3
-        if: always() 
         with:
           name: Bicep.TestResults
           path: ./TestResults/**/*.trx
 
       - name: Setup Node
+        if: matrix.id == 'linux-x64'
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: npm ci
+        if: matrix.id == 'linux-x64'
         run: npm ci
         working-directory: ./src/vscode-bicep
 
       - name: Enable params
+        if: matrix.id == 'linux-x64'
         run: npm run params
         working-directory: ./src/vscode-bicep
 
       - name: Run lint
+        if: matrix.id == 'linux-x64'
         run: npm run lint
         working-directory: ./src/vscode-bicep
 
       - name: Run unit tests
+        if: matrix.id == 'linux-x64'
         run: npm run test:unit
         working-directory: ./src/vscode-bicep
 
       - name: Run snapshot tests
+        if: matrix.id == 'linux-x64'
         run: npm run test:snapshot
         working-directory: ./src/vscode-bicep
 
       - name: Build prod
+        if: matrix.id == 'linux-x64'
         run: npm run build:prod
         working-directory: ./src/vscode-bicep
 
@@ -180,10 +146,12 @@ jobs:
       #   working-directory: ./src/vscode-bicep
 
       - name: Create VSIX
+        if: matrix.id == 'linux-x64'
         run: npm run package
         working-directory: ./src/vscode-bicep
 
       - name: Copy VSIX
+        if: matrix.id == 'linux-x64'
         run: >
          mkdir -p ./artifacts/vscode && 
          cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
@@ -206,10 +174,19 @@ jobs:
           - name: windows-x64
             id: win-x64
             extension: .exe
+          - name: windows-arm64
+            id: win-arm64
+            extension: .exe
           - name: linux-x64
             id: linux-x64
+          - name: linux-arm
+            id: linux-arm
+          - name: linux-arm64
+            id: linux-arm64
           - name: macos-x64
             id: osx-x64
+          - name: macos-arm64
+            id: osx-arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
