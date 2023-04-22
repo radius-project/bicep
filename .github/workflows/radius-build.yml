@@ -76,18 +76,7 @@ jobs:
           -p:SuppressTrimAnalysisWarnings=true 
           -r linux-x64
           -o ./artifacts/bicep/linux-x64
-      - name: Publish Bicep linux-arm
-        run: >
-          dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
-          --configuration Release 
-          --self-contained true 
-          -p:PublishTrimmed=true 
-          -p:PublishSingleFile=true 
-          -p:TrimmerDefaultAction=copyused 
-          -p:SuppressTrimAnalysisWarnings=true 
-          -r linux-arm
-          -o ./artifacts/bicep/linux-arm
-      - name: Publish Bicep linux-arm
+      - name: Publish Bicep linux-arm64
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
