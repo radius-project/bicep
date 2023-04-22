@@ -195,10 +195,17 @@ jobs:
           - name: windows-x64
             id: win-x64
             extension: .exe
+          - name: windows-x64
+            id: win-arm64
+            extension: .exe
           - name: linux-x64
             id: linux-x64
+          - name: linux-arm64
+            id: linux-arm64
           - name: macos-x64
             id: osx-x64
+          - name: macos-arm64
+            id: osx-arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
