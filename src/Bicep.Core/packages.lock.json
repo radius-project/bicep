@@ -1746,7 +1746,7 @@
         }
       }
     },
-    "net6.0/linux-arm64": {
+    "net6.0/linux-arm": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -2847,7 +2847,7 @@
         }
       }
     },
-    "net6.0/linux-musl-x64": {
+    "net6.0/linux-arm64": {
       "Microsoft.Win32.Primitives": {
         "type": "Transitive",
         "resolved": "4.3.0",
