@@ -78,19 +78,13 @@ jobs:
           -p:SuppressTrimAnalysisWarnings=true 
           -r ${{ matrix.rid }}
           -o ./artifacts/bicep/${{ matrix.name }}
-      - name: Publish Language Server
-        if: ${{ matrix.name }} == 'linux-x64'
-        run: >
-          dotnet publish --configuration release 
-          ./src/Bicep.LangServer/Bicep.LangServer.csproj 
-          -o "./src/vscode-bicep/bicepLanguageServer"
 
       - name: Test
-        if: ${{ matrix.name }} == 'linux-x64'
+        if: ${{ matrix.name == 'linux-x64' }}
         run: dotnet test --configuration release --blame --collect:"XPlat Code Coverage" --settings ./.github/workflows/codecov.runsettings --results-directory ./TestResults/
 
       - name: Upload Test Results
-        if: ${{ matrix.name }} == 'linux-x64'
+        if: ${{ matrix.name == 'linux-x64' }}
         uses: actions/upload-artifact@v3
         with:
           name: Bicep.TestResults
@@ -116,6 +110,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+      - name: Publish Language Server
+        run: >
+          dotnet publish --configuration release 
+          ./src/Bicep.LangServer/Bicep.LangServer.csproj 
+          -o "./src/vscode-bicep/bicepLanguageServer"
       - name: npm ci
         run: npm ci
         working-directory: ./src/vscode-bicep
