@@ -98,7 +98,7 @@ jobs:
           -p:SuppressTrimAnalysisWarnings=true 
           -r linux-arm64
           -o ./artifacts/bicep/linux-arm64
-      - name: Publish Bicep osx-x64
+      - name: Publish Bicep macos-x64
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
@@ -109,7 +109,7 @@ jobs:
           -p:SuppressTrimAnalysisWarnings=true 
           -r osx-x64
           -o ./artifacts/bicep/macos-x64
-      - name: Publish Bicep osx-arm64
+      - name: Publish Bicep macos-arm64
         run: >
           dotnet publish ./src/Bicep.Cli/Bicep.Cli.csproj 
           --configuration Release 
