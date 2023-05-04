@@ -100,6 +100,7 @@
 * **DeploymentName**: string
 * **DeploymentPolicies**: [DeploymentPolicies](#deploymentpolicies)
 * **IotJobConfiguration**: [DeploymentIoTJobConfiguration](#deploymentiotjobconfiguration)
+* **ParentTargetArn**: string
 * **Tags**: [Deployment_Tags](#deploymenttags)
 * **TargetArn**: string (Required)
 
@@ -151,6 +152,8 @@
 
 ## IoTJobRateIncreaseCriteria
 ### Properties
+* **NumberOfNotifiedThings**: int
+* **NumberOfSucceededThings**: int
 
 ## IoTJobTimeoutConfig
 ### Properties
