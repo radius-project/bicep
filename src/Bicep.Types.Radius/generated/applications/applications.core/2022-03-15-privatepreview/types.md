@@ -87,7 +87,7 @@
 ## Function listSecrets (Applications.Core/secretStores@2022-03-15-privatepreview)
 * **Resource**: Applications.Core/secretStores
 * **ApiVersion**: 2022-03-15-privatepreview
-* **Output**: [SecretListProperties](#secretlistproperties)
+* **Output**: [SecretStoreListSecretsResult](#secretstorelistsecretsresult)
 
 ## ApplicationProperties
 ### Properties
@@ -363,7 +363,8 @@
 ## EnvironmentRecipeProperties
 ### Properties
 * **parameters**: any: Any object
-* **templatePath**: string (Required): Path to the template provided by the recipe. Currently only link to Azure Container Registry is supported.
+* **templateKind**: string: Format of the template provided by the recipe. Currently only Bicep and Terraform templates are supported.
+* **templatePath**: string (Required): Path to the template provided by the recipe. Currently only link to Azure Container Registry is supported for Bicep and public Terraform registries are supported for Terraform.
 
 ## TrackedResourceTags
 ### Properties
@@ -395,9 +396,6 @@
 
 ## GatewayPropertiesTls
 ### Properties
-* **certificateFrom**: string: Declares which Kubernetes TLS secret will be used.
-* **hostname**: string: Hostname
-* **minimumProtocolVersion**: '1.2' | '1.3': TLS minimum protocol version (defaults to 1.2).
 * **sslPassthrough**: bool: If true, gateway lets the https traffic sslPassthrough to the backend servers for decryption.
 
 ## TrackedResourceTags
@@ -511,12 +509,12 @@
 ### Additional Properties
 * **Additional Properties Type**: string
 
-## SecretListProperties
+## SecretStoreListSecretsResult
 ### Properties
-* **data**: [SecretListPropertiesData](#secretlistpropertiesdata) (ReadOnly): An object to represent key-value type secrets
-* **type**: string (ReadOnly): The type of secret store data
+* **data**: [SecretStoreListSecretsResultData](#secretstorelistsecretsresultdata) (ReadOnly): An object to represent key-value type secrets
+* **type**: 'certificate' | 'generic' (ReadOnly): The type of secret store data
 
-## SecretListPropertiesData
+## SecretStoreListSecretsResultData
 ### Properties
 ### Additional Properties
 * **Additional Properties Type**: [SecretValueProperties](#secretvalueproperties)
