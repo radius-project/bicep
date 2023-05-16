@@ -448,6 +448,51 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
             result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION3", "[listSecrets('mongo', '2022-03-15-privatepreview').password]");
         }
 
+
+        [TestMethod]
+        public void Radius_function_call_datastores_mongo()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+  name: 'my-mongo'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    mode: 'resource'
+    resource: '12345'
+  }
+}
+
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+  name: 'mycontainer'
+  location: 'global'
+  properties: {
+    application: 'myapp'
+    connections: {
+      redis: {
+        source: 'foo'
+      }
+    }
+    container: {
+      image: 'test'
+      env: {
+        DBCONNECTION: mongo.connectionString()
+        DBCONNECTION2: mongo.username()
+        DBCONNECTION3: mongo.password()
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('mongo', '2022-03-15-privatepreview').username]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION3", "[listSecrets('mongo', '2022-03-15-privatepreview').password]");
+        }
+
         [TestMethod]
         public void Radius_function_call_redis()
         {
@@ -493,12 +538,94 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
         }
 
         [TestMethod]
+        public void Radius_function_call_datastores_redis()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource redis 'Applications.Datastores/redisCaches@2022-03-15-privatepreview' = {
+  name: 'my-redis'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    mode: 'resource'
+    resource: '12345'
+  }
+}
+
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+  name: 'mycontainer'
+  location: 'global'
+  properties: {
+    application: 'myapp'
+    connections: {
+      redis: {
+        source: 'foo'
+      }
+    }
+    container: {
+      image: 'test'
+      env: {
+        DBCONNECTION: redis.connectionString()
+        DBCONNECTION2: redis.password()
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('redis', '2022-03-15-privatepreview').connectionString]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('redis', '2022-03-15-privatepreview').password]");
+        }
+
+        [TestMethod]
         public void Radius_function_call_rabbitmq()
         {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
 resource rabbitmq 'Applications.Link/rabbitMQMessageQueues@2022-03-15-privatepreview' = {
+  name: 'my-rabbitmq'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    mode: 'values'
+    queue: 'my-queue'
+  }
+}
+
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+  name: 'mycontainer'
+  location: 'global'
+  properties: {
+    application: 'myapp'
+    connections: {
+      rabbitmq: {
+        source: 'foo'
+      }
+    }
+    container: {
+      image: 'test'
+      env: {
+        DBCONNECTION: rabbitmq.connectionString()
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('rabbitmq', '2022-03-15-privatepreview').connectionString]");
+        }
+
+        [TestMethod]
+        public void Radius_function_call_messaging_rabbitmq()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource rabbitmq 'Applications.Messaging/rabbitMQQueues@2022-03-15-privatepreview' = {
   name: 'my-rabbitmq'
   location: 'global'
   properties: {
@@ -581,14 +708,101 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
 
         }
 
-
         [TestMethod]
+        public void Radius_function_call_core_extender()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource twilio 'Applications.Core/extenders@2022-03-15-privatepreview' = {
+  name: 'my-extender'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    secrets: {
+      accountSid: 'sid'
+      authToken: 'token'
+    }
+  }
+}
+
+resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+  name: 'mycontainer'
+  location: 'global'
+  properties: {
+    application: 'myapp'
+    connections: {
+      rabbitmq: {
+        source: 'foo'
+      }
+    }
+    container: {
+      image: 'test'
+      env: {
+        'TWILIO_SID': twilio.secrets('accountSid')
+        'TWILIO_ACCOUNT': twilio.secrets('authToken')
+      }
+    }
+  }
+}
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.container.properties.properties.container.env.TWILIO_SID",
+                "[listSecrets('twilio', '2022-03-15-privatepreview').accountSid]");
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.container.properties.properties.container.env.TWILIO_ACCOUNT",
+                "[listSecrets('twilio', '2022-03-15-privatepreview').authToken]");
+
+        }
+
+ [TestMethod]
         public void Radius_azure_reference()
         {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
 resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
+  name: 'my-mongo'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    mode: 'resource'
+    resource: '12345'
+  }
+}
+
+resource account 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'coolaccount'
+  location: 'global'
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+    customDomain: {
+        name: mongo.connectionString()
+    }
+  }
+}
+
+output connectionString string = mongo.connectionString()
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.account.properties.customDomain.name",
+                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+        }
+
+        [TestMethod]
+        public void Radius_azure_reference_datastores()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+import radius as radius
+
+resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -634,6 +848,55 @@ import kubernetes as kubernetes {
 }
 
 resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
+  name: 'my-mongo'
+  location: 'global'
+  properties: {
+    environment: 'test'
+    mode: 'resource'
+    resource: '12345'
+  }
+}
+
+resource secret 'core/Secret@v1' = {
+  metadata: {
+    name: 'redis-conn'
+    namespace: 'default'
+    labels: {
+      format: 'k8s-extension'
+    }
+  }
+
+  stringData: {
+    connectionString: '${mongo.connectionString()}'
+  }
+}
+
+output connectionString string = mongo.connectionString()
+");
+            result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
+            var text = result.Template!.ToString();
+            result.Template.Should().HaveValueAtPath(
+                "$.resources.secret.properties.stringData.connectionString",
+                "[format('{0}', listSecrets('mongo', '2022-03-15-privatepreview').connectionString)]");
+            result.Template.Should().HaveValueAtPath(
+                "$.outputs.connectionString.value",
+                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+        }
+
+
+        [TestMethod]
+        public void Kubernetes_Radius_Reference_Datastores()
+        {
+          var result = CompilationHelper.Compile(Services, @"
+param kubeConfig string
+
+import radius as radius
+import kubernetes as kubernetes {
+  kubeConfig: kubeConfig
+  namespace: 'default'
+}
+
+resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
