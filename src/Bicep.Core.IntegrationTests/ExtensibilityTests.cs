@@ -459,8 +459,10 @@ resource redis 'Applications.Link/redisCaches@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'my-redis.redis.cache.windows.net'
+    port: 6379
   }
 }
 
