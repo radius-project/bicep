@@ -103,6 +103,62 @@ namespace Bicep.Core.TypeSystem.Radius
                         .WithEvaluator(EvalWithName(apiVersion))
                         .Build(),
                 }
+            },
+            {
+                "Applications.Datastores/mongoDatabases", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Username)
+                        .WithDescription($"Provides access to the username value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Username))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                }
+            },
+            {
+                "Applications.Messaging/rabbitMQQueues", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+
+                }
+            },
+            {
+                "Applications.Datastores/redisCaches", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                }
+            },
+            {
+                "Applications.Core/extenders", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder("secrets")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithRequiredParameter("secretName", LanguageConstants.String, "name of the secret to retrieve")
+                        .WithEvaluator(EvalWithName(apiVersion))
+                        .Build(),
+                }
             }
         };
 
