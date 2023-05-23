@@ -719,6 +719,7 @@ resource twilio 'Applications.Core/extenders@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
+    application: 'myapp'
     secrets: {
       accountSid: 'sid'
       authToken: 'token'
