@@ -161,38 +161,22 @@
 * **Additional Properties Type**: string
 
 ## DaprPubSubBrokerProperties
-* **Discriminator**: mode
-
-### Base Properties
+### Properties
 * **application**: string: Fully qualified resource ID for the application that the link is consumed by
 * **componentName**: string (ReadOnly): The name of the Dapr component object. Use this value in your code when interacting with the Dapr client to use the Dapr component.
 * **environment**: string (Required): Fully qualified resource ID for the environment that the link is linked to
+* **metadata**: any: Any object
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the link at the time the operation was called
+* **recipe**: [Recipe](#recipe): The recipe used to automatically deploy underlying infrastructure for a link
+* **resourceProvisioning**: 'manual' | 'recipe': Specifies how the underlying service/resource is provisioned and managed. Available values are 'recipe', where Radius manages the lifecycle of the resource through a Recipe, and 'manual', where a user manages the resource and provides the values.
+* **resources**: [ResourceReference](#resourcereference)[]: A collection of references to resources associated with the daprPubSubBroker
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
-* **topic**: string: Topic name of the Azure ServiceBus resource
-### RecipeDaprPubSubProperties
-#### Properties
-* **metadata**: any: Any object
-* **mode**: 'recipe' (Required): Discriminator property for DaprPubSubBrokerProperties.
-* **recipe**: [Recipe](#recipe) (Required): The recipe used to automatically deploy underlying infrastructure for a link
-* **type**: string: Dapr PubSub type. These strings match the format used by Dapr Kubernetes configuration format.
+* **type**: string: DaprPubSubBroker type. These strings match the format used by Dapr Kubernetes configuration format.
 * **version**: string: Dapr component version
 
-### ResourceDaprPubSubProperties
-#### Properties
-* **metadata**: any: Any object
-* **mode**: 'resource' (Required): Discriminator property for DaprPubSubBrokerProperties.
-* **resource**: string (Required): PubSub resource
-* **type**: string: Dapr PubSub type. These strings match the format used by Dapr Kubernetes configuration format.
-* **version**: string: Dapr component version
-
-### ValuesDaprPubSubProperties
-#### Properties
-* **metadata**: any (Required): Any object
-* **mode**: 'values' (Required): Discriminator property for DaprPubSubBrokerProperties.
-* **type**: string (Required): Dapr PubSub type. These strings match the format used by Dapr Kubernetes configuration format.
-* **version**: string (Required): Dapr component version
-
+## ResourceReference
+### Properties
+* **id**: string (Required): Resource id of an existing resource
 
 ## TrackedResourceTags
 ### Properties
@@ -200,29 +184,17 @@
 * **Additional Properties Type**: string
 
 ## DaprSecretStoreProperties
-* **Discriminator**: mode
-
-### Base Properties
+### Properties
 * **application**: string: Fully qualified resource ID for the application that the link is consumed by
 * **componentName**: string (ReadOnly): The name of the Dapr component object. Use this value in your code when interacting with the Dapr client to use the Dapr component.
 * **environment**: string (Required): Fully qualified resource ID for the environment that the link is linked to
-* **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the link at the time the operation was called
-* **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
-### RecipeDaprSecretStoreProperties
-#### Properties
 * **metadata**: any: Any object
-* **mode**: 'recipe' (Required): Discriminator property for DaprSecretStoreProperties.
-* **recipe**: [Recipe](#recipe) (Required): The recipe used to automatically deploy underlying infrastructure for a link
+* **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the link at the time the operation was called
+* **recipe**: [Recipe](#recipe): The recipe used to automatically deploy underlying infrastructure for a link
+* **resourceProvisioning**: 'manual' | 'recipe': Specifies how the underlying service/resource is provisioned and managed. Available values are 'recipe', where Radius manages the lifecycle of the resource through a Recipe, and 'manual', where a user manages the resource and provides the values.
+* **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
 * **type**: string: Dapr Secret Store type. These strings match the types defined in Dapr Component format: https://docs.dapr.io/reference/components-reference/supported-secret-stores/
 * **version**: string: Dapr component version
-
-### ValuesDaprSecretStoreProperties
-#### Properties
-* **metadata**: any (Required): Any object
-* **mode**: 'values' (Required): Discriminator property for DaprSecretStoreProperties.
-* **type**: string (Required): Dapr Secret Store type. These strings match the types defined in Dapr Component format: https://docs.dapr.io/reference/components-reference/supported-secret-stores/
-* **version**: string (Required): Dapr component version
-
 
 ## TrackedResourceTags
 ### Properties
@@ -242,10 +214,6 @@
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
 * **type**: string: Dapr StateStore type. These strings match the format used by Dapr Kubernetes configuration format.
 * **version**: string: Dapr component version
-
-## ResourceReference
-### Properties
-* **id**: string (Required): Resource id of an existing resource
 
 ## TrackedResourceTags
 ### Properties
@@ -317,25 +285,15 @@
 * **Additional Properties Type**: string
 
 ## RabbitMQMessageQueueProperties
-* **Discriminator**: mode
-
-### Base Properties
+### Properties
 * **application**: string: Fully qualified resource ID for the application that the link is consumed by
 * **environment**: string (Required): Fully qualified resource ID for the environment that the link is linked to
 * **provisioningState**: 'Accepted' | 'Canceled' | 'Deleting' | 'Failed' | 'Provisioning' | 'Succeeded' | 'Updating' (ReadOnly): Provisioning state of the link at the time the operation was called
+* **queue**: string: The name of the queue
+* **recipe**: [Recipe](#recipe): The recipe used to automatically deploy underlying infrastructure for a link
+* **resourceProvisioning**: 'manual' | 'recipe': Specifies how the underlying service/resource is provisioned and managed. Available values are 'recipe', where Radius manages the lifecycle of the resource through a Recipe, and 'manual', where a user manages the resource and provides the values.
 * **secrets**: [RabbitMQSecrets](#rabbitmqsecrets): The secret values for the given RabbitMQMessageQueue resource
 * **status**: [ResourceStatus](#resourcestatus) (ReadOnly): Status of a resource.
-### RecipeRabbitMQMessageQueueProperties
-#### Properties
-* **mode**: 'recipe' (Required): Discriminator property for RabbitMQMessageQueueProperties.
-* **queue**: string: The name of the queue
-* **recipe**: [Recipe](#recipe) (Required): The recipe used to automatically deploy underlying infrastructure for a link
-
-### ValuesRabbitMQMessageQueueProperties
-#### Properties
-* **mode**: 'values' (Required): Discriminator property for RabbitMQMessageQueueProperties.
-* **queue**: string (Required): The name of the queue
-
 
 ## RabbitMQSecrets
 ### Properties
