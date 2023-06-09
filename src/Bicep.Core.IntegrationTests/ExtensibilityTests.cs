@@ -415,8 +415,10 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
   }
 }
 
@@ -769,8 +771,10 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
   }
 }
 
@@ -853,8 +857,10 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
   }
 }
 
