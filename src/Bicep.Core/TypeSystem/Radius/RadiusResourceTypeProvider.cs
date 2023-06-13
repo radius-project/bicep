@@ -69,6 +69,21 @@ namespace Bicep.Core.TypeSystem.Radius
                 }
             },
             {
+                "Applications.Link/sqlDatabases", (string apiVersion) => new []
+                {
+                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                        .WithDescription($"Provides access to the connectionString value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, ConnectionString))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                }
+            },
+            {
                 "Applications.Link/rabbitMQMessageQueues", (string apiVersion) => new []
                 {
                     new Semantics.FunctionOverloadBuilder(ConnectionString)
