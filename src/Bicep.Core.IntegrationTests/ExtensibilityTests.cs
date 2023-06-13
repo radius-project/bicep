@@ -419,6 +419,7 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
     resources: [{'id': '12345'}]
     host: 'myaccount.mongo.cosmos.azure.com'
     port: 6379
+    database: 'mydb'
   }
 }
 
@@ -775,6 +776,7 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
     resources: [{'id': '12345'}]
     host: 'myaccount.mongo.cosmos.azure.com'
     port: 6379
+    database: 'mydb'
   }
 }
 
@@ -861,6 +863,7 @@ resource mongo 'Applications.Link/mongoDatabases@2022-03-15-privatepreview' = {
     resources: [{'id': '12345'}]
     host: 'myaccount.mongo.cosmos.azure.com'
     port: 6379
+    database: 'mydb'
   }
 }
 
