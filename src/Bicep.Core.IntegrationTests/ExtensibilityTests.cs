@@ -633,7 +633,7 @@ resource rabbitmq 'Applications.Messaging/rabbitMQQueues@2022-03-15-privateprevi
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'values'
+    resourceProvisioning: 'manual'
     queue: 'my-queue'
   }
 }
