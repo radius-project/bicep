@@ -66,8 +66,7 @@ export async function activate(
 ): Promise<void> {
   const stable = vscode.extensions.getExtension('ms-azuretools.vscode-bicep');
   if (stable !== undefined) {
-    throw new Error(
-      'The Radius Bicep extension cannot be used while the official Bicep extension is also enabled. Please ensure that only one version of the extension is enabled.',
+    vscode.window.showErrorMessage('The Radius Bicep extension cannot be used while the official Bicep extension is also enabled. Please ensure that only one version of the extension is enabled.',
     );
   }
   
