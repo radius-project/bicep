@@ -15,6 +15,8 @@ namespace Bicep.Core.TypeSystem.Radius
     {
 
         private const string ConnectionString = "connectionString";
+
+        private const string URI = "uri";
         private const string Username = "username";
         private const string Password = "password";
 
@@ -106,7 +108,16 @@ namespace Bicep.Core.TypeSystem.Radius
                         .WithReturnType(LanguageConstants.String)
                         .WithEvaluator(Eval(apiVersion, ConnectionString))
                         .Build(),
-
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(URI)
+                        .WithDescription($"Provides access to the uri value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, URI))
+                        .Build(),
                 }
             },
             {
