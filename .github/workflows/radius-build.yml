@@ -226,7 +226,7 @@ jobs:
         working-directory: ./release
       - name: Release
         run: |
-          gh release create v0.23.0 ./release/* --generate-notes --prerelease --draft --verify-tags --title "Radius Bicep v0.23.0"
+          gh release create v0.23.0 ./release/* --generate-notes --prerelease --draft --verify-tag --title "Radius Bicep v0.23.0"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
   publish_blob:
