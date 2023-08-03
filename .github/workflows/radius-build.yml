@@ -29,24 +29,31 @@ jobs:
           - os: windows-latest
             rid: win-x64
             name: windows-x64
+            ext: '.exe'
           - os: windows-latest
             rid: win-arm64
             name: windows-arm64
+            ext: '.exe'
           - os: ubuntu-latest
             rid: linux-x64
             name: linux-x64
+            ext: ''
           - os: ubuntu-latest
             rid: linux-arm
             name: linux-arm
+            ext: ''
           - os: ubuntu-latest
             rid: linux-arm64
             name: linux-arm64
+            ext: ''
           - os: macos-latest
             rid: osx-x64
             name: macos-x64
+            ext: ''
           - os: macos-latest
             rid: osx-arm64
             name: macos-arm64
+            ext: ''
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -94,6 +101,16 @@ jobs:
         with:
           name: artifacts
           path: ./artifacts
+          if-no-files-found: error
+      - name: Move rad-bicep to release directory
+        run: |
+          mkdir ./release
+          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/rad-bicep-${{ matrix.name }}${{ matrix.ext }}
+      - name: Upload rad-bicep
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: ./release
           if-no-files-found: error
   vscode-bicep-build:
     name: Build Bicep vscode extension
@@ -168,8 +185,78 @@ jobs:
           name: artifacts
           path: ./artifacts
           if-no-files-found: error
-
-  publish:
+      - name: Copy VSIX to release
+        run: >
+         mkdir -p ./release/vscode && 
+         cp ./src/vscode-bicep/vscode-bicep.vsix ./release/rad-vscode-bicep.vsix
+      - name: Upload VSIX to release
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: ./release
+          if-no-files-found: error
+  publish_release:
+    if: ${{ false }}
+    name: Publish to GitHub Release
+    needs: ["build", "vscode-bicep-build"]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runtime:
+          - name: windows-x64
+            id: win-x64
+            extension: .exe
+          - name: windows-x64
+            id: win-arm64
+            extension: .exe
+          - name: linux-x64
+            id: linux-x64
+          - name: linux-arm
+            id: linux-arm
+          - name: linux-arm64
+            id: linux-arm64
+          - name: macos-x64
+            id: osx-x64
+          - name: macos-arm64
+            id: osx-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+          submodules: true
+      - name: Parse release version and set environment variables
+        run: python ./.github/scripts/get_release_version.py
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+          path: artifacts
+      - name: Display artifacts
+        run: ls -R
+        working-directory: ./artifacts
+      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+        name: Upload rad-bicep (${{ matrix.runtime.name }})
+        id: upload-rad-bicep
+        with:
+          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
+          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
+          sync: true
+      - name: Check uploaded
+        run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
+      # Only upload it once
+      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+        if: ${{ matrix.runtime.name == 'linux-x64' }}
+        name: Upload VS Code (channel)
+        with:
+          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+          source_dir: ./artifacts/vscode/
+          extra_args: "--destination-path ./vscode-extensibility/${{ env.REL_CHANNEL }}/ --overwrite true"
+          sync: true
+  publish_blob:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build", "vscode-bicep-build"]
