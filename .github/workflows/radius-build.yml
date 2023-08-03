@@ -103,6 +103,7 @@ jobs:
           path: ./artifacts
           if-no-files-found: error
       - name: Move rad-bicep to release directory
+        shell: bash
         run: |
           mkdir ./release
           cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/$release_file
@@ -223,6 +224,9 @@ jobs:
       - name: Display release
         run: ls -R
         working-directory: ./release
+      - name: Release
+        run: |
+          gh release create v0.23.0 ./release/* --generate-notes --pre-release --draft --verify-tags --title "Radius Bicep v0.23.0"
   publish_blob:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
