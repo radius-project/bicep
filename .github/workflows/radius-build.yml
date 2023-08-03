@@ -105,7 +105,10 @@ jobs:
       - name: Move rad-bicep to release directory
         run: |
           mkdir ./release
-          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/rad-bicep-${{ matrix.name }}${{ matrix.ext }}
+          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/${release_file}
+          gunzip ${release_file}
+        env:
+          release_file: rad-bicep-${{ matrix.name }}${{ matrix.ext }}
       - name: Upload rad-bicep
         uses: actions/upload-artifact@v3
         with:
@@ -196,29 +199,10 @@ jobs:
           path: ./release
           if-no-files-found: error
   publish_release:
-    if: ${{ false }}
+    # if: github.event_name == 'push'
     name: Publish to GitHub Release
     needs: ["build", "vscode-bicep-build"]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        runtime:
-          - name: windows-x64
-            id: win-x64
-            extension: .exe
-          - name: windows-x64
-            id: win-arm64
-            extension: .exe
-          - name: linux-x64
-            id: linux-x64
-          - name: linux-arm
-            id: linux-arm
-          - name: linux-arm64
-            id: linux-arm64
-          - name: macos-x64
-            id: osx-x64
-          - name: macos-arm64
-            id: osx-arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -227,35 +211,19 @@ jobs:
           submodules: true
       - name: Parse release version and set environment variables
         run: python ./.github/scripts/get_release_version.py
-      - name: Download artifacts
+      - name: Download releases
         uses: actions/download-artifact@v2
         with:
-          name: artifacts
-          path: artifacts
-      - name: Display artifacts
+          name: release
+          path: release
+      - name: Display release
         run: ls -R
-        working-directory: ./artifacts
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (${{ matrix.runtime.name }})
-        id: upload-rad-bicep
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
-          sync: true
-      - name: Check uploaded
-        run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
-      # Only upload it once
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        if: ${{ matrix.runtime.name == 'linux-x64' }}
-        name: Upload VS Code (channel)
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode-extensibility/${{ env.REL_CHANNEL }}/ --overwrite true"
-          sync: true
+        working-directory: ./release
+      - name: generate checksum files
+        run: cd release && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
+      - name: Display release
+        run: ls -R
+        working-directory: ./release
   publish_blob:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
