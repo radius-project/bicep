@@ -15,6 +15,7 @@ env:
   DOTNET_NOLOGO: true
   # disable telemetry (reduces dotnet tool output in logs)
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  RELEASE_PATH: ./release
 
 jobs:
   build:
@@ -190,16 +191,17 @@ jobs:
           if-no-files-found: error
       - name: Copy VSIX to release
         run: >
-         mkdir -p ./release/vscode && 
-         cp ./src/vscode-bicep/vscode-bicep.vsix ./release/rad-vscode-bicep.vsix
+         mkdir -p ${{ env.RELEASE_PATH }}/vscode && 
+         cp ./src/vscode-bicep/vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
       - name: Upload VSIX to release
         uses: actions/upload-artifact@v3
         with:
           name: release
-          path: ./release
+          path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
+
   publish_release:
-    # if: github.event_name == 'push'
+    if: startsWith(github.ref, 'refs/tags/v')
     name: Publish to GitHub Release
     needs: ["build", "vscode-bicep-build"]
     runs-on: ubuntu-latest
@@ -215,26 +217,34 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: release
-          path: release
-      - name: Display release
-        run: ls -R
-        working-directory: ./release
+          path: ${{ env.RELEASE_PATH }}
       - name: generate checksum files
-        run: cd release && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
+        run: cd ${{ env.RELEASE_PATH }} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
       - name: Display release
         run: ls -R
         working-directory: ./release
-      - name: Release
+      - name: Pre-release
+        if: ${{ contains(env.REL_VERSION, '-rc') }}
         run: |
-          gh release create v0.23.0 \
-            ./release/* \
+          gh release create ${{ env.REL_VERSION }} \
+            ${{ env.RELEASE_PATH }}/* \
             --generate-notes \
             --prerelease \
-            --draft \
             --verify-tag \
-            --title "Radius Bicep v0.23.0"
+            --title "Radius Bicep v${{ env.REL_VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+      - name: Official release
+        if: ${{ !contains(env.REL_VERSION, '-rc') }}
+        run: |
+          gh release create ${{ env.REL_VERSION }} \
+            ${{ env.RELEASE_PATH }}/* \
+            --generate-notes \
+            --verify-tag \
+            --title "Radius Bicep v${{ env.REL_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+  
   publish_blob:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
@@ -332,3 +342,16 @@ jobs:
           source_dir: ./artifacts/vscode/
           extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
           sync: true
+
+  delete_artifacts:
+    name: Delete artifacts
+    if: success()
+    needs: [ 'publish_blob' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete release artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            artifacts
+          failOnError: false
