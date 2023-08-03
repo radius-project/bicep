@@ -15,6 +15,7 @@ env:
   DOTNET_NOLOGO: true
   # disable telemetry (reduces dotnet tool output in logs)
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  RELEASE_PATH: ./release
 
 jobs:
   build:
@@ -29,24 +30,31 @@ jobs:
           - os: windows-latest
             rid: win-x64
             name: windows-x64
+            ext: '.exe'
           - os: windows-latest
             rid: win-arm64
             name: windows-arm64
+            ext: '.exe'
           - os: ubuntu-latest
             rid: linux-x64
             name: linux-x64
+            ext: ''
           - os: ubuntu-latest
             rid: linux-arm
             name: linux-arm
+            ext: ''
           - os: ubuntu-latest
             rid: linux-arm64
             name: linux-arm64
+            ext: ''
           - os: macos-latest
             rid: osx-x64
             name: macos-x64
+            ext: ''
           - os: macos-latest
             rid: osx-arm64
             name: macos-arm64
+            ext: ''
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -94,6 +102,19 @@ jobs:
         with:
           name: artifacts
           path: ./artifacts
+          if-no-files-found: error
+      - name: Move rad-bicep to release directory
+        shell: bash
+        run: |
+          mkdir ${{ env.RELEASE_PATH }}
+          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/$release_file
+        env:
+          release_file: rad-bicep-${{ matrix.name }}${{ matrix.ext }}
+      - name: Upload rad-bicep
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
   vscode-bicep-build:
     name: Build Bicep vscode extension
@@ -168,8 +189,63 @@ jobs:
           name: artifacts
           path: ./artifacts
           if-no-files-found: error
+      - name: Copy VSIX to release
+        run: >
+         mkdir -p ${{ env.RELEASE_PATH }}/vscode && 
+         cp ./src/vscode-bicep/vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
+      - name: Upload VSIX to release
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: ${{ env.RELEASE_PATH }}
+          if-no-files-found: error
 
-  publish:
+  publish_release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Publish to GitHub Release
+    needs: ["build", "vscode-bicep-build"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+          submodules: true
+      - name: Parse release version and set environment variables
+        run: python ./.github/scripts/get_release_version.py
+      - name: Download releases
+        uses: actions/download-artifact@v2
+        with:
+          name: release
+          path: ${{ env.RELEASE_PATH }}
+      - name: generate checksum files
+        run: cd ${{ env.RELEASE_PATH }} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
+      - name: Display release
+        run: ls -R
+        working-directory: ./release
+      - name: Pre-release
+        if: ${{ contains(env.REL_VERSION, '-rc') }}
+        run: |
+          gh release create ${{ env.REL_VERSION }} \
+            ${{ env.RELEASE_PATH }}/* \
+            --generate-notes \
+            --prerelease \
+            --verify-tag \
+            --title "Radius Bicep v${{ env.REL_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+      - name: Official release
+        if: ${{ !contains(env.REL_VERSION, '-rc') }}
+        run: |
+          gh release create ${{ env.REL_VERSION }} \
+            ${{ env.RELEASE_PATH }}/* \
+            --generate-notes \
+            --verify-tag \
+            --title "Radius Bicep v${{ env.REL_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+  
+  publish_blob:
     if: ${{ github.event_name == 'push' }}
     name: Publish to Azure Blob Storage
     needs: ["build", "vscode-bicep-build"]
@@ -266,3 +342,16 @@ jobs:
           source_dir: ./artifacts/vscode/
           extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
           sync: true
+
+  delete_artifacts:
+    name: Delete artifacts
+    if: success()
+    needs: [ 'publish_blob' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete release artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            artifacts
+          failOnError: false
