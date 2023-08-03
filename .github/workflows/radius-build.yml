@@ -105,8 +105,7 @@ jobs:
       - name: Move rad-bicep to release directory
         run: |
           mkdir ./release
-          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/${release_file}
-          gzip ./release/${release_file}
+          cp ./artifacts/bicep/${{ matrix.name }}/rad-bicep${{ matrix.ext }} ./release/$release_file
         env:
           release_file: rad-bicep-${{ matrix.name }}${{ matrix.ext }}
       - name: Upload rad-bicep
