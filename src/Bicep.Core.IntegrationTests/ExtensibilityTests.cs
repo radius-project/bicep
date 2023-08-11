@@ -463,8 +463,11 @@ resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
+    database: 'mydb'
   }
 }
 
@@ -551,8 +554,10 @@ resource redis 'Applications.Datastores/redisCaches@2022-03-15-privatepreview' =
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'my-redis.redis.cache.windows.net'
+    port: 6379
   }
 }
 
@@ -814,8 +819,11 @@ resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
+    database: 'mydb'
   }
 }
 
@@ -911,8 +919,11 @@ resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview
   location: 'global'
   properties: {
     environment: 'test'
-    mode: 'resource'
-    resource: '12345'
+    resourceProvisioning: 'manual'
+    resources: [{'id': '12345'}]
+    host: 'myaccount.mongo.cosmos.azure.com'
+    port: 6379
+    database: 'mydb'
   }
 }
 
