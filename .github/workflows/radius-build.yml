@@ -226,7 +226,7 @@ jobs:
       - name: Pre-release
         if: ${{ contains(env.REL_VERSION, '-rc') }}
         run: |
-          gh release create ${{ env.REL_VERSION }} \
+          gh release create v${{ env.REL_VERSION }} \
             ${{ env.RELEASE_PATH }}/* \
             --generate-notes \
             --prerelease \
@@ -237,7 +237,7 @@ jobs:
       - name: Official release
         if: ${{ !contains(env.REL_VERSION, '-rc') }}
         run: |
-          gh release create ${{ env.REL_VERSION }} \
+          gh release create v${{ env.REL_VERSION }} \
             ${{ env.RELEASE_PATH }}/* \
             --generate-notes \
             --verify-tag \
