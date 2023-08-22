@@ -49,42 +49,6 @@ namespace Bicep.Core.TypeSystem.Radius
 
         private static Dictionary<string, Func<string, IEnumerable<Semantics.FunctionOverload>>> FunctionTable = new()
         {
-
-            {
-                "Applications.Link/mongoDatabases", (string apiVersion) => new []
-                {
-                    new Semantics.FunctionOverloadBuilder(ConnectionString)
-                        .WithDescription($"Provides access to the connectionString value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, ConnectionString))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(Username)
-                        .WithDescription($"Provides access to the username value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, Username))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(Password)
-                        .WithDescription($"Provides access to the password value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, Password))
-                        .Build(),
-                }
-            },
-            {
-                "Applications.Link/sqlDatabases", (string apiVersion) => new []
-                {
-                    new Semantics.FunctionOverloadBuilder(ConnectionString)
-                        .WithDescription($"Provides access to the connectionString value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, ConnectionString))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(Password)
-                        .WithDescription($"Provides access to the password value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, Password))
-                        .Build(),
-                }
-            },
             {
                 "Applications.Datastores/sqlDatabases", (string apiVersion) => new []
                 {
@@ -97,51 +61,6 @@ namespace Bicep.Core.TypeSystem.Radius
                         .WithDescription($"Provides access to the password value.")
                         .WithReturnType(LanguageConstants.String)
                         .WithEvaluator(Eval(apiVersion, Password))
-                        .Build(),
-                }
-            },
-            {
-                "Applications.Link/rabbitMQMessageQueues", (string apiVersion) => new []
-                {
-                    new Semantics.FunctionOverloadBuilder(ConnectionString)
-                        .WithDescription($"Provides access to the connectionString value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, ConnectionString))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(Password)
-                        .WithDescription($"Provides access to the password value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, Password))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(URI)
-                        .WithDescription($"Provides access to the uri value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, URI))
-                        .Build(),
-                }
-            },
-            {
-                "Applications.Link/redisCaches", (string apiVersion) => new []
-                {
-                    new Semantics.FunctionOverloadBuilder(ConnectionString)
-                        .WithDescription($"Provides access to the connectionString value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, ConnectionString))
-                        .Build(),
-                    new Semantics.FunctionOverloadBuilder(Password)
-                        .WithDescription($"Provides access to the password value.")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithEvaluator(Eval(apiVersion, Password))
-                        .Build(),
-                }
-            },
-            {
-                "Applications.Link/extenders", (string apiVersion) => new []
-                {
-                    new Semantics.FunctionOverloadBuilder("secrets")
-                        .WithReturnType(LanguageConstants.String)
-                        .WithRequiredParameter("secretName", LanguageConstants.String, "name of the secret to retrieve")
-                        .WithEvaluator(EvalWithName(apiVersion))
                         .Build(),
                 }
             },
@@ -168,12 +87,21 @@ namespace Bicep.Core.TypeSystem.Radius
             {
                 "Applications.Messaging/rabbitMQQueues", (string apiVersion) => new []
                 {
-                    new Semantics.FunctionOverloadBuilder(ConnectionString)
+                     new Semantics.FunctionOverloadBuilder(ConnectionString)
                         .WithDescription($"Provides access to the connectionString value.")
                         .WithReturnType(LanguageConstants.String)
                         .WithEvaluator(Eval(apiVersion, ConnectionString))
                         .Build(),
-
+                    new Semantics.FunctionOverloadBuilder(Password)
+                        .WithDescription($"Provides access to the password value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, Password))
+                        .Build(),
+                    new Semantics.FunctionOverloadBuilder(URI)
+                        .WithDescription($"Provides access to the uri value.")
+                        .WithReturnType(LanguageConstants.String)
+                        .WithEvaluator(Eval(apiVersion, URI))
+                        .Build(),
                 }
             },
             {
@@ -345,7 +273,7 @@ namespace Bicep.Core.TypeSystem.Radius
             }
 
             // Get the type here
-            // Applications.Link/mongoDatabase
+            // Applications.Datastores/mongoDatabase
 
             return new ObjectType(
                 objectType.Name,
