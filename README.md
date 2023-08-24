@@ -1,4 +1,5 @@
 ## 🏗️ UNDER CONSTRUCTION
+
 This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and use the official Bicep for Radius.
 
 Note that the main Bicep VSCode extension is not compatible with rad-bicep and must be disabled. There may also be small inconsistencies between the main Bicep release and rad-bicep until we complete the full extensibility experience.
@@ -8,22 +9,28 @@ For more information please visit https://docs.radapp.dev
 ## FAQ
 
 **What unique benefits do you get with Radius Bicep?**
+
 1. Tooling to author and deploy Radius resources. Radius resources are platform-agnostic, allowing applications to be written once and deployed to any platform, such as Kubernetes, Microsoft Azure, Amazon Web Services (AWS)
 1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/project-radius/bicep-types-aws)
 
 **Can you install both the official Bicep extension and the Radius Bicep extension?**
+
 No, you can only have one Bicep extension installed at a time. If you have both installed, you will need to uninstall one of them. To build on Radius, you will need to uninstall the official Bicep and use the Radius Bicep extension.
 
 **Can you use the Radius Bicep extension to author Azure resources?**
+
 Yes you can use the Radius Bicep extension to author Azure resources. 
 
 **What are the future plans for Radius Bicep?**
+
 We are currently working with the Bicep team to upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and use the official Bicep for Radius.
 
 **Is this ready for production use?**
+
 Yes, Radius Bicep is ready for production use.
 
 **Can I contribute to Radius Bicep?**
+
 Yes, we accept minor bugfixes that are within the scope of Radius and its additions to Bicep. We're not accepting new features or general Bicep improvements.
 
 [![Build](https://github.com/Azure/bicep/actions/workflows/build.yml/badge.svg)](https://github.com/Azure/bicep/actions/workflows/build.yml)
