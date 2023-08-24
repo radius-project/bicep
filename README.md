@@ -8,7 +8,6 @@ For more information please visit https://docs.radapp.dev
 ## FAQ
 
 **What unique benefits do you get with Radius Bicep?**
-
 1. Tooling to author and deploy Radius resources. Radius resources are platform-agnostic, allowing applications to be written once and deployed to any platform, such as Kubernetes, Microsoft Azure, Amazon Web Services (AWS)
 1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/project-radius/bicep-types-aws)
 
