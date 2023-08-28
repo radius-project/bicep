@@ -10,16 +10,20 @@ For more information please visit https://docs.radapp.dev
 
 **What unique benefits do you get with Radius Bicep?**
 
-1. Tooling to author and deploy Radius resources. Radius resources are platform-agnostic, allowing applications to be written once and deployed to any platform, such as Kubernetes, Microsoft Azure, Amazon Web Services (AWS)
+1. Tooling to author and deploy Radius resources. Radius resources are application-centric and platform-agnostic, allowing apps to be written once and deployed to multiple platforms (_on-premises, Azure, AWS, etc._).
 1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/project-radius/bicep-types-aws)
 
-**Can you install both the official Bicep extension and the Radius Bicep extension?**
+**Can you install both the official Bicep CLI and the Radius (rad) CLI?**
 
-No, you can only have one Bicep extension installed at a time. If you have both installed, you will need to uninstall one of them. To build on Radius, you will need to uninstall the official Bicep and use the Radius Bicep extension.
+Yes, Radius manages its own version of the Bicep CLI (rad-bicep), so you can run both the rad CLI and the official Bicep CLI in parallel. You do not need to uninstall the Bicep CLI.
 
-**Can you use the Radius Bicep extension to author Azure resources?**
+**Can you install both the official Bicep VSCode extension and the Radius Bicep extension?**
 
-Yes you can use the Radius Bicep extension to author Azure resources. 
+No, you can only have one VSCode Bicep extension installed at a time. If you have both installed, you will need to uninstall one of them. To build on Radius, you will need to uninstall the official Bicep and use the Radius Bicep extension.
+
+**Can you use the Radius Bicep VSCode extension to author Azure resources?**
+
+Yes you can use the Radius Bicep extension to author Azure resources. However, it may not have the latest API versions available for Azure resources. You can continue to use newer versions, but the Radius Bicep extension may give warnings.
 
 **What are the future plans for Radius Bicep?**
 
