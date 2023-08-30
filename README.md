@@ -1,3 +1,42 @@
+## 🏗️ UNDER CONSTRUCTION
+
+This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.
+
+Note that the main Bicep VSCode extension is not compatible with rad-bicep and must be disabled. There may also be small inconsistencies between the main Bicep release and rad-bicep until we complete the full extensibility experience.
+
+For more information please visit https://docs.radapp.dev
+
+## FAQ
+
+**What unique benefits do you get with Radius Bicep?**
+
+1. Tooling to author and deploy Radius resources. Radius resources are application-centric and platform-agnostic, allowing apps to be written once and deployed to multiple platforms (_on-premises, Azure, AWS, etc._).
+1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/project-radius/bicep-types-aws)
+
+**Can you install both the official Bicep CLI and the Radius (rad) CLI?**
+
+Yes, Radius manages its own version of the Bicep CLI (rad-bicep), so you can run both the rad CLI and the official Bicep CLI in parallel. You do not need to uninstall the Bicep CLI.
+
+**Can you install both the official Bicep VSCode extension and the Radius Bicep extension?**
+
+No, you can only have one VSCode Bicep extension installed at a time. If you have both installed, you will need to uninstall one of them. To build on Radius, you will need to uninstall the official Bicep and use the Radius Bicep extension.
+
+**Can you use the Radius Bicep VSCode extension to author Azure resources?**
+
+Yes you can use the Radius Bicep extension to author Azure resources. However, it may not have the latest API versions available for Azure resources. You can continue to use newer versions, but the Radius Bicep extension may give warnings.
+
+**What are the future plans for Radius Bicep?**
+
+We are currently working with the Bicep team to upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and use the official Bicep for Radius.
+
+**Is this ready for production use?**
+
+No, Radius is in an early beta and in active development. Please visit https://docs.radapp.dev as we progress to a stable 1.0 release.
+
+**Can I contribute to Radius Bicep?**
+
+Yes, we accept minor bugfixes that are within the scope of Radius and its additions to Bicep. We're not accepting new features or general Bicep improvements.
+
 [![Build](https://github.com/Azure/bicep/actions/workflows/build.yml/badge.svg)](https://github.com/Azure/bicep/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/Azure/bicep/branch/main/graph/badge.svg)](https://codecov.io/gh/Azure/bicep)
 [![Good First Issues](https://img.shields.io/github/issues/Azure/Bicep/good%20first%20issue?color=important&label=good%20first%20issue&style=flat)](https://github.com/Azure/Bicep/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
