@@ -43,7 +43,7 @@
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
 * **location**: string (Required): The geo-location where the resource lives
 * **name**: string (Required, DeployTimeConstant): The resource name
-* **properties**: [ExtenderProperties](#extenderproperties): ExtenderResource link properties
+* **properties**: [ExtenderProperties](#extenderproperties): ExtenderResource portable resource properties
 * **systemData**: [SystemData](#systemdata) (ReadOnly): Metadata pertaining to creation and last modification of the resource.
 * **tags**: [TrackedResourceTags](#trackedresourcetags): Resource tags.
 * **type**: 'Applications.Core/extenders' (ReadOnly, DeployTimeConstant): The resource type
@@ -231,6 +231,7 @@
 * **command**: string[]: Entrypoint array. Overrides the container image's ENTRYPOINT
 * **env**: [ContainerEnv](#containerenv): environment
 * **image**: string (Required): The registry and image to download and run in your container
+* **imagePullPolicy**: 'Always' | 'IfNotPresent' | 'Never': The image pull policy for the container
 * **livenessProbe**: [HealthProbeProperties](#healthprobeproperties): Properties for readiness/liveness probe
 * **ports**: [ContainerPorts](#containerports): container ports
 * **readinessProbe**: [HealthProbeProperties](#healthprobeproperties): Properties for readiness/liveness probe
