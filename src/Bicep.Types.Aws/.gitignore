@@ -1,3 +1,3 @@
-# This directory should only contain the AWS types generated from https://github.com/project-radius/bicep-types-aws. 
+# This directory should only contain the AWS types generated from https://github.com/radius-project/bicep-types-aws. 
 # We don't want the current .gitignore file rules to ignore files found under this directory so we explicitly instruct gitignore to include everything in this directory.
 !generated/**
