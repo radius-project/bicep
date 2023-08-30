@@ -137,7 +137,7 @@ namespace Bicep.Core.TypeSystem.Aws
             }
 
             // Get the type here
-            // Applications.Link/mongoDatabase
+            // Applications.Datastores/mongoDatabases
 
             return new ObjectType(
                 objectType.Name,
