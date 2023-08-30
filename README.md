@@ -1,6 +1,6 @@
 ## 🏗️ UNDER CONSTRUCTION
 
-This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and use the official Bicep for Radius.
+This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.
 
 Note that the main Bicep VSCode extension is not compatible with rad-bicep and must be disabled. There may also be small inconsistencies between the main Bicep release and rad-bicep until we complete the full extensibility experience.
 
