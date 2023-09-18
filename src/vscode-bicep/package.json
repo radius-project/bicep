@@ -1,6 +1,6 @@
 {
   "name": "rad-vscode-bicep",
-  "displayName": "Bicep  (Radius)",
+  "displayName": "Radius Bicep",
   "description": "Radius custom Bicep language support for Visual Studio Code",
   "author": "Microsoft Corporation",
   "license": "MIT",
