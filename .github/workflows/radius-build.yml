@@ -371,7 +371,7 @@ jobs:
         run: npm i -g vsce
 
       - name: Publish
-        run: vsce publish -p ${{ secrets.VS_MARKETPLACE_TOKEN }} --baseContentUrl https://github.com/project-radius/radius --baseImagesUrl https://docs.radapp.dev/getting-started/
+        run: vsce publish -p ${{ secrets.VS_MARKETPLACE_TOKEN }}
 
   # delete_artifacts:
   #   name: Delete artifacts

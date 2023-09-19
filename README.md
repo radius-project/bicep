@@ -52,7 +52,7 @@ Bicep is a Domain Specific Language (DSL) for deploying Azure resources declarat
 
 Bicep code is transpiled to standard ARM Template JSON files, which effectively treats the ARM Template as an Intermediate Language (IL).
 
-[![Video overview of Bicep](http://img.youtube.com/vi/l85qv_1N2_A/0.jpg)](http://www.youtube.com/watch?v=l85qv_1N2_A "Azure Bicep March 2021: Learn everything about the next generation of ARM Templates")
+[![Video overview of Bicep](https://img.youtube.com/vi/l85qv_1N2_A/0.jpg)](https://www.youtube.com/watch?v=l85qv_1N2_A "Azure Bicep March 2021: Learn everything about the next generation of ARM Templates")
 
 ## Goals
 
