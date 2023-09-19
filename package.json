@@ -1,0 +1,15 @@
+{
+  "name": "bicep",
+  "description": "This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
