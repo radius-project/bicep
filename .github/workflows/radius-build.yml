@@ -344,15 +344,34 @@ jobs:
   #         extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
   #         sync: true
 
+  # publish_to_marketplace:
+  #   name: Publish to VS Marketplace
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: HaaLeo/publish-vscode-extension@v1
+  #       name: Publish to VS Marketplace Step
+  #       with:
+  #         pat: stub
+  #         dryRun: true
+
   publish_to_marketplace:
     name: Publish to VS Marketplace
     runs-on: ubuntu-latest
     steps:
-      - uses: HaaLeo/publish-vscode-extension@v1
-        name: Publish to VS Marketplace Step
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
         with:
-          pat: stub
-          dryRun: true
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install the dependencies
+        run: npm i
+
+      - name: Install vsce
+        run: npm i -g vsce
+
+      - name: Publish
+        run: vsce publish -p ${{ secrets.VS_MARKETPLACE_TOKEN }} --baseContentUrl https://github.com/project-radius/radius --baseImagesUrl https://docs.radapp.dev/getting-started/
 
   # delete_artifacts:
   #   name: Delete artifacts
