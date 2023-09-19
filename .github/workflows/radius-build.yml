@@ -199,6 +199,7 @@ jobs:
           name: release
           path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
+      
 
   publish_release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -245,113 +246,123 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
   
-  publish_blob:
-    if: ${{ github.event_name == 'push' }}
-    name: Publish to Azure Blob Storage
-    needs: ["build", "vscode-bicep-build"]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        runtime:
-          - name: windows-x64
-            id: win-x64
-            extension: .exe
-          - name: windows-x64
-            id: win-arm64
-            extension: .exe
-          - name: linux-x64
-            id: linux-x64
-          - name: linux-arm
-            id: linux-arm
-          - name: linux-arm64
-            id: linux-arm64
-          - name: macos-x64
-            id: osx-x64
-          - name: macos-arm64
-            id: osx-arm64
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
-          submodules: true
-      - name: Parse release version and set environment variables
-        run: python ./.github/scripts/get_release_version.py
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: artifacts
-          path: artifacts
-      - name: Display artifacts
-        run: ls -R
-        working-directory: ./artifacts
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (${{ matrix.runtime.name }})
-        id: upload-rad-bicep
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
-          sync: true
-      - name: Check uploaded
-        run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
+  # publish_blob:
+  #   if: ${{ github.event_name == 'push' }}
+  #   name: Publish to Azure Blob Storage
+  #   needs: ["build", "vscode-bicep-build"]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       runtime:
+  #         - name: windows-x64
+  #           id: win-x64
+  #           extension: .exe
+  #         - name: windows-x64
+  #           id: win-arm64
+  #           extension: .exe
+  #         - name: linux-x64
+  #           id: linux-x64
+  #         - name: linux-arm
+  #           id: linux-arm
+  #         - name: linux-arm64
+  #           id: linux-arm64
+  #         - name: macos-x64
+  #           id: osx-x64
+  #         - name: macos-arm64
+  #           id: osx-arm64
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+  #         submodules: true
+  #     - name: Parse release version and set environment variables
+  #       run: python ./.github/scripts/get_release_version.py
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: artifacts
+  #         path: artifacts
+  #     - name: Display artifacts
+  #       run: ls -R
+  #       working-directory: ./artifacts
+  #     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+  #       name: Upload rad-bicep (${{ matrix.runtime.name }})
+  #       id: upload-rad-bicep
+  #       with:
+  #         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+  #         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+  #         source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
+  #         extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
+  #         sync: true
+  #     - name: Check uploaded
+  #       run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
 
-      # Only upload it once
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        if: ${{ matrix.runtime.name == 'linux-x64' }}
-        name: Upload VS Code (channel)
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode-extensibility/${{ env.REL_CHANNEL }}/ --overwrite true"
-          sync: true
+  #     # Only upload it once
+  #     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+  #       if: ${{ matrix.runtime.name == 'linux-x64' }}
+  #       name: Upload VS Code (channel)
+  #       with:
+  #         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+  #         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+  #         source_dir: ./artifacts/vscode/
+  #         extra_args: "--destination-path ./vscode-extensibility/${{ env.REL_CHANNEL }}/ --overwrite true"
+  #         sync: true
 
-      # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
-      # release and see if it's newer. This prevents a patch release of an older vintage from overwriting
-      # a newer release
-      - name: Download version marker file
-        run: |
-          curl https://radiuspublic.blob.core.windows.net/version/stable.txt -o current-stable.txt
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-      - name: Get version
-        id: setcurrentversion
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        run: echo ::set-output name=version::$(cat current-stable.txt)
-      - name: Compare versions
-        uses: madhead/semver-utils@latest
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        id: compare
-        with:
-          version: ${{ env.REL_VERSION }}
-          compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
-      - name: Print info (for sanity)
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        run: |
-          echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
-          echo "this build channel: ${{ env.REL_CHANNEL }}"
-          echo "this build version: ${{ env.REL_VERSION }}"
-          echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload VS Code (stable)
-        if: ${{ success() && (steps.compare.outputs.comparison-result == '>' || steps.compare.outputs.comparison-result == '=')}}
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
-          sync: true
+  #     # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
+  #     # release and see if it's newer. This prevents a patch release of an older vintage from overwriting
+  #     # a newer release
+  #     - name: Download version marker file
+  #       run: |
+  #         curl https://radiuspublic.blob.core.windows.net/version/stable.txt -o current-stable.txt
+  #       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+  #     - name: Get version
+  #       id: setcurrentversion
+  #       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+  #       run: echo ::set-output name=version::$(cat current-stable.txt)
+  #     - name: Compare versions
+  #       uses: madhead/semver-utils@latest
+  #       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+  #       id: compare
+  #       with:
+  #         version: ${{ env.REL_VERSION }}
+  #         compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
+  #     - name: Print info (for sanity)
+  #       if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
+  #       run: |
+  #         echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
+  #         echo "this build channel: ${{ env.REL_CHANNEL }}"
+  #         echo "this build version: ${{ env.REL_VERSION }}"
+  #         echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
+  #     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
+  #       name: Upload VS Code (stable)
+  #       if: ${{ success() && (steps.compare.outputs.comparison-result == '>' || steps.compare.outputs.comparison-result == '=')}}
+  #       with:
+  #         container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
+  #         connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
+  #         source_dir: ./artifacts/vscode/
+  #         extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
+  #         sync: true
 
-  delete_artifacts:
-    name: Delete artifacts
-    if: success()
-    needs: [ 'publish_blob' ]
+  publish_to_marketplace:
+    name: Publish to VS Marketplace
     runs-on: ubuntu-latest
     steps:
-      - name: Delete release artifacts
-        uses: geekyeggo/delete-artifact@v2
+      - uses: HaaLeo/publish-vscode-extension@v1
+        name: Publish to VS Marketplace Step
         with:
-          name: |
-            artifacts
-          failOnError: false
+          pat: stub
+          dryRun: true
+
+  # delete_artifacts:
+  #   name: Delete artifacts
+  #   if: success()
+  #   needs: [ 'publish_blob' ]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Delete release artifacts
+  #       uses: geekyeggo/delete-artifact@v2
+  #       with:
+  #         name: |
+  #           artifacts
+  #         failOnError: false
