@@ -234,6 +234,14 @@ jobs:
           path: ./src/vscode-bicep/vscode-bicep.vsix
           if-no-files-found: error
 
+      - name: Publish VSIX
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          # pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          # registryUrl: https://marketplace.visualstudio.com
+          pat: stub
+          dryRun: true
+
   build-vs-ext:
     name: Build Visual Studio Extension
     runs-on: windows-latest
