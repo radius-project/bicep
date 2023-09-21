@@ -390,7 +390,7 @@ resource blob 'bar:blob' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+resource container 'Applications.Core/containers@2023-10-01-preview' = {
   name: 'mycontainer'
   properties: {
     application: 'myapp'
@@ -410,7 +410,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Datastores/mongoDatabases@2023-10-01-preview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -423,7 +423,7 @@ resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview
   }
 }
 
-resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+resource container 'Applications.Core/containers@2023-10-01-preview' = {
   name: 'mycontainer'
   location: 'global'
   properties: {
@@ -446,9 +446,9 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('mongo', '2022-03-15-privatepreview').username]");
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION3", "[listSecrets('mongo', '2022-03-15-privatepreview').password]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('mongo', '2023-10-01-preview').connectionString]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('mongo', '2023-10-01-preview').username]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION3", "[listSecrets('mongo', '2023-10-01-preview').password]");
         }
 
         [TestMethod]
@@ -457,7 +457,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource redis 'Applications.Datastores/redisCaches@2022-03-15-privatepreview' = {
+resource redis 'Applications.Datastores/redisCaches@2023-10-01-preview' = {
   name: 'my-redis'
   location: 'global'
   properties: {
@@ -469,7 +469,7 @@ resource redis 'Applications.Datastores/redisCaches@2022-03-15-privatepreview' =
   }
 }
 
-resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+resource container 'Applications.Core/containers@2023-10-01-preview' = {
   name: 'mycontainer'
   location: 'global'
   properties: {
@@ -491,8 +491,8 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('redis', '2022-03-15-privatepreview').connectionString]");
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('redis', '2022-03-15-privatepreview').password]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('redis', '2023-10-01-preview').connectionString]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION2", "[listSecrets('redis', '2023-10-01-preview').password]");
         }
 
         [TestMethod]
@@ -501,7 +501,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource rabbitmq 'Applications.Messaging/rabbitMQQueues@2022-03-15-privatepreview' = {
+resource rabbitmq 'Applications.Messaging/rabbitMQQueues@2023-10-01-preview' = {
   name: 'my-rabbitmq'
   location: 'global'
   properties: {
@@ -511,7 +511,7 @@ resource rabbitmq 'Applications.Messaging/rabbitMQQueues@2022-03-15-privateprevi
   }
 }
 
-resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+resource container 'Applications.Core/containers@2023-10-01-preview' = {
   name: 'mycontainer'
   location: 'global'
   properties: {
@@ -532,7 +532,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
 ");
             result.ExcludingLinterDiagnostics().Should().NotHaveAnyDiagnostics();
             var text = result.Template!.ToString();
-            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('rabbitmq', '2022-03-15-privatepreview').connectionString]");
+            result.Template.Should().HaveValueAtPath("$.resources.container.properties.properties.container.env.DBCONNECTION", "[listSecrets('rabbitmq', '2023-10-01-preview').connectionString]");
         }
 
         [TestMethod]
@@ -541,7 +541,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource twilio 'Applications.Core/extenders@2022-03-15-privatepreview' = {
+resource twilio 'Applications.Core/extenders@2023-10-01-preview' = {
   name: 'my-extender'
   location: 'global'
   properties: {
@@ -554,7 +554,7 @@ resource twilio 'Applications.Core/extenders@2022-03-15-privatepreview' = {
   }
 }
 
-resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
+resource container 'Applications.Core/containers@2023-10-01-preview' = {
   name: 'mycontainer'
   location: 'global'
   properties: {
@@ -578,10 +578,10 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath(
                 "$.resources.container.properties.properties.container.env.TWILIO_SID",
-                "[listSecrets('twilio', '2022-03-15-privatepreview').accountSid]");
+                "[listSecrets('twilio', '2023-10-01-preview').accountSid]");
             result.Template.Should().HaveValueAtPath(
                 "$.resources.container.properties.properties.container.env.TWILIO_ACCOUNT",
-                "[listSecrets('twilio', '2022-03-15-privatepreview').authToken]");
+                "[listSecrets('twilio', '2023-10-01-preview').authToken]");
 
         }
 
@@ -591,7 +591,7 @@ resource container 'Applications.Core/containers@2022-03-15-privatepreview' = {
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Datastores/mongoDatabases@2023-10-01-preview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -624,7 +624,7 @@ output connectionString string = mongo.connectionString()
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath(
                 "$.resources.account.properties.customDomain.name",
-                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+                "[listSecrets('mongo', '2023-10-01-preview').connectionString]");
         }
 
         [TestMethod]
@@ -633,7 +633,7 @@ output connectionString string = mongo.connectionString()
           var result = CompilationHelper.Compile(Services, @"
 import radius as radius
 
-resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Datastores/mongoDatabases@2023-10-01-preview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -666,7 +666,7 @@ output connectionString string = mongo.connectionString()
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath(
                 "$.resources.account.properties.customDomain.name",
-                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+                "[listSecrets('mongo', '2023-10-01-preview').connectionString]");
         }
 
         [TestMethod]
@@ -681,7 +681,7 @@ import kubernetes as kubernetes {
   namespace: 'default'
 }
 
-resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Datastores/mongoDatabases@2023-10-01-preview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -714,10 +714,10 @@ output connectionString string = mongo.connectionString()
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath(
                 "$.resources.secret.properties.stringData.connectionString",
-                "[format('{0}', listSecrets('mongo', '2022-03-15-privatepreview').connectionString)]");
+                "[format('{0}', listSecrets('mongo', '2023-10-01-preview').connectionString)]");
             result.Template.Should().HaveValueAtPath(
                 "$.outputs.connectionString.value",
-                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+                "[listSecrets('mongo', '2023-10-01-preview').connectionString]");
         }
 
 
@@ -733,7 +733,7 @@ import kubernetes as kubernetes {
   namespace: 'default'
 }
 
-resource mongo 'Applications.Datastores/mongoDatabases@2022-03-15-privatepreview' = {
+resource mongo 'Applications.Datastores/mongoDatabases@2023-10-01-preview' = {
   name: 'my-mongo'
   location: 'global'
   properties: {
@@ -766,10 +766,10 @@ output connectionString string = mongo.connectionString()
             var text = result.Template!.ToString();
             result.Template.Should().HaveValueAtPath(
                 "$.resources.secret.properties.stringData.connectionString",
-                "[format('{0}', listSecrets('mongo', '2022-03-15-privatepreview').connectionString)]");
+                "[format('{0}', listSecrets('mongo', '2023-10-01-preview').connectionString)]");
             result.Template.Should().HaveValueAtPath(
                 "$.outputs.connectionString.value",
-                "[listSecrets('mongo', '2022-03-15-privatepreview').connectionString]");
+                "[listSecrets('mongo', '2023-10-01-preview').connectionString]");
         }
 
         [TestMethod]
