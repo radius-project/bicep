@@ -304,7 +304,7 @@ jobs:
       - run: oras version
       - name: Push rad bicep binaries to GHCR (${{ matrix.runtime.name }})
         run: |
-          oras push ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest ./artifacts/bicep/${{ matrix.runtime.name }}/
+          oras push ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ if env.UPDATE_RELEASE == 'true' }}${{ env.REL_VERSION }}${{ else }}latest${{ endif }} ./artifacts/bicep/${{ matrix.runtime.name }}/
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
       
