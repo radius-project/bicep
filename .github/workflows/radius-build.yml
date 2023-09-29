@@ -16,6 +16,12 @@ env:
   # disable telemetry (reduces dotnet tool output in logs)
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   RELEASE_PATH: ./release
+  # ORAS (OCI Registry As Storage) CLI version
+  ORAS_VERSION: 1.1.0
+  # GitHub Actor for pushing images to GHCR
+  GHCR_ACTOR: rad-ci-bot
+  # Container registry url for GitHub container registry.
+  CONTAINER_REGISTRY: ${{ github.event_name == 'push' && 'ghcr.io/radius-project/dev' || 'ghcr.io/radius-project/radius' }}
 
 jobs:
   build:
@@ -245,9 +251,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
   
-  publish_blob:
+  publish_ghcr:
     if: ${{ github.event_name == 'push' }}
-    name: Publish to Azure Blob Storage
+    name: Publish to GHCR
     needs: ["build", "vscode-bicep-build"]
     runs-on: ubuntu-latest
     strategy:
@@ -285,6 +291,24 @@ jobs:
       - name: Display artifacts
         run: ls -R
         working-directory: ./artifacts
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ env.GHCR_ACTOR }}
+          password: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+
+      - uses: oras-project/setup-oras@v1
+        with:
+          version: ${{ env.ORAS_VERSION }}
+      - run: oras version
+      - name: Push rad bicep binaries to GHCR (${{ matrix.runtime.name }})
+        run: |
+          oras push ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest ./artifacts/bicep/${{ matrix.runtime.name }}/
+      - name: Check uploaded
+        run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
+      
+      # TODO: remove upload to blob storage once GHCR is tested and working
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload rad-bicep (${{ matrix.runtime.name }})
         id: upload-rad-bicep
@@ -346,7 +370,7 @@ jobs:
   delete_artifacts:
     name: Delete artifacts
     if: success()
-    needs: [ 'publish_blob' ]
+    needs: [ 'publish_ghcr' ]
     runs-on: ubuntu-latest
     steps:
       - name: Delete release artifacts
