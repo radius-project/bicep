@@ -22,8 +22,10 @@ env:
   GHCR_ACTOR: rad-ci-bot
   # Container registry url for GitHub container registry.
   CONTAINER_REGISTRY: ${{ github.event_name == 'push' && 'ghcr.io/radius-project/dev' || 'ghcr.io/radius-project/radius' }}
+  # Version tag 
+  VERSION_TAG: ${{ env.UPDATE_RELEASE == 'true' && env.REL_VERSION || 'latest' }}
   # URL to get source code for building the image
-  IMAGE_SRC: https://github.com/radius-project/radius
+  IMAGE_SRC: https://github.com/radius-project/bicep
 
 jobs:
   build:
@@ -306,7 +308,7 @@ jobs:
       - run: oras version
       - name: Push rad bicep binaries to GHCR (${{ matrix.runtime.name }})
         run: |
-          oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest ./artifacts/bicep/${{ matrix.runtime.name }}/
+          oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ env.VERSION_TAG }} ./artifacts/bicep/${{ matrix.runtime.name }}/
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
       
