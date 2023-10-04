@@ -22,8 +22,6 @@ env:
   GHCR_ACTOR: rad-ci-bot
   # Container registry url for GitHub container registry.
   CONTAINER_REGISTRY: ${{ github.event_name == 'push' && 'ghcr.io/radius-project/dev' || 'ghcr.io/radius-project/radius' }}
-  # Version tag 
-  VERSION_TAG: latest
   # URL to get source code for building the image
   IMAGE_SRC: https://github.com/radius-project/bicep
 
