@@ -308,11 +308,11 @@ jobs:
       - run: oras version
       - name: Push rad bicep binaries to GHCR (${{ matrix.runtime.name }})
         run: |
-          oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ env.VERSION_TAG }} ./artifacts/bicep/${{ matrix.runtime.name }}/
+          oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ env.UPDATE_RELEASE == 'true' && env.REL_VERSION || 'latest' }} ./artifacts/bicep/${{ matrix.runtime.name }}/
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
       
-      # TODO: remove upload to blob storage once GHCR is tested and working
+      # TODO: remove upload to blob storage once binaries are fully moved to GHCR
       - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
         name: Upload rad-bicep (${{ matrix.runtime.name }})
         id: upload-rad-bicep
