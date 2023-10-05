@@ -21,7 +21,7 @@ env:
   # GitHub Actor for pushing images to GHCR
   GHCR_ACTOR: rad-ci-bot
   # Container registry url for GitHub container registry.
-  CONTAINER_REGISTRY: ${{ github.event_name == 'push' && 'ghcr.io/radius-project/dev' || 'ghcr.io/radius-project/radius' }}
+  CONTAINER_REGISTRY: 'ghcr.io/radius-project/radius'
   # URL to get source code for building the image
   IMAGE_SRC: https://github.com/radius-project/bicep
 
