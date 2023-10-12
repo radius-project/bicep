@@ -263,7 +263,7 @@ jobs:
           - name: windows-x64
             id: win-x64
             extension: .exe
-          - name: windows-x64
+          - name: windows-arm64
             id: win-arm64
             extension: .exe
           - name: linux-x64
