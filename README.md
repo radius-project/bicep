@@ -31,7 +31,7 @@ We are currently working with the Bicep team to upstream our extensibility updat
 
 **Is this ready for production use?**
 
-No, Radius is in an early beta and in active development. Please visit https://docs.radapp.dev as we progress to a stable 1.0 release.
+No, Radius is not yet ready for production workloads and is still in active development. 
 
 **Can I contribute to Radius Bicep?**
 
