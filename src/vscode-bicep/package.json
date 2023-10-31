@@ -536,7 +536,7 @@
     "test:update-snapshot": "jest --config jest.config.snapshot.js --updateSnapshot",
     "testlocal:e2e": "(export BICEP_LANGUAGE_SERVER_PATH=${INIT_CWD}/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll || set BICEP_LANGUAGE_SERVER_PATH=%INIT_CWD%/../Bicep.LangServer/bin/Debug/net6.0/Bicep.LangServer.dll) && npm run build && npm run build:e2e && npm run test:e2e",
     "clean": "rimraf ./out ./coverage",
-    "package": "npm run clean && nbgv set-version && vsce package --githubBranch bicep-extensibility --out ./rad-vscode-bicep.vsix && nbgv-setversion --reset",
+    "package": "npm run clean && nbgv-setversion && vsce package --githubBranch bicep-extensibility --out ./rad-vscode-bicep.vsix && nbgv-setversion --reset",
     "packagelocal": "rimraf ./bicepLanguageServer && cp -r ../Bicep.LangServer/bin/Debug/net6.0 ./bicepLanguageServer && npm run package",
     "params": "node ./enableParams.js"
   },
