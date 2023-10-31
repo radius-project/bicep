@@ -1,17 +1,17 @@
 ## 🏗️ UNDER CONSTRUCTION
 
-This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/project-radius/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.
+This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/radius-project/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.
 
 Note that the main Bicep VSCode extension is not compatible with rad-bicep and must be disabled. There may also be small inconsistencies between the main Bicep release and rad-bicep until we complete the full extensibility experience.
 
-For more information please visit https://docs.radapp.dev
+For more information please visit https://docs.radapp.io
 
 ## FAQ
 
 **What unique benefits do you get with Radius Bicep?**
 
 1. Tooling to author and deploy Radius resources. Radius resources are application-centric and platform-agnostic, allowing apps to be written once and deployed to multiple platforms (_on-premises, Azure, AWS, etc._).
-1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/project-radius/bicep-types-aws)
+1. Tooling to author and deploy AWS resource types using the [AWS extensibility provider](https://github.com/radius-project/bicep-types-aws)
 
 **Can you install both the official Bicep CLI and the Radius (rad) CLI?**
 
