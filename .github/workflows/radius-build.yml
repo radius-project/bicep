@@ -184,7 +184,7 @@ jobs:
       - name: Copy VSIX to release
         run: >
          mkdir -p ${{ env.RELEASE_PATH }}/vscode && 
-         cp ./src/vscode-bicep/vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
+         cp ./src/vscode-bicep/rad-vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
       - name: Upload VSIX to release
         uses: actions/upload-artifact@v3
         with:
@@ -292,7 +292,7 @@ jobs:
       - run: oras version
       - name: Push rad bicep binaries to GHCR (${{ matrix.runtime.name }})
         run: |
-          cd ./artifacts/bicep/${{ matrix.runtime.name }} && oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest ./rad-bicep${{ matrix.runtime.extension }}
+          cd ./artifacts/bicep/${{ matrix.runtime.name }} && oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ env.UPDATE_RELEASE == 'true' && env.REL_CHANNEL || 'latest' }} ./rad-bicep${{ matrix.runtime.extension }}
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
 
