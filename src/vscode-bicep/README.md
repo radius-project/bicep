@@ -1,4 +1,12 @@
-# Key features of the Bicep VS Code extension
+## 🏗️ UNDER CONSTRUCTION
+
+This is a temporary fork of the official [Azure Bicep](https://github.com/Azure/bicep) to support [Radius](https://github.com/radius-project/radius) while we upstream our extensibility updates to the official Bicep repository. Once that is complete, we will deprecate this repository and users can use the official build of Bicep with Radius.
+
+Note that the main Bicep VSCode extension is not compatible with rad-bicep and must be disabled. There may also be small inconsistencies between the main Bicep release and rad-bicep until we complete the full extensibility experience.
+
+For more information please visit https://docs.radapp.io
+
+## Key features of the Bicep VS Code extension
 
 The [Bicep VS Code extension](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install#vs-code-and-bicep-extension) is capable of many of the features you would expect out of other language tooling. Here is a comprehensive list of the features that are currently implemented.
 

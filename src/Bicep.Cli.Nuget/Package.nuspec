@@ -6,14 +6,14 @@
     <authors>Microsoft</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
-    <icon>bicep-logo-256.png</icon>
+    <icon>rad-vscode-bicep-logo.png</icon>
     <projectUrl>https://github.com/Azure/bicep</projectUrl>
     <description>Bicep Command Line Interface tool</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>Azure Bicep CLI compiler</tags>
   </metadata>
   <files>
-    <file src="..\icons\bicep-logo-256.png" target="bicep-logo-256.png" />
+    <file src="..\icons\rad-vscode-bicep-logo.png" target="rad-vscode-bicep-logo.png" />
     <file src="build\Azure.Bicep.CommandLine.Common.props" target="build\" />
     <!-- nuget convention requires .props file name to match package ID -->
     <file src="build\Azure.Bicep.CommandLine.RID.props" target="build\Azure.Bicep.CommandLine.$rid$.props" />

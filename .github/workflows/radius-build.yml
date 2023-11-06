@@ -122,6 +122,7 @@ jobs:
           name: release
           path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
+
   vscode-bicep-build:
     name: Build Bicep vscode extension
     runs-on: ubuntu-latest
@@ -167,28 +168,13 @@ jobs:
       - name: Build prod
         run: npm run build:prod
         working-directory: ./src/vscode-bicep
-
-      # Comment out while we troubleshoot the root cause of e2e errors
-      # - name: Build E2E tests
-      #   run: npm run build:e2e
-      #   working-directory: ./src/vscode-bicep
-
-      # - name: Run E2E tests
-      #   run: xvfb-run -a npm run test:e2e
-      #   working-directory: ./src/vscode-bicep
-
-      # - name: Show extension logs of E2E tests
-      #   run: cat ./bicep.log
-      #   if: always()
-      #   working-directory: ./src/vscode-bicep
-
       - name: Create VSIX
         run: npm run package
         working-directory: ./src/vscode-bicep
       - name: Copy VSIX
         run: >
          mkdir -p ./artifacts/vscode && 
-         cp ./src/vscode-bicep/vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
+         cp ./src/vscode-bicep/rad-vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -198,7 +184,7 @@ jobs:
       - name: Copy VSIX to release
         run: >
          mkdir -p ${{ env.RELEASE_PATH }}/vscode && 
-         cp ./src/vscode-bicep/vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
+         cp ./src/vscode-bicep/rad-vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
       - name: Upload VSIX to release
         uses: actions/upload-artifact@v3
         with:
@@ -250,7 +236,8 @@ jobs:
             --title "Radius Bicep v${{ env.REL_VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RAD_CI_BOT_PAT }}
-  publish_ghcr:
+
+  publish:
     if: ${{ github.event_name == 'push' }}
     name: Publish to GHCR
     needs: ["build", "vscode-bicep-build"]
@@ -299,7 +286,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: oras-project/setup-oras@v1
         with:
           version: ${{ env.ORAS_VERSION }}
@@ -309,70 +295,11 @@ jobs:
           cd ./artifacts/bicep/${{ matrix.runtime.name }} && oras push --annotation "org.opencontainers.image.source=${{ env.IMAGE_SRC }}" ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:${{ env.UPDATE_RELEASE == 'true' && env.REL_CHANNEL || 'latest' }} ./rad-bicep${{ matrix.runtime.extension }}
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
-      
-      # TODO: remove upload to blob storage once binaries are fully moved to GHCR
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload rad-bicep (${{ matrix.runtime.name }})
-        id: upload-rad-bicep
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/bicep/${{ matrix.runtime.name }}/
-          extra_args: "--destination-path ./bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/ --pattern rad-bicep${{ matrix.runtime.extension }} --overwrite true"
-          sync: true
-      - name: Check uploaded
-        run: curl --fail https://radiuspublic.blob.core.windows.net/tools/bicep-extensibility/${{ env.REL_CHANNEL }}/${{ matrix.runtime.name }}/rad-bicep${{ matrix.runtime.extension }} -v > out
-
-      # Only upload it once
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        if: ${{ matrix.runtime.name == 'linux-x64' }}
-        name: Upload VS Code (channel)
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode-extensibility/${{ env.REL_CHANNEL }}/ --overwrite true"
-          sync: true
-
-      # Logic: If this is a real release (tagged, non-rc) then compare to our existing full
-      # release and see if it's newer. This prevents a patch release of an older vintage from overwriting
-      # a newer release
-      - name: Download version marker file
-        run: |
-          curl https://radiuspublic.blob.core.windows.net/version/stable.txt -o current-stable.txt
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-      - name: Get version
-        id: setcurrentversion
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        run: echo ::set-output name=version::$(cat current-stable.txt)
-      - name: Compare versions
-        uses: madhead/semver-utils@latest
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        id: compare
-        with:
-          version: ${{ env.REL_VERSION }}
-          compare-to: ${{ steps.setcurrentversion.outputs.version }}.0
-      - name: Print info (for sanity)
-        if: ${{ success() && env.UPDATE_RELEASE == 'true' }}
-        run: |
-          echo "current stable channel: ${{ steps.setcurrentversion.outputs.version }}"
-          echo "this build channel: ${{ env.REL_CHANNEL }}"
-          echo "this build version: ${{ env.REL_VERSION }}"
-          echo "comparison: ${{ steps.compare.outputs.comparison-result }}"
-      - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-        name: Upload VS Code (stable)
-        if: ${{ success() && (steps.compare.outputs.comparison-result == '>' || steps.compare.outputs.comparison-result == '=')}}
-        with:
-          container_name: ${{ secrets.ASSETS_STORAGE_CONTAINER }}
-          connection_string: ${{ secrets.ASSETS_STORAGE_CONNECTION_STRING }}
-          source_dir: ./artifacts/vscode/
-          extra_args: "--destination-path ./vscode-extensibility/stable/ --overwrite true"
-          sync: true
 
   delete_artifacts:
     name: Delete artifacts
     if: success()
-    needs: [ 'publish_ghcr' ]
+    needs: [ 'publish' ]
     runs-on: ubuntu-latest
     steps:
       - name: Delete release artifacts

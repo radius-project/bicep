@@ -33,7 +33,7 @@
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageTags>Azure;Bicep;$(PackageTags)</PackageTags>
     <PackageIconUrl><!-- Don't set this field (deprecated) --></PackageIconUrl>
-    <PackageIcon>bicep-logo-256.png</PackageIcon>
+    <PackageIcon>rad-vscode-bicep-logo.png</PackageIcon>
 
     <!-- generate symbols for upload to the nuget feed -->
     <IncludeSymbols>true</IncludeSymbols>
@@ -47,7 +47,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(EnableNuget)' == 'true'">
-    <None Include="$(MSBuildThisFileDirectory)\icons\bicep-logo-256.png" Pack="true" PackagePath="" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)\icons\rad-vscode-bicep-logo.png" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>

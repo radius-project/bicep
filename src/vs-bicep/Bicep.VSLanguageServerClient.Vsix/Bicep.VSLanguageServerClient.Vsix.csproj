@@ -88,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\BicepFileIcon.png" />
-    <Content Include="Icons\bicep-logo-256.png">
+    <Content Include="Icons\rad-vscode-bicep-logo.png">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
