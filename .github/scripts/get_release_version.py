@@ -88,6 +88,9 @@ with open(os.getenv("GITHUB_ENV"), "a") as githubEnv:
             channel = "REL_CHANNEL={}".format(match.group("version"))
             print("Setting: {}".format(channel))
             githubEnv.write(channel + "\n")
+
+            print("Setting: UPDATE_RELEASE=true")
+            githubEnv.write("UPDATE_RELEASE=true" + "\n")
             sys.exit(0)
 
     print("This is a normal build")
