@@ -133,6 +133,10 @@ If you'd like to contribute to the collection of snippets:
 
 * Submit a PR for review
 
+## Inactive Pull Requests
+
+Pull requests that have been inactive for 90 days will be marked with a stale label. They will automatically be closed after a subsequent 7 days of inactivity. This timeframe may be adjusted in the future based on project needs.
+
 ## Feature Suggestions
 
 * Please first search [Open Bicep Issues](https://github.com/Azure/bicep/issues) before opening an issue to check whether your feature has already been suggested. If it has, feel free to add your own comments to the existing issue.
