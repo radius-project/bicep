@@ -63,7 +63,7 @@ jobs:
             ext: ''
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
           submodules: true
@@ -71,9 +71,9 @@ jobs:
         run: python ./.github/scripts/get_release_version.py
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -99,14 +99,14 @@ jobs:
 
       - name: Upload Test Results
         if: ${{ matrix.name == 'linux-x64' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Bicep.TestResults
           path: ./TestResults/**/*.trx
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: artifacts-${{ matrix.name }}
           path: ./artifacts
           if-no-files-found: error
       - name: Move rad-bicep to release directory
@@ -117,9 +117,9 @@ jobs:
         env:
           release_file: rad-bicep-${{ matrix.name }}${{ matrix.ext }}
       - name: Upload rad-bicep
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: release
+          name: release-${{ matrix.name }}
           path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
 
@@ -128,17 +128,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
           submodules: true
       - name: Parse release version and set environment variables
         run: python ./.github/scripts/get_release_version.py
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -176,7 +176,7 @@ jobs:
          mkdir -p ./artifacts/vscode && 
          cp ./src/vscode-bicep/rad-vscode-bicep.vsix ./artifacts/vscode/rad-vscode-bicep.vsix
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts
           path: ./artifacts
@@ -186,9 +186,9 @@ jobs:
          mkdir -p ${{ env.RELEASE_PATH }}/vscode && 
          cp ./src/vscode-bicep/rad-vscode-bicep.vsix ${{ env.RELEASE_PATH }}/rad-vscode-bicep.vsix
       - name: Upload VSIX to release
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: release
+          name: release-vscode-ext
           path: ${{ env.RELEASE_PATH }}
           if-no-files-found: error
 
@@ -199,16 +199,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
           submodules: true
       - name: Parse release version and set environment variables
         run: python ./.github/scripts/get_release_version.py
       - name: Download releases
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: release
+          pattern: release-*
+          merge-multiple: true
           path: ${{ env.RELEASE_PATH }}
       - name: generate checksum files
         run: cd ${{ env.RELEASE_PATH }} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
@@ -266,27 +267,27 @@ jobs:
             id: osx-arm64
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
           submodules: true
       - name: Parse release version and set environment variables
         run: python ./.github/scripts/get_release_version.py
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: artifacts
+          name: artifacts-${{ matrix.runtime.name }}
           path: artifacts
       - name: Display artifacts
         run: ls -R
         working-directory: ./artifacts
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: oras-project/setup-oras@v1
+      - uses: oras-project/setup-oras@main
         with:
           version: ${{ env.ORAS_VERSION }}
       - run: oras version
@@ -296,15 +297,3 @@ jobs:
       - name: Check uploaded
         run: curl --fail ${{ env.CONTAINER_REGISTRY }}/bicep/rad-bicep/${{ matrix.runtime.name }}:latest -v > out
 
-  delete_artifacts:
-    name: Delete artifacts
-    if: success()
-    needs: [ 'publish' ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete release artifacts
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: |
-            artifacts
-          failOnError: false
