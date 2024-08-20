@@ -1,0 +1,1415 @@
+[
+  {
+    "$type": "ObjectType",
+    "name": "ApplicationStatus",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AttachmentsConfiguration",
+    "properties": {
+      "AttachmentsControlMode": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AttachmentsControlMode",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "EncryptionConfiguration",
+    "properties": {
+      "KmsKeyId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "QAppsConfiguration",
+    "properties": {
+      "QAppsControlMode": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "QAppsControlMode",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "StringType"
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/ApplicationProperties"
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/6"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/ApplicationProperties",
+    "properties": {
+      "ApplicationArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "AttachmentsConfiguration": {
+        "type": {
+          "$ref": "#/1"
+        },
+        "flags": 0
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Description": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "DisplayName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "EncryptionConfiguration": {
+        "type": {
+          "$ref": "#/3"
+        },
+        "flags": 0
+      },
+      "IdentityCenterApplicationArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "IdentityCenterInstanceArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 4
+      },
+      "QAppsConfiguration": {
+        "type": {
+          "$ref": "#/4"
+        },
+        "flags": 0
+      },
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Status": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/9"
+        },
+        "flags": 0
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/Application",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/10"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/Application@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/11"
+    },
+    "flags": 0
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AttributeValueOperator",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DataSourceStatus",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DataSourceVpcConfiguration",
+    "properties": {
+      "SecurityGroupIds": {
+        "type": {
+          "$ref": "#/25"
+        },
+        "flags": 1
+      },
+      "SubnetIds": {
+        "type": {
+          "$ref": "#/26"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentAttributeCondition",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Operator": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/27"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentAttributeTarget",
+    "properties": {
+      "AttributeValueOperator": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/28"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentAttributeValue",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentContentOperator",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentEnrichmentConditionOperator",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentEnrichmentConfiguration",
+    "properties": {
+      "InlineConfigurations": {
+        "type": {
+          "$ref": "#/29"
+        },
+        "flags": 0
+      },
+      "PostExtractionHookConfiguration": {
+        "type": {
+          "$ref": "#/22"
+        },
+        "flags": 0
+      },
+      "PreExtractionHookConfiguration": {
+        "type": {
+          "$ref": "#/22"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "HookConfiguration",
+    "properties": {
+      "InvocationCondition": {
+        "type": {
+          "$ref": "#/16"
+        },
+        "flags": 0
+      },
+      "LambdaArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "S3BucketName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "InlineDocumentEnrichmentConfiguration",
+    "properties": {
+      "Condition": {
+        "type": {
+          "$ref": "#/16"
+        },
+        "flags": 0
+      },
+      "DocumentContentOperator": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Target": {
+        "type": {
+          "$ref": "#/17"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/7"
+    }
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/7"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DataSource_DocumentAttributeValue",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DataSource_DocumentAttributeValue",
+    "properties": {}
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/23"
+    }
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/DataSourceProperties"
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DataSource_Configuration",
+    "properties": {}
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/24"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/DataSourceProperties",
+    "properties": {
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "Configuration": {
+        "type": {
+          "$ref": "#/31"
+        },
+        "flags": 1
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "DataSourceArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "DataSourceId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "Description": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "DisplayName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "DocumentEnrichmentConfiguration": {
+        "type": {
+          "$ref": "#/21"
+        },
+        "flags": 0
+      },
+      "IndexId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Status": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "SyncSchedule": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/32"
+        },
+        "flags": 0
+      },
+      "Type": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "VpcConfiguration": {
+        "type": {
+          "$ref": "#/15"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/DataSource",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/33"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/DataSource@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/34"
+    },
+    "flags": 0
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AttributeType",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "DocumentAttributeConfiguration",
+    "properties": {
+      "Name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Search": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Type": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "IndexCapacityConfiguration",
+    "properties": {
+      "Units": {
+        "type": {
+          "$ref": "#/45"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "IndexStatistics",
+    "properties": {
+      "TextDocumentStatistics": {
+        "type": {
+          "$ref": "#/44"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "IndexStatus",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "IndexType",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Status",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "TextDocumentStatistics",
+    "properties": {
+      "IndexedTextBytes": {
+        "type": {
+          "$ref": "#/45"
+        },
+        "flags": 0
+      },
+      "IndexedTextDocumentCount": {
+        "type": {
+          "$ref": "#/45"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "IntegerType"
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/IndexProperties"
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/37"
+    }
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/43"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/IndexProperties",
+    "properties": {
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "CapacityConfiguration": {
+        "type": {
+          "$ref": "#/38"
+        },
+        "flags": 0
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Description": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "DisplayName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "DocumentAttributeConfigurations": {
+        "type": {
+          "$ref": "#/47"
+        },
+        "flags": 0
+      },
+      "IndexArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "IndexId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "IndexStatistics": {
+        "type": {
+          "$ref": "#/39"
+        },
+        "flags": 2
+      },
+      "Status": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/48"
+        },
+        "flags": 0
+      },
+      "Type": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/Index",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/49"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/Index@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/50"
+    },
+    "flags": 0
+  },
+  {
+    "$type": "ObjectType",
+    "name": "APISchema",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "APISchemaType",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "BasicAuthConfiguration",
+    "properties": {
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "SecretArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "CustomPluginConfiguration",
+    "properties": {
+      "ApiSchema": {
+        "type": {
+          "$ref": "#/52"
+        },
+        "flags": 1
+      },
+      "ApiSchemaType": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Description": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "NoAuthConfiguration",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "OAuth2ClientCredentialConfiguration",
+    "properties": {
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "SecretArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "PluginAuthConfiguration",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "PluginBuildStatus",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "PluginState",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "PluginType",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "S3",
+    "properties": {
+      "Bucket": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/PluginProperties"
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/63"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/PluginProperties",
+    "properties": {
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "AuthConfiguration": {
+        "type": {
+          "$ref": "#/58"
+        },
+        "flags": 1
+      },
+      "BuildStatus": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "CustomPluginConfiguration": {
+        "type": {
+          "$ref": "#/55"
+        },
+        "flags": 0
+      },
+      "DisplayName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "PluginArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "PluginId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "ServerUrl": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "State": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/65"
+        },
+        "flags": 0
+      },
+      "Type": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/Plugin",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/66"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/Plugin@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/67"
+    },
+    "flags": 0
+  },
+  {
+    "$type": "ObjectType",
+    "name": "KendraIndexConfiguration",
+    "properties": {
+      "IndexId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "NativeIndexConfiguration",
+    "properties": {
+      "IndexId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "RetrieverConfiguration",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "RetrieverStatus",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "RetrieverType",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/RetrieverProperties"
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/74"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/RetrieverProperties",
+    "properties": {
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "Configuration": {
+        "type": {
+          "$ref": "#/71"
+        },
+        "flags": 1
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "DisplayName": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "RetrieverArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "RetrieverId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Status": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/76"
+        },
+        "flags": 0
+      },
+      "Type": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/Retriever",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/77"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/Retriever@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/78"
+    },
+    "flags": 0
+  },
+  {
+    "$type": "ObjectType",
+    "name": "Tag",
+    "properties": {
+      "Key": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      },
+      "Value": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 1
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "WebExperienceSamplePromptsControlMode",
+    "properties": {}
+  },
+  {
+    "$type": "ObjectType",
+    "name": "WebExperienceStatus",
+    "properties": {}
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "AWS.QBusiness/WebExperienceProperties"
+  },
+  {
+    "$type": "ArrayType",
+    "itemType": {
+      "$ref": "#/80"
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/WebExperienceProperties",
+    "properties": {
+      "ApplicationId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17
+      },
+      "CreatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "DefaultEndpoint": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "RoleArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "SamplePromptsControlMode": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Status": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "Subtitle": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "Tags": {
+        "type": {
+          "$ref": "#/84"
+        },
+        "flags": 0
+      },
+      "Title": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      },
+      "UpdatedAt": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "WebExperienceArn": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 2
+      },
+      "WebExperienceId": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 18
+      },
+      "WelcomeMessage": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0
+      }
+    }
+  },
+  {
+    "$type": "ObjectType",
+    "name": "AWS.QBusiness/WebExperience",
+    "properties": {
+      "name": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 0,
+        "description": "the resource name"
+      },
+      "alias": {
+        "type": {
+          "$ref": "#/7"
+        },
+        "flags": 17,
+        "description": "the resource alias"
+      },
+      "properties": {
+        "type": {
+          "$ref": "#/85"
+        },
+        "flags": 17,
+        "description": "properties of the resource"
+      }
+    }
+  },
+  {
+    "$type": "ResourceType",
+    "name": "AWS.QBusiness/WebExperience@default",
+    "scopeType": 0,
+    "body": {
+      "$ref": "#/86"
+    },
+    "flags": 0
+  }
+]
