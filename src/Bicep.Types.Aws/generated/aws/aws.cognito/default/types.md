@@ -1,39 +1,112 @@
 # AWS.Cognito @ default
 
+## Resource AWS.Cognito/IdentityPool@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Cognito/IdentityPoolProperties](#awscognitoidentitypoolproperties) (Required, Identifier): properties of the resource
+
 ## Resource AWS.Cognito/IdentityPoolPrincipalTag@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.Cognito/IdentityPoolPrincipalTagProperties](#awscognitoidentitypoolprincipaltagproperties) (Required): properties of the resource
+* **properties**: [AWS.Cognito/IdentityPoolPrincipalTagProperties](#awscognitoidentitypoolprincipaltagproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.Cognito/IdentityPoolRoleAttachment@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Cognito/IdentityPoolRoleAttachmentProperties](#awscognitoidentitypoolroleattachmentproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.Cognito/LogDeliveryConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.Cognito/LogDeliveryConfigurationProperties](#awscognitologdeliveryconfigurationproperties) (Required): properties of the resource
+* **properties**: [AWS.Cognito/LogDeliveryConfigurationProperties](#awscognitologdeliveryconfigurationproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.Cognito/UserPool@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.Cognito/UserPoolProperties](#awscognitouserpoolproperties): properties of the resource
+* **properties**: [AWS.Cognito/UserPoolProperties](#awscognitouserpoolproperties) (Identifier): properties of the resource
 
 ## Resource AWS.Cognito/UserPoolClient@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.Cognito/UserPoolClientProperties](#awscognitouserpoolclientproperties) (Required): properties of the resource
+* **properties**: [AWS.Cognito/UserPoolClientProperties](#awscognitouserpoolclientproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.Cognito/UserPoolGroup@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.Cognito/UserPoolGroupProperties](#awscognitouserpoolgroupproperties) (Required): properties of the resource
+* **properties**: [AWS.Cognito/UserPoolGroupProperties](#awscognitouserpoolgroupproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.Cognito/UserPoolResourceServer@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Cognito/UserPoolResourceServerProperties](#awscognitouserpoolresourceserverproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.Cognito/UserPoolRiskConfigurationAttachment@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Cognito/UserPoolRiskConfigurationAttachmentProperties](#awscognitouserpoolriskconfigurationattachmentproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.Cognito/UserPoolUICustomizationAttachment@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.Cognito/UserPoolUICustomizationAttachmentProperties](#awscognitouserpooluicustomizationattachmentproperties) (Required, Identifier): properties of the resource
+
+## AccountRecoverySetting
+### Properties
+* **RecoveryMechanisms**: [RecoveryOption](#recoveryoption)[]
+
+## AccountTakeoverActionsType
+### Properties
+* **HighAction**: [AccountTakeoverActionType](#accounttakeoveractiontype)
+* **LowAction**: [AccountTakeoverActionType](#accounttakeoveractiontype)
+* **MediumAction**: [AccountTakeoverActionType](#accounttakeoveractiontype)
+
+## AccountTakeoverActionType
+### Properties
+* **EventAction**: string (Required)
+* **Notify**: bool (Required)
+
+## AccountTakeoverRiskConfigurationType
+### Properties
+* **Actions**: [AccountTakeoverActionsType](#accounttakeoveractionstype) (Required)
+* **NotifyConfiguration**: [NotifyConfigurationType](#notifyconfigurationtype)
+
+## AdminCreateUserConfig
+### Properties
+* **AllowAdminCreateUserOnly**: bool
+* **InviteMessageTemplate**: [InviteMessageTemplate](#invitemessagetemplate)
+* **UnusedAccountValidityDays**: int
+
+## AdvancedSecurityAdditionalFlows
+### Properties
+* **CustomAuthMode**: string
+
+## AnalyticsConfiguration
+### Properties
+* **ApplicationArn**: string
+* **ApplicationId**: string
+* **ExternalId**: string
+* **RoleArn**: string
+* **UserDataShared**: bool
 
 ## AWS.Cognito/IdentityPoolPrincipalTagProperties
 ### Properties
@@ -42,8 +115,29 @@
 * **PrincipalTags**: [IdentityPoolPrincipalTag_PrincipalTags](#identitypoolprincipaltagprincipaltags)
 * **UseDefaults**: bool
 
-## IdentityPoolPrincipalTag_PrincipalTags
+## AWS.Cognito/IdentityPoolProperties
 ### Properties
+* **AllowClassicFlow**: bool
+* **AllowUnauthenticatedIdentities**: bool (Required)
+* **CognitoEvents**: [IdentityPool_CognitoEvents](#identitypoolcognitoevents) (WriteOnly)
+* **CognitoIdentityProviders**: [CognitoIdentityProvider](#cognitoidentityprovider)[]
+* **CognitoStreams**: [CognitoStreams](#cognitostreams) (WriteOnly)
+* **DeveloperProviderName**: string
+* **Id**: string (ReadOnly, Identifier)
+* **IdentityPoolName**: string
+* **IdentityPoolTags**: [Tag](#tag)[]: An array of key-value pairs to apply to this resource.
+* **Name**: string (ReadOnly)
+* **OpenIdConnectProviderARNs**: string[]
+* **PushSync**: [PushSync](#pushsync) (WriteOnly)
+* **SamlProviderARNs**: string[]
+* **SupportedLoginProviders**: [IdentityPool_SupportedLoginProviders](#identitypoolsupportedloginproviders)
+
+## AWS.Cognito/IdentityPoolRoleAttachmentProperties
+### Properties
+* **Id**: string (ReadOnly, Identifier)
+* **IdentityPoolId**: string (Required)
+* **RoleMappings**: [IdentityPoolRoleAttachment_RoleMappings](#identitypoolroleattachmentrolemappings)
+* **Roles**: [IdentityPoolRoleAttachment_Roles](#identitypoolroleattachmentroles)
 
 ## AWS.Cognito/LogDeliveryConfigurationProperties
 ### Properties
@@ -51,15 +145,41 @@
 * **LogConfigurations**: [LogConfiguration](#logconfiguration)[]
 * **UserPoolId**: string (Required)
 
-## LogConfiguration
+## AWS.Cognito/UserPoolClientProperties
 ### Properties
-* **CloudWatchLogsConfiguration**: [CloudWatchLogsConfiguration](#cloudwatchlogsconfiguration)
-* **EventSource**: string
-* **LogLevel**: string
+* **AccessTokenValidity**: int
+* **AllowedOAuthFlows**: string[]
+* **AllowedOAuthFlowsUserPoolClient**: bool
+* **AllowedOAuthScopes**: string[]
+* **AnalyticsConfiguration**: [AnalyticsConfiguration](#analyticsconfiguration)
+* **AuthSessionValidity**: int
+* **CallbackURLs**: string[]
+* **ClientId**: string (ReadOnly, Identifier)
+* **ClientName**: string
+* **ClientSecret**: string (ReadOnly)
+* **DefaultRedirectURI**: string
+* **EnablePropagateAdditionalUserContextData**: bool
+* **EnableTokenRevocation**: bool
+* **ExplicitAuthFlows**: string[]
+* **GenerateSecret**: bool
+* **IdTokenValidity**: int
+* **LogoutURLs**: string[]
+* **Name**: string (ReadOnly)
+* **PreventUserExistenceErrors**: string
+* **ReadAttributes**: string[]
+* **RefreshTokenValidity**: int
+* **SupportedIdentityProviders**: string[]
+* **TokenValidityUnits**: [TokenValidityUnits](#tokenvalidityunits)
+* **UserPoolId**: string (Required, Identifier)
+* **WriteAttributes**: string[]
 
-## CloudWatchLogsConfiguration
+## AWS.Cognito/UserPoolGroupProperties
 ### Properties
-* **LogGroupArn**: string
+* **Description**: string
+* **GroupName**: string (Identifier)
+* **Precedence**: int
+* **RoleArn**: string
+* **UserPoolId**: string (Required, Identifier)
 
 ## AWS.Cognito/UserPoolProperties
 ### Properties
@@ -92,26 +212,61 @@
 * **UserPoolTags**: [UserPool_UserPoolTags](#userpooluserpooltags)
 * **VerificationMessageTemplate**: [VerificationMessageTemplate](#verificationmessagetemplate)
 
-## AccountRecoverySetting
+## AWS.Cognito/UserPoolResourceServerProperties
 ### Properties
-* **RecoveryMechanisms**: [RecoveryOption](#recoveryoption)[]
+* **Identifier**: string (Required, Identifier)
+* **Name**: string (Required)
+* **Scopes**: [ResourceServerScopeType](#resourceserverscopetype)[]
+* **UserPoolId**: string (Required, Identifier)
 
-## RecoveryOption
+## AWS.Cognito/UserPoolRiskConfigurationAttachmentProperties
 ### Properties
-* **Name**: string
-* **Priority**: int
+* **AccountTakeoverRiskConfiguration**: [AccountTakeoverRiskConfigurationType](#accounttakeoverriskconfigurationtype)
+* **ClientId**: string (Required, Identifier)
+* **CompromisedCredentialsRiskConfiguration**: [CompromisedCredentialsRiskConfigurationType](#compromisedcredentialsriskconfigurationtype)
+* **RiskExceptionConfiguration**: [RiskExceptionConfigurationType](#riskexceptionconfigurationtype)
+* **UserPoolId**: string (Required, Identifier)
 
-## AdminCreateUserConfig
+## AWS.Cognito/UserPoolUICustomizationAttachmentProperties
 ### Properties
-* **AllowAdminCreateUserOnly**: bool
-* **InviteMessageTemplate**: [InviteMessageTemplate](#invitemessagetemplate)
-* **UnusedAccountValidityDays**: int
+* **ClientId**: string (Required, Identifier)
+* **CSS**: string
+* **UserPoolId**: string (Required, Identifier)
 
-## InviteMessageTemplate
+## CloudWatchLogsConfiguration
 ### Properties
-* **EmailMessage**: string
-* **EmailSubject**: string
-* **SMSMessage**: string
+* **LogGroupArn**: string
+
+## CognitoIdentityProvider
+### Properties
+* **ClientId**: string (Required)
+* **ProviderName**: string (Required)
+* **ServerSideTokenCheck**: bool
+
+## CognitoStreams
+### Properties
+* **RoleArn**: string
+* **StreamingStatus**: string
+* **StreamName**: string
+
+## CompromisedCredentialsActionsType
+### Properties
+* **EventAction**: string (Required)
+
+## CompromisedCredentialsRiskConfigurationType
+### Properties
+* **Actions**: [CompromisedCredentialsActionsType](#compromisedcredentialsactionstype) (Required)
+* **EventFilter**: string[]
+
+## CustomEmailSender
+### Properties
+* **LambdaArn**: string
+* **LambdaVersion**: string
+
+## CustomSMSSender
+### Properties
+* **LambdaArn**: string
+* **LambdaVersion**: string
 
 ## DeviceConfiguration
 ### Properties
@@ -125,6 +280,31 @@
 * **From**: string
 * **ReplyToEmailAddress**: string
 * **SourceArn**: string
+
+## FirehoseConfiguration
+### Properties
+* **StreamArn**: string
+
+## IdentityPool_CognitoEvents
+### Properties
+
+## IdentityPool_SupportedLoginProviders
+### Properties
+
+## IdentityPoolPrincipalTag_PrincipalTags
+### Properties
+
+## IdentityPoolRoleAttachment_RoleMappings
+### Properties
+
+## IdentityPoolRoleAttachment_Roles
+### Properties
+
+## InviteMessageTemplate
+### Properties
+* **EmailMessage**: string
+* **EmailSubject**: string
+* **SMSMessage**: string
 
 ## LambdaConfig
 ### Properties
@@ -143,33 +323,76 @@
 * **UserMigration**: string
 * **VerifyAuthChallengeResponse**: string
 
-## CustomEmailSender
+## LogConfiguration
 ### Properties
-* **LambdaArn**: string
-* **LambdaVersion**: string
+* **CloudWatchLogsConfiguration**: [CloudWatchLogsConfiguration](#cloudwatchlogsconfiguration)
+* **EventSource**: string
+* **FirehoseConfiguration**: [FirehoseConfiguration](#firehoseconfiguration)
+* **LogLevel**: string
+* **S3Configuration**: [S3Configuration](#s3configuration)
 
-## CustomSMSSender
+## NotifyConfigurationType
 ### Properties
-* **LambdaArn**: string
-* **LambdaVersion**: string
+* **BlockEmail**: [NotifyEmailType](#notifyemailtype)
+* **From**: string
+* **MfaEmail**: [NotifyEmailType](#notifyemailtype)
+* **NoActionEmail**: [NotifyEmailType](#notifyemailtype)
+* **ReplyTo**: string
+* **SourceArn**: string (Required)
+
+## NotifyEmailType
+### Properties
+* **HtmlBody**: string
+* **Subject**: string (Required)
+* **TextBody**: string
+
+## NumberAttributeConstraints
+### Properties
+* **MaxValue**: string
+* **MinValue**: string
+
+## PasswordPolicy
+### Properties
+* **MinimumLength**: int
+* **PasswordHistorySize**: int
+* **RequireLowercase**: bool
+* **RequireNumbers**: bool
+* **RequireSymbols**: bool
+* **RequireUppercase**: bool
+* **TemporaryPasswordValidityDays**: int
+
+## Policies
+### Properties
+* **PasswordPolicy**: [PasswordPolicy](#passwordpolicy)
 
 ## PreTokenGenerationConfig
 ### Properties
 * **LambdaArn**: string
 * **LambdaVersion**: string
 
-## Policies
+## PushSync
 ### Properties
-* **PasswordPolicy**: [PasswordPolicy](#passwordpolicy)
+* **ApplicationArns**: string[]
+* **RoleArn**: string
 
-## PasswordPolicy
+## RecoveryOption
 ### Properties
-* **MinimumLength**: int
-* **RequireLowercase**: bool
-* **RequireNumbers**: bool
-* **RequireSymbols**: bool
-* **RequireUppercase**: bool
-* **TemporaryPasswordValidityDays**: int
+* **Name**: string
+* **Priority**: int
+
+## ResourceServerScopeType
+### Properties
+* **ScopeDescription**: string (Required)
+* **ScopeName**: string (Required)
+
+## RiskExceptionConfigurationType
+### Properties
+* **BlockedIPRangeList**: string[]
+* **SkippedIPRangeList**: string[]
+
+## S3Configuration
+### Properties
+* **BucketArn**: string
 
 ## SchemaAttribute
 ### Properties
@@ -181,21 +404,27 @@
 * **Required**: bool
 * **StringAttributeConstraints**: [StringAttributeConstraints](#stringattributeconstraints)
 
-## NumberAttributeConstraints
+## SmsConfiguration
 ### Properties
-* **MaxValue**: string
-* **MinValue**: string
+* **ExternalId**: string
+* **SnsCallerArn**: string
+* **SnsRegion**: string
 
 ## StringAttributeConstraints
 ### Properties
 * **MaxLength**: string
 * **MinLength**: string
 
-## SmsConfiguration
+## Tag
 ### Properties
-* **ExternalId**: string
-* **SnsCallerArn**: string
-* **SnsRegion**: string
+* **Key**: string (Required): The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
+* **Value**: string (Required): The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.
+
+## TokenValidityUnits
+### Properties
+* **AccessToken**: string
+* **IdToken**: string
+* **RefreshToken**: string
 
 ## UserAttributeUpdateSettings
 ### Properties
@@ -205,12 +434,13 @@
 ### Properties
 * **CaseSensitive**: bool
 
-## UserPoolAddOns
-### Properties
-* **AdvancedSecurityMode**: string
-
 ## UserPool_UserPoolTags
 ### Properties
+
+## UserPoolAddOns
+### Properties
+* **AdvancedSecurityAdditionalFlows**: [AdvancedSecurityAdditionalFlows](#advancedsecurityadditionalflows)
+* **AdvancedSecurityMode**: string
 
 ## VerificationMessageTemplate
 ### Properties
@@ -220,54 +450,4 @@
 * **EmailSubject**: string
 * **EmailSubjectByLink**: string
 * **SmsMessage**: string
-
-## AWS.Cognito/UserPoolClientProperties
-### Properties
-* **AccessTokenValidity**: int
-* **AllowedOAuthFlows**: string[]
-* **AllowedOAuthFlowsUserPoolClient**: bool
-* **AllowedOAuthScopes**: string[]
-* **AnalyticsConfiguration**: [AnalyticsConfiguration](#analyticsconfiguration)
-* **AuthSessionValidity**: int
-* **CallbackURLs**: string[]
-* **ClientId**: string (ReadOnly, Identifier)
-* **ClientName**: string
-* **ClientSecret**: string (ReadOnly)
-* **DefaultRedirectURI**: string
-* **EnablePropagateAdditionalUserContextData**: bool
-* **EnableTokenRevocation**: bool
-* **ExplicitAuthFlows**: string[]
-* **GenerateSecret**: bool
-* **IdTokenValidity**: int
-* **LogoutURLs**: string[]
-* **Name**: string (ReadOnly)
-* **PreventUserExistenceErrors**: string
-* **ReadAttributes**: string[]
-* **RefreshTokenValidity**: int
-* **SupportedIdentityProviders**: string[]
-* **TokenValidityUnits**: [TokenValidityUnits](#tokenvalidityunits)
-* **UserPoolId**: string (Required, Identifier)
-* **WriteAttributes**: string[]
-
-## AnalyticsConfiguration
-### Properties
-* **ApplicationArn**: string
-* **ApplicationId**: string
-* **ExternalId**: string
-* **RoleArn**: string
-* **UserDataShared**: bool
-
-## TokenValidityUnits
-### Properties
-* **AccessToken**: string
-* **IdToken**: string
-* **RefreshToken**: string
-
-## AWS.Cognito/UserPoolGroupProperties
-### Properties
-* **Description**: string
-* **GroupName**: string (Identifier)
-* **Precedence**: int
-* **RoleArn**: string
-* **UserPoolId**: string (Required, Identifier)
 
