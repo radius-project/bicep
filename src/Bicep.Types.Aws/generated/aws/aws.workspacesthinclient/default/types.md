@@ -3,9 +3,9 @@
 ## Resource AWS.WorkSpacesThinClient/Environment@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.WorkSpacesThinClient/EnvironmentProperties](#awsworkspacesthinclientenvironmentproperties) (Required): properties of the resource
+* **properties**: [AWS.WorkSpacesThinClient/EnvironmentProperties](#awsworkspacesthinclientenvironmentproperties) (Required, Identifier): properties of the resource
 
 ## AWS.WorkSpacesThinClient/EnvironmentProperties
 ### Properties
@@ -16,6 +16,7 @@
 * **DesktopArn**: string (Required): The Amazon Resource Name (ARN) of the desktop to stream from Amazon WorkSpaces, WorkSpaces Web, or AppStream 2.0.
 * **DesktopEndpoint**: string: The URL for the identity provider login (only for environments that use AppStream 2.0).
 * **DesktopType**: string (ReadOnly): The type of VDI.
+* **DeviceCreationTags**: [Tag](#tag)[]: An array of key-value pairs to apply to the newly created devices for this environment.
 * **Id**: string (ReadOnly, Identifier): Unique identifier of the environment.
 * **KmsKeyArn**: string: The Amazon Resource Name (ARN) of the AWS Key Management Service key used to encrypt the environment.
 * **MaintenanceWindow**: [MaintenanceWindow](#maintenancewindow): A specification for a time window to apply software updates.
