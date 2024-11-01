@@ -3,51 +3,109 @@
 ## Resource AWS.SES/ConfigurationSet@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/ConfigurationSetProperties](#awssesconfigurationsetproperties): properties of the resource
+* **properties**: [AWS.SES/ConfigurationSetProperties](#awssesconfigurationsetproperties) (Identifier): properties of the resource
 
 ## Resource AWS.SES/ConfigurationSetEventDestination@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/ConfigurationSetEventDestinationProperties](#awssesconfigurationseteventdestinationproperties) (Required): properties of the resource
+* **properties**: [AWS.SES/ConfigurationSetEventDestinationProperties](#awssesconfigurationseteventdestinationproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.SES/ContactList@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/ContactListProperties](#awssescontactlistproperties): properties of the resource
+* **properties**: [AWS.SES/ContactListProperties](#awssescontactlistproperties) (Identifier): properties of the resource
 
 ## Resource AWS.SES/DedicatedIpPool@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/DedicatedIpPoolProperties](#awssesdedicatedippoolproperties): properties of the resource
+* **properties**: [AWS.SES/DedicatedIpPoolProperties](#awssesdedicatedippoolproperties) (Identifier): properties of the resource
 
 ## Resource AWS.SES/EmailIdentity@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/EmailIdentityProperties](#awssesemailidentityproperties) (Required): properties of the resource
+* **properties**: [AWS.SES/EmailIdentityProperties](#awssesemailidentityproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerAddonInstance@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerAddonInstanceProperties](#awssesmailmanageraddoninstanceproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerAddonSubscription@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerAddonSubscriptionProperties](#awssesmailmanageraddonsubscriptionproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerArchive@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerArchiveProperties](#awssesmailmanagerarchiveproperties) (Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerIngressPoint@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerIngressPointProperties](#awssesmailmanageringresspointproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerRelay@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerRelayProperties](#awssesmailmanagerrelayproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerRuleSet@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerRuleSetProperties](#awssesmailmanagerrulesetproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.SES/MailManagerTrafficPolicy@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.SES/MailManagerTrafficPolicyProperties](#awssesmailmanagertrafficpolicyproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.SES/Template@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/TemplateProperties](#awssestemplateproperties): properties of the resource
+* **properties**: [AWS.SES/TemplateProperties](#awssestemplateproperties) (Identifier): properties of the resource
 
 ## Resource AWS.SES/VdmAttributes@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SES/VdmAttributesProperties](#awssesvdmattributesproperties): properties of the resource
+* **properties**: [AWS.SES/VdmAttributesProperties](#awssesvdmattributesproperties) (Identifier): properties of the resource
+
+## ArchiveRetention
+### Properties
+
+## AWS.SES/ConfigurationSetEventDestinationProperties
+### Properties
+* **ConfigurationSetName**: string (Required): The name of the configuration set that contains the event destination.
+* **EventDestination**: [EventDestination](#eventdestination) (Required): The event destination object.
+* **Id**: string (ReadOnly, Identifier)
 
 ## AWS.SES/ConfigurationSetProperties
 ### Properties
@@ -59,92 +117,12 @@
 * **TrackingOptions**: [TrackingOptions](#trackingoptions)
 * **VdmOptions**: [VdmOptions](#vdmoptions)
 
-## DeliveryOptions
-### Properties
-* **SendingPoolName**: string: The name of the dedicated IP pool to associate with the configuration set.
-* **TlsPolicy**: string: Specifies whether messages that use the configuration set are required to use Transport Layer Security (TLS). If the value is Require , messages are only delivered if a TLS connection can be established. If the value is Optional , messages can be delivered in plain text if a TLS connection can't be established.
-
-## ReputationOptions
-### Properties
-* **ReputationMetricsEnabled**: bool: If true , tracking of reputation metrics is enabled for the configuration set. If false , tracking of reputation metrics is disabled for the configuration set.
-
-## SendingOptions
-### Properties
-* **SendingEnabled**: bool
-
-## SuppressionOptions
-### Properties
-* **SuppressedReasons**: string[]: A list that contains the reasons that email addresses are automatically added to the suppression list for your account.
-
-## TrackingOptions
-### Properties
-* **CustomRedirectDomain**: string: The domain to use for tracking open and click events.
-
-## VdmOptions
-### Properties
-* **DashboardOptions**: [DashboardOptions](#dashboardoptions)
-* **GuardianOptions**: [GuardianOptions](#guardianoptions)
-
-## DashboardOptions
-### Properties
-* **EngagementMetrics**: string (Required): Whether emails sent with this configuration set have engagement tracking enabled.
-
-## GuardianOptions
-### Properties
-* **OptimizedSharedDelivery**: string (Required): Whether emails sent with this configuration set have optimized delivery algorithm enabled.
-
-## AWS.SES/ConfigurationSetEventDestinationProperties
-### Properties
-* **ConfigurationSetName**: string (Required): The name of the configuration set that contains the event destination.
-* **EventDestination**: [EventDestination](#eventdestination) (Required): The event destination object.
-* **Id**: string (ReadOnly, Identifier)
-
-## EventDestination
-### Properties
-* **CloudWatchDestination**: [CloudWatchDestination](#cloudwatchdestination): An object that contains the names, default values, and sources of the dimensions associated with an Amazon CloudWatch event destination.
-* **Enabled**: bool: Sets whether Amazon SES publishes events to this destination when you send an email with the associated configuration set. Set to true to enable publishing to this destination; set to false to prevent publishing to this destination. The default value is false.   
-* **KinesisFirehoseDestination**: [KinesisFirehoseDestination](#kinesisfirehosedestination): An object that contains the delivery stream ARN and the IAM role ARN associated with an Amazon Kinesis Firehose event destination.
-* **MatchingEventTypes**: string[] (Required): The type of email sending events, send, reject, bounce, complaint, delivery, open, click, renderingFailure, deliveryDelay, and subscription.
-* **Name**: string: The name of the event destination set.
-* **SnsDestination**: [SnsDestination](#snsdestination): An object that contains SNS topic ARN associated event destination.
-
-## CloudWatchDestination
-### Properties
-* **DimensionConfigurations**: [DimensionConfiguration](#dimensionconfiguration)[]: A list of dimensions upon which to categorize your emails when you publish email sending events to Amazon CloudWatch.
-
-## DimensionConfiguration
-### Properties
-* **DefaultDimensionValue**: string (Required): The default value of the dimension that is published to Amazon CloudWatch if you do not provide the value of the dimension when you send an email.
-* **DimensionName**: string (Required): The name of an Amazon CloudWatch dimension associated with an email sending metric.
-* **DimensionValueSource**: string (Required): The place where Amazon SES finds the value of a dimension to publish to Amazon CloudWatch. To use the message tags that you specify using an X-SES-MESSAGE-TAGS header or a parameter to the SendEmail/SendRawEmail API, specify messageTag. To use your own email headers, specify emailHeader. To put a custom tag on any link included in your email, specify linkTag.
-
-## KinesisFirehoseDestination
-### Properties
-* **DeliveryStreamARN**: string (Required): The ARN of the Amazon Kinesis Firehose stream that email sending events should be published to.
-* **IAMRoleARN**: string (Required): The ARN of the IAM role under which Amazon SES publishes email sending events to the Amazon Kinesis Firehose stream.
-
-## SnsDestination
-### Properties
-* **TopicARN**: string (Required)
-
 ## AWS.SES/ContactListProperties
 ### Properties
 * **ContactListName**: string (Identifier): The name of the contact list.
 * **Description**: string: The description of the contact list.
 * **Tags**: [Tag](#tag)[]: The tags (keys and values) associated with the contact list.
 * **Topics**: [Topic](#topic)[]: The topics associated with the contact list.
-
-## Tag
-### Properties
-* **Key**: string (Required)
-* **Value**: string (Required)
-
-## Topic
-### Properties
-* **DefaultSubscriptionStatus**: string (Required)
-* **Description**: string: The description of the topic.
-* **DisplayName**: string (Required): The display name of the topic.
-* **TopicName**: string (Required): The name of the topic.
 
 ## AWS.SES/DedicatedIpPoolProperties
 ### Properties
@@ -166,9 +144,111 @@
 * **FeedbackAttributes**: [FeedbackAttributes](#feedbackattributes)
 * **MailFromAttributes**: [MailFromAttributes](#mailfromattributes)
 
+## AWS.SES/MailManagerAddonInstanceProperties
+### Properties
+* **AddonInstanceArn**: string (ReadOnly)
+* **AddonInstanceId**: string (ReadOnly, Identifier)
+* **AddonName**: string (ReadOnly)
+* **AddonSubscriptionId**: string (Required)
+* **Tags**: [Tag](#tag)[]
+
+## AWS.SES/MailManagerAddonSubscriptionProperties
+### Properties
+* **AddonName**: string (Required)
+* **AddonSubscriptionArn**: string (ReadOnly)
+* **AddonSubscriptionId**: string (ReadOnly, Identifier)
+* **Tags**: [Tag](#tag)[]
+
+## AWS.SES/MailManagerArchiveProperties
+### Properties
+* **ArchiveArn**: string (ReadOnly)
+* **ArchiveId**: string (ReadOnly, Identifier)
+* **ArchiveName**: string
+* **ArchiveState**: string (ReadOnly)
+* **KmsKeyArn**: string
+* **Retention**: [ArchiveRetention](#archiveretention)
+* **Tags**: [Tag](#tag)[]
+
+## AWS.SES/MailManagerIngressPointProperties
+### Properties
+* **ARecord**: string (ReadOnly)
+* **IngressPointArn**: string (ReadOnly)
+* **IngressPointConfiguration**: [IngressPointConfiguration](#ingresspointconfiguration) (WriteOnly)
+* **IngressPointId**: string (ReadOnly, Identifier)
+* **IngressPointName**: string
+* **RuleSetId**: string (Required)
+* **Status**: string (ReadOnly)
+* **StatusToUpdate**: string
+* **Tags**: [Tag](#tag)[]
+* **TrafficPolicyId**: string (Required)
+* **Type**: string (Required)
+
+## AWS.SES/MailManagerRelayProperties
+### Properties
+* **Authentication**: [RelayAuthentication](#relayauthentication) (Required)
+* **RelayArn**: string (ReadOnly)
+* **RelayId**: string (ReadOnly, Identifier)
+* **RelayName**: string
+* **ServerName**: string (Required)
+* **ServerPort**: int (Required)
+* **Tags**: [Tag](#tag)[]
+
+## AWS.SES/MailManagerRuleSetProperties
+### Properties
+* **Rules**: [Rule](#rule)[] (Required)
+* **RuleSetArn**: string (ReadOnly)
+* **RuleSetId**: string (ReadOnly, Identifier)
+* **RuleSetName**: string
+* **Tags**: [Tag](#tag)[]
+
+## AWS.SES/MailManagerTrafficPolicyProperties
+### Properties
+* **DefaultAction**: string (Required)
+* **MaxMessageSizeBytes**: int
+* **PolicyStatements**: [PolicyStatement](#policystatement)[] (Required)
+* **Tags**: [Tag](#tag)[]
+* **TrafficPolicyArn**: string (ReadOnly)
+* **TrafficPolicyId**: string (ReadOnly, Identifier)
+* **TrafficPolicyName**: string
+
+## AWS.SES/TemplateProperties
+### Properties
+* **Id**: string (ReadOnly, Identifier)
+* **Template**: [Template](#template)
+
+## AWS.SES/VdmAttributesProperties
+### Properties
+* **DashboardAttributes**: [DashboardAttributes](#dashboardattributes)
+* **GuardianAttributes**: [GuardianAttributes](#guardianattributes)
+* **VdmAttributesResourceId**: string (ReadOnly, Identifier): Unique identifier for this resource
+
+## CloudWatchDestination
+### Properties
+* **DimensionConfigurations**: [DimensionConfiguration](#dimensionconfiguration)[]: A list of dimensions upon which to categorize your emails when you publish email sending events to Amazon CloudWatch.
+
 ## ConfigurationSetAttributes
 ### Properties
 * **ConfigurationSetName**: string: The configuration set to use by default when sending from this identity. Note that any configuration set defined in the email sending request takes precedence.
+
+## DashboardAttributes
+### Properties
+* **EngagementMetrics**: string: Whether emails sent from this account have engagement tracking enabled.
+
+## DashboardOptions
+### Properties
+* **EngagementMetrics**: string (Required): Whether emails sent with this configuration set have engagement tracking enabled.
+
+## DeliveryOptions
+### Properties
+* **MaxDeliverySeconds**: int: Specifies the maximum time until which SES will retry sending emails
+* **SendingPoolName**: string: The name of the dedicated IP pool to associate with the configuration set.
+* **TlsPolicy**: string: Specifies whether messages that use the configuration set are required to use Transport Layer Security (TLS). If the value is Require , messages are only delivered if a TLS connection can be established. If the value is Optional , messages can be delivered in plain text if a TLS connection can't be established.
+
+## DimensionConfiguration
+### Properties
+* **DefaultDimensionValue**: string (Required): The default value of the dimension that is published to Amazon CloudWatch if you do not provide the value of the dimension when you send an email.
+* **DimensionName**: string (Required): The name of an Amazon CloudWatch dimension associated with an email sending metric.
+* **DimensionValueSource**: string (Required): The place where Amazon SES finds the value of a dimension to publish to Amazon CloudWatch. To use the message tags that you specify using an X-SES-MESSAGE-TAGS header or a parameter to the SendEmail/SendRawEmail API, specify messageTag. To use your own email headers, specify emailHeader. To put a custom tag on any link included in your email, specify linkTag.
 
 ## DkimAttributes
 ### Properties
@@ -180,19 +260,127 @@
 * **DomainSigningSelector**: string (WriteOnly): [Bring Your Own DKIM] A string that's used to identify a public key in the DNS configuration for a domain.
 * **NextSigningKeyLength**: string: [Easy DKIM] The key length of the future DKIM key pair to be generated. This can be changed at most once per day.
 
+## EventBridgeDestination
+### Properties
+* **EventBusArn**: string (Required)
+
+## EventDestination
+### Properties
+* **CloudWatchDestination**: [CloudWatchDestination](#cloudwatchdestination): An object that contains the names, default values, and sources of the dimensions associated with an Amazon CloudWatch event destination.
+* **Enabled**: bool: Sets whether Amazon SES publishes events to this destination when you send an email with the associated configuration set. Set to true to enable publishing to this destination; set to false to prevent publishing to this destination. The default value is false.   
+* **EventBridgeDestination**: [EventBridgeDestination](#eventbridgedestination): An object that contains Event bus ARN associated with the event bridge destination.
+* **KinesisFirehoseDestination**: [KinesisFirehoseDestination](#kinesisfirehosedestination): An object that contains the delivery stream ARN and the IAM role ARN associated with an Amazon Kinesis Firehose event destination.
+* **MatchingEventTypes**: string[] (Required): The type of email sending events, send, reject, bounce, complaint, delivery, open, click, renderingFailure, deliveryDelay, and subscription.
+* **Name**: string: The name of the event destination set.
+* **SnsDestination**: [SnsDestination](#snsdestination): An object that contains SNS topic ARN associated event destination.
+
 ## FeedbackAttributes
 ### Properties
 * **EmailForwardingEnabled**: bool: If the value is true, you receive email notifications when bounce or complaint events occur
+
+## GuardianAttributes
+### Properties
+* **OptimizedSharedDelivery**: string: Whether emails sent from this account have optimized delivery algorithm enabled.
+
+## GuardianOptions
+### Properties
+* **OptimizedSharedDelivery**: string (Required): Whether emails sent with this configuration set have optimized delivery algorithm enabled.
+
+## IngressPointConfiguration
+### Properties
+
+## KinesisFirehoseDestination
+### Properties
+* **DeliveryStreamARN**: string (Required): The ARN of the Amazon Kinesis Firehose stream that email sending events should be published to.
+* **IAMRoleARN**: string (Required): The ARN of the IAM role under which Amazon SES publishes email sending events to the Amazon Kinesis Firehose stream.
 
 ## MailFromAttributes
 ### Properties
 * **BehaviorOnMxFailure**: string: The action to take if the required MX record isn't found when you send an email. When you set this value to UseDefaultValue , the mail is sent using amazonses.com as the MAIL FROM domain. When you set this value to RejectMessage , the Amazon SES API v2 returns a MailFromDomainNotVerified error, and doesn't attempt to deliver the email.
 * **MailFromDomain**: string: The custom MAIL FROM domain that you want the verified identity to use
 
-## AWS.SES/TemplateProperties
+## MailManagerRuleSet_RuleAction
 ### Properties
-* **Id**: string (ReadOnly, Identifier)
-* **Template**: [Template](#template)
+
+## MailManagerRuleSet_RuleCondition
+### Properties
+
+## MailManagerRuleSet_RuleCondition
+### Properties
+
+## PolicyCondition
+### Properties
+
+## PolicyStatement
+### Properties
+* **Action**: string (Required)
+* **Conditions**: [PolicyCondition](#policycondition)[] (Required)
+
+## RelayAuthentication
+### Properties
+
+## ReputationOptions
+### Properties
+* **ReputationMetricsEnabled**: bool: If true , tracking of reputation metrics is enabled for the configuration set. If false , tracking of reputation metrics is disabled for the configuration set.
+
+## Rule
+### Properties
+* **Actions**: [MailManagerRuleSet_RuleAction](#mailmanagerrulesetruleaction)[] (Required)
+* **Conditions**: [MailManagerRuleSet_RuleCondition](#mailmanagerrulesetrulecondition)[]
+* **Name**: string
+* **Unless**: [MailManagerRuleSet_RuleCondition](#mailmanagerrulesetrulecondition)[]
+
+## SendingOptions
+### Properties
+* **SendingEnabled**: bool
+
+## SnsDestination
+### Properties
+* **TopicARN**: string (Required)
+
+## SuppressionOptions
+### Properties
+* **SuppressedReasons**: string[]: A list that contains the reasons that email addresses are automatically added to the suppression list for your account.
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
 
 ## Template
 ### Properties
@@ -201,17 +389,19 @@
 * **TemplateName**: string: The name of the template.
 * **TextPart**: string: The email body that is visible to recipients whose email clients do not display HTML content.
 
-## AWS.SES/VdmAttributesProperties
+## Topic
 ### Properties
-* **DashboardAttributes**: [DashboardAttributes](#dashboardattributes)
-* **GuardianAttributes**: [GuardianAttributes](#guardianattributes)
-* **VdmAttributesResourceId**: string (ReadOnly, Identifier): Unique identifier for this resource
+* **DefaultSubscriptionStatus**: string (Required)
+* **Description**: string: The description of the topic.
+* **DisplayName**: string (Required): The display name of the topic.
+* **TopicName**: string (Required): The name of the topic.
 
-## DashboardAttributes
+## TrackingOptions
 ### Properties
-* **EngagementMetrics**: string: Whether emails sent from this account have engagement tracking enabled.
+* **CustomRedirectDomain**: string: The domain to use for tracking open and click events.
 
-## GuardianAttributes
+## VdmOptions
 ### Properties
-* **OptimizedSharedDelivery**: string: Whether emails sent from this account have optimized delivery algorithm enabled.
+* **DashboardOptions**: [DashboardOptions](#dashboardoptions)
+* **GuardianOptions**: [GuardianOptions](#guardianoptions)
 

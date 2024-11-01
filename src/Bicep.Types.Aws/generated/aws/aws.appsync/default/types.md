@@ -1,39 +1,149 @@
 # AWS.AppSync @ default
 
+## Resource AWS.AppSync/Api@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.AppSync/ApiProperties](#awsappsyncapiproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.AppSync/ChannelNamespace@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.AppSync/ChannelNamespaceProperties](#awsappsyncchannelnamespaceproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.AppSync/DataSource@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.AppSync/DataSourceProperties](#awsappsyncdatasourceproperties) (Required, Identifier): properties of the resource
+
 ## Resource AWS.AppSync/DomainName@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.AppSync/DomainNameProperties](#awsappsyncdomainnameproperties) (Required): properties of the resource
+* **properties**: [AWS.AppSync/DomainNameProperties](#awsappsyncdomainnameproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.AppSync/DomainNameApiAssociation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.AppSync/DomainNameApiAssociationProperties](#awsappsyncdomainnameapiassociationproperties) (Required): properties of the resource
+* **properties**: [AWS.AppSync/DomainNameApiAssociationProperties](#awsappsyncdomainnameapiassociationproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.AppSync/FunctionConfiguration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.AppSync/FunctionConfigurationProperties](#awsappsyncfunctionconfigurationproperties) (Required): properties of the resource
+* **properties**: [AWS.AppSync/FunctionConfigurationProperties](#awsappsyncfunctionconfigurationproperties) (Required, Identifier): properties of the resource
+
+## Resource AWS.AppSync/GraphQLApi@default
+* **Valid Scope(s)**: Unknown
+### Properties
+* **alias**: string (Required, Identifier): the resource alias
+* **name**: string: the resource name
+* **properties**: [AWS.AppSync/GraphQLApiProperties](#awsappsyncgraphqlapiproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.AppSync/Resolver@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.AppSync/ResolverProperties](#awsappsyncresolverproperties) (Required): properties of the resource
+* **properties**: [AWS.AppSync/ResolverProperties](#awsappsyncresolverproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.AppSync/SourceApiAssociation@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.AppSync/SourceApiAssociationProperties](#awsappsyncsourceapiassociationproperties): properties of the resource
+* **properties**: [AWS.AppSync/SourceApiAssociationProperties](#awsappsyncsourceapiassociationproperties) (Identifier): properties of the resource
+
+## AdditionalAuthenticationProvider
+### Properties
+* **AuthenticationType**: string (Required): The authentication type for API key, AWS Identity and Access Management, OIDC, Amazon Cognito user pools, or AWS Lambda.
+* **LambdaAuthorizerConfig**: [LambdaAuthorizerConfig](#lambdaauthorizerconfig)
+* **OpenIDConnectConfig**: [OpenIDConnectConfig](#openidconnectconfig)
+* **UserPoolConfig**: [CognitoUserPoolConfig](#cognitouserpoolconfig)
+
+## AppSyncRuntime
+### Properties
+* **Name**: string (Required): The name of the runtime to use. Currently, the only allowed value is APPSYNC_JS.
+* **RuntimeVersion**: string (Required): The version of the runtime to use. Currently, the only allowed version is 1.0.0.
+
+## AppSyncRuntime
+### Properties
+* **Name**: string (Required): The ``name`` of the runtime to use. Currently, the only allowed value is ``APPSYNC_JS``.
+* **RuntimeVersion**: string (Required): The ``version`` of the runtime to use. Currently, the only allowed version is ``1.0.0``.
+
+## AuthMode
+### Properties
+* **AuthType**: string
+
+## AuthMode
+### Properties
+* **AuthType**: string
+
+## AuthorizationConfig
+### Properties
+* **AuthorizationType**: string (Required): The authorization type that the HTTP endpoint requires.
+* **AwsIamConfig**: [AwsIamConfig](#awsiamconfig): The AWS Identity and Access Management settings.
+
+## AuthProvider
+### Properties
+* **AuthType**: string (Required)
+* **CognitoConfig**: [CognitoConfig](#cognitoconfig)
+* **LambdaAuthorizerConfig**: [LambdaAuthorizerConfig](#lambdaauthorizerconfig)
+* **OpenIDConnectConfig**: [OpenIDConnectConfig](#openidconnectconfig)
+
+## AWS.AppSync/ApiProperties
+### Properties
+* **ApiArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the AppSync Api
+* **ApiId**: string (ReadOnly): The unique identifier for the AppSync Api generated by the service
+* **Dns**: [DnsMap](#dnsmap) (ReadOnly)
+* **EventConfig**: [EventConfig](#eventconfig)
+* **Name**: string (Required)
+* **OwnerContact**: string
+* **Tags**: [Tag](#tag)[]
+
+## AWS.AppSync/ChannelNamespaceProperties
+### Properties
+* **ApiId**: string (Required): AppSync Api Id that this Channel Namespace belongs to.
+* **ChannelNamespaceArn**: string (ReadOnly, Identifier)
+* **CodeHandlers**: string
+* **CodeS3Location**: string (WriteOnly): The Amazon S3 endpoint where the code is located.
+* **Name**: string (Required)
+* **PublishAuthModes**: [AuthMode](#authmode)[]: List of AuthModes supported for Publish operations.
+* **SubscribeAuthModes**: [AuthMode](#authmode)[]: List of AuthModes supported for Subscribe operations.
+* **Tags**: [Tag](#tag)[]
+
+## AWS.AppSync/DataSourceProperties
+### Properties
+* **ApiId**: string (Required): Unique AWS AppSync GraphQL API identifier where this data source will be created.
+* **DataSourceArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) of the API key, such as arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/datasources/datasourcename.
+* **Description**: string: The description of the data source.
+* **DynamoDBConfig**: [DynamoDBConfig](#dynamodbconfig): AWS Region and TableName for an Amazon DynamoDB table in your account.
+* **ElasticsearchConfig**: [ElasticsearchConfig](#elasticsearchconfig): AWS Region and Endpoints for an Amazon OpenSearch Service domain in your account.
+As of September 2021, Amazon Elasticsearch Service is Amazon OpenSearch Service. This property is deprecated. For new data sources, use OpenSearchServiceConfig to specify an OpenSearch Service data source.
+* **EventBridgeConfig**: [EventBridgeConfig](#eventbridgeconfig): ARN for the EventBridge bus.
+* **HttpConfig**: [HttpConfig](#httpconfig): Endpoints for an HTTP data source.
+* **LambdaConfig**: [LambdaConfig](#lambdaconfig): An ARN of a Lambda function in valid ARN format. This can be the ARN of a Lambda function that exists in the current account or in another account.
+* **MetricsConfig**: string
+* **Name**: string (Required): Friendly name for you to identify your AppSync data source after creation.
+* **OpenSearchServiceConfig**: [OpenSearchServiceConfig](#opensearchserviceconfig): AWS Region and Endpoints for an Amazon OpenSearch Service domain in your account.
+* **RelationalDatabaseConfig**: [RelationalDatabaseConfig](#relationaldatabaseconfig): Relational Database configuration of the relational database data source.
+* **ServiceRoleArn**: string: The AWS Identity and Access Management service role ARN for the data source. The system assumes this role when accessing the data source.
+* **Type**: string (Required): The type of the data source.
+
+## AWS.AppSync/DomainNameApiAssociationProperties
+### Properties
+* **ApiAssociationIdentifier**: string (ReadOnly, Identifier)
+* **ApiId**: string (Required)
+* **DomainName**: string (Required)
 
 ## AWS.AppSync/DomainNameProperties
 ### Properties
@@ -42,12 +152,6 @@
 * **Description**: string
 * **DomainName**: string (Required, Identifier)
 * **HostedZoneId**: string (ReadOnly)
-
-## AWS.AppSync/DomainNameApiAssociationProperties
-### Properties
-* **ApiAssociationIdentifier**: string (ReadOnly, Identifier)
-* **ApiId**: string (Required)
-* **DomainName**: string (Required)
 
 ## AWS.AppSync/FunctionConfigurationProperties
 ### Properties
@@ -68,64 +172,63 @@
 * **Runtime**: [AppSyncRuntime](#appsyncruntime): Describes a runtime used by an AWS AppSync pipeline resolver or AWS AppSync function. Specifies the name and version of the runtime to use. Note that if a runtime is specified, code must also be specified.
 * **SyncConfig**: [SyncConfig](#syncconfig): Describes a Sync configuration for a resolver. Specifies which Conflict Detection strategy and Resolution strategy to use when the resolver is invoked.
 
-## AppSyncRuntime
+## AWS.AppSync/GraphQLApiProperties
 ### Properties
-* **Name**: string (Required): The name of the runtime to use. Currently, the only allowed value is APPSYNC_JS.
-* **RuntimeVersion**: string (Required): The version of the runtime to use. Currently, the only allowed version is 1.0.0.
+* **AdditionalAuthenticationProviders**: [AdditionalAuthenticationProvider](#additionalauthenticationprovider)[]: A list of additional authentication providers for the GraphqlApi API.
+* **ApiId**: string (ReadOnly, Identifier): Unique AWS AppSync GraphQL API identifier.
+* **ApiType**: string: The value that indicates whether the GraphQL API is a standard API (GRAPHQL) or merged API (MERGED).
+* **Arn**: string (ReadOnly): The Amazon Resource Name (ARN) of the API key
+* **AuthenticationType**: string (Required): Security configuration for your GraphQL API
+* **EnhancedMetricsConfig**: [EnhancedMetricsConfig](#enhancedmetricsconfig): Enables and controls the enhanced metrics feature. Enhanced metrics emit granular data on API usage and performance such as AppSync request and error counts, latency, and cache hits/misses. All enhanced metric data is sent to your CloudWatch account, and you can configure the types of data that will be sent.
+* **EnvironmentVariables**: [GraphQLApi_EnvironmentVariables](#graphqlapienvironmentvariables): A map containing the list of resources with their properties and environment variables.
+* **GraphQLDns**: string (ReadOnly): The fully qualified domain name (FQDN) of the endpoint URL of your GraphQL API.
+* **GraphQLEndpointArn**: string (ReadOnly): The GraphQL endpoint ARN.
+* **GraphQLUrl**: string (ReadOnly): The Endpoint URL of your GraphQL API.
+* **IntrospectionConfig**: string: Sets the value of the GraphQL API to enable (ENABLED) or disable (DISABLED) introspection. If no value is provided, the introspection configuration will be set to ENABLED by default. This field will produce an error if the operation attempts to use the introspection feature while this field is disabled.
+* **LambdaAuthorizerConfig**: [LambdaAuthorizerConfig](#lambdaauthorizerconfig): A LambdaAuthorizerConfig holds configuration on how to authorize AWS AppSync API access when using the AWS_LAMBDA authorizer mode. Be aware that an AWS AppSync API may have only one Lambda authorizer configured at a time.
+* **LogConfig**: [LogConfig](#logconfig): The Amazon CloudWatch Logs configuration.
+* **MergedApiExecutionRoleArn**: string: The AWS Identity and Access Management service role ARN for a merged API. 
+* **Name**: string (Required): The API name
+* **OpenIDConnectConfig**: [OpenIDConnectConfig](#openidconnectconfig): The OpenID Connect configuration.
+* **OwnerContact**: string: The owner contact information for an API resource.
+* **QueryDepthLimit**: int: The maximum depth a query can have in a single request. Depth refers to the amount of nested levels allowed in the body of query.
+* **RealtimeDns**: string (ReadOnly): The fully qualified domain name (FQDN) of the real-time endpoint URL of your GraphQL API.
+* **RealtimeUrl**: string (ReadOnly): The GraphQL API real-time endpoint URL.
+* **ResolverCountLimit**: int: The maximum number of resolvers that can be invoked in a single request.
+* **Tags**: [Tag](#tag)[]: An arbitrary set of tags (key-value pairs) for this GraphQL API.
 
-## SyncConfig
-### Properties
-* **ConflictDetection**: string (Required): The Conflict Detection strategy to use.
-* **ConflictHandler**: string: The Conflict Resolution strategy to perform in the event of a conflict.
-* **LambdaConflictHandlerConfig**: [LambdaConflictHandlerConfig](#lambdaconflicthandlerconfig)
 
-## LambdaConflictHandlerConfig
-### Properties
-* **LambdaConflictHandlerArn**: string: The Amazon Resource Name (ARN) for the Lambda function to use as the Conflict Handler.
+* **UserPoolConfig**: [UserPoolConfig](#userpoolconfig): Optional authorization configuration for using Amazon Cognito user pools with your GraphQL endpoint.
+
+
+* **Visibility**: string: Sets the scope of the GraphQL API to public (GLOBAL) or private (PRIVATE). By default, the scope is set to Global if no value is provided.
+* **XrayEnabled**: bool: A flag indicating whether to use AWS X-Ray tracing for this GraphqlApi.
+
+
 
 ## AWS.AppSync/ResolverProperties
 ### Properties
-* **ApiId**: string (Required): The AWS AppSync GraphQL API to which you want to attach this resolver.
+* **ApiId**: string (Required): The APSYlong GraphQL API to which you want to attach this resolver.
 * **CachingConfig**: [CachingConfig](#cachingconfig): The caching configuration for the resolver.
-* **Code**: string: The resolver code that contains the request and response functions. When code is used, the runtime is required.
+* **Code**: string: The ``resolver`` code that contains the request and response functions. When code is used, the ``runtime`` is required. The runtime value must be ``APPSYNC_JS``.
 * **CodeS3Location**: string (WriteOnly): The Amazon S3 endpoint.
 * **DataSourceName**: string: The resolver data source name.
 * **FieldName**: string (Required): The GraphQL field on a type that invokes the resolver.
 * **Kind**: string: The resolver type.
-* **MaxBatchSize**: int: The maximum number of resolver request inputs that will be sent to a single AWS Lambda function in a BatchInvoke operation.
+  +   *UNIT*: A UNIT resolver type. A UNIT resolver is the default resolver type. You can use a UNIT resolver to run a GraphQL query against a single data source.
+  +   *PIPELINE*: A PIPELINE resolver type. You can use a PIPELINE resolver to invoke a series of ``Function`` objects in a serial manner. You can use a pipeline resolver to run a GraphQL query against multiple data sources.
+* **MaxBatchSize**: int: The maximum number of resolver request inputs that will be sent to a single LAMlong function in a ``BatchInvoke`` operation.
+* **MetricsConfig**: string: Enables or disables enhanced resolver metrics for specified resolvers. Note that ``MetricsConfig`` won't be used unless the ``resolverLevelMetricsBehavior`` value is set to ``PER_RESOLVER_METRICS``. If the ``resolverLevelMetricsBehavior`` is set to ``FULL_REQUEST_RESOLVER_METRICS`` instead, ``MetricsConfig`` will be ignored. However, you can still set its value.
 * **PipelineConfig**: [PipelineConfig](#pipelineconfig): Functions linked with the pipeline resolver.
-* **RequestMappingTemplate**: string: Request mapping templates are optional when using a Lambda data source. For all other data sources, a request mapping template is required.
-* **RequestMappingTemplateS3Location**: string (WriteOnly): The location of a request mapping template in an Amazon S3 bucket. Use this if you want to provision with a template file in Amazon S3 rather than embedding it in your CloudFormation template.
-* **ResolverArn**: string (ReadOnly, Identifier): The Amazon Resource Name (ARN) for the resolver.
+* **RequestMappingTemplate**: string: The request mapping template.
+ Request mapping templates are optional when using a Lambda data source. For all other data sources, a request mapping template is required.
+* **RequestMappingTemplateS3Location**: string (WriteOnly): The location of a request mapping template in an S3 bucket. Use this if you want to provision with a template file in S3 rather than embedding it in your CFNshort template.
+* **ResolverArn**: string (ReadOnly, Identifier)
 * **ResponseMappingTemplate**: string: The response mapping template.
-* **ResponseMappingTemplateS3Location**: string (WriteOnly): The location of a response mapping template in an Amazon S3 bucket. Use this if you want to provision with a template file in Amazon S3 rather than embedding it in your CloudFormation template.
-* **Runtime**: [AppSyncRuntime](#appsyncruntime): Describes a runtime used by an AWS AppSync pipeline resolver or AWS AppSync function. Specifies the name and version of the runtime to use. Note that if a runtime is specified, code must also be specified.
-* **SyncConfig**: [SyncConfig](#syncconfig): The SyncConfig for a resolver attached to a versioned data source.
+* **ResponseMappingTemplateS3Location**: string (WriteOnly): The location of a response mapping template in an S3 bucket. Use this if you want to provision with a template file in S3 rather than embedding it in your CFNshort template.
+* **Runtime**: [AppSyncRuntime](#appsyncruntime): Describes a runtime used by an APSYlong resolver or APSYlong function. Specifies the name and version of the runtime to use. Note that if a runtime is specified, code must also be specified.
+* **SyncConfig**: [SyncConfig](#syncconfig): The ``SyncConfig`` for a resolver attached to a versioned data source.
 * **TypeName**: string (Required): The GraphQL type that invokes this resolver.
-
-## CachingConfig
-### Properties
-* **CachingKeys**: string[]: The caching keys for a resolver that has caching activated. Valid values are entries from the $context.arguments, $context.source, and $context.identity maps.
-* **Ttl**: int (Required): The TTL in seconds for a resolver that has caching activated. Valid values are 1-36.00 seconds.
-
-## PipelineConfig
-### Properties
-* **Functions**: string[]: A list of Function objects.
-
-## AppSyncRuntime
-### Properties
-* **Name**: string (Required): The name of the runtime to use.
-* **RuntimeVersion**: string (Required): The version of the runtime to use.
-
-## SyncConfig
-### Properties
-* **ConflictDetection**: string (Required): The Conflict Detection strategy to use.
-* **ConflictHandler**: string: The Conflict Resolution strategy to perform in the event of a conflict.
-* **LambdaConflictHandlerConfig**: [LambdaConflictHandlerConfig](#lambdaconflicthandlerconfig)
-
-## LambdaConflictHandlerConfig
-### Properties
-* **LambdaConflictHandlerArn**: string: The Amazon Resource Name (ARN) for the Lambda function to use as the Conflict Handler.
 
 ## AWS.AppSync/SourceApiAssociationProperties
 ### Properties
@@ -143,7 +246,199 @@
 * **SourceApiId**: string (ReadOnly): GraphQLApiId of the source API in the association.
 * **SourceApiIdentifier**: string (WriteOnly): Identifier of the Source GraphQLApi to associate. It could be either GraphQLApi ApiId or ARN
 
+## AwsIamConfig
+### Properties
+* **SigningRegion**: string: The signing Region for AWS Identity and Access Management authorization.
+* **SigningServiceName**: string: The signing service name for AWS Identity and Access Management authorization.
+
+## CachingConfig
+### Properties
+* **CachingKeys**: string[]: The caching keys for a resolver that has caching activated.
+ Valid values are entries from the ``$context.arguments``, ``$context.source``, and ``$context.identity`` maps.
+* **Ttl**: int (Required): The TTL in seconds for a resolver that has caching activated.
+ Valid values are 1?3,600 seconds.
+
+## CognitoConfig
+### Properties
+* **AppIdClientRegex**: string
+* **AwsRegion**: string (Required)
+* **UserPoolId**: string (Required)
+
+## CognitoUserPoolConfig
+### Properties
+* **AppIdClientRegex**: string: A regular expression for validating the incoming Amazon Cognito user pool app client ID. 
+* **AwsRegion**: string: The AWS Region in which the user pool was created.
+* **UserPoolId**: string: The user pool ID
+
+## DeltaSyncConfig
+### Properties
+* **BaseTableTTL**: string (Required): The number of minutes that an Item is stored in the data source.
+* **DeltaSyncTableName**: string (Required): The Delta Sync table name.
+* **DeltaSyncTableTTL**: string (Required): The number of minutes that a Delta Sync log entry is stored in the Delta Sync table.
+
+## DnsMap
+### Properties
+* **Http**: string (ReadOnly)
+* **Realtime**: string (ReadOnly)
+
+## DynamoDBConfig
+### Properties
+* **AwsRegion**: string (Required): The AWS Region.
+* **DeltaSyncConfig**: [DeltaSyncConfig](#deltasyncconfig): The DeltaSyncConfig for a versioned datasource.
+* **TableName**: string (Required): The table name.
+* **UseCallerCredentials**: bool: Set to TRUE to use AWS Identity and Access Management with this data source.
+* **Versioned**: bool: Set to TRUE to use Conflict Detection and Resolution with this data source.
+
+## ElasticsearchConfig
+### Properties
+* **AwsRegion**: string (Required): The AWS Region.
+* **Endpoint**: string (Required): The endpoint.
+
+## EnhancedMetricsConfig
+### Properties
+* **DataSourceLevelMetricsBehavior**: string (Required): Controls how data source metrics will be emitted to CloudWatch. Data source metrics include:
+
+
+* **OperationLevelMetricsConfig**: string (Required): Controls how operation metrics will be emitted to CloudWatch. Operation metrics include:
+
+
+* **ResolverLevelMetricsBehavior**: string (Required): Controls how resolver metrics will be emitted to CloudWatch. Resolver metrics include:
+
+
+
+## EventBridgeConfig
+### Properties
+* **EventBusArn**: string (Required): ARN for the EventBridge bus.
+
+## EventConfig
+### Properties
+* **AuthProviders**: [AuthProvider](#authprovider)[] (Required)
+* **ConnectionAuthModes**: [AuthMode](#authmode)[] (Required)
+* **DefaultPublishAuthModes**: [AuthMode](#authmode)[] (Required)
+* **DefaultSubscribeAuthModes**: [AuthMode](#authmode)[] (Required)
+* **LogConfig**: [EventLogConfig](#eventlogconfig)
+
+## EventLogConfig
+### Properties
+* **CloudWatchLogsRoleArn**: string (Required)
+* **LogLevel**: string (Required)
+
+## GraphQLApi_EnvironmentVariables
+### Properties
+
+## HttpConfig
+### Properties
+* **AuthorizationConfig**: [AuthorizationConfig](#authorizationconfig): The authorization configuration.
+* **Endpoint**: string (Required): The endpoint.
+
+## LambdaAuthorizerConfig
+### Properties
+* **AuthorizerResultTtlInSeconds**: int
+* **AuthorizerUri**: string (Required)
+* **IdentityValidationExpression**: string
+
+## LambdaAuthorizerConfig
+### Properties
+* **AuthorizerResultTtlInSeconds**: int: The number of seconds a response should be cached for.
+* **AuthorizerUri**: string: The ARN of the Lambda function to be called for authorization.
+* **IdentityValidationExpression**: string: A regular expression for validation of tokens before the Lambda function is called.
+
+## LambdaConfig
+### Properties
+* **LambdaFunctionArn**: string (Required): The ARN for the Lambda function.
+
+## LambdaConflictHandlerConfig
+### Properties
+* **LambdaConflictHandlerArn**: string: The Amazon Resource Name (ARN) for the Lambda function to use as the Conflict Handler.
+
+## LambdaConflictHandlerConfig
+### Properties
+* **LambdaConflictHandlerArn**: string: The Amazon Resource Name (ARN) for the Lambda function to use as the Conflict Handler.
+
+## LogConfig
+### Properties
+* **CloudWatchLogsRoleArn**: string: The service role that AWS AppSync will assume to publish to Amazon CloudWatch Logs in your account.
+* **ExcludeVerboseContent**: bool: Set to TRUE to exclude sections that contain information such as headers, context, and evaluated mapping templates, regardless of logging level.
+* **FieldLogLevel**: string: The field logging level. Values can be NONE, ERROR, INFO, DEBUG, or ALL.
+
+## OpenIDConnectConfig
+### Properties
+* **AuthTTL**: int
+* **ClientId**: string
+* **IatTTL**: int
+* **Issuer**: string (Required)
+
+## OpenIDConnectConfig
+### Properties
+* **AuthTTL**: int: The number of milliseconds that a token is valid after being authenticated.
+* **ClientId**: string: The client identifier of the Relying party at the OpenID identity provider.
+* **IatTTL**: int: The number of milliseconds that a token is valid after it's issued to a user.
+
+
+* **Issuer**: string: The issuer for the OIDC configuration. 
+
+## OpenSearchServiceConfig
+### Properties
+* **AwsRegion**: string (Required): The AWS Region.
+* **Endpoint**: string (Required): The endpoint.
+
+## PipelineConfig
+### Properties
+* **Functions**: string[]: A list of ``Function`` objects.
+
+## RdsHttpEndpointConfig
+### Properties
+* **AwsRegion**: string (Required): AWS Region for RDS HTTP endpoint.
+* **AwsSecretStoreArn**: string (Required): The ARN for database credentials stored in AWS Secrets Manager.
+* **DatabaseName**: string: Logical database name.
+* **DbClusterIdentifier**: string (Required): Amazon RDS cluster Amazon Resource Name (ARN).
+* **Schema**: string: Logical schema name.
+
+## RelationalDatabaseConfig
+### Properties
+* **RdsHttpEndpointConfig**: [RdsHttpEndpointConfig](#rdshttpendpointconfig): Information about the Amazon RDS resource.
+* **RelationalDatabaseSourceType**: string (Required): The type of relational data source.
+
 ## SourceApiAssociationConfig
 ### Properties
 * **MergeType**: string: Configuration of the merged behavior for the association. For example when it could be auto or has to be manual.
+
+## SyncConfig
+### Properties
+* **ConflictDetection**: string (Required): The Conflict Detection strategy to use.
+* **ConflictHandler**: string: The Conflict Resolution strategy to perform in the event of a conflict.
+* **LambdaConflictHandlerConfig**: [LambdaConflictHandlerConfig](#lambdaconflicthandlerconfig)
+
+## SyncConfig
+### Properties
+* **ConflictDetection**: string (Required): The Conflict Detection strategy to use.
+  +   *VERSION*: Detect conflicts based on object versions for this resolver.
+  +   *NONE*: Do not detect conflicts when invoking this resolver.
+* **ConflictHandler**: string: The Conflict Resolution strategy to perform in the event of a conflict.
+  +   *OPTIMISTIC_CONCURRENCY*: Resolve conflicts by rejecting mutations when versions don't match the latest version at the server.
+  +   *AUTOMERGE*: Resolve conflicts with the Automerge conflict resolution strategy.
+  +   *LAMBDA*: Resolve conflicts with an LAMlong function supplied in the ``LambdaConflictHandlerConfig``.
+* **LambdaConflictHandlerConfig**: [LambdaConflictHandlerConfig](#lambdaconflicthandlerconfig): The ``LambdaConflictHandlerConfig`` when configuring ``LAMBDA`` as the Conflict Handler.
+
+## Tag
+### Properties
+* **Key**: string (Required): A string used to identify this tag. You can specify a maximum of 128 characters for a tag key.
+* **Value**: string (Required): A string containing the value for this tag. You can specify a maximum of 256 characters for a tag value.
+
+## Tag
+### Properties
+* **Key**: string (Required): A string used to identify this tag. You can specify a maximum of 128 characters for a tag key.
+* **Value**: string (Required): A string containing the value for this tag. You can specify a maximum of 256 characters for a tag value.
+
+## Tag
+### Properties
+* **Key**: string (Required)
+* **Value**: string (Required)
+
+## UserPoolConfig
+### Properties
+* **AppIdClientRegex**: string: A regular expression for validating the incoming Amazon Cognito user pool app client ID.
+* **AwsRegion**: string: The AWS Region in which the user pool was created.
+* **DefaultAction**: string: The action that you want your GraphQL API to take when a request that uses Amazon Cognito user pool authentication doesn't match the Amazon Cognito user pool configuration.
+* **UserPoolId**: string: The user pool ID.
 
