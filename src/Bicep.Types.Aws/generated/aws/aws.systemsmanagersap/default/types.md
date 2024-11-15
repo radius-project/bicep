@@ -3,16 +3,17 @@
 ## Resource AWS.SystemsManagerSAP/Application@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.SystemsManagerSAP/ApplicationProperties](#awssystemsmanagersapapplicationproperties) (Required): properties of the resource
+* **properties**: [AWS.SystemsManagerSAP/ApplicationProperties](#awssystemsmanagersapapplicationproperties) (Required, Identifier): properties of the resource
 
 ## AWS.SystemsManagerSAP/ApplicationProperties
 ### Properties
 * **ApplicationId**: string (Required)
 * **ApplicationType**: string (Required)
-* **Arn**: string (ReadOnly, Identifier): The ARN of the Helix application
+* **Arn**: string (ReadOnly, Identifier): The ARN of the SSM-SAP application
 * **Credentials**: [Credential](#credential)[] (WriteOnly)
+* **DatabaseArn**: string (WriteOnly): The ARN of the SAP HANA database
 * **Instances**: string[] (WriteOnly)
 * **SapInstanceNumber**: string (WriteOnly)
 * **Sid**: string (WriteOnly)

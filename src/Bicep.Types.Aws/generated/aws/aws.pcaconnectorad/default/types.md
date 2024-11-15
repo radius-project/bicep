@@ -3,69 +3,49 @@
 ## Resource AWS.PCAConnectorAD/Connector@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.PCAConnectorAD/ConnectorProperties](#awspcaconnectoradconnectorproperties) (Required): properties of the resource
+* **properties**: [AWS.PCAConnectorAD/ConnectorProperties](#awspcaconnectoradconnectorproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.PCAConnectorAD/DirectoryRegistration@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.PCAConnectorAD/DirectoryRegistrationProperties](#awspcaconnectoraddirectoryregistrationproperties) (Required): properties of the resource
+* **properties**: [AWS.PCAConnectorAD/DirectoryRegistrationProperties](#awspcaconnectoraddirectoryregistrationproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.PCAConnectorAD/Template@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.PCAConnectorAD/TemplateProperties](#awspcaconnectoradtemplateproperties) (Required): properties of the resource
+* **properties**: [AWS.PCAConnectorAD/TemplateProperties](#awspcaconnectoradtemplateproperties) (Required, Identifier): properties of the resource
 
 ## Resource AWS.PCAConnectorAD/TemplateGroupAccessControlEntry@default
 * **Valid Scope(s)**: Unknown
 ### Properties
-* **alias**: string (Required): the resource alias
+* **alias**: string (Required, Identifier): the resource alias
 * **name**: string: the resource name
-* **properties**: [AWS.PCAConnectorAD/TemplateGroupAccessControlEntryProperties](#awspcaconnectoradtemplategroupaccesscontrolentryproperties) (Required): properties of the resource
+* **properties**: [AWS.PCAConnectorAD/TemplateGroupAccessControlEntryProperties](#awspcaconnectoradtemplategroupaccesscontrolentryproperties) (Required, Identifier): properties of the resource
+
+## AccessRights
+### Properties
+* **AutoEnroll**: string
+* **Enroll**: string
 
 ## AWS.PCAConnectorAD/ConnectorProperties
 ### Properties
-* **CertificateAuthorityArn**: string (Required, WriteOnly)
+* **CertificateAuthorityArn**: string (Required)
 * **ConnectorArn**: string (ReadOnly, Identifier)
-* **DirectoryId**: string (Required, WriteOnly)
-* **Tags**: [Tags](#tags) (WriteOnly)
-* **VpcInformation**: [VpcInformation](#vpcinformation) (Required, WriteOnly)
-
-## Tags
-### Properties
-
-## VpcInformation
-### Properties
-* **SecurityGroupIds**: string[] (Required)
+* **DirectoryId**: string (Required)
+* **Tags**: [Tags](#tags)
+* **VpcInformation**: [VpcInformation](#vpcinformation) (Required)
 
 ## AWS.PCAConnectorAD/DirectoryRegistrationProperties
 ### Properties
-* **DirectoryId**: string (Required, WriteOnly)
+* **DirectoryId**: string (Required)
 * **DirectoryRegistrationArn**: string (ReadOnly, Identifier)
-* **Tags**: [Tags](#tags) (WriteOnly)
-
-## Tags
-### Properties
-
-## AWS.PCAConnectorAD/TemplateProperties
-### Properties
-* **ConnectorArn**: string (Required, WriteOnly)
-* **Definition**: [TemplateDefinition](#templatedefinition) (Required, WriteOnly)
-* **Name**: string (Required, WriteOnly)
-* **ReenrollAllCertificateHolders**: bool (WriteOnly)
-* **Tags**: [Tags](#tags) (WriteOnly)
-* **TemplateArn**: string (ReadOnly, Identifier)
-
-## TemplateDefinition
-### Properties
-
-## Tags
-### Properties
+* **Tags**: [Tags](#tags)
 
 ## AWS.PCAConnectorAD/TemplateGroupAccessControlEntryProperties
 ### Properties
@@ -74,8 +54,28 @@
 * **GroupSecurityIdentifier**: string (Identifier)
 * **TemplateArn**: string (Identifier)
 
-## AccessRights
+## AWS.PCAConnectorAD/TemplateProperties
 ### Properties
-* **AutoEnroll**: string
-* **Enroll**: string
+* **ConnectorArn**: string (Required)
+* **Definition**: [TemplateDefinition](#templatedefinition) (Required)
+* **Name**: string (Required)
+* **ReenrollAllCertificateHolders**: bool (WriteOnly)
+* **Tags**: [Tags](#tags)
+* **TemplateArn**: string (ReadOnly, Identifier)
+
+## Tags
+### Properties
+
+## Tags
+### Properties
+
+## Tags
+### Properties
+
+## TemplateDefinition
+### Properties
+
+## VpcInformation
+### Properties
+* **SecurityGroupIds**: string[] (Required)
 
